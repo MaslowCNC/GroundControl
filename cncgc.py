@@ -90,6 +90,9 @@ class Data( ):
 
 class MainProgram( Frame ):
 
+	''' ------------------------------------------------------------------------------------
+	These are the backend functions (These are functions which are called by other functions)
+	----------------------------------------------------------------------------------------'''
 	#This initializes the Tkinter GUI
 	def __init__( self, dataBack ):
 		Frame.__init__( self )
@@ -118,8 +121,8 @@ class MainProgram( Frame ):
 		self.file.add_command(label = 'Begin Loging', command = self.beginLoging)
 		self.file.add_command(label = 'End Loging', command = self.endLog)
 		self.file.add_command(label = 'Connect to CNC', command = self.recievemessage)
-		self.file.add_command(label = 'Save Settings', command = self.savesettings)
-		self.file.add_command(label = 'Load Settings', command = self.loadsettings)
+		#self.file.add_command(label = 'Save Settings', command = self.savesettings)
+		#self.file.add_command(label = 'Load Settings', command = self.loadsettings)
 		
 		
 		self.runmen = Menu(self.menu)
@@ -339,21 +342,7 @@ class MainProgram( Frame ):
 		self.refreshout()
 		self.refreshGcode()
 		self.recievemessage() #This checks if the CNC is connected and establishes a connection if it is
-		
-	def forceCOMconnect(self):
-		
-		self.top = Toplevel()
-		self.top.title("Specify Port")
-
-		self.msg = Message(self.top, text="Please Enter Desired Port. This value can be found in Device Manager. An example of a valid choice would be COM9", width = 400)
-		self.msg.pack()
-		
-		self.myEntryBox = Entry(self.top, text = "COM9")
-		self.myEntryBox.pack()
-		
-		self.button = Button(self.top, text="Submit", command=self.submit)
-		self.button.pack()
-		
+	
 	def setupSettingsFile(self):
 		APPNAME = "Makesmith"
 		import sys
@@ -371,25 +360,6 @@ class MainProgram( Frame ):
 			os.makedirs(appdata)
 		if not os.path.exists(self.dataBack.settingsFile):
 			open(self.dataBack.settingsFile, 'w+')
-	
-	
-	def versionNumber(self):
-		self.gcode_queue.put("B05 ")
-		self.gcode_queue.put("Software Version: 0.55 ")
-	
-	def resetOrigin(self):
-		conversionFactor = 2
-		xInit = int(self.dataBack.xDrag/conversionFactor)
-		yInit = int(self.dataBack.yDrag/conversionFactor)
-		self.canv.xview_scroll(-xInit, UNITS) 
-		self.canv.yview_scroll(-yInit, UNITS) 
-		self.dataBack.xDrag = 0
-		self.dataBack.yDrag = 0
-		self.dataBack.saveFlag = 1
-		if xInit is not 0 or yInit is not 0: #this puts it in a better spot for small screens
-			self.canv.xview_scroll(180, UNITS) 
-			self.canv.yview_scroll(180, UNITS) 
-	
 	
 	def savesettings(self):
 		root.after(10000,self.savesettings)
@@ -443,46 +413,7 @@ class MainProgram( Frame ):
 			root.after(200,self.moveToStart)
 		except:
 			print("Issue Opening Settings")
-		
-	def viewGcode(self):
-		gcodewindow = Toplevel()
-		message = "This is the child window"
-		gCodeText = Text( gcodewindow, width = 37, height = 14, background = "grey95", relief = FLAT)
-		gCodeText.pack(fill = BOTH, expand = YES)
-		for x in self.dataBack.gcode:
-			gCodeText.insert(END, x + "\r\n")
-		
-	def moveToStart(self):
-		conversionFactor = 2
-		xInit = int(self.dataBack.xDrag/conversionFactor)
-		yInit = int(self.dataBack.yDrag/conversionFactor)
-		self.canv.xview_scroll(xInit, UNITS) 
-		self.canv.yview_scroll(yInit, UNITS) 
-	
-	def stoprun(self):
-		stopflag = 0
-		if self.dataBack.uploadFlag == 1: 
-			stopflag = 1
-		self.dataBack.uploadFlag = 0
-		self.dataBack.gcodeIndex = 0
-		self.quick_queue.put("STOP") 
-		with self.gcode_queue.mutex:
-			self.gcode_queue.queue.clear()
-		print("Gode Stopped")
-		
-		self.dataBack.target[0] = self.dataBack.currentpos[0]/self.dataBack.unitsScale
-		self.dataBack.target[1] = self.dataBack.currentpos[1]/self.dataBack.unitsScale
-		self.dataBack.target[2] = self.dataBack.currentpos[2]/self.dataBack.unitsScale
-		
-		'''if stopflag == 1:
-			answer = messagebox.askyesno("Save?", "Would you like to save your place in the current program?")
-			if answer is True: pass
-			else: self.dataBack.gcodeIndex = 0'''
-		
-	def pause(self):
-		self.dataBack.uploadFlag = 0
-		print("paused")
-	
+
 	def listSerialPorts(self):
 		import glob
 		if sys.platform.startswith('win'):
@@ -525,62 +456,6 @@ class MainProgram( Frame ):
 			self.com.add_command(label = y[1], command = lambda y=y: self.comset(str(y[0])))
 		self.com.add_command(label = 'Specify', command = self.forceCOMconnect)
 	
-	def unpause(self):
-		self.dataBack.uploadFlag = 1
-		print("unpaused")
-	
-	def forceResume(self):
-		self.dataBack.uploadFlag = 1
-		self.dataBack.readyFlag = 1
-		#self.sendandinc()
-		print("forced resume")
-		print("uploadFlag: ")
-		print(self.dataBack.uploadFlag)
-		print("gcodeIndex")
-		print(self.dataBack.gcodeIndex)
-		print("readyFlag")
-		print(self.dataBack.readyFlag)
-	
-	def tool_width_toggle(self):
-		if self.dataBack.toolWidthFlag == 1:
-			self.dataBack.toolWidthFlag = 0
-		else:
-			self.dataBack.toolWidthFlag = 1
-		self.refreshGcode()
-		
-	def zoomset(self, zoomFract):
-		self.dataBack.zoomLevel = 4.9*zoomFract
-		self.refreshGcode()
-		self.dataBack.saveFlag = 1
-	
-	def updateSettings(self):
-		self.settingsView = Toplevel()
-		self.settingsView.title("LCD Display Settings")
-		
-		msg = Message(self.settingsView, text="These settings apply to the optional on machine LCD display\n", width = 400)
-		msg.pack()
-		
-		msg = Message(self.settingsView, text="Contrast", width = 400)
-		msg.pack()
-		
-		self.contrastValue = Scale(self.settingsView, from_=0, to=100, orient=HORIZONTAL, length = 400)
-		self.contrastValue.pack()
-		self.contrastValue.set(self.dataBack.contrast)
-		
-		msg2 = Message(self.settingsView, text="Backlight", width = 400)
-		msg2.pack()
-		
-		self.backlightValue = Scale(self.settingsView, from_=0, to=100, orient=HORIZONTAL, length = 400)
-		self.backlightValue.pack()
-		self.backlightValue.set(self.dataBack.backlight)
-		
-		msg3 = Message(self.settingsView, text=" ", width = 400)
-		msg3.pack()
-		
-		settingsButton = Button(self.settingsView, text="Update", command=self.pushSettingsToMachine)
-		settingsButton.pack()
-		self.dataBack.saveFlag = 1
-	
 	def pushSettingsToMachine (self):
 		try:
 			contrast = self.contrastValue.get()
@@ -597,172 +472,6 @@ class MainProgram( Frame ):
 		sleep(.25)
 		
 		self.gcode_queue.put("B02 C" + str(self.dataBack.contrast) + " ")
-		
-	def color_toggle(self):
-		if self.dataBack.colorFlag == 1:
-			self.dataBack.colorFlag = 0
-		else:
-			self.dataBack.colorFlag = 1
-		self.refreshGcode()
-		self.dataBack.saveFlag = 1
-		
-	def beginGcodeRun(self):
-		self.reZero()
-		self.dataBack.uploadFlag = 1
-		self.dataBack.readyFlag = 1
-		self.dataBack.startTime = time()
-		self.sendandinc()
-		
-	def scrollactive(self):
-		if self.dataBack.scrollFlag == 0:
-			self.dataBack.scrollFlag = 1
-			#print("first one ran")
-			return 
-		
-		if self.dataBack.scrollFlag == 1:
-			self.dataBack.scrollFlag = 0
-			#print("second one ran")
-			return
-		
-	def runtest(self):
-		if(self.dataBack.spindleFlag == 1):
-			self.gcode_queue.put("S5000 ")
-			self.dataBack.spindleFlag = 0
-		elif(self.dataBack.spindleFlag == 0):
-			self.gcode_queue.put("S0 ")
-			self.dataBack.spindleFlag = 1
-		
-	def reZero(self): 
-		self.dataBack.currentpos[0] = 0.0
-		self.dataBack.currentpos[1] = 0.0
-		self.dataBack.currentpos[2] = 0.0
-		
-		self.dataBack.target[0] = 0.0
-		self.dataBack.target[1] = 0.0
-		self.dataBack.target[2] = 0.0
-		
-		self.xposdispval.set("0.00")
-		self.yposdispval.set("0.00")
-		self.zposdispval.set("0.00")
-		
-		self.xposdispvalin.set("0.00")
-		self.yposdispvalin.set("0.00")
-		self.zposdispvalin.set("0.00")
-		
-		self.gcode_queue.put("G10 X0 Y0 Z0 ")
-		
-		self.refreshGcode()
-	
-	def reZeroZ(self):
-		self.dataBack.currentpos[2] = 0.0
-		self.dataBack.target[2] = 0.0
-		self.zposdispval.set("0.00")
-		self.zposdispvalin.set("0.00")
-		
-		self.gcode_queue.put("G10 Z0 ")
-		self.refreshGcode()
-		
-	def comset(self, comstring):
-		self.dataBack.comport = comstring
-		self.recievemessage()
-		print(self.dataBack.comport)
-		self.dataBack.saveFlag = 1
-		
-	def rightb(self):
-		self.jmpsize()
-		target = -1*self.dataBack.target[0] + float(self.dataBack.stepsizeval)
-		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X" + str(target) + " ")
-		self.dataBack.target[0] = self.dataBack.target[0] - float(self.dataBack.stepsizeval)
-		
-		
-	def leftb(self):
-		self.jmpsize()
-		target = -1*self.dataBack.target[0] - float(self.dataBack.stepsizeval)
-		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X" + str(target) + " ")
-		self.dataBack.target[0] = self.dataBack.target[0] + float(self.dataBack.stepsizeval)
-		
-	def forwardb(self):
-		self.jmpsize()
-		target = self.dataBack.target[1] + float(self.dataBack.stepsizeval)
-		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " Y" + str(target) + " ")
-		self.dataBack.target[1] = self.dataBack.target[1] + float(self.dataBack.stepsizeval)
-		
-	def backb(self):
-		self.jmpsize()
-		target = self.dataBack.target[1] - float(self.dataBack.stepsizeval)
-		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " Y" + str(target) + " ")
-		self.dataBack.target[1] = self.dataBack.target[1] - float(self.dataBack.stepsizeval)
-		
-	def upb(self):
-		self.jmpsize()
-		target = self.dataBack.target[2] + float(self.dataBack.stepsizeval)
-		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " Z" + str(target) + " ")
-		self.dataBack.target[2] = self.dataBack.target[2] + float(self.dataBack.stepsizeval)
-		
-	def downb(self):
-		self.jmpsize()
-		target = self.dataBack.target[2] - float(self.dataBack.stepsizeval)
-		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " Z" + str(target) + " ")
-		self.dataBack.target[2] = self.dataBack.target[2] - float(self.dataBack.stepsizeval)
-		
-	def homebtn(self):
-		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X0 Y0 Z0 ")
-		self.dataBack.target[0] = 0.0
-		self.dataBack.target[1] = 0.0
-		self.dataBack.target[2] = 0.0
-		
-		
-	def urb(self):
-		self.jmpsize()
-		xtarget = -1*self.dataBack.target[0] + float(self.dataBack.stepsizeval)
-		ytarget = self.dataBack.target[1] + float(self.dataBack.stepsizeval)
-		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
-		self.dataBack.target[0] = self.dataBack.target[0] - float(self.dataBack.stepsizeval)
-		self.dataBack.target[1] = self.dataBack.target[1] + float(self.dataBack.stepsizeval)
-	
-	def ulb(self):
-		self.jmpsize()
-		xtarget = -1*self.dataBack.target[0] - float(self.dataBack.stepsizeval)
-		ytarget = self.dataBack.target[1] + float(self.dataBack.stepsizeval)
-		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
-		self.dataBack.target[0] = self.dataBack.target[0] + float(self.dataBack.stepsizeval)
-		self.dataBack.target[1] = self.dataBack.target[1] + float(self.dataBack.stepsizeval)
-	
-	def drb(self):
-		self.jmpsize()
-		xtarget = -1*self.dataBack.target[0] + float(self.dataBack.stepsizeval)
-		ytarget = self.dataBack.target[1] - float(self.dataBack.stepsizeval)
-		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
-		self.dataBack.target[0] = self.dataBack.target[0] - float(self.dataBack.stepsizeval)
-		self.dataBack.target[1] = self.dataBack.target[1] - float(self.dataBack.stepsizeval)
-	
-	def dlb(self):
-		self.jmpsize()
-		xtarget = -1*self.dataBack.target[0] - float(self.dataBack.stepsizeval)
-		ytarget = self.dataBack.target[1] - float(self.dataBack.stepsizeval)
-		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
-		self.dataBack.target[0] = self.dataBack.target[0] + float(self.dataBack.stepsizeval)
-		self.dataBack.target[1] = self.dataBack.target[1] - float(self.dataBack.stepsizeval)
-	
-	def sendonegcode(self):
-		#print("start")
-		#print(self.dataBack.gcodeIndex)
-		try:
-			self.gcode_queue.put(self.dataBack.gcode[self.dataBack.gcodeIndex])
-			#print(self.dataBack.gcode[self.dataBack.gcodeIndex])
-			self.dataBack.gcodeIndex = self.dataBack.gcodeIndex + 1
-		except:
-			self.dataBack.uploadFlag = 0
-			#self.dataBack.readyFlag = 0
-			self.dataBack.gcodeIndex = 0
-			print("Gcode run complete")
-		#print(self.dataBack.gcodeIndex)
-		#print("end")
-	
-	def incmt(self):
-		#self.dataBack.gcodeIndex = self.dataBack.gcodeIndex + 1
-		print("incmt ran")
-		
 		
 	def sendandinc(self):
 		
@@ -781,67 +490,12 @@ class MainProgram( Frame ):
 		#timeDispString = "%10.1f Min" % (timeElap/60)
 		
 		self.sendonegcode()
-		#self.incmt()
 		
 	def jmpsize(self):
 		self.dataBack.stepsizeval = self.stepsize.get()
 		self.dataBack.feedRate = self.speed.get()
 		self.dataBack.saveFlag = 1
 		
-	def beginLoging (self):
-		filename = "DataLog.txt"
-		try:
-			logfile = open(filename, 'w') #Opens the provided file name for writing which will replace any existing data
-			self.dataBack.logflag = 1
-			self.dataBack.logfile = logfile
-		except:
-			print("open issue")
-		
-		
-	#end log closes the log file and sets the log flag to be false
-	def endLog(self):
-		if(self.dataBack.logflag == 1):
-			self.dataBack.logflag = 0
-			self.dataBack.logfile.close()
-		
-	def resetcount(self):
-		self.dataBack.gcodeIndex = 0
-	
-	def autoDebug(self): 
-		debugWindow = Toplevel()
-		debugWindow.title("Diagnostics")
-		msgText = "This will try to help you detect and possibly\n   resolve any issues with the machine\n\n     The output of each test will show \n up on in the terminal on the main screen.\n\n"
-		msg = Message(debugWindow, text= msgText, width = 400)
-		msg.pack()
-		
-		encodersFrame = Frame(debugWindow)
-		encodersFrame.pack()
-		
-		MotorsFrame = Frame(debugWindow)
-		MotorsFrame.pack()
-		
-		BothFrame = Frame(debugWindow)
-		BothFrame.pack()
-		
-		msg2 = Message(encodersFrame, text= "This tests to see that all of the encoders are producing a valid PWM signal. If the encoder happens to be exactly at the zero position it will not pass the test because the encoder is not producing a signal. Pluging the encoder in backwards will not hurt it.", width = 400)
-		msg2.pack(side = LEFT)
-		
-		encodersButton = Button(encodersFrame, text = "Test Encoders", command = lambda: self.gcode_queue.put("Test Encoders"))
-		encodersButton.pack(side = LEFT)
-		
-		msg3 = Message(MotorsFrame, text= "This test moves each motor in turn. If your motors do not move, check that they are plugged in correctly and that the power supply is working.", width = 400)
-		msg3.pack(side = LEFT)
-		
-		motorsButton = Button(MotorsFrame, text = "Test Motors", command = lambda: self.gcode_queue.put("Test Motors"))
-		motorsButton.pack(side = LEFT)
-		
-		msg4 = Message(BothFrame, text = "This test checks that the motors are plugged into the correct axies. It does this by driving one motor and checking to see that the machine moves in the correct direction.", width = 400)
-		msg4.pack(side = LEFT)
-		
-		bothButton = Button(BothFrame, text="Test Both", command = lambda: self.gcode_queue.put("Test Both"))
-		bothButton.pack(side = LEFT)
-		
-	
 	#This function opens the thread which handles the input from the serial port
 	#It only needs to be run once, it is run by connecting to the machine
 	def recievemessage(self):
@@ -851,18 +505,7 @@ class MainProgram( Frame ):
 		th=threading.Thread(target=x.getmessage)
 		th.daemon = True
 		th.start()
-			
-	
-	def loadGcode(self):
-		from tkinter import filedialog
-		import re
-		filename = filedialog.askopenfilename(filetypes = (("G-code Files", "*.nc;*.ngc"),("All files", "*.*") ), initialdir = self.dataBack.gcodeFile)  #This opens the built in TK dialog box to open a file
-		if filename is not "":
-			self.dataBack.gcodeFile = filename
-		self.reloadGcode()
-		self.dataBack.saveFlag = 1
-		self.refreshGcode()
-
+		
 	def angleGet(self, X, Y, centerX, centerY):
 		'''print("BEGIN")
 		print(X)
@@ -903,8 +546,7 @@ class MainProgram( Frame ):
 			theta = math.atan((centerY - Y)/(X - centerX))
 			theta = theta/math.pi
 		#print(theta)
-		return(theta)
-	
+		return(theta)	
 	
 	def updatePosView(self, poString):
 		#print("function ran")
@@ -970,8 +612,7 @@ class MainProgram( Frame ):
 		
 		self.xposdispvalin.set(xposstring)
 		self.yposdispvalin.set(yposstring)
-		self.zposdispvalin.set(zposstring)
-		
+		self.zposdispvalin.set(zposstring)	
 		
 	def grab(self,event):
 		
@@ -1003,57 +644,6 @@ class MainProgram( Frame ):
 		self.canv.xview_scroll(-xInit, UNITS) 
 		self.canv.yview_scroll(-yInit, UNITS) '''
 	
-	#This is now the way to view the G-code
-	def showCanvas(self):
-
-		scalor3 = self.dataBack.zoomLevel
-		
-		
-		#canv.create_line(0, 0, 4, 4)
-		self.canv.create_line(800, 0, 800, 900, dash=(6, 6), fill = 'grey')#the hash lines
-		self.canv.create_line(0, 800, 900, 800, dash=(6, 6), fill = 'grey')
-		
-		self.canv.create_line(500, 850, 500 + 20*scalor3, 850)
-		self.canv.create_line(500, 840, 500, 860)
-		self.canv.create_line(500 + 20*scalor3, 840, 500 + 20*scalor3, 860)
-		
-		self.canv.create_text( 556, 860, text = "One Inch" )
-		
-		self.drawgcode()
-		
-		#indicator for location 
-		#(0, 0) is (800, 800)
-		offsetX =  self.dataBack.offsetX
-		offsetY =  self.dataBack.offsetY
-		
-		self.canv.create_line(offsetX + 790 - self.dataBack.currentpos[0]*scalor3, offsetY + 790 - self.dataBack.currentpos[1]*scalor3, offsetX + 810 - self.dataBack.currentpos[0]*scalor3, offsetY + 810 - self.dataBack.currentpos[1]*scalor3)
-		self.canv.create_line(offsetX + 790 - self.dataBack.currentpos[0]*scalor3, offsetY + 810 - self.dataBack.currentpos[1]*scalor3, offsetX + 810 - self.dataBack.currentpos[0]*scalor3, offsetY + 790 - self.dataBack.currentpos[1]*scalor3)
-		self.canv.create_oval(offsetX + 790 - self.dataBack.currentpos[0]*scalor3, offsetY + 790 - self.dataBack.currentpos[1]*scalor3, offsetX + 810 - self.dataBack.currentpos[0]*scalor3, offsetY + 810 - self.dataBack.currentpos[1]*scalor3)
-		
-		#Z axis indicator
-		self.canv.create_line(850, 550, 850, 150)
-		self.canv.create_line(845, 550, 855, 550)
-		self.canv.create_line(845, 150, 855, 150)
-		self.canv.create_line(837, 350 - self.dataBack.currentpos[2]*scalor3, 863, 350 - self.dataBack.currentpos[2]*scalor3)
-		#tick marks
-		self.canv.create_line(850, 350 + 20*scalor3 , 857, 350 + 20*scalor3 )
-		self.canv.create_line(850, 350 - 20*scalor3 , 857, 350 - 20*scalor3 )
-		
-		m = 1
-		while(m <= 50):
-			self.canv.create_line(846, 350 + m*.03937*20*scalor3 , 850, 350 + m*.03937*20*scalor3 )
-			self.canv.create_line(846, 350 - m*.03937*20*scalor3 , 850, 350 - m*.03937*20*scalor3 )
-			m = m +1
-		
-		m = 1
-		while(m <= 5):
-			self.canv.create_line(842, 350 + m*.3937*20*scalor3 , 850, 350 + m*.3937*20*scalor3 )
-			self.canv.create_line(842, 350 - m*.3937*20*scalor3 , 850, 350 - m*.3937*20*scalor3 )
-			m = m +1
-			
-		self.refreshGcode()
-		
-		
 	def drawgcode(self):
 		#one roation is 4 pixels
 		xnow = 800.0
@@ -1083,7 +673,7 @@ class MainProgram( Frame ):
 				if opstring[0:3] == 'G00' or opstring[0:3] == 'G01' or opstring[0:3] == 'G02' or opstring[0:3] == 'G03':
 					prependString = opstring[0:3] + " "
 				
-				if opstring[0:3] == 'G01' or opstring[0:3] == 'G00':
+				if opstring[0:3] == 'G01' or opstring[0:3] == 'G00' or opstring[0:3] == 'G1 ' or opstring[0:3] == 'G0 ':
 					#print("g1 recognized")
 					scalor = self.dataBack.zoomLevel * self.dataBack.unitsScale
 					startpt = opstring.find('X')
@@ -1155,7 +745,7 @@ class MainProgram( Frame ):
 						ynow = 800 - ydist
 				
 				
-				if opstring[0:3] == 'G02':
+				if opstring[0:3] == 'G02' or opstring[0:3] == 'G2 ':
 					scalor = self.dataBack.zoomLevel * self.dataBack.unitsScale
 					Xval = 0
 					Yval = 0
@@ -1314,7 +904,7 @@ class MainProgram( Frame ):
 					
 					
 				
-				if opstring[0:3] == 'G03':
+				if opstring[0:3] == 'G03' or opstring[0:3] == 'G3 ':
 					#print("g3 recognized")
 					Xval = 0
 					Yval = 0
@@ -1585,27 +1175,6 @@ class MainProgram( Frame ):
 		if float(self.output.index(END)) > 600: #checks to see if there are over 600 lines of data being displayed, float() handles the decimal point
 			self.output.delete(1.0,300.0) #if there are the oldest 300 are deleted
 		
-	def refreshGcode(self):
-		#print("updated canvas")
-		self.canv.delete("all") #clear the canvas
-		self.refreshCross()
-		
-		scalor2 = self.dataBack.zoomLevel
-		
-		
-		#redraw frame shit
-		self.canv.create_line( 800, -4000, 800,  4800, dash=(6, 6), fill = 'grey')#the hash lines
-		self.canv.create_line( -4000,  800,  4800,  800, dash=(6, 6), fill = 'grey')
-		
-		#Draw inch marker
-		self.canv.create_line( 900,  850,  900 + 20*scalor2,  850)
-		self.canv.create_line( 900,  840,  900,  860)
-		self.canv.create_line( 900 + 20*scalor2,  840,  900 + 20*scalor2,  860)
-		
-		self.canv.create_text( 870, 850, text = "One Inch" )
-		
-		self.drawgcode()
-			
 	def refreshCross(self):
 		#indicator for location 
 		#(0, 0) is (800, 800)
@@ -1627,6 +1196,435 @@ class MainProgram( Frame ):
 		self.cross2 = self.canv.create_line(offsetX + 790 - self.dataBack.currentpos[0]*scalor2, offsetY + 810 - self.dataBack.currentpos[1]*scalor2, offsetX + 810 - self.dataBack.currentpos[0]*scalor2, offsetY + 790 - self.dataBack.currentpos[1]*scalor2)
 		self.posOval = self.canv.create_oval(offsetX + 790 - self.dataBack.currentpos[0]*scalor2, offsetY + 790 - self.dataBack.currentpos[1]*scalor2, offsetX + 810 - self.dataBack.currentpos[0]*scalor2, offsetY + 810 - self.dataBack.currentpos[1]*scalor2)
 	
+	'''--------------------------------------------------------------------------------------
+	 These are the frontend functions which the user can activate using the GUI
+	 ----------------------------------------------------------------------------------------'''	
+	def forceCOMconnect(self):
+		
+		self.top = Toplevel()
+		self.top.title("Specify Port")
+
+		self.msg = Message(self.top, text="Please Enter Desired Port. This value can be found in Device Manager. An example of a valid choice would be COM9", width = 400)
+		self.msg.pack()
+		
+		self.myEntryBox = Entry(self.top, text = "COM9")
+		self.myEntryBox.pack()
+		
+		self.button = Button(self.top, text="Submit", command=self.submit)
+		self.button.pack()
+	
+	def versionNumber(self):
+		self.gcode_queue.put("B05 ")
+		self.gcode_queue.put("Software Version: 0.55 ")
+	
+	def submit(self):
+		self.comset(self.myEntryBox.get()) 
+		self.top.destroy()
+	
+	def resetOrigin(self):
+		conversionFactor = 2
+		xInit = int(self.dataBack.xDrag/conversionFactor)
+		yInit = int(self.dataBack.yDrag/conversionFactor)
+		self.canv.xview_scroll(-xInit, UNITS) 
+		self.canv.yview_scroll(-yInit, UNITS) 
+		self.dataBack.xDrag = 0
+		self.dataBack.yDrag = 0
+		self.dataBack.saveFlag = 1
+		if xInit is not 0 or yInit is not 0: #this puts it in a better spot for small screens
+			self.canv.xview_scroll(180, UNITS) 
+			self.canv.yview_scroll(180, UNITS) 
+		
+	def moveToStart(self):
+		conversionFactor = 2
+		xInit = int(self.dataBack.xDrag/conversionFactor)
+		yInit = int(self.dataBack.yDrag/conversionFactor)
+		self.canv.xview_scroll(xInit, UNITS) 
+		self.canv.yview_scroll(yInit, UNITS) 
+	
+	def stoprun(self):
+		stopflag = 0
+		if self.dataBack.uploadFlag == 1: 
+			stopflag = 1
+		self.dataBack.uploadFlag = 0
+		self.dataBack.gcodeIndex = 0
+		self.quick_queue.put("STOP") 
+		with self.gcode_queue.mutex:
+			self.gcode_queue.queue.clear()
+		print("Gode Stopped")
+		
+		self.dataBack.target[0] = self.dataBack.currentpos[0]/self.dataBack.unitsScale
+		self.dataBack.target[1] = self.dataBack.currentpos[1]/self.dataBack.unitsScale
+		self.dataBack.target[2] = self.dataBack.currentpos[2]/self.dataBack.unitsScale
+		
+		'''if stopflag == 1:
+			answer = messagebox.askyesno("Save?", "Would you like to save your place in the current program?")
+			if answer is True: pass
+			else: self.dataBack.gcodeIndex = 0'''
+		
+	def pause(self):
+		self.dataBack.uploadFlag = 0
+		print("paused")
+	
+	def unpause(self):
+		self.dataBack.uploadFlag = 1
+		print("unpaused")
+	
+	def tool_width_toggle(self):
+		if self.dataBack.toolWidthFlag == 1:
+			self.dataBack.toolWidthFlag = 0
+		else:
+			self.dataBack.toolWidthFlag = 1
+		self.refreshGcode()
+		
+	def zoomset(self, zoomFract):
+		self.dataBack.zoomLevel = 4.9*zoomFract
+		self.refreshGcode()
+		self.dataBack.saveFlag = 1
+	
+	def updateSettings(self):
+		self.settingsView = Toplevel()
+		self.settingsView.title("LCD Display Settings")
+		
+		msg = Message(self.settingsView, text="These settings apply to the optional on machine LCD display\n", width = 400)
+		msg.pack()
+		
+		msg = Message(self.settingsView, text="Contrast", width = 400)
+		msg.pack()
+		
+		self.contrastValue = Scale(self.settingsView, from_=0, to=100, orient=HORIZONTAL, length = 400)
+		self.contrastValue.pack()
+		self.contrastValue.set(self.dataBack.contrast)
+		
+		msg2 = Message(self.settingsView, text="Backlight", width = 400)
+		msg2.pack()
+		
+		self.backlightValue = Scale(self.settingsView, from_=0, to=100, orient=HORIZONTAL, length = 400)
+		self.backlightValue.pack()
+		self.backlightValue.set(self.dataBack.backlight)
+		
+		msg3 = Message(self.settingsView, text=" ", width = 400)
+		msg3.pack()
+		
+		settingsButton = Button(self.settingsView, text="Update", command=self.pushSettingsToMachine)
+		settingsButton.pack()
+		self.dataBack.saveFlag = 1
+	
+	def color_toggle(self):
+		if self.dataBack.colorFlag == 1:
+			self.dataBack.colorFlag = 0
+		else:
+			self.dataBack.colorFlag = 1
+		self.refreshGcode()
+		self.dataBack.saveFlag = 1
+		
+	def beginGcodeRun(self):
+		self.reZero()
+		self.dataBack.uploadFlag = 1
+		self.dataBack.readyFlag = 1
+		self.dataBack.startTime = time()
+		self.sendandinc()
+		
+	def scrollactive(self):
+		if self.dataBack.scrollFlag == 0:
+			self.dataBack.scrollFlag = 1
+			#print("first one ran")
+			return 
+		
+		if self.dataBack.scrollFlag == 1:
+			self.dataBack.scrollFlag = 0
+			#print("second one ran")
+			return
+		
+	def runtest(self):
+		if(self.dataBack.spindleFlag == 1):
+			self.gcode_queue.put("S5000 ")
+			self.dataBack.spindleFlag = 0
+		elif(self.dataBack.spindleFlag == 0):
+			self.gcode_queue.put("S0 ")
+			self.dataBack.spindleFlag = 1
+		
+	def reZero(self): 
+		self.dataBack.currentpos[0] = 0.0
+		self.dataBack.currentpos[1] = 0.0
+		self.dataBack.currentpos[2] = 0.0
+		
+		self.dataBack.target[0] = 0.0
+		self.dataBack.target[1] = 0.0
+		self.dataBack.target[2] = 0.0
+		
+		self.xposdispval.set("0.00")
+		self.yposdispval.set("0.00")
+		self.zposdispval.set("0.00")
+		
+		self.xposdispvalin.set("0.00")
+		self.yposdispvalin.set("0.00")
+		self.zposdispvalin.set("0.00")
+		
+		self.gcode_queue.put("G10 X0 Y0 Z0 ")
+		
+		self.refreshGcode()
+	
+	def reZeroZ(self):
+		self.dataBack.currentpos[2] = 0.0
+		self.dataBack.target[2] = 0.0
+		self.zposdispval.set("0.00")
+		self.zposdispvalin.set("0.00")
+		
+		self.gcode_queue.put("G10 Z0 ")
+		self.refreshGcode()
+		
+	def comset(self, comstring):
+		self.dataBack.comport = comstring
+		self.recievemessage()
+		print(self.dataBack.comport)
+		self.dataBack.saveFlag = 1
+		
+	def rightb(self):
+		self.jmpsize()
+		target = -1*self.dataBack.target[0] + float(self.dataBack.stepsizeval)
+		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X" + str(target) + " ")
+		self.dataBack.target[0] = self.dataBack.target[0] - float(self.dataBack.stepsizeval)
+			
+	def leftb(self):
+		self.jmpsize()
+		target = -1*self.dataBack.target[0] - float(self.dataBack.stepsizeval)
+		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X" + str(target) + " ")
+		self.dataBack.target[0] = self.dataBack.target[0] + float(self.dataBack.stepsizeval)
+		
+	def forwardb(self):
+		self.jmpsize()
+		target = self.dataBack.target[1] + float(self.dataBack.stepsizeval)
+		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " Y" + str(target) + " ")
+		self.dataBack.target[1] = self.dataBack.target[1] + float(self.dataBack.stepsizeval)
+		
+	def backb(self):
+		self.jmpsize()
+		target = self.dataBack.target[1] - float(self.dataBack.stepsizeval)
+		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " Y" + str(target) + " ")
+		self.dataBack.target[1] = self.dataBack.target[1] - float(self.dataBack.stepsizeval)
+		
+	def upb(self):
+		self.jmpsize()
+		target = self.dataBack.target[2] + float(self.dataBack.stepsizeval)
+		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " Z" + str(target) + " ")
+		self.dataBack.target[2] = self.dataBack.target[2] + float(self.dataBack.stepsizeval)
+		
+	def downb(self):
+		self.jmpsize()
+		target = self.dataBack.target[2] - float(self.dataBack.stepsizeval)
+		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " Z" + str(target) + " ")
+		self.dataBack.target[2] = self.dataBack.target[2] - float(self.dataBack.stepsizeval)
+		
+	def homebtn(self):
+		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X0 Y0 Z0 ")
+		self.dataBack.target[0] = 0.0
+		self.dataBack.target[1] = 0.0
+		self.dataBack.target[2] = 0.0
+			
+	def urb(self):
+		self.jmpsize()
+		xtarget = -1*self.dataBack.target[0] + float(self.dataBack.stepsizeval)
+		ytarget = self.dataBack.target[1] + float(self.dataBack.stepsizeval)
+		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+		self.dataBack.target[0] = self.dataBack.target[0] - float(self.dataBack.stepsizeval)
+		self.dataBack.target[1] = self.dataBack.target[1] + float(self.dataBack.stepsizeval)
+	
+	def ulb(self):
+		self.jmpsize()
+		xtarget = -1*self.dataBack.target[0] - float(self.dataBack.stepsizeval)
+		ytarget = self.dataBack.target[1] + float(self.dataBack.stepsizeval)
+		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+		self.dataBack.target[0] = self.dataBack.target[0] + float(self.dataBack.stepsizeval)
+		self.dataBack.target[1] = self.dataBack.target[1] + float(self.dataBack.stepsizeval)
+	
+	def drb(self):
+		self.jmpsize()
+		xtarget = -1*self.dataBack.target[0] + float(self.dataBack.stepsizeval)
+		ytarget = self.dataBack.target[1] - float(self.dataBack.stepsizeval)
+		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+		self.dataBack.target[0] = self.dataBack.target[0] - float(self.dataBack.stepsizeval)
+		self.dataBack.target[1] = self.dataBack.target[1] - float(self.dataBack.stepsizeval)
+	
+	def dlb(self):
+		self.jmpsize()
+		xtarget = -1*self.dataBack.target[0] - float(self.dataBack.stepsizeval)
+		ytarget = self.dataBack.target[1] - float(self.dataBack.stepsizeval)
+		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+		self.dataBack.target[0] = self.dataBack.target[0] + float(self.dataBack.stepsizeval)
+		self.dataBack.target[1] = self.dataBack.target[1] - float(self.dataBack.stepsizeval)	
+		
+	def beginLoging (self):
+		filename = "DataLog.txt"
+		try:
+			logfile = open(filename, 'w') #Opens the provided file name for writing which will replace any existing data
+			self.dataBack.logflag = 1
+			self.dataBack.logfile = logfile
+		except:
+			print("open issue")
+			
+	#end log closes the log file and sets the log flag to be false
+	def endLog(self):
+		if(self.dataBack.logflag == 1):
+			self.dataBack.logflag = 0
+			self.dataBack.logfile.close()
+		
+	def autoDebug(self): 
+		debugWindow = Toplevel()
+		debugWindow.title("Diagnostics")
+		msgText = "This will try to help you detect and possibly\n   resolve any issues with the machine\n\n     The output of each test will show \n up on in the terminal on the main screen.\n\n"
+		msg = Message(debugWindow, text= msgText, width = 400)
+		msg.pack()
+		
+		encodersFrame = Frame(debugWindow)
+		encodersFrame.pack()
+		
+		MotorsFrame = Frame(debugWindow)
+		MotorsFrame.pack()
+		
+		BothFrame = Frame(debugWindow)
+		BothFrame.pack()
+		
+		msg2 = Message(encodersFrame, text= "This tests to see that all of the encoders are producing a valid PWM signal. If the encoder happens to be exactly at the zero position it will not pass the test because the encoder is not producing a signal. Pluging the encoder in backwards will not hurt it.", width = 400)
+		msg2.pack(side = LEFT)
+		
+		encodersButton = Button(encodersFrame, text = "Test Encoders", command = lambda: self.gcode_queue.put("Test Encoders"))
+		encodersButton.pack(side = LEFT)
+		
+		msg3 = Message(MotorsFrame, text= "This test moves each motor in turn. If your motors do not move, check that they are plugged in correctly and that the power supply is working.", width = 400)
+		msg3.pack(side = LEFT)
+		
+		motorsButton = Button(MotorsFrame, text = "Test Motors", command = lambda: self.gcode_queue.put("Test Motors"))
+		motorsButton.pack(side = LEFT)
+		
+		msg4 = Message(BothFrame, text = "This test checks that the motors are plugged into the correct axies. It does this by driving one motor and checking to see that the machine moves in the correct direction.", width = 400)
+		msg4.pack(side = LEFT)
+		
+		bothButton = Button(BothFrame, text="Test Both", command = lambda: self.gcode_queue.put("Test Both"))
+		bothButton.pack(side = LEFT)	
+	
+	def loadGcode(self):
+		from tkinter import filedialog
+		import re
+		filename = filedialog.askopenfilename(filetypes = (("G-code Files", "*.nc;*.ngc"),("All files", "*.*") ), initialdir = self.dataBack.gcodeFile)  #This opens the built in TK dialog box to open a file
+		if filename is not "":
+			self.dataBack.gcodeFile = filename
+		self.reloadGcode()
+		self.dataBack.saveFlag = 1
+		self.refreshGcode()
+	
+	'''-------------------------------------------------------------------------------------------------------------
+	These functions likely do not ever run and can be deleted.
+	'''
+	def refreshGcode(self):
+		#print("updated canvas")
+		self.canv.delete("all") #clear the canvas
+		self.refreshCross()
+		
+		scalor2 = self.dataBack.zoomLevel
+		
+		
+		#redraw frame shit
+		self.canv.create_line( 800, -4000, 800,  4800, dash=(6, 6), fill = 'grey')#the hash lines
+		self.canv.create_line( -4000,  800,  4800,  800, dash=(6, 6), fill = 'grey')
+		
+		#Draw inch marker
+		self.canv.create_line( 900,  850,  900 + 20*scalor2,  850)
+		self.canv.create_line( 900,  840,  900,  860)
+		self.canv.create_line( 900 + 20*scalor2,  840,  900 + 20*scalor2,  860)
+		
+		self.canv.create_text( 870, 850, text = "One Inch" )
+		
+		self.drawgcode()
+			
+	#This is now the way to view the G-code
+	def showCanvas(self):
+
+		scalor3 = self.dataBack.zoomLevel
+		
+		
+		#canv.create_line(0, 0, 4, 4)
+		self.canv.create_line(800, 0, 800, 900, dash=(6, 6), fill = 'grey')#the hash lines
+		self.canv.create_line(0, 800, 900, 800, dash=(6, 6), fill = 'grey')
+		
+		self.canv.create_line(500, 850, 500 + 20*scalor3, 850)
+		self.canv.create_line(500, 840, 500, 860)
+		self.canv.create_line(500 + 20*scalor3, 840, 500 + 20*scalor3, 860)
+		
+		self.canv.create_text( 556, 860, text = "One Inch" )
+		
+		self.drawgcode()
+		
+		#indicator for location 
+		#(0, 0) is (800, 800)
+		offsetX =  self.dataBack.offsetX
+		offsetY =  self.dataBack.offsetY
+		
+		self.canv.create_line(offsetX + 790 - self.dataBack.currentpos[0]*scalor3, offsetY + 790 - self.dataBack.currentpos[1]*scalor3, offsetX + 810 - self.dataBack.currentpos[0]*scalor3, offsetY + 810 - self.dataBack.currentpos[1]*scalor3)
+		self.canv.create_line(offsetX + 790 - self.dataBack.currentpos[0]*scalor3, offsetY + 810 - self.dataBack.currentpos[1]*scalor3, offsetX + 810 - self.dataBack.currentpos[0]*scalor3, offsetY + 790 - self.dataBack.currentpos[1]*scalor3)
+		self.canv.create_oval(offsetX + 790 - self.dataBack.currentpos[0]*scalor3, offsetY + 790 - self.dataBack.currentpos[1]*scalor3, offsetX + 810 - self.dataBack.currentpos[0]*scalor3, offsetY + 810 - self.dataBack.currentpos[1]*scalor3)
+		
+		#Z axis indicator
+		self.canv.create_line(850, 550, 850, 150)
+		self.canv.create_line(845, 550, 855, 550)
+		self.canv.create_line(845, 150, 855, 150)
+		self.canv.create_line(837, 350 - self.dataBack.currentpos[2]*scalor3, 863, 350 - self.dataBack.currentpos[2]*scalor3)
+		#tick marks
+		self.canv.create_line(850, 350 + 20*scalor3 , 857, 350 + 20*scalor3 )
+		self.canv.create_line(850, 350 - 20*scalor3 , 857, 350 - 20*scalor3 )
+		
+		m = 1
+		while(m <= 50):
+			self.canv.create_line(846, 350 + m*.03937*20*scalor3 , 850, 350 + m*.03937*20*scalor3 )
+			self.canv.create_line(846, 350 - m*.03937*20*scalor3 , 850, 350 - m*.03937*20*scalor3 )
+			m = m +1
+		
+		m = 1
+		while(m <= 5):
+			self.canv.create_line(842, 350 + m*.3937*20*scalor3 , 850, 350 + m*.3937*20*scalor3 )
+			self.canv.create_line(842, 350 - m*.3937*20*scalor3 , 850, 350 - m*.3937*20*scalor3 )
+			m = m +1
+			
+		self.refreshGcode()
+	
+	def viewGcode(self):
+		gcodewindow = Toplevel()
+		message = "This is the child window"
+		gCodeText = Text( gcodewindow, width = 37, height = 14, background = "grey95", relief = FLAT)
+		gCodeText.pack(fill = BOTH, expand = YES)
+		for x in self.dataBack.gcode:
+			gCodeText.insert(END, x + "\r\n")
+	
+	def forceResume(self):
+		self.dataBack.uploadFlag = 1
+		self.dataBack.readyFlag = 1
+		#self.sendandinc()
+		print("forced resume")
+		print("uploadFlag: ")
+		print(self.dataBack.uploadFlag)
+		print("gcodeIndex")
+		print(self.dataBack.gcodeIndex)
+		print("readyFlag")
+		print(self.dataBack.readyFlag)
+	
+	def sendonegcode(self):
+		#print("start")
+		#print(self.dataBack.gcodeIndex)
+		try:
+			self.gcode_queue.put(self.dataBack.gcode[self.dataBack.gcodeIndex])
+			#print(self.dataBack.gcode[self.dataBack.gcodeIndex])
+			self.dataBack.gcodeIndex = self.dataBack.gcodeIndex + 1
+		except:
+			self.dataBack.uploadFlag = 0
+			#self.dataBack.readyFlag = 0
+			self.dataBack.gcodeIndex = 0
+			print("Gcode run complete")
+
+	def incmt(self):
+		#self.dataBack.gcodeIndex = self.dataBack.gcodeIndex + 1
+		print("incmt ran")
+	
+	def resetcount(self):
+		self.dataBack.gcodeIndex = 0
 	
 #CanPort is the thread which handles direct communication with the CAN device. CanPort initializes the connection and then receives
 #and parses standard CAN messages. These messages are then passed to the Grid thread via the message_queue queue where they are
@@ -1714,8 +1712,6 @@ class SerialPort():
 							print("write issue")
 						#print("end")
 						subReadyFlag = False
-						#print("ready unset")
-				
 
 
 
