@@ -1,4 +1,4 @@
-'''This file is part of the Makesmith Ground Control Software.
+﻿'''This file is part of the Makesmith Ground Control Software.
 
 The Makesmith Ground Control Software is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ class Data( ):
 class MainProgram( Frame ):
 
 	''' ------------------------------------------------------------------------------------
-	These are the backend functions (These are functions which are called by other functions)
+	These are the back-end functions (These are functions which are called by other functions)
 	----------------------------------------------------------------------------------------'''
 	#This initializes the Tkinter GUI
 	def __init__( self, dataBack ):
@@ -130,9 +130,9 @@ class MainProgram( Frame ):
 		self.runmen.add_command(label = 'Run G-Code', command = self.beginGcodeRun)
 		self.runmen.add_command(label = 'Pause', command = self.pause)
 		self.runmen.add_command(label = 'Resume', command = self.unpause)
-		self.runmen.add_command(label = 'Force Resume', command = self.forceResume)
+		#self.runmen.add_command(label = 'Force Resume', command = self.forceResume)
 		self.runmen.add_command(label = 'Zero Z', command = self.reZeroZ)
-		self.runmen.add_command(label = 'Reset Index', command = self.resetcount)
+		#self.runmen.add_command(label = 'Reset Index', command = self.resetcount)
 		self.runmen.add_command(label = 'Diagnostics', command = self.autoDebug)
 		
 		self.view = Menu(self.menu)
@@ -227,7 +227,7 @@ class MainProgram( Frame ):
 		self.up.pack(side = LEFT)
 		
 		self.testbtn = Button( self.set_frame, text = "Toggle\nSpindle", bg = self.setColor, width = self.buttonwidth, height = self.buttonHeight)
-		self.testbtn["command"] = self.runtest
+		self.testbtn["command"] = self.toggleSpindle
 		self.testbtn.pack(side = LEFT)
 		
 		self.left = Button(self.middle_frame, text = "<", bg = self.moveColor, width = self.buttonwidth, height = self.buttonHeight)
@@ -343,6 +343,7 @@ class MainProgram( Frame ):
 		self.refreshGcode()
 		self.recievemessage() #This checks if the CNC is connected and establishes a connection if it is
 	
+	#This sets up the file where the program settings are saved if it does not already exist
 	def setupSettingsFile(self):
 		APPNAME = "Makesmith"
 		import sys
@@ -361,6 +362,7 @@ class MainProgram( Frame ):
 		if not os.path.exists(self.dataBack.settingsFile):
 			open(self.dataBack.settingsFile, 'w+')
 	
+	#Saves the program settings
 	def savesettings(self):
 		root.after(10000,self.savesettings)
 		if self.dataBack.saveFlag == 1:
@@ -384,6 +386,7 @@ class MainProgram( Frame ):
 			settings.close()
 			self.dataBack.saveFlag = 0
 		
+	#This loads the program settings from memory during startup 
 	def loadsettings(self):
 		try:
 			settingsfile = open(self.dataBack.settingsFile, 'r+')
@@ -414,6 +417,7 @@ class MainProgram( Frame ):
 		except:
 			print("Issue Opening Settings")
 
+	#Detects all the devices connected to the computer. Returns them as an array.
 	def listSerialPorts(self):
 		import glob
 		if sys.platform.startswith('win'):
@@ -441,6 +445,7 @@ class MainProgram( Frame ):
 				print("Port find error")
 		return result
 	
+	#Runs every two seconds to detect if any new devices are connected
 	def detectCOMports(self):
 		root.after(2000,self.detectCOMports)
 		x = []
@@ -456,6 +461,7 @@ class MainProgram( Frame ):
 			self.com.add_command(label = y[1], command = lambda y=y: self.comset(str(y[0])))
 		self.com.add_command(label = 'Specify', command = self.forceCOMconnect)
 	
+	#This allows settings within the machine (like PID gains) from the computer side software
 	def pushSettingsToMachine (self):
 		try:
 			contrast = self.contrastValue.get()
@@ -473,6 +479,7 @@ class MainProgram( Frame ):
 		
 		self.gcode_queue.put("B02 C" + str(self.dataBack.contrast) + " ")
 		
+	#This sends the next line of gcode and increments the gcode pointer in dataBack
 	def sendandinc(self):
 		
 		timeElap = time() - self.dataBack.startTime
@@ -491,6 +498,9 @@ class MainProgram( Frame ):
 		
 		self.sendonegcode()
 		
+	'''This pulls the value from the scroll box which sets how far the CNC moves when you click 
+	an arrow button and commands the machine to move that amount. It is called every time you 
+	click an arrow button.'''
 	def jmpsize(self):
 		self.dataBack.stepsizeval = self.stepsize.get()
 		self.dataBack.feedRate = self.speed.get()
@@ -506,6 +516,8 @@ class MainProgram( Frame ):
 		th.daemon = True
 		th.start()
 		
+	'''angleGet returns the angle from the positive x axis to a point given the center of the circle 
+	and the point. It is called when plotting circles in the drawGcode() function.'''
 	def angleGet(self, X, Y, centerX, centerY):
 		'''print("BEGIN")
 		print(X)
@@ -548,6 +560,7 @@ class MainProgram( Frame ):
 		#print(theta)
 		return(theta)	
 	
+	#This updates the digital read out on the computer and moves the cross-hairs on the GUI
 	def updatePosView(self, poString):
 		#print("function ran")
 		#print(poString)
@@ -613,18 +626,21 @@ class MainProgram( Frame ):
 		self.xposdispvalin.set(xposstring)
 		self.yposdispvalin.set(yposstring)
 		self.zposdispvalin.set(zposstring)	
-		
+	
+	#grab records the point at which you click the left mouse button, used for scrolling.
 	def grab(self,event):
 		
 		self.canv.scan_mark(event.x, event.y)
 		self.dataBack.saveFlag = 1
-		
+	
+	#drag records the point at which you let go of the left mouse button, used for scrolling.
 	def drag(self,event):
 		
 		self.canv.scan_dragto(event.x, event.y, gain=1)
 		self.dataBack.xDrag = int(self.canv.canvasx(0))
 		self.dataBack.yDrag = int(self.canv.canvasy(0))
 		
+	#mouse_wheel zooms the canvas when you scroll the mouse wheel.
 	def mouse_wheel(self, event):
 		# respond to Linux or Windows wheel event
 		if event.num == 5 or event.delta == -120:
@@ -644,6 +660,7 @@ class MainProgram( Frame ):
 		self.canv.xview_scroll(-xInit, UNITS) 
 		self.canv.yview_scroll(-yInit, UNITS) '''
 	
+	#This draws the gcode on the canvas.
 	def drawgcode(self):
 		#one roation is 4 pixels
 		xnow = 800.0
@@ -1089,6 +1106,7 @@ class MainProgram( Frame ):
 		except:
 			print("bad gcode")
 		
+	#This reloads the gcode from the hard drive in case it has been updated.
 	def reloadGcode(self):
 		try:
 			filename = self.dataBack.gcodeFile
@@ -1105,7 +1123,7 @@ class MainProgram( Frame ):
 			self.dataBack.gcodeFile = ""
 		self.refreshGcode()
 		
-	#Runs 20 times a second
+	#Runs frequently to update the GUI
 	def refreshout (self):
 		#print("refreshout")
 		#print(self.dataBack.readyFlag)
@@ -1175,6 +1193,7 @@ class MainProgram( Frame ):
 		if float(self.output.index(END)) > 600: #checks to see if there are over 600 lines of data being displayed, float() handles the decimal point
 			self.output.delete(1.0,300.0) #if there are the oldest 300 are deleted
 		
+	#Runs frequently to update the cross hairs on the GUI
 	def refreshCross(self):
 		#indicator for location 
 		#(0, 0) is (800, 800)
@@ -1197,8 +1216,9 @@ class MainProgram( Frame ):
 		self.posOval = self.canv.create_oval(offsetX + 790 - self.dataBack.currentpos[0]*scalor2, offsetY + 790 - self.dataBack.currentpos[1]*scalor2, offsetX + 810 - self.dataBack.currentpos[0]*scalor2, offsetY + 810 - self.dataBack.currentpos[1]*scalor2)
 	
 	'''--------------------------------------------------------------------------------------
-	 These are the frontend functions which the user can activate using the GUI
+	 These are the front-end functions which the user can activate using the GUI
 	 ----------------------------------------------------------------------------------------'''	
+	#ForceCOMconnect forces the program to try to connect to a COM port which is not detected
 	def forceCOMconnect(self):
 		
 		self.top = Toplevel()
@@ -1213,14 +1233,17 @@ class MainProgram( Frame ):
 		self.button = Button(self.top, text="Submit", command=self.submit)
 		self.button.pack()
 	
-	def versionNumber(self):
-		self.gcode_queue.put("B05 ")
-		self.gcode_queue.put("Software Version: 0.55 ")
-	
+	#This is the button on the forceCOMConnect window which updates the COM value
 	def submit(self):
 		self.comset(self.myEntryBox.get()) 
 		self.top.destroy()
 	
+	#This displays the software version number and requests that the machine print it's firmware version number.
+	def versionNumber(self):
+		self.gcode_queue.put("B05 ")
+		self.gcode_queue.put("Software Version: 0.55 ")
+	
+	#resetOrigin moves the window back to the center of the screen if it has been moved to far to one side or another.
 	def resetOrigin(self):
 		conversionFactor = 2
 		xInit = int(self.dataBack.xDrag/conversionFactor)
@@ -1234,6 +1257,7 @@ class MainProgram( Frame ):
 			self.canv.xview_scroll(180, UNITS) 
 			self.canv.yview_scroll(180, UNITS) 
 		
+	#moveToStart moves the canvas to a better starting position
 	def moveToStart(self):
 		conversionFactor = 2
 		xInit = int(self.dataBack.xDrag/conversionFactor)
@@ -1241,6 +1265,7 @@ class MainProgram( Frame ):
 		self.canv.xview_scroll(xInit, UNITS) 
 		self.canv.yview_scroll(yInit, UNITS) 
 	
+	#stoprun stops the machine's movement imediatly when it is moving.
 	def stoprun(self):
 		stopflag = 0
 		if self.dataBack.uploadFlag == 1: 
@@ -1261,14 +1286,17 @@ class MainProgram( Frame ):
 			if answer is True: pass
 			else: self.dataBack.gcodeIndex = 0'''
 		
+	#pause makes shuts down the machine after it finishes processing the current line of gcode
 	def pause(self):
 		self.dataBack.uploadFlag = 0
 		print("paused")
 	
+	#unpause causes the machine to begin moving again after being paused.
 	def unpause(self):
 		self.dataBack.uploadFlag = 1
 		print("unpaused")
 	
+	#This toggles if the lines in the gui are drawn with width. The width is set by the tool diameter.
 	def tool_width_toggle(self):
 		if self.dataBack.toolWidthFlag == 1:
 			self.dataBack.toolWidthFlag = 0
@@ -1276,11 +1304,13 @@ class MainProgram( Frame ):
 			self.dataBack.toolWidthFlag = 1
 		self.refreshGcode()
 		
+	#zoomset zooms the canvas.
 	def zoomset(self, zoomFract):
 		self.dataBack.zoomLevel = 4.9*zoomFract
 		self.refreshGcode()
 		self.dataBack.saveFlag = 1
 	
+	#updateSettings lets you change the contrast and brightness on the LCD display
 	def updateSettings(self):
 		self.settingsView = Toplevel()
 		self.settingsView.title("LCD Display Settings")
@@ -1309,6 +1339,7 @@ class MainProgram( Frame ):
 		settingsButton.pack()
 		self.dataBack.saveFlag = 1
 	
+	#color_toggle causes the color of the lines on the canvas to be black or color. Currently not working well.
 	def color_toggle(self):
 		if self.dataBack.colorFlag == 1:
 			self.dataBack.colorFlag = 0
@@ -1317,6 +1348,7 @@ class MainProgram( Frame ):
 		self.refreshGcode()
 		self.dataBack.saveFlag = 1
 		
+	#beginGcodeRun begins exicuting the currently opened gcode file
 	def beginGcodeRun(self):
 		self.reZero()
 		self.dataBack.uploadFlag = 1
@@ -1324,6 +1356,7 @@ class MainProgram( Frame ):
 		self.dataBack.startTime = time()
 		self.sendandinc()
 		
+	#scrollactive toggles if the output text can be scrolled or is static
 	def scrollactive(self):
 		if self.dataBack.scrollFlag == 0:
 			self.dataBack.scrollFlag = 1
@@ -1335,7 +1368,8 @@ class MainProgram( Frame ):
 			#print("second one ran")
 			return
 		
-	def runtest(self):
+	#toggleSpindle turns on and off the dremel if a relay is attached
+	def toggleSpindle(self):
 		if(self.dataBack.spindleFlag == 1):
 			self.gcode_queue.put("S5000 ")
 			self.dataBack.spindleFlag = 0
@@ -1343,6 +1377,7 @@ class MainProgram( Frame ):
 			self.gcode_queue.put("S0 ")
 			self.dataBack.spindleFlag = 1
 		
+	#reZero defines a new home position for the machine.
 	def reZero(self): 
 		self.dataBack.currentpos[0] = 0.0
 		self.dataBack.currentpos[1] = 0.0
@@ -1364,6 +1399,7 @@ class MainProgram( Frame ):
 		
 		self.refreshGcode()
 	
+	#reZeroZ sets a new home position for just the z axis. This is useful for tool changes.
 	def reZeroZ(self):
 		self.dataBack.currentpos[2] = 0.0
 		self.dataBack.target[2] = 0.0
@@ -1373,12 +1409,14 @@ class MainProgram( Frame ):
 		self.gcode_queue.put("G10 Z0 ")
 		self.refreshGcode()
 		
+	#comset sets the COM port to which the machine is attached
 	def comset(self, comstring):
 		self.dataBack.comport = comstring
 		self.recievemessage()
 		print(self.dataBack.comport)
 		self.dataBack.saveFlag = 1
-		
+	
+	#rightb moves the machine to the right by the indicated amount at the indicated speed. rightb is called by the right arrow button.
 	def rightb(self):
 		self.jmpsize()
 		target = -1*self.dataBack.target[0] + float(self.dataBack.stepsizeval)
@@ -1421,6 +1459,7 @@ class MainProgram( Frame ):
 		self.dataBack.target[1] = 0.0
 		self.dataBack.target[2] = 0.0
 			
+	#up and to the right button
 	def urb(self):
 		self.jmpsize()
 		xtarget = -1*self.dataBack.target[0] + float(self.dataBack.stepsizeval)
@@ -1453,6 +1492,7 @@ class MainProgram( Frame ):
 		self.dataBack.target[0] = self.dataBack.target[0] + float(self.dataBack.stepsizeval)
 		self.dataBack.target[1] = self.dataBack.target[1] - float(self.dataBack.stepsizeval)	
 		
+	#beginLoging pipes the output of text window to a file. This is usefull for debug reasons
 	def beginLoging (self):
 		filename = "DataLog.txt"
 		try:
@@ -1462,12 +1502,13 @@ class MainProgram( Frame ):
 		except:
 			print("open issue")
 			
-	#end log closes the log file and sets the log flag to be false
+	#end log closes the log file and sets the log flag to be false. If end log is not called the file will not close properly which is an issue.
 	def endLog(self):
 		if(self.dataBack.logflag == 1):
 			self.dataBack.logflag = 0
 			self.dataBack.logfile.close()
 		
+	#autoDebug tests various functions of the machine
 	def autoDebug(self): 
 		debugWindow = Toplevel()
 		debugWindow.title("Diagnostics")
@@ -1502,6 +1543,7 @@ class MainProgram( Frame ):
 		bothButton = Button(BothFrame, text="Test Both", command = lambda: self.gcode_queue.put("Test Both"))
 		bothButton.pack(side = LEFT)	
 	
+	#loadGcode opens a new gcode file 
 	def loadGcode(self):
 		from tkinter import filedialog
 		import re
@@ -1512,9 +1554,19 @@ class MainProgram( Frame ):
 		self.dataBack.saveFlag = 1
 		self.refreshGcode()
 	
+	#viewGcode opens a new window to look at the gcode which is opened
+	def viewGcode(self):
+		gcodewindow = Toplevel()
+		message = "This is the child window"
+		gCodeText = Text( gcodewindow, width = 37, height = 14, background = "grey95", relief = FLAT)
+		gCodeText.pack(fill = BOTH, expand = YES)
+		for x in self.dataBack.gcode:
+			gCodeText.insert(END, x + "\r\n")
+	
 	'''-------------------------------------------------------------------------------------------------------------
 	These functions likely do not ever run and can be deleted.
 	'''
+	#This is called several times, is it useful?
 	def refreshGcode(self):
 		#print("updated canvas")
 		self.canv.delete("all") #clear the canvas
@@ -1537,6 +1589,7 @@ class MainProgram( Frame ):
 		self.drawgcode()
 			
 	#This is now the way to view the G-code
+	#called once during setup
 	def showCanvas(self):
 
 		scalor3 = self.dataBack.zoomLevel
@@ -1586,14 +1639,7 @@ class MainProgram( Frame ):
 			
 		self.refreshGcode()
 	
-	def viewGcode(self):
-		gcodewindow = Toplevel()
-		message = "This is the child window"
-		gCodeText = Text( gcodewindow, width = 37, height = 14, background = "grey95", relief = FLAT)
-		gCodeText.pack(fill = BOTH, expand = YES)
-		for x in self.dataBack.gcode:
-			gCodeText.insert(END, x + "\r\n")
-	
+	#depreciated
 	def forceResume(self):
 		self.dataBack.uploadFlag = 1
 		self.dataBack.readyFlag = 1
@@ -1606,6 +1652,7 @@ class MainProgram( Frame ):
 		print("readyFlag")
 		print(self.dataBack.readyFlag)
 	
+	#not called?
 	def sendonegcode(self):
 		#print("start")
 		#print(self.dataBack.gcodeIndex)
@@ -1619,12 +1666,12 @@ class MainProgram( Frame ):
 			self.dataBack.gcodeIndex = 0
 			print("Gcode run complete")
 
-	def incmt(self):
+	'''def incmt(self):
 		#self.dataBack.gcodeIndex = self.dataBack.gcodeIndex + 1
-		print("incmt ran")
+		print("incmt ran")'''
 	
-	def resetcount(self):
-		self.dataBack.gcodeIndex = 0
+	'''def resetcount(self):
+		self.dataBack.gcodeIndex = 0'''
 	
 #CanPort is the thread which handles direct communication with the CAN device. CanPort initializes the connection and then receives
 #and parses standard CAN messages. These messages are then passed to the Grid thread via the message_queue queue where they are
