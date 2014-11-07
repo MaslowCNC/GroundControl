@@ -118,9 +118,9 @@ class MainProgram( Frame ):
 		self.file.add_command(label = 'Open G-Code', command = self.loadGcode)
 		self.file.add_command(label = 'Run G-Code', command = self.beginGcodeRun)
 		#self.file.add_command(label = 'Reset Index', command = self.resetcount)
-		self.file.add_command(label = 'Begin Loging', command = self.beginLoging)
-		self.file.add_command(label = 'End Loging', command = self.endLog)
-		self.file.add_command(label = 'Connect to CNC', command = self.recievemessage)
+		self.file.add_command(label = 'Begin Logging', command = self.beginLoging)
+		self.file.add_command(label = 'End Logging', command = self.endLog)
+		self.file.add_command(label = 'Reconnect to CNC', command = self.recievemessage)
 		#self.file.add_command(label = 'Save Settings', command = self.savesettings)
 		#self.file.add_command(label = 'Load Settings', command = self.loadsettings)
 		
@@ -1687,11 +1687,11 @@ class SerialPort():
 	def getmessage (self):
 		#print("Waiting for new message")
 		#print(self.comport)
-		#opens a serial connection called serialCAN on COM5 at 57600 Baud
+		#opens a serial connection called serialCAN
 		
 		try:
 			print("connecting")
-			serialCAN = serial.Serial(self.comport, 19200, timeout = .1) #self.comport is the com port which is opened
+			serialCAN = serial.Serial(self.comport, 9600, timeout = .1) #self.comport is the com port which is opened
 		except:
 			#print(self.comport + "is unavailable or already in use")
 			self.message_queue.put(self.comport + " is unavailable\n     or already in use")
