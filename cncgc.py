@@ -569,6 +569,9 @@ class MainProgram( Frame ):
 		
 		endpt = poString.find(')')
 		
+		if endpt is -1:
+			print("Negitive 1!")
+		
 		numz = poString[startpt:endpt]
 		#print(numz)
 		
@@ -1691,7 +1694,7 @@ class SerialPort():
 		
 		try:
 			print("connecting")
-			serialCAN = serial.Serial(self.comport, 9600, timeout = .1) #self.comport is the com port which is opened
+			serialCAN = serial.Serial(self.comport, 19200, timeout = .1) #self.comport is the com port which is opened
 		except:
 			#print(self.comport + "is unavailable or already in use")
 			self.message_queue.put(self.comport + " is unavailable\n     or already in use")
@@ -1712,7 +1715,10 @@ class SerialPort():
 					if len(msg) > 0:
 						#try:
 						#print(msg)
-						msg = msg.decode('utf-8')
+						try:
+							msg = msg.decode('utf-8')
+						except:
+							print("decode issue")
 						#print(msg)
 						'''except:
 							print("decode issue")
