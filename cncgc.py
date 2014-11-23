@@ -155,7 +155,8 @@ class MainProgram( Frame ):
 		
 		self.com = Menu(self.menu)
 		self.menu.add_cascade(label = 'Port', menu = self.com)
-		self.detectCOMports()
+		self.com.add_command(label = 'Update List', command = self.detectCOMports)
+		#self.detectCOMports()
 		
 		
 		self.canvas_frame = Frame(root)
@@ -447,7 +448,7 @@ class MainProgram( Frame ):
 	
 	#Runs every two seconds to detect if any new devices are connected
 	def detectCOMports(self):
-		root.after(2000,self.detectCOMports)
+		#root.after(2000,self.detectCOMports)
 		x = []
 		
 		altPorts = self.listSerialPorts()
@@ -564,32 +565,35 @@ class MainProgram( Frame ):
 	def updatePosView(self, poString):
 		#print("function ran")
 		#print(poString)
-		startpt = poString.find('(')
-		startpt = startpt + 1
-		
-		endpt = poString.find(')')
-		
-		if endpt is -1:
-			print("Negitive 1!")
-		
-		numz = poString[startpt:endpt]
-		#print(numz)
-		
-		valz = numz.split(",")
-		
-		#print(valz)
-		
-		self.xposdispval.set(-1*float(valz[0]))
-		self.yposdispval.set(valz[1])
-		self.zposdispval.set(valz[2])
-		
-		xval = float(valz[0])
-		yval = float(valz[1])
-		zval = float(valz[2])
-		
-		self.dataBack.currentpos[0] = xval
-		self.dataBack.currentpos[1] = yval
-		self.dataBack.currentpos[2] = zval
+		try:
+			startpt = poString.find('(')
+			startpt = startpt + 1
+			
+			endpt = poString.find(')')
+			
+			numz = poString[startpt:endpt]
+			#print(numz)
+			
+			valz = numz.split(",")
+			
+			#print(valz)
+			
+			self.xposdispval.set(-1*float(valz[0]))
+			self.yposdispval.set(valz[1])
+			self.zposdispval.set(valz[2])
+			
+			xval = float(valz[0])
+			yval = float(valz[1])
+			zval = float(valz[2])
+			
+			self.dataBack.currentpos[0] = xval
+			self.dataBack.currentpos[1] = yval
+			self.dataBack.currentpos[2] = zval
+		except:
+			print("poz decode issue")
+			xval = self.dataBack.currentpos[0]
+			yval = self.dataBack.currentpos[1]
+			zval = self.dataBack.currentpos[2]
 		
 		try:
 			self.refreshCross()
@@ -1691,57 +1695,67 @@ class SerialPort():
 		#print("Waiting for new message")
 		#print(self.comport)
 		#opens a serial connection called serialCAN
+		from time import sleep
+		
+		'''ser = serial.Serial('/dev/ttyUSB0', 19200, timeout = .25)
+		while True:
+			# To simulate asynchronous I/O, we create a random number at
+			# random intervals. Replace the following 2 lines with the real
+			# thing.
+			#time.sleep(rand.random() * 0.3)
+			msg = ser.readline() #rand.random()
+			#self.queue.put(msg)
+			print(msg)'''
 		
 		try:
 			print("connecting")
-			serialCAN = serial.Serial(self.comport, 19200, timeout = .1) #self.comport is the com port which is opened
+			serialCAN = serial.Serial(self.comport, 19200, timeout = .25) #self.comport is the com port which is opened
 		except:
 			#print(self.comport + "is unavailable or already in use")
 			self.message_queue.put(self.comport + " is unavailable\n     or already in use")
 		else:
 			self.message_queue.put("\r\nConnected on port " + self.comport + "\r\n")
+			gcode = ""
+			msg = ""
+			subReadyFlag = True
 			
+			serialCAN.parity = serial.PARITY_ODD #This is something you have to do to get the connection to open properly. I have no idea why.
+			serialCAN.close()
+			serialCAN.open()
+			serialCAN.close()
+			serialCAN.parity = serial.PARITY_NONE
+			serialCAN.open()
+		
 			while True:
-				gcode = ""
+				# To simulate asynchronous I/O, we create a random number at
+				# random intervals. Replace the following 2 lines with the real
+				# thing.
+				#time.sleep(rand.random() * 0.3)
+				try:
+					msg = serialCAN.readline() #rand.random()
+				except:
+					print("no read")
+				try:
+					msg = msg.decode('utf-8')
+				except:
+					print("decode issue")
+					
+				if len(msg) > 0:
+					self.message_queue.put(msg)
+					
+					if msg == "gready\r\n":
+						#print("ready set")
+						subReadyFlag = True
+					if msg == "Clear Buffer\r\n":
+						print("buffer cleared")
+						while self.gcode_queue.empty() != True:
+							gcode = self.gcode_queue.get_nowait()
+						gcode = ""
 				msg = ""
-				subReadyFlag = True
-				while True:
-					#print("One")
-					try:
-						msg = serialCAN.readline()
-					except:
-						print("no read issue")
-					#print("Two")
-					if len(msg) > 0:
-						#try:
-						#print(msg)
-						try:
-							msg = msg.decode('utf-8')
-						except:
-							print("decode issue")
-						#print(msg)
-						'''except:
-							print("decode issue")
-							print(msg)'''
-						try:
-							self.message_queue.put(msg)
-							if msg == "gready\r\n":
-								#print("ready set")
-								subReadyFlag = True
-							if msg == "Clear Buffer\r\n":
-								print("buffer cleared")
-								while self.gcode_queue.empty() != True:
-									gcode = self.gcode_queue.get_nowait()
-								gcode = ""
-						except:
-							print("put issue")
-						msg = ""
-					
-					if self.gcode_queue.empty() != True and len(gcode) is 0:
+				
+				if self.gcode_queue.empty() != True and len(gcode) is 0:
 						gcode = self.gcode_queue.get_nowait()
-						#print(gcode)
-					
-					if self.quick_queue.empty() != True:
+				if self.quick_queue.empty() != True:
 						qcode = self.quick_queue.get_nowait()
 						qcode = qcode.encode()
 						#print(len(gcode))
@@ -1751,21 +1765,19 @@ class SerialPort():
 							serialCAN.write(qcode)
 						except:
 							print("write issue 2")
-					
-					if len(gcode) > 0 and subReadyFlag is True:
-						#print("gcode seen")
-						gcode = gcode.encode()
-						#print(len(gcode))
-						#print("Sending: ")
-						#print(gcode)
-						try:
-							serialCAN.write(gcode)
-							gcode = ""  
-						except:
-							print("write issue")
-						#print("end")
-						subReadyFlag = False
-
+				if len(gcode) > 0 and subReadyFlag is True:
+					#print("gcode seen")
+					gcode = gcode.encode()
+					#print(len(gcode))
+					#print("Sending: ")
+					#print(gcode)
+					try:
+						serialCAN.write(gcode)
+						gcode = ""  
+					except:
+						print("write issue")
+					#print("end")
+					subReadyFlag = False
 
 
 def main():
