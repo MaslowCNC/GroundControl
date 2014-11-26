@@ -610,14 +610,14 @@ class MainProgram( Frame ):
 		xval = -xval
 		
 		if self.dataBack.unitsScale == 1:
-			xposstring = "%10.1f R" % xval
-			yposstring = "%10.1f R" % yval
-			zposstring = "%10.1f R" % zval
+			xposstring = "X:%10.1f R" % xval
+			yposstring = "Y:%10.1f R" % yval
+			zposstring = "Z:%10.1f R" % zval
 		
 		if self.dataBack.unitsScale == 20:
-			xposstring = "%10.1f IN" % (xval * (1/20))
-			yposstring = "%10.1f IN" % (yval * (1/20))
-			zposstring = "%10.1f IN" % (zval * (1/20))
+			xposstring = "X:%10.1f IN" % (xval * (1/20))
+			yposstring = "Y:%10.1f IN" % (yval * (1/20))
+			zposstring = "Z:%10.1f IN" % (zval * (1/20))
 		
 		if self.dataBack.unitsScale <1:
 			if abs(xval) < .1:
@@ -626,9 +626,9 @@ class MainProgram( Frame ):
 				yval = 0.00
 			if abs(zval) < .1:
 				zval = 0.00
-			xposstring = "%10.1f mm" % (xval * (1.27))
-			yposstring = "%10.1f mm" % (yval * (1.27))
-			zposstring = "%10.1f mm" % (zval * (1.27))
+			xposstring = "X:%10.1f mm" % (xval * (1.27))
+			yposstring = "Y:%10.1f mm" % (yval * (1.27))
+			zposstring = "X:%10.1f mm" % (zval * (1.27))
 		
 		self.xposdispvalin.set(xposstring)
 		self.yposdispvalin.set(yposstring)
@@ -1156,6 +1156,12 @@ class MainProgram( Frame ):
 			if messageparsed == "gready\r\n":
 				self.dataBack.readyFlag = 1
 				#print("ready flag set")
+			elif messageparsed == "ESTOP\r\n":
+				self.dataBack.readyFlag = 0
+				self.output.insert(END,"ESTOP triggered\r\n")
+			elif messageparsed == "ESTOP cleared\r\n":
+				self.output.insert(END,"ESTOP cleared\r\n")
+				self.dataBack.readyFlag = 1
 			elif messageparsed[0] == 'p' and messageparsed[1] == 'z':
 				self.updatePosView(messageparsed)
 				#print("pz seen")
