@@ -86,6 +86,7 @@ class Data( ):
 		self.appData = ""
 		self.contrast = 50
 		self.backlight = 65
+		self.heartBeat = time()
 
 
 class MainProgram( Frame ):
@@ -156,7 +157,7 @@ class MainProgram( Frame ):
 		self.com = Menu(self.menu)
 		self.menu.add_cascade(label = 'Port', menu = self.com)
 		self.com.add_command(label = 'Update List', command = self.detectCOMports)
-		#self.detectCOMports()
+		self.detectCOMports()
 		
 		
 		self.canvas_frame = Frame(root)
@@ -202,7 +203,6 @@ class MainProgram( Frame ):
 		self.terminal_frame = Frame(self.canv, height=150, width = 550, padx = 25, bg = "grey95")
 		self.terminal_frame.pack( anchor = 'ne')
 		 
-		
 		self.spy_frame = Frame(self.canv, height=75, width = 150, bg = "grey95")
 		self.spy_frame.pack(expand = NO,  anchor = 'ne') 
 		
@@ -448,7 +448,8 @@ class MainProgram( Frame ):
 	
 	#Runs every two seconds to detect if any new devices are connected
 	def detectCOMports(self):
-		#root.after(2000,self.detectCOMports)
+		if sys.platform.startswith('win'):
+			root.after(2000,self.detectCOMports)
 		x = []
 		
 		altPorts = self.listSerialPorts()
@@ -461,6 +462,7 @@ class MainProgram( Frame ):
 		for y in self.dataBack.comPorts:
 			self.com.add_command(label = y[1], command = lambda y=y: self.comset(str(y[0])))
 		self.com.add_command(label = 'Specify', command = self.forceCOMconnect)
+		self.com.add_command(label = 'Update List', command = self.detectCOMports)
 	
 	#This allows settings within the machine (like PID gains) from the computer side software
 	def pushSettingsToMachine (self):
@@ -609,17 +611,17 @@ class MainProgram( Frame ):
 		
 		xval = -xval
 		
-		if self.dataBack.unitsScale == 1:
+		if self.dataBack.unitsScale == 1: #In rotations (no longer used)
 			xposstring = "X:%10.1f R" % xval
 			yposstring = "Y:%10.1f R" % yval
 			zposstring = "Z:%10.1f R" % zval
 		
-		if self.dataBack.unitsScale == 20:
+		if self.dataBack.unitsScale == 20: #In inches
 			xposstring = "X:%10.1f IN" % (xval * (1/20))
 			yposstring = "Y:%10.1f IN" % (yval * (1/20))
 			zposstring = "Z:%10.1f IN" % (zval * (1/20))
 		
-		if self.dataBack.unitsScale <1:
+		if self.dataBack.unitsScale <1: #In mm
 			if abs(xval) < .1:
 				xval = 0.00
 			if abs(yval) < .1:
@@ -628,7 +630,7 @@ class MainProgram( Frame ):
 				zval = 0.00
 			xposstring = "X:%10.1f mm" % (xval * (1.27))
 			yposstring = "Y:%10.1f mm" % (yval * (1.27))
-			zposstring = "X:%10.1f mm" % (zval * (1.27))
+			zposstring = "Z:%10.1f mm" % (zval * (1.27))
 		
 		self.xposdispvalin.set(xposstring)
 		self.yposdispvalin.set(yposstring)
@@ -1135,7 +1137,7 @@ class MainProgram( Frame ):
 		#print("refreshout")
 		#print(self.dataBack.readyFlag)
 		#print(self.dataBack.uploadFlag)
-		root.after(25,self.refreshout)  # reschedule event in 250 mili seconds
+		root.after(25,self.refreshout)  # reschedule event
 		
 		if self.dataBack.uploadFlag == 1:
 			self.dataBack.endTime = time()
@@ -1144,6 +1146,11 @@ class MainProgram( Frame ):
 			self.dataBack.target[2] = self.dataBack.currentpos[2]/self.dataBack.unitsScale
 		
 		self.timedisp.set(("%.2f" % ((self.dataBack.endTime - self.dataBack.startTime)/60)))
+		
+			
+		if time() - self.dataBack.heartBeat > 1:
+			print("not connected")
+			self.terminal.configure(bg = "red")
 		
 		#This pulls the unparsed message and writes it to the output field of the GUI
 		while self.message_queue.empty() == False :
@@ -1164,7 +1171,8 @@ class MainProgram( Frame ):
 				self.dataBack.readyFlag = 1
 			elif messageparsed[0] == 'p' and messageparsed[1] == 'z':
 				self.updatePosView(messageparsed)
-				#print("pz seen")
+				self.dataBack.heartBeat = time()
+				self.terminal.configure(bg = "green")
 				#print(("%.2f" % ((time() - self.dataBack.startTime)/60)))
 			elif messageparsed == "really stuck\r\n":
 				from tkinter import messagebox
@@ -1173,8 +1181,8 @@ class MainProgram( Frame ):
 				self.quick_queue.put("unstuck")
 				self.dataBack.uploadFlag = 1
 			elif messageparsed[0:18] == "Please insert tool":
-				print(messageparsed[0:18])
 				if time() - self.dataBack.startTime > 20:
+					print("Insert tool.")
 					self.dataBack.uploadFlag = 0
 					from tkinter import messagebox
 					messageString = "Please insert tool " + messageparsed[19:] + "Once the tool is in place please select Run >> Resume to resume operation."
@@ -1467,7 +1475,12 @@ class MainProgram( Frame ):
 		self.dataBack.target[2] = self.dataBack.target[2] - float(self.dataBack.stepsizeval)
 		
 	def homebtn(self):
-		self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X0 Y0 Z0 ")
+		if self.dataBack.target[2] < 0:
+			self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " Z0 ")
+			self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X0 Y0 Z0 ")
+		if self.dataBack.target[2] >= 0:
+			self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " X0 Y0 ")
+			self.gcode_queue.put("G01 F" + str(float(self.dataBack.feedRate)) + " Z0 ")
 		self.dataBack.target[0] = 0.0
 		self.dataBack.target[1] = 0.0
 		self.dataBack.target[2] = 0.0
