@@ -103,7 +103,7 @@ class MainProgram( Frame ):
 		elif sys.platform.startswith('linux'):
 			self.master.attributes('-zoomed', True)
 		
-		self.master.title( "Makesmith Ground Control" )
+		self.master.title( "Makesmith Ground Control - Software is still beta, please use with caution" )
 		
 		self.dataBack = dataBack
 		self.message_queue = queue.Queue()
@@ -135,6 +135,8 @@ class MainProgram( Frame ):
 		self.runmen.add_command(label = 'Zero Z', command = self.reZeroZ)
 		#self.runmen.add_command(label = 'Reset Index', command = self.resetcount)
 		self.runmen.add_command(label = 'Diagnostics', command = self.autoDebug)
+		self.runmen.add_command(label = 'Switch to Millimetres', command = self.switchmm)
+		self.runmen.add_command(label = 'Switch to Inches', command = self.switchinches)
 		
 		self.view = Menu(self.menu)
 		self.menu.add_cascade(label = 'View', menu = self.view)
@@ -159,6 +161,7 @@ class MainProgram( Frame ):
 		self.com.add_command(label = 'Update List', command = self.detectCOMports)
 		self.detectCOMports()
 		
+		print("menus made")
 		
 		self.canvas_frame = Frame(root)
 		self.canvas_frame.pack(fill=BOTH, expand = 1, anchor = 'nw', side = LEFT) 
@@ -210,6 +213,7 @@ class MainProgram( Frame ):
 		self.buttonHeight = 3
 		self.moveColor = "gray68"
 		self.setColor = "gray58"
+		
 		
 		self.ul = Button(self.top_frame , text = "<^", bg = self.moveColor, width = self.buttonwidth, height = self.buttonHeight)
 		self.ul["command"] = self.ulb
@@ -332,9 +336,9 @@ class MainProgram( Frame ):
 		self.timedsp.pack()
 		
 		self.terminaltext = StringVar()
-		self.terminaltext.set("Software is beta. Use caution.\n")
 		self.terminal = Label(self.terminal_frame, textvariable = self.terminaltext, font=("Times New Roman", 16), fg = "black", bg = "grey95", width = 25, anchor = E, justify = RIGHT)
 		self.terminal.pack(fill = BOTH, expand = 1)
+		
 		
 		self.setupSettingsFile()
 		self.showCanvas()
@@ -342,7 +346,8 @@ class MainProgram( Frame ):
 		self.savesettings()
 		self.refreshout()
 		self.refreshGcode()
-		self.recievemessage() #This checks if the CNC is connected and establishes a connection if it is
+		self.recievemessage() #This checks if the CNC is hooked up and establishes a connection if it is
+		
 	
 	#This sets up the file where the program settings are saved if it does not already exist
 	def setupSettingsFile(self):
@@ -417,7 +422,21 @@ class MainProgram( Frame ):
 			root.after(200,self.moveToStart)
 		except:
 			print("Issue Opening Settings")
-
+	
+	def switchmm(self):
+		self.gcode_queue.put("G21 ")
+		self.dataBack.unitsScale = 1/1.27
+		self.dataBack.target[0] = self.dataBack.target[0] * 25.4
+		self.dataBack.target[1] = self.dataBack.target[1] * 25.4
+		self.dataBack.target[2] = self.dataBack.target[2] * 25.4
+	
+	def switchinches(self):
+		self.gcode_queue.put("G20 ")
+		self.dataBack.unitsScale = 20
+		self.dataBack.target[0] = self.dataBack.target[0] * 0.039370
+		self.dataBack.target[1] = self.dataBack.target[1] * 0.039370
+		self.dataBack.target[2] = self.dataBack.target[2] * 0.039370
+	
 	#Detects all the devices connected to the computer. Returns them as an array.
 	def listSerialPorts(self):
 		import glob
@@ -515,9 +534,9 @@ class MainProgram( Frame ):
 		print("Starting Second Thread")
 		#self.message_queue is the queue which handles passing CAN messages between threads
 		x = SerialPort( self.message_queue, self.gcode_queue, self, self.dataBack.comport, self.quick_queue)
-		th=threading.Thread(target=x.getmessage)
-		th.daemon = True
-		th.start()
+		self.th=threading.Thread(target=x.getmessage)
+		self.th.daemon = True
+		self.th.start()
 		
 	'''angleGet returns the angle from the positive x axis to a point given the center of the circle 
 	and the point. It is called when plotting circles in the drawGcode() function.'''
@@ -1087,10 +1106,10 @@ class MainProgram( Frame ):
 					ynow = ynow - Yval*scalor
 				
 				if opstring[0:3] == 'G20':
-					self.dataBack.unitsScale = 20
+					self.switchinches()
 					
 				if opstring[0:3] == 'G21':
-					self.dataBack.unitsScale = 1/1.27
+					self.switchmm()
 					
 				if opstring[0:3] == 'G90':
 					self.dataBack.absoluteFlag = 1
@@ -1149,8 +1168,14 @@ class MainProgram( Frame ):
 		
 			
 		if time() - self.dataBack.heartBeat > 1:
-			print("not connected")
 			self.terminal.configure(bg = "red")
+			self.terminaltext.set("Connection Lost...Reconnect in " + str(6 - int(time() - self.dataBack.heartBeat)))
+			if 5 - int(time() - self.dataBack.heartBeat) < 0:
+				if self.th.is_alive() : #if the serial thread is open, ask it to close an reopen the serial connection
+					self.quick_queue.put("Reconnect")
+				else: #if the serial thread is not open, open it
+					self.recievemessage()
+				self.dataBack.heartBeat = time()
 		
 		#This pulls the unparsed message and writes it to the output field of the GUI
 		while self.message_queue.empty() == False :
@@ -1173,6 +1198,7 @@ class MainProgram( Frame ):
 				self.updatePosView(messageparsed)
 				self.dataBack.heartBeat = time()
 				self.terminal.configure(bg = "green")
+				self.terminaltext.set("Connected on " + self.dataBack.comport + "    ")
 				#print(("%.2f" % ((time() - self.dataBack.startTime)/60)))
 			elif messageparsed == "really stuck\r\n":
 				from tkinter import messagebox
@@ -1371,22 +1397,23 @@ class MainProgram( Frame ):
 		
 	#beginGcodeRun begins exicuting the currently opened gcode file
 	def beginGcodeRun(self):
-		self.reZero()
-		self.dataBack.uploadFlag = 1
-		self.dataBack.readyFlag = 1
-		self.dataBack.startTime = time()
-		self.sendandinc()
+		if self.dataBack.uploadFlag == 0:
+			self.reZero()
+			self.dataBack.uploadFlag = 1
+			self.dataBack.readyFlag = 1
+			self.dataBack.startTime = time()
+			self.sendandinc()
+		else:
+			self.output.insert(END,"A program is already running, press stop to end it")
 		
 	#scrollactive toggles if the output text can be scrolled or is static
 	def scrollactive(self):
 		if self.dataBack.scrollFlag == 0:
 			self.dataBack.scrollFlag = 1
-			#print("first one ran")
 			return 
 		
 		if self.dataBack.scrollFlag == 1:
 			self.dataBack.scrollFlag = 0
-			#print("second one ran")
 			return
 		
 	#toggleSpindle turns on and off the dremel if a relay is attached
@@ -1699,7 +1726,7 @@ class MainProgram( Frame ):
 	'''def resetcount(self):
 		self.dataBack.gcodeIndex = 0'''
 	
-#CanPort is the thread which handles direct communication with the CAN device. CanPort initializes the connection and then receives
+#SerialPort is the thread which handles direct communication with the CAN device. CanPort initializes the connection and then receives
 #and parses standard CAN messages. These messages are then passed to the Grid thread via the message_queue queue where they are
 #added to the GUI
 class SerialPort():
@@ -1730,8 +1757,8 @@ class SerialPort():
 			print("connecting")
 			serialCAN = serial.Serial(self.comport, 19200, timeout = .25) #self.comport is the com port which is opened
 		except:
-			#print(self.comport + "is unavailable or already in use")
-			self.message_queue.put(self.comport + " is unavailable\n     or already in use")
+			#print(self.comport + "is unavailable or in use")
+			self.message_queue.put("\n" + self.comport + " is unavailable or in use")
 		else:
 			self.message_queue.put("\r\nConnected on port " + self.comport + "\r\n")
 			gcode = ""
@@ -1753,11 +1780,13 @@ class SerialPort():
 				try:
 					msg = serialCAN.readline() #rand.random()
 				except:
-					print("no read")
+					pass
+					#print("no read")
 				try:
 					msg = msg.decode('utf-8')
 				except:
-					print("decode issue")
+					pass
+					#print("decode issue")
 					
 				if len(msg) > 0:
 					self.message_queue.put(msg)
@@ -1778,12 +1807,21 @@ class SerialPort():
 						qcode = self.quick_queue.get_nowait()
 						qcode = qcode.encode()
 						#print(len(gcode))
-						#print("Sending: ")
-						#print(qcode)
-						try:
-							serialCAN.write(qcode)
-						except:
-							print("write issue 2")
+						if qcode == b'Reconnect': #this tells the machine serial thread to close the serial connection
+							qcode = ""
+							print("Attempting to Re-establish connection")
+							serialCAN.close() #closes the serial port
+							from time import sleep
+							sleep(.25)
+							try:
+								serialCAN.open()
+							except:
+								return -1
+						else:
+							try:
+								serialCAN.write(qcode)
+							except:
+								print("write issue 2")
 				if len(gcode) > 0 and subReadyFlag is True:
 					#print("gcode seen")
 					gcode = gcode.encode()
