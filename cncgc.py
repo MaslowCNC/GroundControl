@@ -161,7 +161,6 @@ class MainProgram( Frame ):
 		self.com.add_command(label = 'Update List', command = self.detectCOMports)
 		self.detectCOMports()
 		
-		print("menus made")
 		
 		self.canvas_frame = Frame(root)
 		self.canvas_frame.pack(fill=BOTH, expand = 1, anchor = 'nw', side = LEFT) 
@@ -1288,7 +1287,7 @@ class MainProgram( Frame ):
 	#This displays the software version number and requests that the machine print it's firmware version number.
 	def versionNumber(self):
 		self.gcode_queue.put("B05 ")
-		self.gcode_queue.put("Software Version: 0.55 ")
+		self.gcode_queue.put("Software Version: 0.57 ")
 	
 	#resetOrigin moves the window back to the center of the screen if it has been moved to far to one side or another.
 	def resetOrigin(self):
