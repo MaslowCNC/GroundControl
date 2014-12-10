@@ -159,7 +159,6 @@ class MainProgram( Frame ):
 		self.com = Menu(self.menu)
 		self.menu.add_cascade(label = 'Port', menu = self.com)
 		self.com.add_command(label = 'Update List', command = self.detectCOMports)
-		self.detectCOMports()
 		
 		
 		self.canvas_frame = Frame(root)
@@ -345,6 +344,7 @@ class MainProgram( Frame ):
 		self.savesettings()
 		self.refreshout()
 		self.refreshGcode()
+		self.detectCOMports()
 		self.recievemessage() #This checks if the CNC is hooked up and establishes a connection if it is
 		
 	
@@ -673,7 +673,7 @@ class MainProgram( Frame ):
 		if event.num == 5 or event.delta == -120:
 			self.dataBack.zoomLevel -= 2
 			#self.canv.xview_scroll(-110, UNITS) 
-			print(self.canv.winfo_width())
+			#print(self.canv.winfo_width())
 		if event.num == 4 or event.delta == 120:
 			self.dataBack.zoomLevel += 2
 			#self.canv.xview_scroll(110, UNITS) 
@@ -1152,10 +1152,10 @@ class MainProgram( Frame ):
 		
 	#Runs frequently to update the GUI
 	def refreshout (self):
-		#print("refreshout")
+		print("refreshout")
 		#print(self.dataBack.readyFlag)
 		#print(self.dataBack.uploadFlag)
-		root.after(25,self.refreshout)  # reschedule event
+		root.after(250,self.refreshout)  # reschedule event
 		
 		if self.dataBack.uploadFlag == 1:
 			self.dataBack.endTime = time()
@@ -1198,6 +1198,7 @@ class MainProgram( Frame ):
 				self.dataBack.heartBeat = time()
 				self.terminal.configure(bg = "green")
 				self.terminaltext.set("Connected on " + self.dataBack.comport + "    ")
+				print(time())
 				#print(("%.2f" % ((time() - self.dataBack.startTime)/60)))
 			elif messageparsed == "really stuck\r\n":
 				from tkinter import messagebox
@@ -1599,7 +1600,7 @@ class MainProgram( Frame ):
 	def loadGcode(self):
 		from tkinter import filedialog
 		import re
-		filename = filedialog.askopenfilename(filetypes = (("G-code Files", "*.nc;*.ngc"),("All files", "*.*") ), initialdir = self.dataBack.gcodeFile)  #This opens the built in TK dialog box to open a file
+		filename = filedialog.askopenfilename(initialdir = self.dataBack.gcodeFile)  #This opens the built in TK dialog box to open a file
 		if filename is not "":
 			self.dataBack.gcodeFile = filename
 		self.reloadGcode()
