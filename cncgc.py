@@ -1289,7 +1289,7 @@ class MainProgram( Frame ):
 	#This displays the software version number and requests that the machine print it's firmware version number.
 	def versionNumber(self):
 		self.gcode_queue.put("B05 ")
-		self.gcode_queue.put("Software Version: " . self.databack.version)
+		self.gcode_queue.put("Software Version: " . self.dataBack.version)
 	
 	#resetOrigin moves the window back to the center of the screen if it has been moved to far to one side or another.
 	def resetOrigin(self):
