@@ -155,11 +155,14 @@ class MainProgram( Frame ):
 		self.view.add_command(label = 'Update Gcode', command = self.reloadGcode)
 		self.view.add_command(label = 'View Gcode', command = self.viewGcode)
 		
-		
 		self.com = Menu(self.menu)
 		self.menu.add_cascade(label = 'Port', menu = self.com)
 		self.com.add_command(label = 'Update List', command = self.detectCOMports)
 		
+		self.help = Menu(self.menu)
+		self.menu.add_cascade(label = 'Help', menu = self.help)
+		self.help.add_command(label = 'About', command = self.aboutDialog)
+
 		
 		self.canvas_frame = Frame(root)
 		self.canvas_frame.pack(fill=BOTH, expand = 1, anchor = 'nw', side = LEFT) 
@@ -348,6 +351,9 @@ class MainProgram( Frame ):
 		self.recievemessage() #This checks if the CNC is hooked up and establishes a connection if it is
 		
 	
+	def aboutDialog(self):
+		messagebox.showinfo("About","Makesmith Ground Control\nSoftware version: "+self.dataBack.version)
+
 	#This sets up the file where the program settings are saved if it does not already exist
 	def setupSettingsFile(self):
 		APPNAME = "Makesmith"
@@ -1285,7 +1291,7 @@ class MainProgram( Frame ):
 	#This displays the software version number and requests that the machine print it's firmware version number.
 	def versionNumber(self):
 		self.gcode_queue.put("B05 ")
-		self.gcode_queue.put("Software Version: " . self.dataBack.version)
+		self.gcode_queue.put("Software Version: " + self.dataBack.version)
 	
 	#resetOrigin moves the window back to the center of the screen if it has been moved to far to one side or another.
 	def resetOrigin(self):
