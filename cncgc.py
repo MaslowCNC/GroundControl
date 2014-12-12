@@ -34,6 +34,7 @@ import serial.tools.list_ports
 
 class Data( ):
 	def __init__(self):
+		self.version = '5.8'
 		#Gcodes contains all of the lines of gcode in the opened file
 		self.gcode = []
 		#all of the available COM ports
@@ -151,7 +152,7 @@ class MainProgram( Frame ):
 		#self.view.add_command(label = 'Display Settings', command = self.updateSettings)
 		#self.view.add_command(label = 'Toggle Tool Width', command = self.tool_width_toggle)
 		#self.view.add_command(label = 'Toggle Color', command = self.color_toggle)
-		self.view.add_command(label = 'Version', command = self.versionNumber)
+		self.view.add_command(label =  'Version (' + self.dataBack.version + ')', command = self.versionNumber)
 		self.view.add_command(label = 'Update Gcode', command = self.reloadGcode)
 		self.view.add_command(label = 'View Gcode', command = self.viewGcode)
 		
@@ -1288,7 +1289,7 @@ class MainProgram( Frame ):
 	#This displays the software version number and requests that the machine print it's firmware version number.
 	def versionNumber(self):
 		self.gcode_queue.put("B05 ")
-		self.gcode_queue.put("Software Version: 0.57 ")
+		self.gcode_queue.put("Software Version: " . self.databack.version)
 	
 	#resetOrigin moves the window back to the center of the screen if it has been moved to far to one side or another.
 	def resetOrigin(self):
