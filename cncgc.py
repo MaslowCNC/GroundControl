@@ -1551,6 +1551,7 @@ class MainProgram( Frame ):
 		filename = "DataLog.txt"
 		try:
 			logfile = open(filename, 'w') #Opens the provided file name for writing which will replace any existing data
+			logfile.write("Software Version: " + self.dataBack.version) #Log GroundControl version
 			self.dataBack.logflag = 1
 			self.dataBack.logfile = logfile
 		except:
