@@ -34,7 +34,7 @@ import serial.tools.list_ports
 
 class Data( ):
 	def __init__(self):
-		self.version = '5.8'
+		self.version = '0.58'
 		#Gcodes contains all of the lines of gcode in the opened file
 		self.gcode = []
 		#all of the available COM ports
