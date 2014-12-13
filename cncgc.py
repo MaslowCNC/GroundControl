@@ -16,19 +16,18 @@ along with the Makesmith Ground Control Software.  If not, see <http://www.gnu.o
 Copyright 2014 Bar Smith'''
 
 from tkinter import *
-import serial
+from tkinter import filedialog
+from tkinter import messagebox
+root = Tk()
 import re
 import threading
 import queue
-#import time
 import math
+#import time
 from time import gmtime, strftime
 from time import time
-import tkinter.messagebox
-root = Tk()
+import serial
 global serialCAN
-from tkinter import filedialog
-from tkinter import messagebox
 import serial.tools.list_ports
 
 
@@ -156,11 +155,14 @@ class MainProgram( Frame ):
 		self.view.add_command(label = 'Update Gcode', command = self.reloadGcode)
 		self.view.add_command(label = 'View Gcode', command = self.viewGcode)
 		
-		
 		self.com = Menu(self.menu)
 		self.menu.add_cascade(label = 'Port', menu = self.com)
 		self.com.add_command(label = 'Update List', command = self.detectCOMports)
 		
+		self.help = Menu(self.menu)
+		self.menu.add_cascade(label = 'Help', menu = self.help)
+		self.help.add_command(label = 'About', command = self.aboutDialog)
+
 		
 		self.canvas_frame = Frame(root)
 		self.canvas_frame.pack(fill=BOTH, expand = 1, anchor = 'nw', side = LEFT) 
@@ -349,6 +351,9 @@ class MainProgram( Frame ):
 		self.recievemessage() #This checks if the CNC is hooked up and establishes a connection if it is
 		
 	
+	def aboutDialog(self):
+		messagebox.showinfo("About","Makesmith Ground Control\nSoftware Version: "+self.dataBack.version)
+
 	#This sets up the file where the program settings are saved if it does not already exist
 	def setupSettingsFile(self):
 		APPNAME = "Makesmith"
@@ -1145,7 +1150,6 @@ class MainProgram( Frame ):
 			self.dataBack.gcode = filtersparsed
 			filterfile.close() #closes the filter save file
 		except:
-			from tkinter import messagebox
 			if filename is not "":
 				messagebox.showwarning("Shucks", "Cannot reopen \n %s \n\n It may have been moved or deleted. To locate it or open a different file use File > Open G-code" % filename)
 			self.dataBack.gcodeFile = ""
@@ -1202,7 +1206,6 @@ class MainProgram( Frame ):
 				print(time())
 				#print(("%.2f" % ((time() - self.dataBack.startTime)/60)))
 			elif messageparsed == "really stuck\r\n":
-				from tkinter import messagebox
 				self.dataBack.uploadFlag = 0
 				messagebox.showwarning("Shucks", "The machine has become stuck and was unable to free itself.\r\n\r\nThe motors have been turned off to protect them.\r\nPlease verify that the machine is free to move and are properly lubricated, then press OK to continue operation.\r\n\r\nYour machine will not loose its place if you manually rotate the motors")
 				self.quick_queue.put("unstuck")
@@ -1211,7 +1214,6 @@ class MainProgram( Frame ):
 				if time() - self.dataBack.startTime > 20:
 					print("Insert tool.")
 					self.dataBack.uploadFlag = 0
-					from tkinter import messagebox
 					messageString = "Please insert tool " + messageparsed[19:] + "Once the tool is in place please select Run >> Resume to resume operation."
 					messagebox.showinfo("Tool Change", messageString)
 			else:
@@ -1289,7 +1291,7 @@ class MainProgram( Frame ):
 	#This displays the software version number and requests that the machine print it's firmware version number.
 	def versionNumber(self):
 		self.gcode_queue.put("B05 ")
-		self.gcode_queue.put("Software Version: " . self.dataBack.version)
+		self.gcode_queue.put("Software Version: " + self.dataBack.version)
 	
 	#resetOrigin moves the window back to the center of the screen if it has been moved to far to one side or another.
 	def resetOrigin(self):
@@ -1600,8 +1602,6 @@ class MainProgram( Frame ):
 	
 	#loadGcode opens a new gcode file 
 	def loadGcode(self):
-		from tkinter import filedialog
-		import re
 		filename = filedialog.askopenfilename(initialdir = self.dataBack.gcodeFile)  #This opens the built in TK dialog box to open a file
 		if filename is not "":
 			self.dataBack.gcodeFile = filename
