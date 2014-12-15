@@ -76,7 +76,7 @@ class Data( ):
 		self.colorFlag = 0
 		self.spindleFlag = 1
 		self.prependString = " "
-		self.absoluteFlag = 0
+		self.absoluteFlag = 1
 		self.unitsSetFlag = 0 #used once to set the correct units on the machine
 		self.startTime = 0
 		self.endTime = 0
