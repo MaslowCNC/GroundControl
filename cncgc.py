@@ -1152,7 +1152,7 @@ class MainProgram( Frame ):
 		
 	#Runs frequently to update the GUI
 	def refreshout (self):
-		print("refreshout")
+		#print("refreshout")
 		#print(self.dataBack.readyFlag)
 		#print(self.dataBack.uploadFlag)
 		root.after(250,self.refreshout)  # reschedule event
@@ -1183,55 +1183,58 @@ class MainProgram( Frame ):
 				messageparsed = self.message_queue.get_nowait()
 			except:
 				print("message parse issue")
-			
-			if messageparsed == "gready\r\n":
-				self.dataBack.readyFlag = 1
-				#print("ready flag set")
-			elif messageparsed == "ESTOP\r\n":
-				self.dataBack.readyFlag = 0
-				self.output.insert(END,"ESTOP triggered\r\n")
-			elif messageparsed == "ESTOP cleared\r\n":
-				self.output.insert(END,"ESTOP cleared\r\n")
-				self.dataBack.readyFlag = 1
-			elif messageparsed[0] == 'p' and messageparsed[1] == 'z':
-				self.updatePosView(messageparsed)
-				self.dataBack.heartBeat = time()
-				self.terminal.configure(bg = "green")
-				self.terminaltext.set("Connected on " + self.dataBack.comport + "    ")
-				print(time())
-				#print(("%.2f" % ((time() - self.dataBack.startTime)/60)))
-			elif messageparsed == "really stuck\r\n":
-				from tkinter import messagebox
-				self.dataBack.uploadFlag = 0
-				messagebox.showwarning("Shucks", "The machine has become stuck and was unable to free itself.\r\n\r\nThe motors have been turned off to protect them.\r\nPlease verify that the machine is free to move and are properly lubricated, then press OK to continue operation.\r\n\r\nYour machine will not loose its place if you manually rotate the motors")
-				self.quick_queue.put("unstuck")
-				self.dataBack.uploadFlag = 1
-			elif messageparsed[0:18] == "Please insert tool":
-				if time() - self.dataBack.startTime > 20:
-					print("Insert tool.")
-					self.dataBack.uploadFlag = 0
+			try:
+				if messageparsed == "gready\r\n":
+					self.dataBack.readyFlag = 1
+					#print("ready flag set")
+				elif messageparsed == "ESTOP\r\n":
+					self.dataBack.readyFlag = 0
+					self.output.insert(END,"ESTOP triggered\r\n")
+				elif messageparsed == "ESTOP cleared\r\n":
+					self.output.insert(END,"ESTOP cleared\r\n")
+					self.dataBack.readyFlag = 1
+				elif messageparsed[0] == 'p' and messageparsed[1] == 'z':
+					self.updatePosView(messageparsed)
+					self.dataBack.heartBeat = time()
+					self.terminal.configure(bg = "green")
+					self.terminaltext.set("Connected on " + self.dataBack.comport + "    ")
+					#print(time())
+					#print(("%.2f" % ((time() - self.dataBack.startTime)/60)))
+				elif messageparsed == "really stuck\r\n":
 					from tkinter import messagebox
-					messageString = "Please insert tool " + messageparsed[19:] + "Once the tool is in place please select Run >> Resume to resume operation."
-					messagebox.showinfo("Tool Change", messageString)
-			else:
-				try:
-					self.output.insert(END, messageparsed)
-				except:
-					print("jump to end issue")
+					self.dataBack.uploadFlag = 0
+					messagebox.showwarning("Shucks", "The machine has become stuck and was unable to free itself.\r\n\r\nThe motors have been turned off to protect them.\r\nPlease verify that the machine is free to move and are properly lubricated, then press OK to continue operation.\r\n\r\nYour machine will not loose its place if you manually rotate the motors")
+					self.quick_queue.put("unstuck")
+					self.dataBack.uploadFlag = 1
+				elif messageparsed[0:18] == "Please insert tool":
+					if time() - self.dataBack.startTime > 2:
+						print("Insert tool.")
+						self.dataBack.uploadFlag = 0
+						self.dataBack.readyFlag = 0
+						print(self.gcode_queue.qsize())
+						from tkinter import messagebox
+						messageString = "Please insert tool " + messageparsed[19:] + "Once the tool is in place please select Run >> Resume to resume operation."
+						messagebox.showinfo("Tool Change", messageString)
+				else:
+					try:
+						self.output.insert(END, messageparsed)
+					except:
+						print("jump to end issue")
+					
+					if(self.dataBack.logflag == 1):
+						self.dataBack.logfile.write(messageparsed)
 				
-				if(self.dataBack.logflag == 1):
-					self.dataBack.logfile.write(messageparsed)
+				if self.dataBack.readyFlag == 1 and self.dataBack.uploadFlag == 1:
+					#print("Sending function called")
+					self.sendandinc()
+					
+					self.dataBack.readyFlag = 0
+					#print("here: ")
+					#print(messageparsed)
+					messageparsed = ""
+			except:
+				print("serial data byte shift")
 			
-			if self.dataBack.readyFlag == 1 and self.dataBack.uploadFlag == 1:
-				#print("Sending function called")
-				self.sendandinc()
-				
-				self.dataBack.readyFlag = 0
-				#print("here: ")
-				#print(messageparsed)
-				messageparsed = ""
-				
-		
 		if self.dataBack.scrollFlag == 1:
 			self.output.see(END)
 		
@@ -1397,12 +1400,14 @@ class MainProgram( Frame ):
 		
 	#beginGcodeRun begins exicuting the currently opened gcode file
 	def beginGcodeRun(self):
-		if self.dataBack.uploadFlag == 0:
+		if self.dataBack.uploadFlag == 0 and self.dataBack.gcodeIndex < 2: #there is not a program being exicuted 
 			self.reZero()
 			self.dataBack.uploadFlag = 1
 			self.dataBack.readyFlag = 1
 			self.dataBack.startTime = time()
 			self.sendandinc()
+		elif self.dataBack.uploadFlag == 0 and self.dataBack.gcodeIndex > 2:
+			self.unpause()
 		else:
 			self.output.insert(END,"A program is already running, press stop to end it")
 		
@@ -1578,6 +1583,12 @@ class MainProgram( Frame ):
 		BothFrame = Frame(debugWindow)
 		BothFrame.pack()
 		
+		centerFrame = Frame(debugWindow)
+		centerFrame.pack()
+		
+		constantFrame = Frame(debugWindow)
+		constantFrame.pack()
+		
 		msg2 = Message(encodersFrame, text= "This tests to see that all of the encoders are producing a valid PWM signal. If the encoder happens to be exactly at the zero position it will not pass the test because the encoder is not producing a signal. Pluging the encoder in backwards will not hurt it.", width = 400)
 		msg2.pack(side = LEFT)
 		
@@ -1594,7 +1605,160 @@ class MainProgram( Frame ):
 		msg4.pack(side = LEFT)
 		
 		bothButton = Button(BothFrame, text="Test Both", command = lambda: self.gcode_queue.put("Test Both"))
-		bothButton.pack(side = LEFT)	
+		bothButton.pack(side = LEFT)
+		
+		centermsg = Message(centerFrame, text = "This test allows you to define the center position for each servo. On the back of each servo is a small potentiometer which will let you adjust the resting position of the servo. This test will command all of the motors to not rotat for two seconds. If one motor rotates, adjust the potentiometer on the back of the servo until it stops.", width = 400)
+		centermsg.pack(side = LEFT)
+		
+		centerMotors = Button(centerFrame, text="Center Motors", command = lambda: self.gcode_queue.put("Center Motors"))
+		centerMotors.pack(side = LEFT)
+		
+		constantmsg = Message(constantFrame, text = "\nThis test allows you to manually set the speed of all three motors independently for testing purposes. It can cause strange behavior because it manually overrides the regular control system. If you notice that the motors continue to rotate at speed zero, you can adjust them using the potentiometer on the back of the servo.", width = 500)
+		constantmsg.pack(side = LEFT)
+		
+		constantFramex = Frame(debugWindow)
+		constantFramex.pack()
+		
+		xmsg = Message(constantFramex, text = "X: ")
+		xmsg.pack(side = LEFT)
+		
+		constantMotorsxn9 = Button(constantFramex, text="-9", command = lambda: self.gcode_queue.put("B06 X0"))
+		constantMotorsxn8 = Button(constantFramex, text="-8", command = lambda: self.gcode_queue.put("B06 X10"))
+		constantMotorsxn7 = Button(constantFramex, text="-7", command = lambda: self.gcode_queue.put("B06 X20"))
+		constantMotorsxn6 = Button(constantFramex, text="-6", command = lambda: self.gcode_queue.put("B06 X30"))
+		constantMotorsxn5 = Button(constantFramex, text="-5", command = lambda: self.gcode_queue.put("B06 X40"))
+		constantMotorsxn4 = Button(constantFramex, text="-4", command = lambda: self.gcode_queue.put("B06 X50"))
+		constantMotorsxn3 = Button(constantFramex, text="-3", command = lambda: self.gcode_queue.put("B06 X60"))
+		constantMotorsxn2 = Button(constantFramex, text="-2", command = lambda: self.gcode_queue.put("B06 X70"))
+		constantMotorsxn1 = Button(constantFramex, text="-1", command = lambda: self.gcode_queue.put("B06 X80"))
+		constantMotorsx0 = Button(constantFramex, text="0", command = lambda: self.gcode_queue.put("B06 X90"))
+		constantMotorsx1 = Button(constantFramex, text="+1", command = lambda: self.gcode_queue.put("B06 X100"))
+		constantMotorsx2 = Button(constantFramex, text="+2", command = lambda: self.gcode_queue.put("B06 X110"))
+		constantMotorsx3 = Button(constantFramex, text="+3", command = lambda: self.gcode_queue.put("B06 X120"))
+		constantMotorsx4 = Button(constantFramex, text="+4", command = lambda: self.gcode_queue.put("B06 X130"))
+		constantMotorsx5 = Button(constantFramex, text="+5", command = lambda: self.gcode_queue.put("B06 X140"))
+		constantMotorsx6 = Button(constantFramex, text="+6", command = lambda: self.gcode_queue.put("B06 X150"))
+		constantMotorsx7 = Button(constantFramex, text="+7", command = lambda: self.gcode_queue.put("B06 X160"))
+		constantMotorsx8 = Button(constantFramex, text="+8", command = lambda: self.gcode_queue.put("B06 X170"))
+		constantMotorsx9 = Button(constantFramex, text="+9", command = lambda: self.gcode_queue.put("B06 X180"))
+		
+		constantMotorsxn9.pack(side = LEFT)
+		constantMotorsxn8.pack(side = LEFT)
+		constantMotorsxn7.pack(side = LEFT)
+		constantMotorsxn6.pack(side = LEFT)
+		constantMotorsxn5.pack(side = LEFT)
+		constantMotorsxn4.pack(side = LEFT)
+		constantMotorsxn3.pack(side = LEFT)
+		constantMotorsxn2.pack(side = LEFT)
+		constantMotorsxn1.pack(side = LEFT)
+		constantMotorsx0.pack(side = LEFT)
+		constantMotorsx1.pack(side = LEFT)
+		constantMotorsx2.pack(side = LEFT)
+		constantMotorsx3.pack(side = LEFT)
+		constantMotorsx4.pack(side = LEFT)
+		constantMotorsx5.pack(side = LEFT)
+		constantMotorsx6.pack(side = LEFT)
+		constantMotorsx7.pack(side = LEFT)
+		constantMotorsx8.pack(side = LEFT)
+		constantMotorsx9.pack(side = LEFT)
+		
+		constantFramey = Frame(debugWindow)
+		constantFramey.pack()
+		
+		ymsg = Message(constantFramey, text = "Y: ")
+		ymsg.pack(side = LEFT)
+		
+		constantMotorsyn9 = Button(constantFramey, text="-9", command = lambda: self.gcode_queue.put("B06 Y0"))
+		constantMotorsyn8 = Button(constantFramey, text="-8", command = lambda: self.gcode_queue.put("B06 Y10"))
+		constantMotorsyn7 = Button(constantFramey, text="-7", command = lambda: self.gcode_queue.put("B06 Y20"))
+		constantMotorsyn6 = Button(constantFramey, text="-6", command = lambda: self.gcode_queue.put("B06 Y30"))
+		constantMotorsyn5 = Button(constantFramey, text="-5", command = lambda: self.gcode_queue.put("B06 Y40"))
+		constantMotorsyn4 = Button(constantFramey, text="-4", command = lambda: self.gcode_queue.put("B06 Y50"))
+		constantMotorsyn3 = Button(constantFramey, text="-3", command = lambda: self.gcode_queue.put("B06 Y60"))
+		constantMotorsyn2 = Button(constantFramey, text="-2", command = lambda: self.gcode_queue.put("B06 Y70"))
+		constantMotorsyn1 = Button(constantFramey, text="-1", command = lambda: self.gcode_queue.put("B06 Y80"))
+		constantMotorsy0 = Button(constantFramey, text="0", command = lambda: self.gcode_queue.put("B06 Y90"))
+		constantMotorsy1 = Button(constantFramey, text="+1", command = lambda: self.gcode_queue.put("B06 Y100"))
+		constantMotorsy2 = Button(constantFramey, text="+2", command = lambda: self.gcode_queue.put("B06 Y110"))
+		constantMotorsy3 = Button(constantFramey, text="+3", command = lambda: self.gcode_queue.put("B06 Y120"))
+		constantMotorsy4 = Button(constantFramey, text="+4", command = lambda: self.gcode_queue.put("B06 Y130"))
+		constantMotorsy5 = Button(constantFramey, text="+5", command = lambda: self.gcode_queue.put("B06 Y140"))
+		constantMotorsy6 = Button(constantFramey, text="+6", command = lambda: self.gcode_queue.put("B06 Y150"))
+		constantMotorsy7 = Button(constantFramey, text="+7", command = lambda: self.gcode_queue.put("B06 Y160"))
+		constantMotorsy8 = Button(constantFramey, text="+8", command = lambda: self.gcode_queue.put("B06 Y170"))
+		constantMotorsy9 = Button(constantFramey, text="+9", command = lambda: self.gcode_queue.put("B06 Y180"))
+		
+		constantMotorsyn9.pack(side = LEFT)
+		constantMotorsyn8.pack(side = LEFT)
+		constantMotorsyn7.pack(side = LEFT)
+		constantMotorsyn6.pack(side = LEFT)
+		constantMotorsyn5.pack(side = LEFT)
+		constantMotorsyn4.pack(side = LEFT)
+		constantMotorsyn3.pack(side = LEFT)
+		constantMotorsyn2.pack(side = LEFT)
+		constantMotorsyn1.pack(side = LEFT)
+		constantMotorsy0.pack(side = LEFT)
+		constantMotorsy1.pack(side = LEFT)
+		constantMotorsy2.pack(side = LEFT)
+		constantMotorsy3.pack(side = LEFT)
+		constantMotorsy4.pack(side = LEFT)
+		constantMotorsy5.pack(side = LEFT)
+		constantMotorsy6.pack(side = LEFT)
+		constantMotorsy7.pack(side = LEFT)
+		constantMotorsy8.pack(side = LEFT)
+		constantMotorsy9.pack(side = LEFT)
+		
+		constantFramez = Frame(debugWindow)
+		constantFramez.pack()
+		
+		zmsg = Message(constantFramez, text = "Z: ")
+		zmsg.pack(side = LEFT)
+		
+		constantMotorszn9 = Button(constantFramez, text="-9", command = lambda: self.gcode_queue.put("B06 Z0"))
+		constantMotorszn8 = Button(constantFramez, text="-8", command = lambda: self.gcode_queue.put("B06 Z10"))
+		constantMotorszn7 = Button(constantFramez, text="-7", command = lambda: self.gcode_queue.put("B06 Z20"))
+		constantMotorszn6 = Button(constantFramez, text="-6", command = lambda: self.gcode_queue.put("B06 Z30"))
+		constantMotorszn5 = Button(constantFramez, text="-5", command = lambda: self.gcode_queue.put("B06 Z40"))
+		constantMotorszn4 = Button(constantFramez, text="-4", command = lambda: self.gcode_queue.put("B06 Z50"))
+		constantMotorszn3 = Button(constantFramez, text="-3", command = lambda: self.gcode_queue.put("B06 Z60"))
+		constantMotorszn2 = Button(constantFramez, text="-2", command = lambda: self.gcode_queue.put("B06 Z70"))
+		constantMotorszn1 = Button(constantFramez, text="-1", command = lambda: self.gcode_queue.put("B06 Z80"))
+		constantMotorsz0 = Button(constantFramez, text="0", command = lambda: self.gcode_queue.put("B06 Z90"))
+		constantMotorsz1 = Button(constantFramez, text="+1", command = lambda: self.gcode_queue.put("B06 Z100"))
+		constantMotorsz2 = Button(constantFramez, text="+2", command = lambda: self.gcode_queue.put("B06 Z110"))
+		constantMotorsz3 = Button(constantFramez, text="+3", command = lambda: self.gcode_queue.put("B06 Z120"))
+		constantMotorsz4 = Button(constantFramez, text="+4", command = lambda: self.gcode_queue.put("B06 Z130"))
+		constantMotorsz5 = Button(constantFramez, text="+5", command = lambda: self.gcode_queue.put("B06 Z140"))
+		constantMotorsz6 = Button(constantFramez, text="+6", command = lambda: self.gcode_queue.put("B06 Z150"))
+		constantMotorsz7 = Button(constantFramez, text="+7", command = lambda: self.gcode_queue.put("B06 Z160"))
+		constantMotorsz8 = Button(constantFramez, text="+8", command = lambda: self.gcode_queue.put("B06 Z170"))
+		constantMotorsz9 = Button(constantFramez, text="+9", command = lambda: self.gcode_queue.put("B06 Z180"))
+		
+		constantMotorszn9.pack(side = LEFT)
+		constantMotorszn8.pack(side = LEFT)
+		constantMotorszn7.pack(side = LEFT)
+		constantMotorszn6.pack(side = LEFT)
+		constantMotorszn5.pack(side = LEFT)
+		constantMotorszn4.pack(side = LEFT)
+		constantMotorszn3.pack(side = LEFT)
+		constantMotorszn2.pack(side = LEFT)
+		constantMotorszn1.pack(side = LEFT)
+		constantMotorsz0.pack(side = LEFT)
+		constantMotorsz1.pack(side = LEFT)
+		constantMotorsz2.pack(side = LEFT)
+		constantMotorsz3.pack(side = LEFT)
+		constantMotorsz4.pack(side = LEFT)
+		constantMotorsz5.pack(side = LEFT)
+		constantMotorsz6.pack(side = LEFT)
+		constantMotorsz7.pack(side = LEFT)
+		constantMotorsz8.pack(side = LEFT)
+		constantMotorsz9.pack(side = LEFT)
+		
+		constantFrameExit = Frame(debugWindow)
+		constantFrameExit.pack()
+		
+		constantMotorsExit = Button(constantFrameExit, text="Exit Manual Control", command = lambda: self.gcode_queue.put("Exit Manual Control"))
+		constantMotorsExit.pack(side = LEFT)
 	
 	#loadGcode opens a new gcode file 
 	def loadGcode(self):
@@ -1633,11 +1797,18 @@ class MainProgram( Frame ):
 		self.canv.create_line( -4000,  800,  4800,  800, dash=(6, 6), fill = 'grey')
 		
 		#Draw inch marker
-		self.canv.create_line( 900,  850,  900 + 20*scalor2,  850)
-		self.canv.create_line( 900,  840,  900,  860)
-		self.canv.create_line( 900 + 20*scalor2,  840,  900 + 20*scalor2,  860)
-		
-		self.canv.create_text( 870, 850, text = "One Inch" )
+		if self.dataBack.unitsScale == 20:
+			self.canv.create_line( 900,  850,  900 + 20*scalor2,  850)
+			self.canv.create_line( 900,  840,  900,  860)
+			self.canv.create_line( 900 + 20*scalor2,  840,  900 + 20*scalor2,  860)
+			
+			self.canv.create_text( 870, 850, text = "One Inch" )
+		else:
+			self.canv.create_line( 900,  850,  900 + 8*scalor2,  850)
+			self.canv.create_line( 900,  840,  900,  860)
+			self.canv.create_line( 900 + 8*scalor2,  840,  900 + 8*scalor2,  860)
+			
+			self.canv.create_text( 870, 850, text = "10 mm" )
 		
 		self.drawgcode()
 			
@@ -1771,12 +1942,13 @@ class SerialPort():
 			serialCAN.close()
 			serialCAN.parity = serial.PARITY_NONE
 			serialCAN.open()
-		
+			
 			while True:
 				# To simulate asynchronous I/O, we create a random number at
 				# random intervals. Replace the following 2 lines with the real
 				# thing.
 				#time.sleep(rand.random() * 0.3)
+				##self.message_queue.put("\n" + str(self.gcode_queue.qsize()))
 				try:
 					msg = serialCAN.readline() #rand.random()
 				except:
@@ -1789,11 +1961,15 @@ class SerialPort():
 					#print("decode issue")
 					
 				if len(msg) > 0:
-					self.message_queue.put(msg)
 					
 					if msg == "gready\r\n":
 						#print("ready set")
 						subReadyFlag = True
+						if self.gcode_queue.qsize() >= 1:
+							msg = ""
+					
+					self.message_queue.put(msg)
+					
 					if msg == "Clear Buffer\r\n":
 						print("buffer cleared")
 						while self.gcode_queue.empty() != True:
