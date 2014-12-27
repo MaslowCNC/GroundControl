@@ -1972,13 +1972,15 @@ class SerialPort():
 						if self.gcode_queue.qsize() >= 1:
 							msg = ""
 					
-					self.message_queue.put(msg)
-					
 					if msg == "Clear Buffer\r\n":
 						print("buffer cleared")
 						while self.gcode_queue.empty() != True:
 							gcode = self.gcode_queue.get_nowait()
 						gcode = ""
+						msg = ""
+					
+					self.message_queue.put(msg)
+					
 				msg = ""
 				
 				if self.gcode_queue.empty() != True and len(gcode) is 0:
@@ -2006,8 +2008,8 @@ class SerialPort():
 					#print("gcode seen")
 					gcode = gcode.encode()
 					#print(len(gcode))
-					#print("Sending: ")
-					#print(gcode)
+					print("Sending: ")
+					print(gcode)
 					try:
 						serialCAN.write(gcode)
 						gcode = ""  
