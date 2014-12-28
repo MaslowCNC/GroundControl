@@ -31,7 +31,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 import serial.tools.list_ports
 
-
+'''Data holds a set of variables which are essentially global variables which hold information about the gcode file opened, the machine which is connected, and the user's settings. These variables are NOT thread-safe. The queue system shuld always be used for passing information between threads.'''
 class Data( ):
 	def __init__(self):
 		#Gcodes contains all of the lines of gcode in the opened file
@@ -89,7 +89,8 @@ class Data( ):
 		self.backlight = 65
 		self.heartBeat = time()
 
-
+'''The main-program holds most of the functions. This is where the program begins. The GUI is created here, and the functions to allow the user to interact
+with the machine are here.'''
 class MainProgram( Frame ):
 
 	''' ------------------------------------------------------------------------------------
@@ -1903,9 +1904,8 @@ class MainProgram( Frame ):
 	'''def resetcount(self):
 		self.dataBack.gcodeIndex = 0'''
 	
-#SerialPort is the thread which handles direct communication with the CAN device. CanPort initializes the connection and then receives
-#and parses standard CAN messages. These messages are then passed to the Grid thread via the message_queue queue where they are
-#added to the GUI
+'''SerialPort is the thread which handles direct communication with the CNC machine. SerialPort initializes the connection and then receives
+and parses messages. These messages are then passed to the main thread via the message_queue queue where they are added to the GUI'''
 class SerialPort():
 	def __init__( self, message_queue, gcode_queue, mainwindow, comport, quick_queue):
 		self.message_queue = message_queue
@@ -1919,16 +1919,6 @@ class SerialPort():
 		#print(self.comport)
 		#opens a serial connection called serialCAN
 		from time import sleep
-		
-		'''ser = serial.Serial('/dev/ttyUSB0', 19200, timeout = .25)
-		while True:
-			# To simulate asynchronous I/O, we create a random number at
-			# random intervals. Replace the following 2 lines with the real
-			# thing.
-			#time.sleep(rand.random() * 0.3)
-			msg = ser.readline() #rand.random()
-			#self.queue.put(msg)
-			print(msg)'''
 		
 		try:
 			print("connecting")
@@ -1987,6 +1977,7 @@ class SerialPort():
 				
 				if self.gcode_queue.empty() != True and len(gcode) is 0:
 						gcode = self.gcode_queue.get_nowait()
+						gcode = gcode + " "
 				if self.quick_queue.empty() != True:
 						qcode = self.quick_queue.get_nowait()
 						qcode = qcode.encode()
@@ -1995,7 +1986,6 @@ class SerialPort():
 							qcode = ""
 							print("Attempting to Re-establish connection")
 							serialCAN.close() #closes the serial port
-							from time import sleep
 							sleep(.25)
 							try:
 								serialCAN.open()
@@ -2019,14 +2009,16 @@ class SerialPort():
 						print("write issue")
 					#print("end")
 					subReadyFlag = False
+				else:
+					print("did not send")
+					print(subReadyFlag);
+					print(len(gcode));
 
 
-def main():
+def main(): #this is where the program begins
 	backend = Data()
-	GD = MainProgram(backend)
-	
-	#GD.bind('<<rout>>', GD.refreshout)
-	GD.mainloop()
+	GD = MainProgram(backend) #begin the program
+	GD.mainloop() #run the program until it is closed
 
 if __name__ == "__main__":
 	 main()
