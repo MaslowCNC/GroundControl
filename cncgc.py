@@ -1112,10 +1112,12 @@ class MainProgram( Frame ):
 					ynow = ynow - Yval*scalor
 				
 				if opstring[0:3] == 'G20':
-					self.switchinches()
+					if self.dataBack.unitsScale < 15: #if the machine is currently in mm (this prevents the code from running EVERY time the gcode is redrawn
+						self.switchinches()
 					
 				if opstring[0:3] == 'G21':
-					self.switchmm()
+					if self.dataBack.unitsScale > 15:
+						self.switchmm()
 					
 				if opstring[0:3] == 'G90':
 					self.dataBack.absoluteFlag = 1
