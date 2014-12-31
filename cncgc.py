@@ -135,6 +135,7 @@ class MainProgram( Frame ):
 		self.runmen.add_command(label = 'Resume', command = self.unpause)
 		#self.runmen.add_command(label = 'Force Resume', command = self.forceResume)
 		self.runmen.add_command(label = 'Zero Z', command = self.reZeroZ)
+		self.runmen.add_command(label = 'Auto Zero Z', command = self.autoZero)
 		#self.runmen.add_command(label = 'Reset Index', command = self.resetcount)
 		self.runmen.add_command(label = 'Diagnostics', command = self.autoDebug)
 		self.runmen.add_command(label = 'Switch to Millimetres', command = self.switchmm)
@@ -375,6 +376,9 @@ class MainProgram( Frame ):
 		if not os.path.exists(self.dataBack.settingsFile):
 			open(self.dataBack.settingsFile, 'w+')
 	
+	def autoZero(self):
+		self.gcode_queue.put("B07 ")
+
 	#Saves the program settings
 	def savesettings(self):
 		root.after(10000,self.savesettings)
@@ -1766,7 +1770,7 @@ class MainProgram( Frame ):
 		constantFrameExit = Frame(debugWindow)
 		constantFrameExit.pack()
 		
-		constantMotorsExit = Button(constantFrameExit, text="Exit Manual Control", command = lambda: self.gcode_queue.put("Exit Manual Control"))
+		constantMotorsExit = Button(constantFrame, text="Exit Manual Control", command = lambda: self.gcode_queue.put("Exit Manual Control"))
 		constantMotorsExit.pack(side = LEFT)
 	
 	#loadGcode opens a new gcode file 
@@ -2010,9 +2014,10 @@ class SerialPort():
 					#print("end")
 					subReadyFlag = False
 				else:
-					print("did not send")
-					print(subReadyFlag);
-					print(len(gcode));
+					pass
+					#print("did not send")
+					#print(subReadyFlag);
+					#print(len(gcode));
 
 
 def main(): #this is where the program begins
