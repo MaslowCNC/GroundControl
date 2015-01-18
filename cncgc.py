@@ -36,7 +36,7 @@ class Data( ):
 	def __init__(self):
 		#Gcodes contains all of the lines of gcode in the opened file
 		self.gcode = []
-		self.version = '0.58b'
+		self.version = '0.58'
 		#all of the available COM ports
 		self.comPorts = []
 		#A flag to indicate if logging is enabled
@@ -701,7 +701,6 @@ class MainProgram( Frame ):
 	
 	#This draws the gcode on the canvas.
 	def drawgcode(self):
-		#one roation is 4 pixels
 		xnow = 800.0
 		ynow = 800.0
 		znow = 0
@@ -962,8 +961,8 @@ class MainProgram( Frame ):
 				
 				if opstring[0:3] == 'G03' or opstring[0:3] == 'G3 ':
 					#print("g3 recognized")
-					Xval = 0
-					Yval = 0
+					Xval = xnow #this makes it so if no xvalue is found, the default will be a good guess
+					Yval = ynow
 					Ival = 0
 					Jval = 0
 					scalor = self.dataBack.zoomLevel * self.dataBack.unitsScale
