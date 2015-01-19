@@ -802,8 +802,8 @@ class MainProgram( Frame ):
 				
 				if opstring[0:3] == 'G02' or opstring[0:3] == 'G2 ':
 					scalor = self.dataBack.zoomLevel * self.dataBack.unitsScale
-					Xval = 0
-					Yval = 0
+					Xval = xnow
+					Yval = (800 - ynow)/scalor
 					Ival = 0
 					Jval = 0
 					#print("g2 recognized")
@@ -962,7 +962,7 @@ class MainProgram( Frame ):
 				if opstring[0:3] == 'G03' or opstring[0:3] == 'G3 ':
 					#print("g3 recognized")
 					Xval = xnow #this makes it so if no xvalue is found, the default will be a good guess
-					Yval = ynow
+					Yval = (800 - ynow)/scalor
 					Ival = 0
 					Jval = 0
 					scalor = self.dataBack.zoomLevel * self.dataBack.unitsScale
@@ -1037,17 +1037,14 @@ class MainProgram( Frame ):
 					endpt = j
 					if endpt >= 4:
 						Jval = float(opstring[startpt : endpt])
-					
+
 					if Xval != 0 or Yval != 0 or Ival != 0 or Jval != 0:
-						#print("this ran")
 						xposnow = (xnow - 800)#this is the version with 800 stripped off
 						yposnow = (ynow - 800)
 						
 						drawFlag = 1
 						if (abs(scalor*(Xval - xposnow/scalor))) < 1:
 							drawFlag = 0
-							#print(abs(scalor*(Xval - xposnow/scalor)))
-							#print("tata1")
 						
 						if self.dataBack.absoluteFlag == 1:
 							#print("absolute circle")
@@ -1063,18 +1060,7 @@ class MainProgram( Frame ):
 						cirend = self.angleGet(Xval, Yval, Ival, Jval)
 						cirbgn = - cirbgn
 						cirend = - cirend
-						#print("Angle arguments")
-						#print(opstring)
-						#print(Xval)
-						#print(Yval)
-						#print(Ival)
-						#print(Jval)
-						#print(cirbgn)
-						#print(cirend)
-							
-					#print(radius)
-					#print(cirend)
-					#print(cirbgn)
+						
 					#the position at any given time is given by 
 					radius = radius * scalor
 					
