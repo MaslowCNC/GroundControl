@@ -542,7 +542,7 @@ class MainProgram( Frame ):
 	#This function opens the thread which handles the input from the serial port
 	#It only needs to be run once, it is run by connecting to the machine
 	def recievemessage(self):
-		print("Starting Second Thread")
+		#print("Starting Second Thread")
 		#self.message_queue is the queue which handles passing CAN messages between threads
 		x = SerialPort( self.message_queue, self.gcode_queue, self, self.dataBack.comport, self.quick_queue)
 		self.th=threading.Thread(target=x.getmessage)
@@ -1141,6 +1141,13 @@ class MainProgram( Frame ):
 			filtersparsed = re.split(r'\s(?=G)|\n|\s(?=g)|\s(?=M)', rawfilters) #splits the gcode into elements to be added to the list
 			filtersparsed = [x + ' ' for x in filtersparsed] #adds a space to the end of each line
 			filtersparsed = [x.lstrip() for x in filtersparsed]
+			filtersparsed = [x.replace('X ','X') for x in filtersparsed]
+			filtersparsed = [x.replace('Y ','Y') for x in filtersparsed]
+			filtersparsed = [x.replace('Z ','Z') for x in filtersparsed]
+			filtersparsed = [x.replace('I ','I') for x in filtersparsed]
+			filtersparsed = [x.replace('J ','J') for x in filtersparsed]
+			filtersparsed = [x.replace('F ','F') for x in filtersparsed]
+
 			self.dataBack.gcode = filtersparsed
 			filterfile.close() #closes the filter save file
 		except:
@@ -1910,7 +1917,7 @@ class SerialPort():
 		from time import sleep
 		
 		try:
-			print("connecting")
+			#print("connecting")
 			serialCAN = serial.Serial(self.comport, 19200, timeout = .25) #self.comport is the com port which is opened
 		except:
 			#print(self.comport + "is unavailable or in use")
