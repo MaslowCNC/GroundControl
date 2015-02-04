@@ -647,9 +647,9 @@ class MainProgram( Frame ):
 			zposstring = "Z:%10.1f R" % zval
 		
 		if self.dataBack.unitsScale == 20: #In inches
-			xposstring = "X:%10.1f IN" % (xval * (1/20))
-			yposstring = "Y:%10.1f IN" % (yval * (1/20))
-			zposstring = "Z:%10.1f IN" % (zval * (1/20))
+			xposstring = "X:%10.2f IN" % (xval * (1/20))
+			yposstring = "Y:%10.2f IN" % (yval * (1/20))
+			zposstring = "Z:%10.2f IN" % (zval * (1/20))
 		
 		if self.dataBack.unitsScale <1: #In mm
 			if abs(xval) < .1:
