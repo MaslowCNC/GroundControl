@@ -355,7 +355,7 @@ class MainProgram( Frame ):
 		
 	
 	def aboutDialog(self):
-		messagebox.showinfo("About", "Makesmith Ground Control\nSoftware Version: " + self.dataBack.version + "\nWritten by Bar Smith, Andrew Albinger, and Oidan")
+		messagebox.showinfo("About", "Makesmith Ground Control\nSoftware Version: " + self.dataBack.version + "\nWritten by Bar Smith, Andrew Albinger, Oidan, and Shaughan")
 	
 	#This sets up the file where the program settings are saved if it does not already exist
 	def setupSettingsFile(self):
