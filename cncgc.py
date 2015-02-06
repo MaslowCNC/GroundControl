@@ -288,6 +288,11 @@ class MainProgram( Frame ):
 		self.speed.insert(0,125)
 		self.speed.pack(side = LEFT, padx = 8)
 		
+		self.unitsBtn = Button(self.aux_frame, text = "mm", bg = self.setColor, width = self.buttonwidth)
+		self.unitsBtn["command"] = self.toggleUnits
+		self.unitsBtn.pack(side = LEFT)
+		self.unitSwitchFlag = 1
+		
 		#This is the text box which contains the messages too and from the machine
 		self.output = Text( self.spy_frame, width = 37, height = 14, background = "grey95", relief = FLAT)
 		self.output.pack(fill = Y, expand = YES)
@@ -356,6 +361,16 @@ class MainProgram( Frame ):
 	
 	def aboutDialog(self):
 		messagebox.showinfo("About", "Makesmith Ground Control\nSoftware Version: " + self.dataBack.version + "\nWritten by Bar Smith, Andrew Albinger, Oidan, and Shaughan")
+	
+	def toggleUnits(self):
+		if self.unitSwitchFlag == 1:
+			self.unitSwitchFlag = 0
+			self.unitsBtn.config(text="inches")
+			self.switchinches()
+		else:
+			self.unitSwitchFlag = 1
+			self.switchmm()
+			self.unitsBtn.config(text="mm")
 	
 	#This sets up the file where the program settings are saved if it does not already exist
 	def setupSettingsFile(self):
