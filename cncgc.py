@@ -723,7 +723,6 @@ class MainProgram( Frame ):
 		fillcolor = "green"
 		prependString = "G00 "
 		
-		
 		i = 0
 		opstring = ""
 		try:
@@ -813,9 +812,9 @@ class MainProgram( Frame ):
 						self.canv.create_line(self.dataBack.offsetX + xnow, self.dataBack.offsetY + ynow, self.dataBack.offsetX + 800 - xdist, self.dataBack.offsetY + 800 - ydist, width = cutdi, fill = fillcolor, capstyle = "round", dash = linestyle)
 						xnow = 800 - xdist
 						ynow = 800 - ydist
-				
-				
+							
 				if opstring[0:3] == 'G02' or opstring[0:3] == 'G2 ':
+					
 					scalor = self.dataBack.zoomLevel * self.dataBack.unitsScale
 					Xval = xnow
 					Yval = (800 - ynow)/scalor
@@ -894,17 +893,13 @@ class MainProgram( Frame ):
 					if endpt >= 4:
 						Jval = float(opstring[startpt : endpt])
 					
-					
 					if Xval != 0 or Yval != 0 or Ival != 0 or Jval != 0:
-						#print("this ran")
 						xposnow = (xnow - 800)#this is the position with 800 stripped off
 						yposnow = (ynow - 800)
 						
 						drawFlag = 1
 						if abs(scalor*(Xval - xposnow/scalor)) < 1:
 							drawFlag = 0
-							#print(abs(scalor*(Xval - xposnow/scalor)))
-							#print("tata")
 						
 						if self.dataBack.absoluteFlag == 1:
 							#print("absolute circle")
@@ -912,7 +907,6 @@ class MainProgram( Frame ):
 							Yval = Yval + yposnow/scalor
 						
 						radius = math.sqrt((Ival)**2 + (Jval)**2) #** is the same as ^ (exponent)
-						#print(radius)
 						cirbgn = self.angleGet((xnow - 800), (ynow - 800), (xnow - 800) + Ival, (ynow - 800) + Jval)
 						cirend = self.angleGet(Xval, Yval, Ival, Jval)
 						cirbgn = - cirbgn
@@ -925,11 +919,11 @@ class MainProgram( Frame ):
 					cirbgn = (cirbgn * 360) / 2
 					cirend = (cirend * 360) / 2
 					
-					
-					#print(topLeftx),
-					#print(topLefty), 
-					#print(bottomRightx),
-					#print(bottomRighty),
+					radiusUsingBegin = math.sqrt((Ival**2) + (Jval**2))
+					radiusUsingEnd = math.sqrt(((Xval - Ival)**2) + ((Yval - Jval)**2))
+					radiusDif = abs(radiusUsingBegin - radiusUsingEnd)
+					if radiusDif > .01:
+						self.canv.create_text(xnow, ynow, text = "IJ Error", fill = "red")
 					
 					#print(cirend)
 					if cirbgn < 0:
@@ -944,7 +938,6 @@ class MainProgram( Frame ):
 					#	cirend = 360 + cirend
 					if cirend > cirbgn:
 						cirend = 360 - cirend
-						#print("The ran")
 					extend = cirend - cirbgn
 					if extend < 0:
 						extend = 360 + cirend
@@ -966,14 +959,9 @@ class MainProgram( Frame ):
 					else:
 						self.canv.create_line(xnow, ynow, xnow + Xval*scalor, ynow - Yval*scalor, width = cutdi, fill = fillcolor, capstyle = "round")
 					
-					#testxnow = xnow - radius*math.cos((2*math.pi*cirbgn)/360) + radius*math.cos((2*math.pi*cirend)/360)
-					#testynow = ynow + radius*math.sin((2*math.pi*cirbgn)/360) - radius*math.sin((2*math.pi*cirend)/360)
-					
 					xnow = xnow + Xval*scalor
 					ynow = ynow - Yval*scalor
-					
-					
-				
+									
 				if opstring[0:3] == 'G03' or opstring[0:3] == 'G3 ':
 					#print("g3 recognized")
 					Xval = xnow #this makes it so if no xvalue is found, the default will be a good guess
@@ -1065,8 +1053,6 @@ class MainProgram( Frame ):
 							#print("absolute circle")
 							Xval = Xval - xposnow/scalor
 							Yval = Yval + yposnow/scalor
-							#print(Xval)
-							#print(Yval)
 							
 							
 						radius = math.sqrt((Ival)**2 + (Jval)**2) #** is the same as ^ (exponent)
@@ -1078,6 +1064,12 @@ class MainProgram( Frame ):
 						
 					#the position at any given time is given by 
 					radius = radius * scalor
+					
+					radiusUsingBegin = math.sqrt((Ival**2) + (Jval**2))
+					radiusUsingEnd = math.sqrt(((Xval - Ival)**2) + ((Yval - Jval)**2))
+					radiusDif = abs(radiusUsingBegin - radiusUsingEnd)
+					if radiusDif > .01:
+						self.canv.create_text(xnow, ynow, text = "IJ Error", fill = "red")
 					
 					cirbgn = (cirbgn * 359) / 2
 					cirend = (cirend * 359) / 2
@@ -1801,16 +1793,16 @@ class MainProgram( Frame ):
 	'''-------------------------------------------------------------------------------------------------------------
 	These functions likely do not ever run and can be deleted.
 	'''
-	#This is called several times, is it useful?
+	#Draws the gcode on the canvas
 	def refreshGcode(self):
-		#print("updated canvas")
+		
 		self.canv.delete("all") #clear the canvas
 		self.refreshCross()
 		
 		scalor2 = self.dataBack.zoomLevel
 		
 		
-		#redraw frame shit
+		#redraw frame
 		self.canv.create_line( 800, -4000, 800,  4800, dash=(6, 6), fill = 'grey')#the hash lines
 		self.canv.create_line( -4000,  800,  4800,  800, dash=(6, 6), fill = 'grey')
 		
