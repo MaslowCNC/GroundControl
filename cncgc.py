@@ -725,9 +725,14 @@ class MainProgram( Frame ):
 		
 		i = 0
 		opstring = ""
+		
+		if len(self.dataBack.gcode) > 8000:
+			errorText = "The current file contains " + str(len(self.dataBack.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.dataBack.gcode)) + " lines simultanously may crash the\n program, only the first 8000 lines are shown here.\nThe complete program will cut if you choose to do so."
+			self.canv.create_text(xnow + 200, ynow - 50, text = errorText, fill = "red")
+		
 		try:
 		
-			while i < len(self.dataBack.gcode):
+			while i < len(self.dataBack.gcode) and i < 8000: #maximum of 8,000 lines are drawn on the screen at a time
 				opstring = self.dataBack.gcode[i]
 				opstring = opstring + " " #ensures that the is a space at the end of the line
 				
@@ -1181,9 +1186,9 @@ class MainProgram( Frame ):
 			
 		if time() - self.dataBack.heartBeat > 1:
 			self.terminal.configure(bg = "red")
-			self.terminaltext.set("Connection Lost...Reconnect in " + str(6 - int(time() - self.dataBack.heartBeat)))
-			if 5 - int(time() - self.dataBack.heartBeat) < 0:
-				if self.th.is_alive() : #if the serial thread is open, ask it to close an reopen the serial connection
+			self.terminaltext.set("Connection Lost...Reconnect in " + str(11 - int(time() - self.dataBack.heartBeat)))
+			if 10 - int(time() - self.dataBack.heartBeat) < 0:
+				if self.th.is_alive() : #if the serial thread is open, ask it to close and reopen the serial connection
 					self.quick_queue.put("Reconnect")
 				else: #if the serial thread is not open, open it
 					self.recievemessage()
