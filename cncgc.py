@@ -379,8 +379,9 @@ class MainProgram( Frame ):
 		from os import path, environ
 		import os
 		if sys.platform == 'darwin':
-			from AppKit import NSSearchPathForDirectoriesInDomains
-			appdata = path.join(NSSearchPathForDirectoriesInDomains(14, 1, True)[0], APPNAME)
+			#from AppKit import NSSearchPathForDirectoriesInDomains
+			#appdata = path.join(NSSearchPathForDirectoriesInDomains(14, 1, True)[0], APPNAME)
+			appdata = os.getcwd()
 		elif sys.platform == 'win32':
 			appdata = path.join(environ['APPDATA'], APPNAME)
 		else:
@@ -1795,9 +1796,6 @@ class MainProgram( Frame ):
 		for x in self.dataBack.gcode:
 			gCodeText.insert(END, x + "\r\n")
 	
-	'''-------------------------------------------------------------------------------------------------------------
-	These functions likely do not ever run and can be deleted.
-	'''
 	#Draws the gcode on the canvas
 	def refreshGcode(self):
 		
@@ -1826,7 +1824,11 @@ class MainProgram( Frame ):
 			self.canv.create_text( 870, 850, text = "10 mm" )
 		
 		self.drawgcode()
-			
+	
+	'''-------------------------------------------------------------------------------------------------------------
+	These functions likely do not ever run and can be deleted.
+	'''
+	
 	#This is now the way to view the G-code
 	#called once during setup
 	def showCanvas(self):
