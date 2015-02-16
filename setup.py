@@ -13,11 +13,11 @@
 from cx_Freeze import setup, Executable
 
 executables = [
-    Executable('GroundControl.py')
+    Executable('cncgc.py')
 ]
 
 setup(name='GroundControl',
-      version='0.57',
+      version='0.58',
       description='Makesmith Ground Control',
       executables=executables
       )

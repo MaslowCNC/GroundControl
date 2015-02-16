@@ -386,7 +386,7 @@ class MainProgram( Frame ):
 			appdata = path.join(environ['APPDATA'], APPNAME)
 		else:
 			appdata = path.expanduser(path.join("~", "." + APPNAME))
-		self.dataBack.settingsFile = appdata + "\Settings.txt"
+		self.dataBack.settingsFile = appdata + "/Settings.txt"
 		if not os.path.exists(appdata):
 			os.makedirs(appdata)
 		if not os.path.exists(self.dataBack.settingsFile):
