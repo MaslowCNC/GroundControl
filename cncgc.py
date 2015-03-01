@@ -105,6 +105,8 @@ class MainProgram( Frame ):
 			self.master.wm_state('zoomed') #This did not work on ubuntu
 		elif sys.platform.startswith('linux'):
 			self.master.attributes('-zoomed', True)
+		elif sys.platform == 'darwin':
+			self.master.attributes('-fullscreen', True)
 		
 		self.master.title( "Makesmith Ground Control - Software is beta, please use with caution" )
 		
