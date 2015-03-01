@@ -88,6 +88,7 @@ class Data( ):
 		self.contrast = 50
 		self.backlight = 65
 		self.heartBeat = time()
+		self.firstTimePosFlag = 0 #this is used to determine the first time the position is recieved from the machine
 
 '''The main-program holds most of the functions. This is where the program begins. The GUI is created here, and the functions to allow the user to interact
 with the machine are here.'''
@@ -637,6 +638,12 @@ class MainProgram( Frame ):
 			self.dataBack.currentpos[0] = xval
 			self.dataBack.currentpos[1] = yval
 			self.dataBack.currentpos[2] = zval
+			if self.dataBack.firstTimePosFlag == 0:
+				self.dataBack.firstTimePosFlag = 1
+				self.dataBack.target[0] = self.dataBack.currentpos[0]/self.dataBack.unitsScale
+				self.dataBack.target[1] = self.dataBack.currentpos[1]/self.dataBack.unitsScale
+				self.dataBack.target[2] = self.dataBack.currentpos[2]/self.dataBack.unitsScale
+			
 		except:
 			print("poz decode issue")
 			xval = self.dataBack.currentpos[0]
