@@ -106,7 +106,7 @@ class MainProgram( Frame ):
 		elif sys.platform.startswith('linux'):
 			self.master.attributes('-zoomed', True)
 		
-		self.master.title( "Makesmith Ground Control - Software is still beta, please use with caution" )
+		self.master.title( "Makesmith Ground Control - Software is beta, please use with caution" )
 		
 		self.dataBack = dataBack
 		self.message_queue = queue.Queue()
@@ -382,12 +382,14 @@ class MainProgram( Frame ):
 		if sys.platform == 'darwin':
 			#from AppKit import NSSearchPathForDirectoriesInDomains
 			#appdata = path.join(NSSearchPathForDirectoriesInDomains(14, 1, True)[0], APPNAME)
-			appdata = os.getcwd()
+			appdata = "Settings.txt"
+			self.dataBack.settingsFile = appdata
 		elif sys.platform == 'win32':
 			appdata = path.join(environ['APPDATA'], APPNAME)
+			self.dataBack.settingsFile = appdata + "/Settings.txt"
 		else:
 			appdata = path.expanduser(path.join("~", "." + APPNAME))
-		self.dataBack.settingsFile = appdata + "/Settings.txt"
+			self.dataBack.settingsFile = appdata + "/Settings.txt"
 		if not os.path.exists(appdata):
 			os.makedirs(appdata)
 		if not os.path.exists(self.dataBack.settingsFile):
