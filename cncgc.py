@@ -1611,6 +1611,9 @@ class MainProgram( Frame ):
 		centerFrame = Frame(debugWindow)
 		centerFrame.pack()
 		
+		magnetFrame = Frame(debugWindow)
+		magnetFrame.pack()
+		
 		constantFrame = Frame(debugWindow)
 		constantFrame.pack()
 		
@@ -1632,11 +1635,17 @@ class MainProgram( Frame ):
 		bothButton = Button(BothFrame, text="Test Both", command = lambda: self.gcode_queue.put("Test Both"))
 		bothButton.pack(side = LEFT)
 		
-		centermsg = Message(centerFrame, text = "This test allows you to define the center position for each servo. On the back of each servo is a small potentiometer which will let you adjust the resting position of the servo. This test will command all of the motors to not rotat for two seconds. If one motor rotates, adjust the potentiometer on the back of the servo until it stops.", width = 400)
+		centermsg = Message(centerFrame, text = "This test allows you to define the center position for each servo. On the back of each servo is a small potentiometer which will let you adjust the resting position of the servo. This test will command all of the motors to not stop for two seconds. If one motor rotates, adjust the potentiometer on the back of the servo until it stops.", width = 400)
 		centermsg.pack(side = LEFT)
 		
 		centerMotors = Button(centerFrame, text="Center Motors", command = lambda: self.gcode_queue.put("Center Motors"))
 		centerMotors.pack(side = LEFT)
+		
+		alignMsg = Message(magnetFrame, text = "This function automatically calibrates the encoders to compensate for any alignment issues. While calibrating, your machine will move so be sure that all three axies have room to move before begining the calibration process.", width = 400)
+		alignMsg.pack(side = LEFT)
+		
+		alignButton = Button(magnetFrame, text="Calibrate Magnets", command = lambda: self.gcode_queue.put("Align Magnets "))
+		alignButton.pack(side = LEFT)
 		
 		constantmsg = Message(constantFrame, text = "\nThis test allows you to manually set the speed of all three motors independently for testing purposes. It can cause strange behavior because it manually overrides the regular control system. If you notice that the motors continue to rotate at speed zero, you can adjust them using the potentiometer on the back of the servo.", width = 500)
 		constantmsg.pack(side = LEFT)
