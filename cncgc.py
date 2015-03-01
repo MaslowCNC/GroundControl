@@ -88,6 +88,7 @@ class Data( ):
 		self.contrast = 50
 		self.backlight = 65
 		self.heartBeat = time()
+		self.firstTimePosFlag = 0 #this is used to determine the first time the position is recieved from the machine
 
 '''The main-program holds most of the functions. This is where the program begins. The GUI is created here, and the functions to allow the user to interact
 with the machine are here.'''
@@ -637,6 +638,12 @@ class MainProgram( Frame ):
 			self.dataBack.currentpos[0] = xval
 			self.dataBack.currentpos[1] = yval
 			self.dataBack.currentpos[2] = zval
+			if self.dataBack.firstTimePosFlag == 0:
+				self.dataBack.firstTimePosFlag = 1
+				self.dataBack.target[0] = self.dataBack.currentpos[0]/self.dataBack.unitsScale
+				self.dataBack.target[1] = self.dataBack.currentpos[1]/self.dataBack.unitsScale
+				self.dataBack.target[2] = self.dataBack.currentpos[2]/self.dataBack.unitsScale
+			
 		except:
 			print("poz decode issue")
 			xval = self.dataBack.currentpos[0]
@@ -1604,6 +1611,9 @@ class MainProgram( Frame ):
 		centerFrame = Frame(debugWindow)
 		centerFrame.pack()
 		
+		magnetFrame = Frame(debugWindow)
+		magnetFrame.pack()
+		
 		constantFrame = Frame(debugWindow)
 		constantFrame.pack()
 		
@@ -1625,11 +1635,17 @@ class MainProgram( Frame ):
 		bothButton = Button(BothFrame, text="Test Both", command = lambda: self.gcode_queue.put("Test Both"))
 		bothButton.pack(side = LEFT)
 		
-		centermsg = Message(centerFrame, text = "This test allows you to define the center position for each servo. On the back of each servo is a small potentiometer which will let you adjust the resting position of the servo. This test will command all of the motors to not rotat for two seconds. If one motor rotates, adjust the potentiometer on the back of the servo until it stops.", width = 400)
+		centermsg = Message(centerFrame, text = "This test allows you to define the center position for each servo. On the back of each servo is a small potentiometer which will let you adjust the resting position of the servo. This test will command all of the motors to not stop for two seconds. If one motor rotates, adjust the potentiometer on the back of the servo until it stops.", width = 400)
 		centermsg.pack(side = LEFT)
 		
 		centerMotors = Button(centerFrame, text="Center Motors", command = lambda: self.gcode_queue.put("Center Motors"))
 		centerMotors.pack(side = LEFT)
+		
+		alignMsg = Message(magnetFrame, text = "This function automatically calibrates the encoders to compensate for any alignment issues. While calibrating, your machine will move so be sure that all three axies have room to move before begining the calibration process.", width = 400)
+		alignMsg.pack(side = LEFT)
+		
+		alignButton = Button(magnetFrame, text="Calibrate Magnets", command = lambda: self.gcode_queue.put("Align Magnets "))
+		alignButton.pack(side = LEFT)
 		
 		constantmsg = Message(constantFrame, text = "\nThis test allows you to manually set the speed of all three motors independently for testing purposes. It can cause strange behavior because it manually overrides the regular control system. If you notice that the motors continue to rotate at speed zero, you can adjust them using the potentiometer on the back of the servo.", width = 500)
 		constantmsg.pack(side = LEFT)
