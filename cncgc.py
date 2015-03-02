@@ -384,8 +384,8 @@ class MainProgram( Frame ):
 		if sys.platform == 'darwin':
 			#from AppKit import NSSearchPathForDirectoriesInDomains
 			#appdata = path.join(NSSearchPathForDirectoriesInDomains(14, 1, True)[0], APPNAME)
-			appdata = "Settings.txt"
-			self.dataBack.settingsFile = appdata
+			appdata = "/Library/Application Support/Makesmith"
+			self.dataBack.settingsFile = appdata + "/Settings.txt"
 		elif sys.platform == 'win32':
 			appdata = path.join(environ['APPDATA'], APPNAME)
 			self.dataBack.settingsFile = appdata + "/Settings.txt"
