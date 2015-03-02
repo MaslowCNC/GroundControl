@@ -36,7 +36,7 @@ class Data( ):
 	def __init__(self):
 		#Gcodes contains all of the lines of gcode in the opened file
 		self.gcode = []
-		self.version = '0.58'
+		self.version = '0.59'
 		#all of the available COM ports
 		self.comPorts = []
 		#A flag to indicate if logging is enabled
