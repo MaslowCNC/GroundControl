@@ -1824,12 +1824,7 @@ class MainProgram( Frame ):
 		
 		scalor2 = self.dataBack.zoomLevel
 		
-<<<<<<< HEAD
-		#redraw frame shit
-=======
-		
 		#redraw frame
->>>>>>> origin/master
 		self.canv.create_line( 800, -4000, 800,  4800, dash=(6, 6), fill = 'grey')#the hash lines
 		self.canv.create_line( -4000,  800,  4800,  800, dash=(6, 6), fill = 'grey')
 		
