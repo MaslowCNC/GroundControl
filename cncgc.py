@@ -36,7 +36,7 @@ class Data( ):
 	def __init__(self):
 		#Gcodes contains all of the lines of gcode in the opened file
 		self.gcode = []
-		self.version = '0.58'
+		self.version = '0.59'
 		#all of the available COM ports
 		self.comPorts = []
 		#A flag to indicate if logging is enabled
@@ -88,6 +88,7 @@ class Data( ):
 		self.contrast = 50
 		self.backlight = 65
 		self.heartBeat = time()
+		self.firstTimePosFlag = 0 #this is used to determine the first time the position is recieved from the machine
 
 '''The main-program holds most of the functions. This is where the program begins. The GUI is created here, and the functions to allow the user to interact
 with the machine are here.'''
@@ -104,8 +105,10 @@ class MainProgram( Frame ):
 			self.master.wm_state('zoomed') #This did not work on ubuntu
 		elif sys.platform.startswith('linux'):
 			self.master.attributes('-zoomed', True)
+		elif sys.platform == 'darwin':
+			self.master.attributes('-fullscreen', True)
 		
-		self.master.title( "Makesmith Ground Control - Software is still beta, please use with caution" )
+		self.master.title( "Makesmith Ground Control - Software is beta, please use with caution" )
 		
 		self.dataBack = dataBack
 		self.message_queue = queue.Queue()
@@ -288,6 +291,11 @@ class MainProgram( Frame ):
 		self.speed.insert(0,125)
 		self.speed.pack(side = LEFT, padx = 8)
 		
+		self.unitsBtn = Button(self.aux_frame, text = "mm", bg = self.setColor, width = self.buttonwidth)
+		self.unitsBtn["command"] = self.toggleUnits
+		self.unitsBtn.pack(side = LEFT)
+		self.unitSwitchFlag = 1
+		
 		#This is the text box which contains the messages too and from the machine
 		self.output = Text( self.spy_frame, width = 37, height = 14, background = "grey95", relief = FLAT)
 		self.output.pack(fill = Y, expand = YES)
@@ -355,7 +363,17 @@ class MainProgram( Frame ):
 		
 	
 	def aboutDialog(self):
-		messagebox.showinfo("About", "Makesmith Ground Control\nSoftware Version: " + self.dataBack.version + "\nWritten by Bar Smith, Andrew Albinger, and Oidan")
+		messagebox.showinfo("About", "Makesmith Ground Control\nSoftware Version: " + self.dataBack.version + "\nWritten by Bar Smith, Andrew Albinger, Oidan, and Shaughan")
+	
+	def toggleUnits(self):
+		if self.unitSwitchFlag == 1:
+			self.unitSwitchFlag = 0
+			self.unitsBtn.config(text="inches")
+			self.switchinches()
+		else:
+			self.unitSwitchFlag = 1
+			self.switchmm()
+			self.unitsBtn.config(text="mm")
 	
 	#This sets up the file where the program settings are saved if it does not already exist
 	def setupSettingsFile(self):
@@ -364,13 +382,16 @@ class MainProgram( Frame ):
 		from os import path, environ
 		import os
 		if sys.platform == 'darwin':
-			from AppKit import NSSearchPathForDirectoriesInDomains
-			appdata = path.join(NSSearchPathForDirectoriesInDomains(14, 1, True)[0], APPNAME)
+			#from AppKit import NSSearchPathForDirectoriesInDomains
+			#appdata = path.join(NSSearchPathForDirectoriesInDomains(14, 1, True)[0], APPNAME)
+			appdata = "/Library/Application Support/Makesmith"
+			self.dataBack.settingsFile = appdata + "/Settings.txt"
 		elif sys.platform == 'win32':
 			appdata = path.join(environ['APPDATA'], APPNAME)
+			self.dataBack.settingsFile = appdata + "/Settings.txt"
 		else:
 			appdata = path.expanduser(path.join("~", "." + APPNAME))
-		self.dataBack.settingsFile = appdata + "\Settings.txt"
+			self.dataBack.settingsFile = appdata + "/Settings.txt"
 		if not os.path.exists(appdata):
 			os.makedirs(appdata)
 		if not os.path.exists(self.dataBack.settingsFile):
@@ -621,6 +642,12 @@ class MainProgram( Frame ):
 			self.dataBack.currentpos[0] = xval
 			self.dataBack.currentpos[1] = yval
 			self.dataBack.currentpos[2] = zval
+			if self.dataBack.firstTimePosFlag == 0:
+				self.dataBack.firstTimePosFlag = 1
+				self.dataBack.target[0] = self.dataBack.currentpos[0]/self.dataBack.unitsScale
+				self.dataBack.target[1] = self.dataBack.currentpos[1]/self.dataBack.unitsScale
+				self.dataBack.target[2] = self.dataBack.currentpos[2]/self.dataBack.unitsScale
+			
 		except:
 			print("poz decode issue")
 			xval = self.dataBack.currentpos[0]
@@ -647,9 +674,9 @@ class MainProgram( Frame ):
 			zposstring = "Z:%10.1f R" % zval
 		
 		if self.dataBack.unitsScale == 20: #In inches
-			xposstring = "X:%10.1f IN" % (xval * (1/20))
-			yposstring = "Y:%10.1f IN" % (yval * (1/20))
-			zposstring = "Z:%10.1f IN" % (zval * (1/20))
+			xposstring = "X:%10.2f IN" % (xval * (1/20))
+			yposstring = "Y:%10.2f IN" % (yval * (1/20))
+			zposstring = "Z:%10.2f IN" % (zval * (1/20))
 		
 		if self.dataBack.unitsScale <1: #In mm
 			if abs(xval) < .1:
@@ -708,12 +735,16 @@ class MainProgram( Frame ):
 		fillcolor = "green"
 		prependString = "G00 "
 		
-		
 		i = 0
 		opstring = ""
+		
+		if len(self.dataBack.gcode) > 8000:
+			errorText = "The current file contains " + str(len(self.dataBack.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.dataBack.gcode)) + " lines simultanously may crash the\n program, only the first 8000 lines are shown here.\nThe complete program will cut if you choose to do so."
+			self.canv.create_text(xnow + 200, ynow - 50, text = errorText, fill = "red")
+		
 		try:
 		
-			while i < len(self.dataBack.gcode):
+			while i < len(self.dataBack.gcode) and i < 8000: #maximum of 8,000 lines are drawn on the screen at a time
 				opstring = self.dataBack.gcode[i]
 				opstring = opstring + " " #ensures that the is a space at the end of the line
 				
@@ -798,9 +829,9 @@ class MainProgram( Frame ):
 						self.canv.create_line(self.dataBack.offsetX + xnow, self.dataBack.offsetY + ynow, self.dataBack.offsetX + 800 - xdist, self.dataBack.offsetY + 800 - ydist, width = cutdi, fill = fillcolor, capstyle = "round", dash = linestyle)
 						xnow = 800 - xdist
 						ynow = 800 - ydist
-				
-				
+							
 				if opstring[0:3] == 'G02' or opstring[0:3] == 'G2 ':
+					
 					scalor = self.dataBack.zoomLevel * self.dataBack.unitsScale
 					Xval = xnow
 					Yval = (800 - ynow)/scalor
@@ -879,17 +910,13 @@ class MainProgram( Frame ):
 					if endpt >= 4:
 						Jval = float(opstring[startpt : endpt])
 					
-					
 					if Xval != 0 or Yval != 0 or Ival != 0 or Jval != 0:
-						#print("this ran")
 						xposnow = (xnow - 800)#this is the position with 800 stripped off
 						yposnow = (ynow - 800)
 						
 						drawFlag = 1
 						if abs(scalor*(Xval - xposnow/scalor)) < 1:
 							drawFlag = 0
-							#print(abs(scalor*(Xval - xposnow/scalor)))
-							#print("tata")
 						
 						if self.dataBack.absoluteFlag == 1:
 							#print("absolute circle")
@@ -897,7 +924,6 @@ class MainProgram( Frame ):
 							Yval = Yval + yposnow/scalor
 						
 						radius = math.sqrt((Ival)**2 + (Jval)**2) #** is the same as ^ (exponent)
-						#print(radius)
 						cirbgn = self.angleGet((xnow - 800), (ynow - 800), (xnow - 800) + Ival, (ynow - 800) + Jval)
 						cirend = self.angleGet(Xval, Yval, Ival, Jval)
 						cirbgn = - cirbgn
@@ -910,11 +936,11 @@ class MainProgram( Frame ):
 					cirbgn = (cirbgn * 360) / 2
 					cirend = (cirend * 360) / 2
 					
-					
-					#print(topLeftx),
-					#print(topLefty), 
-					#print(bottomRightx),
-					#print(bottomRighty),
+					radiusUsingBegin = math.sqrt((Ival**2) + (Jval**2))
+					radiusUsingEnd = math.sqrt(((Xval - Ival)**2) + ((Yval - Jval)**2))
+					radiusDif = abs(radiusUsingBegin - radiusUsingEnd)
+					if radiusDif > .01:
+						self.canv.create_text(xnow, ynow, text = "IJ Error", fill = "red")
 					
 					#print(cirend)
 					if cirbgn < 0:
@@ -929,7 +955,6 @@ class MainProgram( Frame ):
 					#	cirend = 360 + cirend
 					if cirend > cirbgn:
 						cirend = 360 - cirend
-						#print("The ran")
 					extend = cirend - cirbgn
 					if extend < 0:
 						extend = 360 + cirend
@@ -951,14 +976,9 @@ class MainProgram( Frame ):
 					else:
 						self.canv.create_line(xnow, ynow, xnow + Xval*scalor, ynow - Yval*scalor, width = cutdi, fill = fillcolor, capstyle = "round")
 					
-					#testxnow = xnow - radius*math.cos((2*math.pi*cirbgn)/360) + radius*math.cos((2*math.pi*cirend)/360)
-					#testynow = ynow + radius*math.sin((2*math.pi*cirbgn)/360) - radius*math.sin((2*math.pi*cirend)/360)
-					
 					xnow = xnow + Xval*scalor
 					ynow = ynow - Yval*scalor
-					
-					
-				
+									
 				if opstring[0:3] == 'G03' or opstring[0:3] == 'G3 ':
 					#print("g3 recognized")
 					Xval = xnow #this makes it so if no xvalue is found, the default will be a good guess
@@ -1050,8 +1070,6 @@ class MainProgram( Frame ):
 							#print("absolute circle")
 							Xval = Xval - xposnow/scalor
 							Yval = Yval + yposnow/scalor
-							#print(Xval)
-							#print(Yval)
 							
 							
 						radius = math.sqrt((Ival)**2 + (Jval)**2) #** is the same as ^ (exponent)
@@ -1063,6 +1081,12 @@ class MainProgram( Frame ):
 						
 					#the position at any given time is given by 
 					radius = radius * scalor
+					
+					radiusUsingBegin = math.sqrt((Ival**2) + (Jval**2))
+					radiusUsingEnd = math.sqrt(((Xval - Ival)**2) + ((Yval - Jval)**2))
+					radiusDif = abs(radiusUsingBegin - radiusUsingEnd)
+					if radiusDif > .01:
+						self.canv.create_text(xnow, ynow, text = "IJ Error", fill = "red")
 					
 					cirbgn = (cirbgn * 359) / 2
 					cirend = (cirend * 359) / 2
@@ -1174,9 +1198,9 @@ class MainProgram( Frame ):
 			
 		if time() - self.dataBack.heartBeat > 1:
 			self.terminal.configure(bg = "red")
-			self.terminaltext.set("Connection Lost...Reconnect in " + str(6 - int(time() - self.dataBack.heartBeat)))
-			if 5 - int(time() - self.dataBack.heartBeat) < 0:
-				if self.th.is_alive() : #if the serial thread is open, ask it to close an reopen the serial connection
+			self.terminaltext.set("Connection Lost...Reconnect in " + str(11 - int(time() - self.dataBack.heartBeat)))
+			if 10 - int(time() - self.dataBack.heartBeat) < 0:
+				if self.th.is_alive() : #if the serial thread is open, ask it to close and reopen the serial connection
 					self.quick_queue.put("Reconnect")
 				else: #if the serial thread is not open, open it
 					self.recievemessage()
@@ -1591,6 +1615,9 @@ class MainProgram( Frame ):
 		centerFrame = Frame(debugWindow)
 		centerFrame.pack()
 		
+		magnetFrame = Frame(debugWindow)
+		magnetFrame.pack()
+		
 		constantFrame = Frame(debugWindow)
 		constantFrame.pack()
 		
@@ -1612,11 +1639,17 @@ class MainProgram( Frame ):
 		bothButton = Button(BothFrame, text="Test Both", command = lambda: self.gcode_queue.put("Test Both"))
 		bothButton.pack(side = LEFT)
 		
-		centermsg = Message(centerFrame, text = "This test allows you to define the center position for each servo. On the back of each servo is a small potentiometer which will let you adjust the resting position of the servo. This test will command all of the motors to not rotat for two seconds. If one motor rotates, adjust the potentiometer on the back of the servo until it stops.", width = 400)
+		centermsg = Message(centerFrame, text = "This test allows you to define the center position for each servo. On the back of each servo is a small potentiometer which will let you adjust the resting position of the servo. This test will command all of the motors to not stop for two seconds. If one motor rotates, adjust the potentiometer on the back of the servo until it stops.", width = 400)
 		centermsg.pack(side = LEFT)
 		
 		centerMotors = Button(centerFrame, text="Center Motors", command = lambda: self.gcode_queue.put("Center Motors"))
 		centerMotors.pack(side = LEFT)
+		
+		alignMsg = Message(magnetFrame, text = "This function automatically calibrates the encoders to compensate for any alignment issues. While calibrating, your machine will move so be sure that all three axies have room to move before begining the calibration process.", width = 400)
+		alignMsg.pack(side = LEFT)
+		
+		alignButton = Button(magnetFrame, text="Calibrate Magnets", command = lambda: self.gcode_queue.put("Align Magnets "))
+		alignButton.pack(side = LEFT)
 		
 		constantmsg = Message(constantFrame, text = "\nThis test allows you to manually set the speed of all three motors independently for testing purposes. It can cause strange behavior because it manually overrides the regular control system. If you notice that the motors continue to rotate at speed zero, you can adjust them using the potentiometer on the back of the servo.", width = 500)
 		constantmsg.pack(side = LEFT)
@@ -1783,18 +1816,20 @@ class MainProgram( Frame ):
 		for x in self.dataBack.gcode:
 			gCodeText.insert(END, x + "\r\n")
 	
-	'''-------------------------------------------------------------------------------------------------------------
-	These functions likely do not ever run and can be deleted.
-	'''
-	#This is called several times, is it useful?
+	#Draws the gcode on the canvas
 	def refreshGcode(self):
-		#print("updated canvas")
+		
 		self.canv.delete("all") #clear the canvas
 		self.refreshCross()
 		
 		scalor2 = self.dataBack.zoomLevel
 		
+<<<<<<< HEAD
 		#redraw frame shit
+=======
+		
+		#redraw frame
+>>>>>>> origin/master
 		self.canv.create_line( 800, -4000, 800,  4800, dash=(6, 6), fill = 'grey')#the hash lines
 		self.canv.create_line( -4000,  800,  4800,  800, dash=(6, 6), fill = 'grey')
 		
@@ -1813,7 +1848,11 @@ class MainProgram( Frame ):
 			self.canv.create_text( 870, 850, text = "10 mm" )
 		
 		self.drawgcode()
-			
+	
+	'''-------------------------------------------------------------------------------------------------------------
+	These functions likely do not ever run and can be deleted.
+	'''
+	
 	#This is now the way to view the G-code
 	#called once during setup
 	def showCanvas(self):
