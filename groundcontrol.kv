@@ -1,0 +1,77 @@
+#:kivy 1.0.9
+
+#<Widget>:
+#    canvas.after:
+#        Line:
+#            rectangle: self.x+1,self.y+1,self.width-1,self.height-1
+#            dash_offset: 5
+#            dash_length: 3
+
+
+<AnalysisOverview>:
+    
+    GridLayout:
+        cols: 4
+        pos: root.width - 4*75, 0
+        Button:
+            text: '<^'
+            size_hint: None, None
+            width:75
+            height: 75
+            on_press: root.testFuncOne()
+        Button:
+            text: '^'
+            size_hint: None, None
+            width:75
+            height: 75
+            on_press: root.testFuncTwo()
+        Button:
+            text: '>^'
+            size_hint: None, None
+            width:75
+            height: 75
+        Button:
+            text: 'UP'
+            size_hint: None, None
+            width:75
+            height: 75
+        Button:
+            text: '<'
+            size_hint: None, None
+            width:75
+            height: 75
+        Button:
+            text: 'HOME'
+            size_hint: None, None
+            width:75
+            height: 75
+        Button:
+            text: '>'
+            size_hint: None, None
+            width:75
+            height: 75
+        Button:
+            text: 'DOWN'
+            size_hint: None, None
+            width:75
+            height: 75
+        Button:
+            text: '<\/'
+            size_hint: None, None
+            width:75
+            height: 75
+        Button:
+            text: '\/'
+            size_hint: None, None
+            width:75
+            height: 75
+        Button:
+            text: '\/'
+            size_hint: None, None
+            width:75
+            height: 75
+        Button:
+            text: 'RUN'
+            size_hint: None, None
+            width:75
+            height: 75
