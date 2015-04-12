@@ -1,1 +1,25 @@
-test
+#:kivy 1.0.9
+
+<Widget>:
+    canvas.after:
+        Line:
+            rectangle: self.x+1,self.y+1,self.width-1,self.height-1
+            dash_offset: 5
+            dash_length: 3
+
+
+
+<AnalysisOverview>:
+    exploreplot: firstplot
+    exampleplot: secondplot
+    
+    BoxLayout:
+        orientation: 'horizontal'
+        padding:20
+        spacing:10
+        Button:
+            text: 'Button 1'
+            on_press: root.testFuncOne()
+        Button:
+            text: 'Button 2'
+            on_press: root.testFuncTwo()
