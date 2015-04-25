@@ -11,19 +11,19 @@ from kivy.clock import Clock
 from math import cos, sin
 
 
-class AnalysisOverview(FloatLayout):
+class FrontPage(FloatLayout):
     exploreplot = ObjectProperty(None)
     exampleplot = ObjectProperty(None)
     
     def testFuncOne(self):
-       print "func one"
+        print "func one"
         
     def testFuncTwo(self):
         print "func two"
 
 class GroundControlApp(App):
     def build(self):
-        interface =  AnalysisOverview()
+        interface =  FrontPage()
         return interface
 
 
