@@ -32,24 +32,25 @@ class GroundControlApp(App):
     def build(self):
         interface = FloatLayout()
         
-        screenControls = GridLayout(rows = 1)
-        btn1 = Button(text='Front Page', size_hint=(None, None), width = 320, height = 30)
+        screenControls = GridLayout(rows = 1, size_hint=(1, .05), pos = (0,Window.height - 50))
+        
+        btn1 = Button(text='Front Page', size_hint=(.5, .5))
         btn1.bind(on_press=self.showFront)
         screenControls.add_widget(btn1)
         
-        btn2 = Button(text='Other Features', size_hint=(None, None), width = 320, height = 30)
+        btn2 = Button(text='Other Features', size_hint=(.5, .5))
         btn2.bind(on_press=self.showFeatures)
         screenControls.add_widget(btn2)
         
         
-        btn3 = Button(text='Settings', size_hint=(None, None), width = 320, height = 30)
+        btn3 = Button(text='Settings', size_hint=(.5, .5))
         btn3.bind(on_press=self.showSettings)
         screenControls.add_widget(btn3)
         
         interface.add_widget(screenControls)
         
         
-        self.sm = ScreenManager(transition=SlideTransition(), size_hint=(None, None), pos = (120,0), width = Window.width-120, height = Window.height, clearcolor=(1,1,1,1))
+        self.sm = ScreenManager(transition=SlideTransition(), size_hint=(1, .95), pos = (0,0), clearcolor=(1,1,1,1))
         
         self.frontpage = FrontPage(name='FrontPage')
         self.sm.add_widget(self.frontpage)
