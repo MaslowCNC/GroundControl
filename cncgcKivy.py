@@ -30,7 +30,6 @@ class OtherFeatures(Screen):
 class SoftwareSettings(Screen):
     pass
 
-
 class ViewMenu(GridLayout):
     pass
 
@@ -40,7 +39,7 @@ class RunMenu(FloatLayout):
 class ConnectMenu(FloatLayout):
     pass
 
-class AboutMenu(FloatLayout):
+class Diagnostics(FloatLayout):
     pass
 
 class ManualControl(FloatLayout):

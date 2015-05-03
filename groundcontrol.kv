@@ -172,36 +172,60 @@
         cols: 1
         size: root.size
         pos: root.pos
+        Label:
+            text: "View"
         Button:
-            text: 'ViewMenu'
+            text: 'Open File'
         Button:
-            text: 'ViewMenu2'
+            text: 'Update Gcode'
+        Button:
+            text: 'View Gcode'
+        Button:
+            text: 'Reset Origin'
                 
 <RunMenu>:
     GridLayout:
         cols: 1
         size: root.size
         pos: root.pos
+        Label:
+            text: "Run"
         Button:
-            text: 'Runmenu'
+            text: 'Pause'
+        Button:
+            text: 'Resume'
+        Button:
+            text: 'Zero Z'
+        Button:
+            text: 'Auto Zero Z'
                 
 <ConnectMenu>:
     GridLayout:
         cols: 1
         size: root.size
         pos: root.pos
+        Label:
+            text: "Connect"
         Button:
-            text: 'ConnectMenu'
+            text: 'Reconnect'
+        Button:
+            text: 'Ports'
+        Button:
+            text: 'Update List'
                 
-<AboutMenu>:
+<Diagnostics>:
     GridLayout:
         cols: 3
+        size: root.size
+        pos: root.pos
         Button:
             text: 'Aboutmenu'
 
 <ManualControl>:
     GridLayout:
         cols: 3
+        size: root.size
+        pos: root.pos
         Button:
             text: 'ManualControl'
                 
@@ -210,8 +234,8 @@
         orientation: 'vertical'
         BoxLayout:
             orientation: 'horizontal'
-            #padding:0
-            #spacing:0
+            padding:2
+            spacing:0
             
             ViewMenu:
                 id: viewmenu
@@ -221,13 +245,13 @@
                 id: connectmenu
         BoxLayout:
             orientation: 'vertical'
-            #padding:0
-            #spacing:0
+            padding:2
+            spacing:0
             
-            Button:
-                text: 'Diagnos'
-            Button:
-                text: 'Manual Control'
+            Diagnostics:
+                id: diagnostics
+            ManualControl:
+                id: manualcontrol
 
 <SoftwareSettings>:
     GridLayout:
