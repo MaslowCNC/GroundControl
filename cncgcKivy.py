@@ -11,6 +11,8 @@ from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 
+class GcodeCanvas(FloatLayout):
+    pass
 
 class FrontPage(Screen):
     exploreplot = ObjectProperty(None)
@@ -26,6 +28,22 @@ class OtherFeatures(Screen):
     pass
 
 class SoftwareSettings(Screen):
+    pass
+
+
+class ViewMenu(GridLayout):
+    pass
+
+class RunMenu(FloatLayout):
+    pass
+
+class ConnectMenu(FloatLayout):
+    pass
+
+class AboutMenu(FloatLayout):
+    pass
+
+class ManualControl(FloatLayout):
     pass
 
 class GroundControlApp(App):

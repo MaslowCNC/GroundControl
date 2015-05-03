@@ -1,4 +1,4 @@
-#:kivy 1.0.9
+#kivy 1.0.9
 
 #<Widget>:
 #    canvas.after:
@@ -7,8 +7,25 @@
 #            dash_offset: 5
 #            dash_length: 3
 
+<GcodeCanvas>:
+    canvas:
+        Line:
+            points: 0,200,self.width,200
+            dash_offset: 5
+        Line:
+            points: 300,0,300,self.height
+            dash_offset: 5
+        Line:
+            circle: 300, 200, 15
+        Line:
+            points: 300 - 15, 200 - 15, 300 + 15, 200 + 15
+        Line:
+            points: 300 + 15, 200 - 15, 300 - 15, 200 + 15
 
 <FrontPage>:
+
+    GcodeCanvas:
+        id: gcodecanvas
     GridLayout:
         cols: 4
         pos: self.width - 4*75, 0
@@ -150,13 +167,69 @@
         size_hint: None, None
         pos: root.width - 170, root.height-500
 
-<OtherFeatures>
+<ViewMenu>:
     GridLayout:
         cols: 1
+        size: root.size
+        pos: root.pos
         Button:
-            text: 'Debug'
+            text: 'ViewMenu'
+        Button:
+            text: 'ViewMenu2'
+                
+<RunMenu>:
+    GridLayout:
+        cols: 1
+        size: root.size
+        pos: root.pos
+        Button:
+            text: 'Runmenu'
+                
+<ConnectMenu>:
+    GridLayout:
+        cols: 1
+        size: root.size
+        pos: root.pos
+        Button:
+            text: 'ConnectMenu'
+                
+<AboutMenu>:
+    GridLayout:
+        cols: 3
+        Button:
+            text: 'Aboutmenu'
 
-<SoftwareSettings>
+<ManualControl>:
+    GridLayout:
+        cols: 3
+        Button:
+            text: 'ManualControl'
+                
+<OtherFeatures>:
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            orientation: 'horizontal'
+            #padding:0
+            #spacing:0
+            
+            ViewMenu:
+                id: viewmenu
+            RunMenu:
+                id: runmenu
+            ConnectMenu:
+                id: connectmenu
+        BoxLayout:
+            orientation: 'vertical'
+            #padding:0
+            #spacing:0
+            
+            Button:
+                text: 'Diagnos'
+            Button:
+                text: 'Manual Control'
+
+<SoftwareSettings>:
     GridLayout:
         cols: 1
         Button:
