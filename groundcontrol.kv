@@ -215,31 +215,109 @@
                 
 <Diagnostics>:
     GridLayout:
-        cols: 3
+        rows: 2
         size: root.size
         pos: root.pos
         Label:
             text: "Diagnostic features"
-        Button:
-            text: 'Test Encoders'
-        Button:
-            text: 'Test Motors'
-        Button:
-            text: 'Test Both'
-        Button:
-            text: 'Calibrate Motors'
-        Button:
-            text: 'Calibrate Magnets'
-        Button:
-            text: 'About'
+        GridLayout:
+            cols: 3
+            Button:
+                text: 'Test Encoders'
+            Button:
+                text: 'Test Motors'
+            Button:
+                text: 'Test Both'
+            Button:
+                text: 'Calibrate Motors'
+            Button:
+                text: 'Calibrate Magnets'
+            Button:
+                text: 'About'
 
 <ManualControl>:
     GridLayout:
-        cols: 3
+        rows: 2
         size: root.size
         pos: root.pos
-        Button:
-            text: 'ManualControl'
+        Label:
+            text: "Manual Control"
+        GridLayout:
+            cols: 12
+            Label:
+                text: "X:"
+            Button:
+                text: '-5'
+            Button:
+                text: '-4'
+            Button:
+                text: '-3'
+            Button:
+                text: '-2'
+            Button:
+                text: '-1'
+            Button:
+                text: '0'
+            Button:
+                text: '1'
+            Button:
+                text: '2'
+            Button:
+                text: '3'
+            Button:
+                text: '4'
+            Button:
+                text: '5'
+            
+            Label:
+                text: "Y:"
+            Button:
+                text: '-5'
+            Button:
+                text: '-4'
+            Button:
+                text: '-3'
+            Button:
+                text: '-2'
+            Button:
+                text: '-1'
+            Button:
+                text: '0'
+            Button:
+                text: '1'
+            Button:
+                text: '2'
+            Button:
+                text: '3'
+            Button:
+                text: '4'
+            Button:
+                text: '5'
+            
+            Label:
+                text: "Z:"
+            Button:
+                text: '-5'
+            Button:
+                text: '-4'
+            Button:
+                text: '-3'
+            Button:
+                text: '-2'
+            Button:
+                text: '-1'
+            Button:
+                text: '0'
+            Button:
+                text: '1'
+            Button:
+                text: '2'
+            Button:
+                text: '3'
+            Button:
+                text: '4'
+            Button:
+                text: '5'
                 
 <OtherFeatures>:
     BoxLayout:
