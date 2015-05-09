@@ -63,16 +63,37 @@ class ConnectMenu(FloatLayout):
     
     connectmenu = ObjectProperty(None) #make ConnectMenu object accessable at this scope
     comPorts = []
+    comPort = ""
     
+    message_queue = Queue.Queue()
+    gcode_queue = Queue.Queue()
+    quick_queue = Queue.Queue()
     
     def reconnect(self):
         print "reconnect pressed"
+        self.comPort = '/dev/ttyACM0'
+        self.recieveMessage()
+    
+    def ports(self):
+        print "ports"
+        self.gcode_queue.put("test gcode");
     
         '''
     
     Serial Connection Functions
     
     '''
+    
+    def recieveMessage(self):
+        #This function opens the thread which handles the input from the serial port
+        #It only needs to be run once, it is run by connecting to the machine
+        
+        print("Starting Second Thread")
+        #self.message_queue is the queue which handles passing CAN messages between threads
+        x = SerialPort( self.message_queue, self.gcode_queue, self, self.comPort, self.quick_queue)
+        self.th=threading.Thread(target=x.getmessage)
+        self.th.daemon = True
+        self.th.start()
     
     def listSerialPorts(self):
         #Detects all the devices connected to the computer. Returns them as an array.
@@ -110,10 +131,129 @@ class ConnectMenu(FloatLayout):
             x.append((z,z))
         
         self.comPorts = x
+
+class SerialPort():
+    '''
+    
+    SerialPort is the thread which handles direct communication with the CNC machine. 
+    SerialPort initializes the connection and then receives
+    and parses messages. These messages are then passed to the main thread via the message_queue 
+    queue where they are added to the GUI
+    
+    '''
+
+    def __init__( self, message_queue, gcode_queue, mainwindow, comport, quick_queue):
+        self.message_queue = message_queue
+        self.gcode_queue = gcode_queue
+        self.quick_queue = quick_queue
+        self.mainwindow = mainwindow
+        self.comport = comport
         
-        print self.comPorts
-    
-    
+    def getmessage (self):
+        print("Waiting for new message")
+        print(self.comport)
+        #opens a serial connection called serialCAN
+        from time import sleep
+        
+        try:
+            print("connecting")
+            serialCAN = serial.Serial(self.comport, 19200, timeout = .25) #self.comport is the com port which is opened
+        except:
+            print(self.comport + "is unavailable or in use")
+            self.message_queue.put("\n" + self.comport + " is unavailable or in use")
+        else:
+            self.message_queue.put("\r\nConnected on port " + self.comport + "\r\n")
+            gcode = ""
+            msg = ""
+            subReadyFlag = True
+            
+            serialCAN.parity = serial.PARITY_ODD #This is something you have to do to get the connection to open properly. I have no idea why.
+            serialCAN.close()
+            serialCAN.open()
+            serialCAN.close()
+            serialCAN.parity = serial.PARITY_NONE
+            serialCAN.open()
+            
+            print "port open?:"
+            print serialCAN.isOpen()
+            
+            while True:
+                
+                # To simulate asynchronous I/O, we create a random number at
+                # random intervals. Replace the following 2 lines with the real
+                # thing.
+                #time.sleep(rand.random() * 0.3)
+                ##self.message_queue.put("\n" + str(self.gcode_queue.qsize()))
+                try:
+                    msg = serialCAN.readline() #rand.random()
+                except:
+                    pass
+                    #print("no read")
+                try:
+                    msg = msg.decode('utf-8')
+                except:
+                    pass
+                    #print("decode issue")
+                    
+                if len(msg) > 0:
+                    
+                    print "heardback:"
+                    print msg
+                    
+                    if msg == "gready\r\n":
+                        #print("ready set")
+                        subReadyFlag = True
+                        if self.gcode_queue.qsize() >= 1:
+                            msg = ""
+                    
+                    if msg == "Clear Buffer\r\n":
+                        print("buffer cleared")
+                        while self.gcode_queue.empty() != True:
+                            gcode = self.gcode_queue.get_nowait()
+                        gcode = ""
+                        msg = ""
+                    
+                    self.message_queue.put(msg)
+                    
+                msg = ""
+                
+                if self.gcode_queue.empty() != True and len(gcode) is 0:
+                        gcode = self.gcode_queue.get_nowait()
+                        gcode = gcode + " "
+                if self.quick_queue.empty() != True:
+                        qcode = self.quick_queue.get_nowait()
+                        qcode = qcode.encode()
+                        #print(len(gcode))
+                        if qcode == b'Reconnect': #this tells the machine serial thread to close the serial connection
+                            qcode = ""
+                            print("Attempting to Re-establish connection")
+                            serialCAN.close() #closes the serial port
+                            sleep(.25)
+                            try:
+                                serialCAN.open()
+                            except:
+                                return -1
+                        else:
+                            try:
+                                serialCAN.write(qcode)
+                            except:
+                                print("write issue 2")
+                if len(gcode) > 0 and subReadyFlag is True:
+                    #print("gcode seen")
+                    gcode = gcode.encode()
+                    #print(len(gcode))
+                    print("Sending: ")
+                    print(gcode)
+                    try:
+                        serialCAN.write(gcode)
+                        gcode = ""  
+                    except:
+                        print("write issue")
+                    #print("end")
+                    subReadyFlag = False
+                else:
+                    pass
+
 
 class Diagnostics(FloatLayout):
     pass
