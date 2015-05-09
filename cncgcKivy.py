@@ -157,7 +157,7 @@ class SerialPort():
         
         try:
             print("connecting")
-            serialCAN = serial.Serial(self.comport, 19200, timeout = .25) #self.comport is the com port which is opened
+            serialCAN = serial.Serial(self.comport, 9600, timeout = .25) #self.comport is the com port which is opened
         except:
             print(self.comport + "is unavailable or in use")
             self.message_queue.put("\n" + self.comport + " is unavailable or in use")
@@ -179,11 +179,6 @@ class SerialPort():
             
             while True:
                 
-                # To simulate asynchronous I/O, we create a random number at
-                # random intervals. Replace the following 2 lines with the real
-                # thing.
-                #time.sleep(rand.random() * 0.3)
-                ##self.message_queue.put("\n" + str(self.gcode_queue.qsize()))
                 try:
                     msg = serialCAN.readline() #rand.random()
                 except:
