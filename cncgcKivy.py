@@ -178,8 +178,30 @@ class GroundControlApp(App):
         
         interface.add_widget(self.sm)
         
+        self.detectCOMports()
+        
         return interface
-
+    
+    '''
+    
+    Serial Connection Functions
+    
+    '''
+    def detectCOMports(self):
+        x = []
+        
+        altPorts = self.listSerialPorts()
+        for z in altPorts:
+            x.append((z,z))
+        
+        self.dataBack.comPorts = x
+        
+        self.com.delete(0,END)
+        for y in self.dataBack.comPorts:
+            self.com.add_command(label = y[1], command = lambda y=y: self.comset(str(y[0])))
+        self.com.add_command(label = 'Specify', command = self.forceCOMconnect)
+        self.com.add_command(label = 'Update List', command = self.detectCOMports)
+    
     '''
 
     Show page functions
