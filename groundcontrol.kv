@@ -208,6 +208,7 @@
             text: "Connect"
         Button:
             text: 'Reconnect'
+            on_press: root.reconnect()
         Button:
             text: 'Ports'
         Button:
@@ -320,6 +321,8 @@
                 text: '5'
                 
 <OtherFeatures>:
+    connectmenu:connectmenu
+    
     BoxLayout:
         orientation: 'vertical'
         BoxLayout:

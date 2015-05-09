@@ -22,7 +22,11 @@ Other Imports
 
 '''
 
+import threading
+import Queue
+import serial
 from time import time
+import sys
 
 '''
 
@@ -56,7 +60,60 @@ class RunMenu(FloatLayout):
     pass
 
 class ConnectMenu(FloatLayout):
-    pass
+    
+    connectmenu = ObjectProperty(None) #make ConnectMenu object accessable at this scope
+    comPorts = []
+    
+    
+    def reconnect(self):
+        print "reconnect pressed"
+    
+        '''
+    
+    Serial Connection Functions
+    
+    '''
+    
+    def listSerialPorts(self):
+        #Detects all the devices connected to the computer. Returns them as an array.
+        import glob
+        if sys.platform.startswith('win'):
+            ports = ['COM' + str(i + 1) for i in range(256)]
+
+        elif sys.platform.startswith('linux'):
+            # this is to exclude your current terminal "/dev/tty"
+            ports = glob.glob('/dev/tty[A-Za-z]*')
+
+        elif sys.platform.startswith('darwin'):
+            ports = glob.glob('/dev/tty.*')
+
+        else:
+            raise EnvironmentError('Unsupported platform')
+
+        result = []
+        for port in ports:
+            try:
+                s = serial.Serial(port)
+                s.close()
+                result.append(port)
+            except (OSError, serial.SerialException):
+                pass
+            except (ValueError):
+                print("Port find error")
+        return result
+    
+    def detectCOMports(self, *args):
+        x = []
+        
+        altPorts = self.listSerialPorts()
+        for z in altPorts:
+            x.append((z,z))
+        
+        self.comPorts = x
+        
+        print self.comPorts
+    
+    
 
 class Diagnostics(FloatLayout):
     pass
@@ -143,6 +200,7 @@ Main UI Program
 '''
 
 class GroundControlApp(App):
+    
     def build(self):
         interface = FloatLayout()
         self.dataBack = Data()
@@ -178,29 +236,9 @@ class GroundControlApp(App):
         
         interface.add_widget(self.sm)
         
-        self.detectCOMports()
+        Clock.schedule_interval(self.otherfeatures.connectmenu.detectCOMports, 2)
         
         return interface
-    
-    '''
-    
-    Serial Connection Functions
-    
-    '''
-    def detectCOMports(self):
-        x = []
-        
-        altPorts = self.listSerialPorts()
-        for z in altPorts:
-            x.append((z,z))
-        
-        self.dataBack.comPorts = x
-        
-        self.com.delete(0,END)
-        for y in self.dataBack.comPorts:
-            self.com.add_command(label = y[1], command = lambda y=y: self.comset(str(y[0])))
-        self.com.add_command(label = 'Specify', command = self.forceCOMconnect)
-        self.com.add_command(label = 'Update List', command = self.detectCOMports)
     
     '''
 
