@@ -372,8 +372,21 @@ class GroundControlApp(App):
         interface.add_widget(self.sm)
         
         Clock.schedule_interval(self.otherfeatures.connectmenu.detectCOMports, 2)
+        Clock.schedule_interval(self.runPeriodically, .1)
         
         return interface
+    
+    '''
+    
+    Update Functions
+    
+    '''
+    
+    def runPeriodically(self, *args):
+        if not self.otherfeatures.connectmenu.message_queue.empty(): #if there is new data to be read
+            message = self.otherfeatures.connectmenu.message_queue.get()
+            print "Message in main thread:"
+            print message
     
     '''
 
