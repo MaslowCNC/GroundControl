@@ -35,11 +35,23 @@ UI Elements
 '''
 
 class GcodeCanvas(FloatLayout):
-    pass
+    crossPosX = NumericProperty(25)
+    crossPosY = NumericProperty(7)
+    
+    offsetX = NumericProperty(100)
+    offsetY = NumericProperty(100)
+    
+    canvasScaleFactor = 2 #scale from mm to pixels
+    
+    
+    def setCrossPos(self, xPos, yPos):
+        self.crossPosX = xPos * self.canvasScaleFactor
+        self.crossPosY = yPos * self.canvasScaleFactor
 
 class FrontPage(Screen):
     textconsole = ObjectProperty(None)
     connectmenu = ObjectProperty(None) #make ConnectMenu object accessable at this scope
+    gcodecanvas = ObjectProperty(None) #make ConnectMenu object accessable at this scope
     
     target = [0,0,0]
     
@@ -508,23 +520,26 @@ class GroundControlApp(App):
                 self.frontpage.consoleText = newText
     
     def setPosOnScreen(self, message):
-        try:
-            startpt = message.find('(')
-            startpt = startpt + 1
-            
-            endpt = message.find(')')
-            
-            numz = message[startpt:endpt]
-            
-            valz = numz.split(",")
-            
-            xval = -1*float(valz[0])
-            yval = float(valz[1])
-            zval = float(valz[2])
         
-            self.frontpage.setPosReadout(xval,yval,zval)
-        except:
-            print "pos decode issue"
+ #       try:
+        startpt = message.find('(')
+        startpt = startpt + 1
+        
+        endpt = message.find(')')
+        
+        numz = message[startpt:endpt]
+        
+        valz = numz.split(",")
+        
+        xval = -1*float(valz[0])
+        yval = float(valz[1])
+        zval = float(valz[2])
+    
+        self.frontpage.setPosReadout(xval,yval,zval)
+        self.frontpage.gcodecanvas.setCrossPos(xval,yval)
+        
+#        except:
+#            print "Cannot Decode: " + str(message)
     
     '''
 

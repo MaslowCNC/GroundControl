@@ -10,22 +10,23 @@
 <GcodeCanvas>:
     canvas:
         Line:
-            points: 0,200,self.width,200
+            points: 0,self.offsetY,self.width,self.offsetY
             dash_offset: 5
         Line:
-            points: 300,0,300,self.height
+            points: self.offsetX,0,self.offsetX,self.height
             dash_offset: 5
         Line:
-            circle: 300, 200, 15
+            circle: self.offsetX + root.crossPosX, self.offsetY + root.crossPosY, 15
         Line:
-            points: 300 - 15, 200 - 15, 300 + 15, 200 + 15
+            points: self.offsetX + root.crossPosX - 15, self.offsetY + root.crossPosY - 15, self.offsetX + root.crossPosX + 15, self.offsetY + root.crossPosY + 15
         Line:
-            points: 300 + 15, 200 - 15, 300 - 15, 200 + 15
+            points: self.offsetX + root.crossPosX + 15, self.offsetY + root.crossPosY - 15, self.offsetX + root.crossPosX - 15, self.offsetY + root.crossPosY + 15
 
 <FrontPage>:
     textconsole:textconsole
     moveDistInput:moveDistInput
     moveSpeedInput:moveSpeedInput
+    gcodecanvas:gcodecanvas
     
     GcodeCanvas:
         id: gcodecanvas
