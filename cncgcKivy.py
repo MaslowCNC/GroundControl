@@ -41,7 +41,7 @@ class FrontPage(Screen):
     textconsole = ObjectProperty(None)
     connectmenu = ObjectProperty(None) #make ConnectMenu object accessable at this scope
     
-    target = [0,0]
+    target = [0,0,0]
     
     distMove = 0
     speedMove = 0
@@ -67,37 +67,76 @@ class FrontPage(Screen):
             pass
     
     def upLeft(self):
-        print self.target
         self.jmpsize()
         xtarget = -1*self.target[0] - float(self.stepsizeval)
         ytarget = self.target[1] + float(self.stepsizeval)
-        print xtarget
-        print self.stepsizeval
         self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
         self.target[0] = self.target[0] + float(self.stepsizeval)
         self.target[1] = self.target[1] + float(self.stepsizeval)
         
     def upRight(self):
-        print float(self.moveDist.text)
-        print float(self.moveSpeed.text)
+        self.jmpsize()
+        xtarget = -1*self.target[0] + float(self.stepsizeval)
+        ytarget = self.target[1] + float(self.stepsizeval)
+        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+        self.target[0] = self.target[0] - float(self.stepsizeval)
+        self.target[1] = self.target[1] + float(self.stepsizeval)
     def up(self):
-        pass
+        self.jmpsize()
+        target = self.target[1] + float(self.stepsizeval)
+        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Y" + str(target) + " ")
+        self.target[1] = self.target[1] + float(self.stepsizeval)
     def left(self):
-        pass
+        self.jmpsize()
+        target = -1*self.target[0] - float(self.stepsizeval)
+        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(target) + " ")
+        self.target[0] = self.target[0] + float(self.stepsizeval)
+        
     def right(self):
-        pass
+        self.jmpsize()
+        target = -1*self.target[0] + float(self.stepsizeval)
+        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(target) + " ")
+        self.target[0] = self.target[0] - float(self.stepsizeval)
+        
     def downLeft(self):
-        pass
+        self.jmpsize()
+        xtarget = -1*self.target[0] - float(self.stepsizeval)
+        ytarget = self.target[1] - float(self.stepsizeval)
+        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+        self.target[0] = self.target[0] + float(self.stepsizeval)
+        self.target[1] = self.target[1] - float(self.stepsizeval)    
     def down(self):
-        pass
+        self.jmpsize()
+        target = self.target[1] - float(self.stepsizeval)
+        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Y" + str(target) + " ")
+        self.target[1] = self.target[1] - float(self.stepsizeval)
     def downRight(self):
-        pass
+        self.jmpsize()
+        xtarget = -1*self.target[0] + float(self.stepsizeval)
+        ytarget = self.target[1] - float(self.stepsizeval)
+        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+        self.target[0] = self.target[0] - float(self.stepsizeval)
+        self.target[1] = self.target[1] - float(self.stepsizeval)
     def zUp(self):
-        pass
+        self.jmpsize()
+        target = self.target[2] + float(self.stepsizeval)
+        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Z" + str(target) + " ")
+        self.target[2] = self.target[2] + float(self.stepsizeval)
     def zDown(self):
-        pass
+        self.jmpsize()
+        target = self.target[2] - float(self.stepsizeval)
+        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Z" + str(target) + " ")
+        self.target[2] = self.target[2] - float(self.stepsizeval)
     def home(self):
-        pass
+        if self.target[2] < 0:
+            self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Z0 ")
+            self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X0 Y0 Z0 ")
+        if self.target[2] >= 0:
+            self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X0 Y0 ")
+            self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Z0 ")
+        self.target[0] = 0.0
+        self.target[1] = 0.0
+        self.target[2] = 0.0
 
 class OtherFeatures(Screen):
     pass
