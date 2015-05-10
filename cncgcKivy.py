@@ -38,14 +38,66 @@ class GcodeCanvas(FloatLayout):
     pass
 
 class FrontPage(Screen):
-    exploreplot = ObjectProperty(None)
-    exampleplot = ObjectProperty(None)
+    textconsole = ObjectProperty(None)
+    connectmenu = ObjectProperty(None) #make ConnectMenu object accessable at this scope
     
-    def testFuncOne(self):
-        print "func one"
+    target = [0,0]
+    
+    distMove = 0
+    speedMove = 0
+    
+    stepsizeval = 0
+    feedRate = 0
+    
+    consoleText = StringProperty("Connected\nG20\nG19\nG01 X23.232 Y-1.382")
+    
+    def setupQueues(self, message_queue, gcode_queue, quick_queue):
+        self.message_queue = message_queue
+        self.gcode_queue = gcode_queue
+        self.quick_queue = quick_queue
+    
+    def jmpsize(self):
+        try:
+            self.stepsizeval = float(self.moveDistInput.text)
+        except:
+            pass
+        try:
+            self.feedRate = float(self.moveSpeedInput.text)
+        except:
+            pass
+    
+    def upLeft(self):
+        print self.target
+        self.jmpsize()
+        xtarget = -1*self.target[0] - float(self.stepsizeval)
+        ytarget = self.target[1] + float(self.stepsizeval)
+        print xtarget
+        print self.stepsizeval
+        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+        self.target[0] = self.target[0] + float(self.stepsizeval)
+        self.target[1] = self.target[1] + float(self.stepsizeval)
         
-    def testFuncTwo(self):
-        print "func two"
+    def upRight(self):
+        print float(self.moveDist.text)
+        print float(self.moveSpeed.text)
+    def up(self):
+        pass
+    def left(self):
+        pass
+    def right(self):
+        pass
+    def downLeft(self):
+        pass
+    def down(self):
+        pass
+    def downRight(self):
+        pass
+    def zUp(self):
+        pass
+    def zDown(self):
+        pass
+    def home(self):
+        pass
 
 class OtherFeatures(Screen):
     pass
@@ -61,15 +113,15 @@ class RunMenu(FloatLayout):
 
 class ConnectMenu(FloatLayout):
     
-    connectmenu = ObjectProperty(None) #make ConnectMenu object accessable at this scope
     comPorts = []
     comPort = ""
     
-    message_queue = Queue.Queue()
-    gcode_queue = Queue.Queue()
-    quick_queue = Queue.Queue()
+    def setupQueues(self, message_queue, gcode_queue, quick_queue):
+        self.message_queue = message_queue
+        self.gcode_queue = gcode_queue
+        self.quick_queue = quick_queue
     
-    def reconnect(self):
+    def reconnect(self, *args):
         print "reconnect pressed"
         self.comPort = '/dev/ttyACM0'
         self.recieveMessage()
@@ -192,8 +244,8 @@ class SerialPort():
                     
                 if len(msg) > 0:
                     
-                    print "heardback:"
-                    print msg
+                    #print "heardback:"
+                    #print msg
                     
                     if msg == "gready\r\n":
                         #print("ready set")
@@ -248,7 +300,6 @@ class SerialPort():
                     subReadyFlag = False
                 else:
                     pass
-
 
 class Diagnostics(FloatLayout):
     pass
@@ -340,6 +391,11 @@ class GroundControlApp(App):
         interface = FloatLayout()
         self.dataBack = Data()
         
+        #create queues
+        message_queue = Queue.Queue()
+        gcode_queue = Queue.Queue()
+        quick_queue = Queue.Queue()
+        
         screenControls = GridLayout(rows = 1, size_hint=(1, .05), pos = (0,Window.height - 50))
         
         btn1 = Button(text='Control', size_hint=(.5, .5))
@@ -371,8 +427,13 @@ class GroundControlApp(App):
         
         interface.add_widget(self.sm)
         
+        self.otherfeatures.connectmenu.setupQueues(message_queue, gcode_queue, quick_queue)
+        self.frontpage.setupQueues(message_queue, gcode_queue, quick_queue)
+        
         Clock.schedule_interval(self.otherfeatures.connectmenu.detectCOMports, 2)
         Clock.schedule_interval(self.runPeriodically, .1)
+        
+        Clock.schedule_once(self.otherfeatures.connectmenu.reconnect, .1)
         
         return interface
     
@@ -385,8 +446,14 @@ class GroundControlApp(App):
     def runPeriodically(self, *args):
         if not self.otherfeatures.connectmenu.message_queue.empty(): #if there is new data to be read
             message = self.otherfeatures.connectmenu.message_queue.get()
-            print "Message in main thread:"
-            print message
+            if message[0:2] == "pz":
+                self.setPosOnScreen(message)
+            else:
+                newText = self.frontpage.consoleText[-30:] + message
+                self.frontpage.consoleText = newText
+    
+    def setPosOnScreen(self, message):
+        pass
     
     '''
 

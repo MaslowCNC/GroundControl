@@ -23,7 +23,10 @@
             points: 300 + 15, 200 - 15, 300 - 15, 200 + 15
 
 <FrontPage>:
-
+    textconsole:textconsole
+    moveDistInput:moveDistInput
+    moveSpeedInput:moveSpeedInput
+    
     GcodeCanvas:
         id: gcodecanvas
     GridLayout:
@@ -34,58 +37,67 @@
             size_hint: None, None
             width:75
             height: 60
-            on_press: root.testFuncOne()
+            on_press: root.upLeft()
         Button:
             text: '^'
             size_hint: None, None
             width:75
             height: 60
-            on_press: root.testFuncTwo()
+            on_press: root.up()
         Button:
             text: '>^'
             size_hint: None, None
             width:75
             height: 60
+            on_press: root.upRight()
         Button:
             text: 'UP'
             size_hint: None, None
             width:75
             height: 60
+            on_press: root.zUp()
         Button:
             text: '<'
             size_hint: None, None
             width:75
             height: 60
+            on_press: root.left()
         Button:
             text: 'HOME'
             size_hint: None, None
             width:75
             height: 60
+            on_press: root.home()
         Button:
             text: '>'
             size_hint: None, None
             width:75
             height: 60
+            on_press: root.right()
         Button:
             text: 'DOWN'
             size_hint: None, None
             width:75
             height: 60
+            on_press: root.right()
         Button:
             text: '<\/'
             size_hint: None, None
             width:75
             height: 60
+            on_press: root.right()
         Button:
             text: '\/'
             size_hint: None, None
             width:75
             height: 60
+            on_press: root.down()
         Button:
             text: '\/'
             size_hint: None, None
             width:75
             height: 60
+            on_press: root.up()
         Button:
             text: 'Stop'
             size_hint: None, None
@@ -112,16 +124,17 @@
             width:75
             height: 60
     TextInput:
-        id: moveDist
-        text: "Distance"
+        id: moveDistInput
+        text: "5"
         size_hint: None, None
         width: 225/2
         height: 40
         pos: root.width - 300, root.height-280
         multiline: False
+        on_text: 
     TextInput:
-        id: moveSpeed
-        text: "Speed"
+        id: moveSpeedInput
+        text: "200"
         size_hint: None, None
         width: 225/2
         height: 40
@@ -163,8 +176,10 @@
         size_hint: None, None
         pos: root.width - 170, root.height-430
     Label:
-        text: "Connected\nG20\nG19\nG01 X23.232 Y-1.382"
+        id: textconsole
+        text: root.consoleText
         size_hint: None, None
+        max_lines: 3
         pos: root.width - 170, root.height-500
 
 <ViewMenu>:
