@@ -46,10 +46,19 @@ class FrontPage(Screen):
     distMove = 0
     speedMove = 0
     
+    xReadoutPos = StringProperty("2.2 mm")
+    yReadoutPos = StringProperty("2.3 mm")
+    zReadoutPos = StringProperty("2.4 mm")
+    
     stepsizeval = 0
     feedRate = 0
     
     consoleText = StringProperty("Connected\nG20\nG19\nG01 X23.232 Y-1.382")
+    
+    def setPosReadout(self, xPos, yPos, zPos):
+        self.xReadoutPos = str(xPos) + " mm"
+        self.yReadoutPos = str(yPos) + " mm"
+        self.zReadoutPos = str(zPos) + " mm"
     
     def setupQueues(self, message_queue, gcode_queue, quick_queue):
         self.message_queue = message_queue
@@ -81,11 +90,13 @@ class FrontPage(Screen):
         self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
         self.target[0] = self.target[0] - float(self.stepsizeval)
         self.target[1] = self.target[1] + float(self.stepsizeval)
+
     def up(self):
         self.jmpsize()
         target = self.target[1] + float(self.stepsizeval)
         self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Y" + str(target) + " ")
         self.target[1] = self.target[1] + float(self.stepsizeval)
+
     def left(self):
         self.jmpsize()
         target = -1*self.target[0] - float(self.stepsizeval)
@@ -105,11 +116,13 @@ class FrontPage(Screen):
         self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
         self.target[0] = self.target[0] + float(self.stepsizeval)
         self.target[1] = self.target[1] - float(self.stepsizeval)    
+
     def down(self):
         self.jmpsize()
         target = self.target[1] - float(self.stepsizeval)
         self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Y" + str(target) + " ")
         self.target[1] = self.target[1] - float(self.stepsizeval)
+
     def downRight(self):
         self.jmpsize()
         xtarget = -1*self.target[0] + float(self.stepsizeval)
@@ -117,16 +130,19 @@ class FrontPage(Screen):
         self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
         self.target[0] = self.target[0] - float(self.stepsizeval)
         self.target[1] = self.target[1] - float(self.stepsizeval)
+
     def zUp(self):
         self.jmpsize()
         target = self.target[2] + float(self.stepsizeval)
         self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Z" + str(target) + " ")
         self.target[2] = self.target[2] + float(self.stepsizeval)
+
     def zDown(self):
         self.jmpsize()
         target = self.target[2] - float(self.stepsizeval)
         self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Z" + str(target) + " ")
         self.target[2] = self.target[2] - float(self.stepsizeval)
+
     def home(self):
         if self.target[2] < 0:
             self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Z0 ")
@@ -492,7 +508,23 @@ class GroundControlApp(App):
                 self.frontpage.consoleText = newText
     
     def setPosOnScreen(self, message):
-        pass
+        try:
+            startpt = message.find('(')
+            startpt = startpt + 1
+            
+            endpt = message.find(')')
+            
+            numz = message[startpt:endpt]
+            
+            valz = numz.split(",")
+            
+            xval = -1*float(valz[0])
+            yval = float(valz[1])
+            zval = float(valz[2])
+        
+            self.frontpage.setPosReadout(xval,yval,zval)
+        except:
+            print "pos decode issue"
     
     '''
 

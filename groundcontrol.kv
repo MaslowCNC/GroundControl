@@ -79,13 +79,13 @@
             size_hint: None, None
             width:75
             height: 60
-            on_press: root.right()
+            on_press: root.zDown()
         Button:
             text: '<\/'
             size_hint: None, None
             width:75
             height: 60
-            on_press: root.right()
+            on_press: root.downLeft()
         Button:
             text: '\/'
             size_hint: None, None
@@ -93,11 +93,11 @@
             height: 60
             on_press: root.down()
         Button:
-            text: '\/'
+            text: '\/>'
             size_hint: None, None
             width:75
             height: 60
-            on_press: root.up()
+            on_press: root.downRight()
         Button:
             text: 'Stop'
             size_hint: None, None
@@ -147,15 +147,15 @@
         height: 40
         pos: root.width - 75 , root.height-280
     Label:
-        text: "0.0 mm"
+        text: root.xReadoutPos
         size_hint: None, None
         pos: root.width - 220, root.height-360
     Label:
-        text: "0.0 mm"
+        text: root.yReadoutPos
         size_hint: None, None
         pos: root.width - 220, root.height-380
     Label:
-        text: "0.0 mm"
+        text: root.zReadoutPos
         size_hint: None, None
         pos: root.width - 220, root.height-400
     Label:
