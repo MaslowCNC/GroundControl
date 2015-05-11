@@ -38,8 +38,10 @@ class GcodeCanvas(FloatLayout):
     crossPosX = NumericProperty(25)
     crossPosY = NumericProperty(7)
     
-    offsetX = NumericProperty(100)
-    offsetY = NumericProperty(100)
+    offsetX = NumericProperty(300)
+    offsetY = NumericProperty(200)
+    lastTouchX = 0
+    lastTouchY = 0
     
     canvasScaleFactor = 2 #scale from mm to pixels
     
@@ -47,6 +49,20 @@ class GcodeCanvas(FloatLayout):
     def setCrossPos(self, xPos, yPos):
         self.crossPosX = xPos * self.canvasScaleFactor
         self.crossPosY = yPos * self.canvasScaleFactor
+    
+    
+    def onMotion(self, etype, callback ,motionevent):
+        if motionevent.x != 0.0:
+            if abs(motionevent.x - self.lastTouchX) > 100:
+                self.lastTouchX = motionevent.x
+            if abs(motionevent.y - self.lastTouchY) > 100:
+                self.lastTouchY = motionevent.y
+            
+            self.offsetX =  self.offsetX + (motionevent.x - self.lastTouchX)
+            self.lastTouchX = motionevent.x
+            self.offsetY =  self.offsetY + (motionevent.y - self.lastTouchY)
+            self.lastTouchY = motionevent.y
+    
 
 class FrontPage(Screen):
     textconsole = ObjectProperty(None)
@@ -501,6 +517,8 @@ class GroundControlApp(App):
         Clock.schedule_interval(self.runPeriodically, .1)
         
         Clock.schedule_once(self.otherfeatures.connectmenu.reconnect, .1)
+        
+        Window.bind(on_motion = self.frontpage.gcodecanvas.onMotion)
         
         return interface
     
