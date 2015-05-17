@@ -193,8 +193,10 @@
             text: "View"
         Button:
             text: 'Open File'
+            on_press: root.openFile()
         Button:
             text: 'Update Gcode'
+            on_press: root.reloadGcode()
         Button:
             text: 'View Gcode'
         Button:
@@ -340,6 +342,7 @@
                 
 <OtherFeatures>:
     connectmenu:connectmenu
+    viewmenu:viewmenu
     
     BoxLayout:
         orientation: 'vertical'
