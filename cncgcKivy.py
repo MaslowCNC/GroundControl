@@ -63,7 +63,6 @@ class GcodeCanvas(FloatLayout):
             self.offsetY =  self.offsetY + (motionevent.y - self.lastTouchY)
             self.lastTouchY = motionevent.y
     
-
 class FrontPage(Screen):
     textconsole = ObjectProperty(None)
     connectmenu = ObjectProperty(None) #make ConnectMenu object accessable at this scope
@@ -74,14 +73,16 @@ class FrontPage(Screen):
     distMove = 0
     speedMove = 0
     
-    xReadoutPos = StringProperty("2.2 mm")
-    yReadoutPos = StringProperty("2.3 mm")
-    zReadoutPos = StringProperty("2.4 mm")
+    xReadoutPos = StringProperty("0 mm")
+    yReadoutPos = StringProperty("0 mm")
+    zReadoutPos = StringProperty("0 mm")
     
     stepsizeval = 0
     feedRate = 0
     
-    consoleText = StringProperty("Connected\nG20\nG19\nG01 X23.232 Y-1.382")
+    spindleFlag = 0
+    
+    consoleText = StringProperty(" ")
     
     def setPosReadout(self, xPos, yPos, zPos):
         self.xReadoutPos = str(xPos) + " mm"
@@ -181,6 +182,31 @@ class FrontPage(Screen):
         self.target[0] = 0.0
         self.target[1] = 0.0
         self.target[2] = 0.0
+    
+    def stopRun(self):
+        #stoprun stops the machine's movement imediatly when it is moving.
+        stopflag = 0
+        #if self.dataBack.uploadFlag == 1: 
+        #    stopflag = 1
+        #self.dataBack.uploadFlag = 0
+        #self.dataBack.gcodeIndex = 0
+        self.quick_queue.put("STOP") 
+        with self.gcode_queue.mutex:
+            self.gcode_queue.queue.clear()
+        print("Gode Stopped")
+        
+        #self.target[0] = self.dataBack.currentpos[0]/self.dataBack.unitsScale
+        #self.target[1] = self.dataBack.currentpos[1]/self.dataBack.unitsScale
+        #self.target[2] = self.dataBack.currentpos[2]/self.dataBack.unitsScale
+    
+    def toggleSpindle(self):
+    #toggleSpindle turns on and off the dremel if a relay is attached
+        if(self.spindleFlag == 1):
+            self.gcode_queue.put("S5000 ")
+            self.spindleFlag = 0
+        elif(self.dataBack.spindleFlag == 0):
+            self.gcode_queue.put("S0 ")
+            self.spindleFlag = 1
 
 class OtherFeatures(Screen):
     pass
@@ -534,8 +560,11 @@ class GroundControlApp(App):
             if message[0:2] == "pz":
                 self.setPosOnScreen(message)
             else:
-                newText = self.frontpage.consoleText[-30:] + message
-                self.frontpage.consoleText = newText
+                try:
+                    newText = self.frontpage.consoleText[-30:] + message
+                    self.frontpage.consoleText = newText
+                except:
+                    print "text not displayed correctly"
     
     def setPosOnScreen(self, message):
         
@@ -564,10 +593,13 @@ class GroundControlApp(App):
     Show page functions
 
     '''
+    
     def showFront(self, extra):
         self.sm.current = 'FrontPage'
+    
     def showFeatures(self, extra):
         self.sm.current = 'OtherFeatures'
+    
     def showSettings(self, extra):
         self.sm.current = 'SoftwareSettings'
     
