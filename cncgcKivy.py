@@ -63,50 +63,58 @@ class GcodeCanvas(FloatLayout):
         self.crossPosY = yPos * self.canvasScaleFactor
     
     def angleGet(self, X, Y, centerX, centerY):
-        '''angleGet returns the angle from the positive x axis to a point given the center of the circle 
-    and the point. It is called when plotting circles in the drawGcode() function.'''
+        '''
+        
+        angleGet returns the angle from the positive x axis to a point given the center of the circle 
+        and the point. It is called when plotting circles in the drawGcode() function. Result is returned
+        in pi-radians. 
+    
+        '''
         
         if X == centerX: #this resolves /div0 errors
             #print("special case X")
             if Y >= centerY:
                 #print("special case one")
-                return(1.5)
+                return(0)
             if Y <= centerY:
                 #print("special case two")
-                return(.5)
+                return(1)
         if Y == centerY: #this resolves /div0 errors
             #print("special case Y")
             if X >= centerX:
                 #print("special case three")
-                return(0)
+                return(.5)
             if X <= centerX:
                 #print("special case four")
-                return(1.0)
+                return(1.5)
         if X > centerX and Y > centerY: #quadrant one
-            #print("Quadrant 1")
-            theta = math.atan((centerY - Y)/(X - centerX))
-            theta = 2 + theta/math.pi
-        if X < centerX and Y > centerY: #quadrant two
-            #print("Quadrant 2")
-            theta = math.atan((Y - centerY)/(X - centerX))
-            theta = 1 - theta/math.pi
-        if X < centerX and Y < centerY: #quadrant three
-            #print("Quadrant 3")
-            theta = math.atan((Y - centerY)/(X - centerX))
-            theta = 1 - theta/math.pi
-        if X > centerX and Y < centerY: #quadrant four
-            #print("Quadrant 4")
+            print("Quadrant 1")
             theta = math.atan((centerY - Y)/(X - centerX))
             theta = theta/math.pi
+            theta = theta + .5
+        if X < centerX and Y > centerY: #quadrant two
+            print("Quadrant 2")
+            theta = math.atan((Y - centerY)/(X - centerX))
+            theta = 1 - theta/math.pi
+            theta = theta + .5
+        if X < centerX and Y < centerY: #quadrant three
+            print("Quadrant 3")
+            theta = math.atan((Y - centerY)/(X - centerX))
+            theta = 1 - theta/math.pi
+            theta = theta + .5
+        if X > centerX and Y < centerY: #quadrant four
+            print("Quadrant 4")
+            theta = math.atan((centerY - Y)/(X - centerX))
+            theta = theta/math.pi
+            theta = theta + .5
         #print(theta)
         return(theta)   
     
     def drawG1(self,gCodeLine):
         
-        print gCodeLine
         
         xTarget = self.xPosition
-        yTarget = self.xPosition
+        yTarget = self.yPosition
         
         x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if x:
@@ -118,14 +126,59 @@ class GcodeCanvas(FloatLayout):
         
         with self.canvas:
             Color(1, 1, 1)
-            print "drawing a line from (" + str(self.xPosition) + "," + str(self.yPosition) + ") to (" + str(xTarget) + "," + str(yTarget) + ")"
-            Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1.1, group = 'inflections')
+            #print "drawing a line from (" + str(self.xPosition) + "," + str(self.yPosition) + ") to (" + str(xTarget) + "," + str(yTarget) + ")"
+            Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'inflections')
         
         self.xPosition = xTarget
         self.yPosition = yTarget
     
     def drawG2(self,gCodeLine):
         print gCodeLine
+        
+        xTarget = self.xPosition
+        yTarget = self.yPosition
+        iTarget = self.xPosition
+        jTarget = self.yPosition
+        
+        x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if x:
+            xTarget = float(x.groups()[0])*self.canvasScaleFactor
+        y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if y:
+            yTarget = float(y.groups()[0])*self.canvasScaleFactor
+        i = re.search("I(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if i:
+            iTarget = float(i.groups()[0])*self.canvasScaleFactor
+        j = re.search("J(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if j:
+            jTarget = float(j.groups()[0])*self.canvasScaleFactor
+        
+        radius = math.sqrt(iTarget**2 + jTarget**2)
+        centerX = self.xPosition + iTarget
+        centerY = self.yPosition + jTarget
+        
+        getAngle1 = self.angleGet(self.xPosition, self.yPosition, centerX, centerY)
+        getAngle2 = self.angleGet(xTarget, yTarget, centerX, centerY)
+        
+        print "get angles"
+        print getAngle1
+        print getAngle2
+        
+        startAngle = math.degrees(math.pi * getAngle1)
+        endAngle = math.degrees(math.pi * getAngle2)
+        
+        with self.canvas:
+            Color(1, 1, 1)
+            Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, startAngle, endAngle))
+            #Line(circle=(self.offsetX + centerX , self.offsetY + centerY, 2))
+            #Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 2))
+        
+        print "Angles: "
+        print startAngle
+        print endAngle
+        
+        self.xPosition = xTarget
+        self.yPosition = yTarget
     
     def drawG3(self,gCodeLine):
         print gCodeLine
@@ -166,7 +219,7 @@ class GcodeCanvas(FloatLayout):
                         
             if opstring[0:3] == 'G02' or opstring[0:3] == 'G2 ':
                 print ("g2 recognized")
-                self.drawG1(opstring)
+                self.drawG2(opstring)
                                
             if opstring[0:3] == 'G03' or opstring[0:3] == 'G3 ':
                 print("g3 recognized")
