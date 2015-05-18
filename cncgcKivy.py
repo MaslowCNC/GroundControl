@@ -8,7 +8,7 @@ from kivy.properties import OptionProperty, NumericProperty, ListProperty, \
         BooleanProperty, StringProperty, ObjectProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
-from kivy.graphics import Color, Ellipse
+from kivy.graphics import Color, Ellipse, Line
 from kivy.graphics import InstructionGroup
 from kivy.core.window import Window
 from kivy.uix.button import Button
@@ -29,6 +29,7 @@ import serial
 from time import time
 import sys
 import re
+import math
 
 '''
 
@@ -45,17 +46,163 @@ class GcodeCanvas(FloatLayout):
     lastTouchX = 0
     lastTouchY = 0
     
-    canvasScaleFactor = 2 #scale from mm to pixels
+    canvasScaleFactor = 4 #scale from mm to pixels
+    
+    xPosition = 0
+    yPosition = 0
     
     gcode = []
     
     def updateGcode(self):
         print "update gcode"
         print self.gcode
+        self.drawgcode()
     
     def setCrossPos(self, xPos, yPos):
         self.crossPosX = xPos * self.canvasScaleFactor
         self.crossPosY = yPos * self.canvasScaleFactor
+    
+    def angleGet(self, X, Y, centerX, centerY):
+        '''angleGet returns the angle from the positive x axis to a point given the center of the circle 
+    and the point. It is called when plotting circles in the drawGcode() function.'''
+        
+        if X == centerX: #this resolves /div0 errors
+            #print("special case X")
+            if Y >= centerY:
+                #print("special case one")
+                return(1.5)
+            if Y <= centerY:
+                #print("special case two")
+                return(.5)
+        if Y == centerY: #this resolves /div0 errors
+            #print("special case Y")
+            if X >= centerX:
+                #print("special case three")
+                return(0)
+            if X <= centerX:
+                #print("special case four")
+                return(1.0)
+        if X > centerX and Y > centerY: #quadrant one
+            #print("Quadrant 1")
+            theta = math.atan((centerY - Y)/(X - centerX))
+            theta = 2 + theta/math.pi
+        if X < centerX and Y > centerY: #quadrant two
+            #print("Quadrant 2")
+            theta = math.atan((Y - centerY)/(X - centerX))
+            theta = 1 - theta/math.pi
+        if X < centerX and Y < centerY: #quadrant three
+            #print("Quadrant 3")
+            theta = math.atan((Y - centerY)/(X - centerX))
+            theta = 1 - theta/math.pi
+        if X > centerX and Y < centerY: #quadrant four
+            #print("Quadrant 4")
+            theta = math.atan((centerY - Y)/(X - centerX))
+            theta = theta/math.pi
+        #print(theta)
+        return(theta)   
+    
+    def drawG1(self,gCodeLine):
+        
+        print gCodeLine
+        
+        xTarget = self.xPosition
+        yTarget = self.xPosition
+        
+        x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if x:
+            xTarget = float(x.groups()[0])*self.canvasScaleFactor
+        
+        y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if y:
+            yTarget = float(y.groups()[0])*self.canvasScaleFactor
+        
+        with self.canvas:
+            Color(1, 1, 1)
+            print "drawing a line from (" + str(self.xPosition) + "," + str(self.yPosition) + ") to (" + str(xTarget) + "," + str(yTarget) + ")"
+            Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1.1, group = 'inflections')
+        
+        self.xPosition = xTarget
+        self.yPosition = yTarget
+    
+    def drawG2(self,gCodeLine):
+        print gCodeLine
+    
+    def drawG3(self,gCodeLine):
+        print gCodeLine
+    
+    #This draws the gcode on the canvas.
+    def drawgcode(self):
+        xnow = 800.0
+        ynow = 800.0
+        znow = 0
+        cutdi = 1
+        fillcolor = "green"
+        prependString = "G00 "
+        
+        i = 0
+        opstring = ""
+        
+        
+        
+        if len(self.gcode) > 8000:
+            errorText = "The current file contains " + str(len(self.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.gcode)) + " lines simultanously may crash the\n program, only the first 8000 lines are shown here.\nThe complete program will cut if you choose to do so."
+            print errorText
+            #self.canv.create_text(xnow + 200, ynow - 50, text = errorText, fill = "red")
+        
+        
+        while i < len(self.gcode) and i < 8000: #maximum of 8,000 lines are drawn on the screen at a time
+            opstring = self.gcode[i]
+            opstring = opstring + " " #ensures that the is a space at the end of the line
+            
+            if opstring[0] == 'X' or opstring[0] == 'Y' or opstring[0] == 'Z': #this adds the gcode operator if it is omited by the program
+                opstring = prependString + opstring
+            
+            if opstring[0:3] == 'G00' or opstring[0:3] == 'G01' or opstring[0:3] == 'G02' or opstring[0:3] == 'G03':
+                prependString = opstring[0:3] + " "
+            
+            if opstring[0:3] == 'G01' or opstring[0:3] == 'G00' or opstring[0:3] == 'G1 ' or opstring[0:3] == 'G0 ':
+                print("g1 recognized")
+                self.drawG1(opstring)
+                        
+            if opstring[0:3] == 'G02' or opstring[0:3] == 'G2 ':
+                print ("g2 recognized")
+                self.drawG1(opstring)
+                               
+            if opstring[0:3] == 'G03' or opstring[0:3] == 'G3 ':
+                print("g3 recognized")
+                self.drawG1(opstring)
+            
+            if opstring[0:3] == 'G20':
+                if self.canvasScaleFactor < 15: #if the machine is currently in mm (this prevents the code from running EVERY time the gcode is redrawn
+                    #self.switchinches()
+                    pass
+                
+            if opstring[0:3] == 'G21':
+                if self.canvasScaleFactor > 15:
+                    pass
+                    #self.switchmm()
+                
+            if opstring[0:3] == 'G90':
+                self.absoluteFlag = 1
+                
+            if opstring[0:3] == 'G91':
+                self.absoluteFlag = 0
+            
+            if opstring[0] == 'D':
+                #print("diameter change recognized")
+                startpt = opstring.find('D')
+                startpt = startpt + 1
+                endpt = 0
+                j = startpt
+                while opstring[j] != ' ':
+                    j = j + 1
+                endpt = j
+                tooldi = float(opstring[startpt : endpt])
+                cutdi = scalor*20*tooldi
+                #print(tooldi)
+            
+            i = i + 1
+    
     
     def onMotion(self, etype, callback ,motionevent):
         if motionevent.x != 0.0:
@@ -192,10 +339,10 @@ class FrontPage(Screen):
     def stopRun(self):
         #stoprun stops the machine's movement imediatly when it is moving.
         stopflag = 0
-        #if self.dataBack.uploadFlag == 1: 
+        #if self.uploadFlag == 1: 
         #    stopflag = 1
-        #self.dataBack.uploadFlag = 0
-        #self.dataBack.gcodeIndex = 0
+        #self.uploadFlag = 0
+        #self.gcodeIndex = 0
         self.quick_queue.put("STOP") 
         with self.gcode_queue.mutex:
             self.gcode_queue.queue.clear()
