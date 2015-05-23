@@ -160,12 +160,12 @@ class GcodeCanvas(FloatLayout):
         startAngle = math.degrees(math.pi * getAngle1)
         endAngle = math.degrees(math.pi * getAngle2)
         
+        if startAngle > endAngle:
+            startAnlge = startAngle - 360
+        
         print "Angles"
         print startAngle
         print endAngle
-        
-        startAngle = 270
-        endAngle = 45
         
         with self.canvas:
             Color(1, 1, 1)
