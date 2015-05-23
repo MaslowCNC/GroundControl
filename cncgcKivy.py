@@ -54,8 +54,6 @@ class GcodeCanvas(FloatLayout):
     gcode = []
     
     def updateGcode(self):
-        print "update gcode"
-        print self.gcode
         self.drawgcode()
     
     def setCrossPos(self, xPos, yPos):
@@ -88,26 +86,26 @@ class GcodeCanvas(FloatLayout):
                 #print("special case four")
                 return(1.5)
         if X > centerX and Y > centerY: #quadrant one
-            print("Quadrant 1")
+            #print("Quadrant 1")
             theta = math.atan((centerY - Y)/(X - centerX))
             theta = theta/math.pi
             theta = theta + .5
         if X < centerX and Y > centerY: #quadrant two
-            print("Quadrant 2")
+            #print("Quadrant 2")
             theta = math.atan((Y - centerY)/(X - centerX))
             theta = 1 - theta/math.pi
             theta = theta + .5
         if X < centerX and Y < centerY: #quadrant three
-            print("Quadrant 3")
+            #print("Quadrant 3")
             theta = math.atan((Y - centerY)/(X - centerX))
             theta = 1 - theta/math.pi
             theta = theta + .5
         if X > centerX and Y < centerY: #quadrant four
-            print("Quadrant 4")
+            #print("Quadrant 4")
             theta = math.atan((centerY - Y)/(X - centerX))
             theta = theta/math.pi
             theta = theta + .5
-        #print(theta)
+        
         return(theta)   
     
     def drawG1(self,gCodeLine):
@@ -133,7 +131,6 @@ class GcodeCanvas(FloatLayout):
         self.yPosition = yTarget
     
     def drawG2(self,gCodeLine):
-        print gCodeLine
         
         xTarget = self.xPosition
         yTarget = self.yPosition
@@ -160,10 +157,6 @@ class GcodeCanvas(FloatLayout):
         getAngle1 = self.angleGet(self.xPosition, self.yPosition, centerX, centerY)
         getAngle2 = self.angleGet(xTarget, yTarget, centerX, centerY)
         
-        print "get angles"
-        print getAngle1
-        print getAngle2
-        
         startAngle = math.degrees(math.pi * getAngle1)
         endAngle = math.degrees(math.pi * getAngle2)
         
@@ -173,15 +166,12 @@ class GcodeCanvas(FloatLayout):
             #Line(circle=(self.offsetX + centerX , self.offsetY + centerY, 2))
             #Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 2))
         
-        print "Angles: "
-        print startAngle
-        print endAngle
         
         self.xPosition = xTarget
         self.yPosition = yTarget
     
     def drawG3(self,gCodeLine):
-        print gCodeLine
+        pass
     
     #This draws the gcode on the canvas.
     def drawgcode(self):
@@ -214,15 +204,12 @@ class GcodeCanvas(FloatLayout):
                 prependString = opstring[0:3] + " "
             
             if opstring[0:3] == 'G01' or opstring[0:3] == 'G00' or opstring[0:3] == 'G1 ' or opstring[0:3] == 'G0 ':
-                print("g1 recognized")
                 self.drawG1(opstring)
                         
             if opstring[0:3] == 'G02' or opstring[0:3] == 'G2 ':
-                print ("g2 recognized")
                 self.drawG2(opstring)
                                
             if opstring[0:3] == 'G03' or opstring[0:3] == 'G3 ':
-                print("g3 recognized")
                 self.drawG1(opstring)
             
             if opstring[0:3] == 'G20':
@@ -242,7 +229,6 @@ class GcodeCanvas(FloatLayout):
                 self.absoluteFlag = 0
             
             if opstring[0] == 'D':
-                #print("diameter change recognized")
                 startpt = opstring.find('D')
                 startpt = startpt + 1
                 endpt = 0
@@ -252,7 +238,6 @@ class GcodeCanvas(FloatLayout):
                 endpt = j
                 tooldi = float(opstring[startpt : endpt])
                 cutdi = scalor*20*tooldi
-                #print(tooldi)
             
             i = i + 1
     
@@ -463,7 +448,6 @@ class ViewMenu(GridLayout):
         fileExtension = filename[-4:]
         
         self.gcodeFilePath = filename
-        print self.gcodeFilePath
         self.reloadGcode()
         self.dismiss_popup()
     
@@ -594,7 +578,6 @@ class SerialPort():
         
     def getmessage (self):
         print("Waiting for new message")
-        print(self.comport)
         #opens a serial connection called serialCAN
         from time import sleep
         
@@ -626,20 +609,15 @@ class SerialPort():
                     msg = serialCAN.readline() #rand.random()
                 except:
                     pass
-                    #print("no read")
                 try:
                     msg = msg.decode('utf-8')
                 except:
                     pass
-                    #print("decode issue")
                     
                 if len(msg) > 0:
                     
-                    #print "heardback:"
-                    #print msg
                     
                     if msg == "gready\r\n":
-                        #print("ready set")
                         subReadyFlag = True
                         if self.gcode_queue.qsize() >= 1:
                             msg = ""
@@ -661,7 +639,6 @@ class SerialPort():
                 if self.quick_queue.empty() != True:
                         qcode = self.quick_queue.get_nowait()
                         qcode = qcode.encode()
-                        #print(len(gcode))
                         if qcode == b'Reconnect': #this tells the machine serial thread to close the serial connection
                             qcode = ""
                             print("Attempting to Re-establish connection")
@@ -677,9 +654,7 @@ class SerialPort():
                             except:
                                 print("write issue 2")
                 if len(gcode) > 0 and subReadyFlag is True:
-                    #print("gcode seen")
                     gcode = gcode.encode()
-                    #print(len(gcode))
                     print("Sending: ")
                     print(gcode)
                     try:
@@ -687,7 +662,6 @@ class SerialPort():
                         gcode = ""  
                     except:
                         print("write issue")
-                    #print("end")
                     subReadyFlag = False
                 else:
                     pass
@@ -897,8 +871,6 @@ class GroundControlApp(App):
         self.frontpage.setPosReadout(xval,yval,zval)
         self.frontpage.gcodecanvas.setCrossPos(xval,yval)
         
-#        except:
-#            print "Cannot Decode: " + str(message)
     
     '''
 
