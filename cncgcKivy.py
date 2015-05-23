@@ -171,7 +171,54 @@ class GcodeCanvas(FloatLayout):
         self.yPosition = yTarget
     
     def drawG3(self,gCodeLine):
-        pass
+        
+        xTarget = self.xPosition
+        yTarget = self.yPosition
+        iTarget = self.xPosition
+        jTarget = self.yPosition
+        
+        x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if x:
+            xTarget = float(x.groups()[0])*self.canvasScaleFactor
+        y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if y:
+            yTarget = float(y.groups()[0])*self.canvasScaleFactor
+        i = re.search("I(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if i:
+            iTarget = float(i.groups()[0])*self.canvasScaleFactor
+        j = re.search("J(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if j:
+            jTarget = float(j.groups()[0])*self.canvasScaleFactor
+        
+        radius = math.sqrt(iTarget**2 + jTarget**2)
+        centerX = self.xPosition + iTarget
+        centerY = self.yPosition + jTarget
+        
+        getAngle1 = self.angleGet(self.xPosition, self.yPosition, centerX, centerY)
+        getAngle2 = self.angleGet(xTarget, yTarget, centerX, centerY)
+        
+        startAngle = math.degrees(math.pi * getAngle1)
+        endAngle = math.degrees(math.pi * getAngle2)
+        
+        if startAngle == 0:
+            startAngle = 360
+        
+        print "Angles"
+        print startAngle
+        print endAngle
+        
+        #startAngle = 360
+        #endAngle = 270
+        
+        with self.canvas:
+            Color(1, 1, 1)
+            Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, endAngle, startAngle))
+            #Line(circle=(self.offsetX + centerX , self.offsetY + centerY, 2))
+            #Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 2))
+        
+        
+        self.xPosition = xTarget
+        self.yPosition = yTarget
     
     #This draws the gcode on the canvas.
     def drawgcode(self):
@@ -210,7 +257,7 @@ class GcodeCanvas(FloatLayout):
                 self.drawG2(opstring)
                                
             if opstring[0:3] == 'G03' or opstring[0:3] == 'G3 ':
-                self.drawG1(opstring)
+                self.drawG3(opstring)
             
             if opstring[0:3] == 'G20':
                 if self.canvasScaleFactor < 15: #if the machine is currently in mm (this prevents the code from running EVERY time the gcode is redrawn
@@ -239,8 +286,8 @@ class GcodeCanvas(FloatLayout):
                 tooldi = float(opstring[startpt : endpt])
                 cutdi = scalor*20*tooldi
             
+            
             i = i + 1
-    
     
     def onMotion(self, etype, callback ,motionevent):
         if motionevent.x != 0.0:
