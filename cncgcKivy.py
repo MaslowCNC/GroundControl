@@ -200,19 +200,19 @@ class GcodeCanvas(FloatLayout):
         startAngle = math.degrees(math.pi * getAngle1)
         endAngle = math.degrees(math.pi * getAngle2)
         
-        if startAngle == 0:
-            startAngle = 360
+        if endAngle > startAngle:
+            endAngle = endAngle - 360
         
         print "Angles"
         print startAngle
         print endAngle
         
-        #startAngle = 360
-        #endAngle = 270
+        #startAngle = 45
+        #endAngle = -220
         
         with self.canvas:
             Color(1, 1, 1)
-            Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, endAngle, startAngle))
+            Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, startAngle, endAngle))
             #Line(circle=(self.offsetX + centerX , self.offsetY + centerY, 2))
             #Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 2))
         
