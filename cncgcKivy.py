@@ -41,12 +41,12 @@ class GcodeCanvas(FloatLayout):
     crossPosX = NumericProperty(0)
     crossPosY = NumericProperty(0)
     
-    offsetX = NumericProperty(300)
-    offsetY = NumericProperty(200)
+    offsetX = NumericProperty(100)
+    offsetY = NumericProperty(100)
     lastTouchX = 0
     lastTouchY = 0
     
-    canvasScaleFactor = 4 #scale from mm to pixels
+    canvasScaleFactor = 8 #scale from mm to pixels
     
     xPosition = 0
     yPosition = 0
@@ -161,11 +161,7 @@ class GcodeCanvas(FloatLayout):
         endAngle = math.degrees(math.pi * getAngle2)
         
         if startAngle > endAngle:
-            startAnlge = startAngle - 360
-        
-        print "Angles"
-        print startAngle
-        print endAngle
+            startAngle = startAngle - 360
         
         with self.canvas:
             Color(1, 1, 1)
