@@ -1,4 +1,4 @@
-#kivy 1.0.9
+#kivy 1.9.9
 
 #<Widget>:
 #    canvas.after:
@@ -110,21 +110,25 @@
             size_hint: None, None
             width:75
             height: 60
+            disabled: True
         Button:
             text: 'Re-Zero'
             size_hint: None, None
             width:75
             height: 60
+            disabled: True
         Button:
             text: 'Scroll\nEnable'
             size_hint: None, None
             width:75
             height: 60
+            disabled: True
         Button:
             text: 'RUN'
             size_hint: None, None
             width:75
             height: 60
+            disabled: True
     TextInput:
         id: moveDistInput
         text: "5"
@@ -148,6 +152,7 @@
         width:75
         height: 40
         pos: root.width - 75 , root.height-280
+        disabled: True
     Label:
         text: root.xReadoutPos
         size_hint: None, None
@@ -199,8 +204,10 @@
             on_press: root.reloadGcode()
         Button:
             text: 'View Gcode'
+            disabled: True
         Button:
             text: 'Reset Origin'
+            disabled: True
                 
 <RunMenu>:
     GridLayout:
@@ -211,12 +218,16 @@
             text: "Run"
         Button:
             text: 'Pause'
+            disabled: True
         Button:
             text: 'Resume'
+            disabled: True
         Button:
             text: 'Zero Z'
+            disabled: True
         Button:
             text: 'Auto Zero Z'
+            disabled: True
                 
 <ConnectMenu>:
     GridLayout:
@@ -228,11 +239,14 @@
         Button:
             text: 'Reconnect'
             on_press: root.reconnect()
+            disabled: True
         Button:
             text: 'Ports'
             on_press: root.ports()
+            disabled: True
         Button:
             text: 'Update List'
+            disabled: True
                 
 <Diagnostics>:
     GridLayout:
@@ -245,16 +259,22 @@
             cols: 3
             Button:
                 text: 'Test Encoders'
+                disabled: True
             Button:
                 text: 'Test Motors'
+                disabled: True
             Button:
                 text: 'Test Both'
+                disabled: True
             Button:
                 text: 'Calibrate Motors'
+                disabled: True
             Button:
                 text: 'Calibrate Magnets'
+                disabled: True
             Button:
                 text: 'About'
+                disabled: True
 
 <ManualControl>:
     GridLayout:
@@ -269,75 +289,108 @@
                 text: "X:"
             Button:
                 text: '-5'
+                disabled: True
             Button:
                 text: '-4'
+                disabled: True
             Button:
                 text: '-3'
+                disabled: True
             Button:
                 text: '-2'
+                disabled: True
             Button:
                 text: '-1'
+                disabled: True
             Button:
                 text: '0'
+                disabled: True
             Button:
                 text: '1'
+                disabled: True
             Button:
                 text: '2'
+                disabled: True
             Button:
                 text: '3'
+                disabled: True
             Button:
                 text: '4'
+                disabled: True
             Button:
+                disabled: True
                 text: '5'
             
             Label:
                 text: "Y:"
             Button:
+                disabled: True
                 text: '-5'
             Button:
+                disabled: True
                 text: '-4'
             Button:
+                disabled: True
                 text: '-3'
             Button:
+                disabled: True
                 text: '-2'
             Button:
+                disabled: True
                 text: '-1'
             Button:
+                disabled: True
                 text: '0'
             Button:
+                disabled: True
                 text: '1'
             Button:
+                disabled: True
                 text: '2'
             Button:
+                disabled: True
                 text: '3'
             Button:
+                disabled: True
                 text: '4'
             Button:
+                disabled: True
                 text: '5'
             
             Label:
                 text: "Z:"
             Button:
+                disabled: True
                 text: '-5'
             Button:
+                disabled: True
                 text: '-4'
             Button:
+                disabled: True
                 text: '-3'
             Button:
+                disabled: True
                 text: '-2'
             Button:
+                disabled: True
                 text: '-1'
             Button:
+                disabled: True
                 text: '0'
             Button:
+                disabled: True
                 text: '1'
             Button:
+                disabled: True
                 text: '2'
             Button:
+                disabled: True
                 text: '3'
             Button:
+                disabled: True
                 text: '4'
             Button:
+                disabled: True
                 text: '5'
                 
 <OtherFeatures>:
@@ -371,6 +424,7 @@
     GridLayout:
         cols: 1
         Button:
+            disabled: True
             text: 'Settings'
 
 <LoadDialog>:

@@ -8,6 +8,7 @@ from kivy.properties import OptionProperty, NumericProperty, ListProperty, \
         BooleanProperty, StringProperty, ObjectProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.graphics import Color, Ellipse, Line
 from kivy.graphics import InstructionGroup
 from kivy.core.window import Window
@@ -297,11 +298,12 @@ class GcodeCanvas(FloatLayout):
             self.lastTouchX = motionevent.x
             self.offsetY =  self.offsetY + (motionevent.y - self.lastTouchY)
             self.lastTouchY = motionevent.y
+            #self.clearGcode()
+            #self.drawgcode()
         else:
             self.motionFlag = 1
         
-            #self.clearGcode()
-            #self.drawgcode()
+            
     
 class FrontPage(Screen):
     textconsole = ObjectProperty(None)
@@ -853,8 +855,13 @@ class GroundControlApp(App):
         btn3.bind(on_press=self.showSettings)
         screenControls.add_widget(btn3)
         
-        interface.add_widget(screenControls)
+        #interface.add_widget(screenControls)
         
+        layout = AnchorLayout(anchor_x='center', anchor_y='top')
+        #btn = Button(text='Hello World', size_hint=(.1,.05))
+        layout.add_widget(screenControls)
+        
+        interface.add_widget(layout)
         
         self.sm = ScreenManager(transition=SlideTransition(), size_hint=(1, .95), pos = (0,0), clearcolor=(1,1,1,1))
         
