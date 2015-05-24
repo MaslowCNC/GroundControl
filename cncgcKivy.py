@@ -45,6 +45,7 @@ class GcodeCanvas(FloatLayout):
     offsetY = NumericProperty(100)
     lastTouchX = 0
     lastTouchY = 0
+    motionFlag = 0
     
     canvasScaleFactor = 8 #scale from mm to pixels
     
@@ -125,7 +126,7 @@ class GcodeCanvas(FloatLayout):
         with self.canvas:
             Color(1, 1, 1)
             #print "drawing a line from (" + str(self.xPosition) + "," + str(self.yPosition) + ") to (" + str(xTarget) + "," + str(yTarget) + ")"
-            Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'inflections')
+            Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode')
         
         self.xPosition = xTarget
         self.yPosition = yTarget
@@ -165,9 +166,7 @@ class GcodeCanvas(FloatLayout):
         
         with self.canvas:
             Color(1, 1, 1)
-            Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, startAngle, endAngle))
-            #Line(circle=(self.offsetX + centerX , self.offsetY + centerY, 2))
-            #Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 2))
+            Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, startAngle, endAngle), group = 'gcode')
         
         
         self.xPosition = xTarget
@@ -208,13 +207,14 @@ class GcodeCanvas(FloatLayout):
         
         with self.canvas:
             Color(1, 1, 1)
-            Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, startAngle, endAngle))
-            #Line(circle=(self.offsetX + centerX , self.offsetY + centerY, 2))
-            #Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 2))
+            Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, startAngle, endAngle), group = 'gcode')
         
         
         self.xPosition = xTarget
         self.yPosition = yTarget
+    
+    def clearGcode(self):
+             self.canvas.remove_group('gcode')
     
     #This draws the gcode on the canvas.
     def drawgcode(self):
@@ -286,16 +286,22 @@ class GcodeCanvas(FloatLayout):
             i = i + 1
     
     def onMotion(self, etype, callback ,motionevent):
+        
         if motionevent.x != 0.0:
-            if abs(motionevent.x - self.lastTouchX) > 50:
+            if self.motionFlag:
                 self.lastTouchX = motionevent.x
-            if abs(motionevent.y - self.lastTouchY) > 50:
                 self.lastTouchY = motionevent.y
+                self.motionFlag = 0
             
             self.offsetX =  self.offsetX + (motionevent.x - self.lastTouchX)
             self.lastTouchX = motionevent.x
             self.offsetY =  self.offsetY + (motionevent.y - self.lastTouchY)
             self.lastTouchY = motionevent.y
+        else:
+            self.motionFlag = 1
+        
+            #self.clearGcode()
+            #self.drawgcode()
     
 class FrontPage(Screen):
     textconsole = ObjectProperty(None)
