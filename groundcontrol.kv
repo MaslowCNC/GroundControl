@@ -238,15 +238,15 @@
             text: "Connect"
         Button:
             text: 'Reconnect'
-            on_press: root.reconnect()
-            disabled: True
-        Button:
-            text: 'Ports'
-            on_press: root.ports()
-            disabled: True
+            on_press: root.connect()
+        Spinner:
+            id: ports
+            text: "Ports"
+            values: root.COMports
+            on_text: root.setPort(ports.text)   
         Button:
             text: 'Update List'
-            disabled: True
+            on_press: root.updatePorts()
                 
 <Diagnostics>:
     GridLayout:

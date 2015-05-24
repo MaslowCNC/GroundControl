@@ -302,9 +302,7 @@ class GcodeCanvas(FloatLayout):
             #self.drawgcode()
         else:
             self.motionFlag = 1
-        
-            
-    
+
 class FrontPage(Screen):
     textconsole = ObjectProperty(None)
     connectmenu = ObjectProperty(None) #make ConnectMenu object accessable at this scope
@@ -539,7 +537,7 @@ class RunMenu(FloatLayout):
 
 class ConnectMenu(FloatLayout):
     
-    comPorts = []
+    COMports = ListProperty(("Available Ports:", ""))
     comPort = ""
     
     def setupQueues(self, message_queue, gcode_queue, quick_queue):
@@ -547,10 +545,27 @@ class ConnectMenu(FloatLayout):
         self.gcode_queue = gcode_queue
         self.quick_queue = quick_queue
     
-    def reconnect(self, *args):
-        print "reconnect pressed"
-        self.comPort = '/dev/ttyACM0'
+    def setPort(self, port):
+        print "update ports"
+        print port
+        self.comPort = port
+    
+    def connect(self, *args):
+        print "connect pressed"
+        
         self.recieveMessage()
+    
+    def updatePorts(self):
+        
+        portsList = ["Available Ports:"]
+        
+        for port in self.listSerialPorts():
+            portsList.append(port)
+        
+        if len(portsList) == 1:
+            portsList.append(" ")
+        
+        self.COMports = portsList
     
     def ports(self):
         print "ports"
@@ -884,7 +899,7 @@ class GroundControlApp(App):
         Clock.schedule_interval(self.otherfeatures.connectmenu.detectCOMports, 2)
         Clock.schedule_interval(self.runPeriodically, .1)
         
-        Clock.schedule_once(self.otherfeatures.connectmenu.reconnect, .1)
+        Clock.schedule_once(self.otherfeatures.connectmenu.connect, .1)
         
         Window.bind(on_motion = self.frontpage.gcodecanvas.onMotion)
         
