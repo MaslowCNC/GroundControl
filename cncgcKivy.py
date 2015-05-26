@@ -54,6 +54,9 @@ class GcodeCanvas(FloatLayout):
     yPosition = 0
     
     gcode = []
+    gcodePos = 0
+    uploadFlag = 0
+    readyFlag = 0
     
     def updateGcode(self):
         self.drawgcode()
@@ -423,6 +426,29 @@ class FrontPage(Screen):
         self.target[1] = 0.0
         self.target[2] = 0.0
     
+    def reZero(self): 
+        self.target = [0,0,0]
+        
+        self.xReadoutPos = "0 mm"
+        self.yReadoutPos = "0 mm"
+        self.zReadoutPos = "0 mm"
+        
+        self.gcodecanvas.setCrossPos(0,0)
+        
+        self.gcode_queue.put("G10 X0 Y0 Z0 ")
+    
+    def startRun(self):
+        self.reZero()
+        
+        self.gcodecanvas.uploadFlag = 1
+    
+    def sendLine(self):
+        try:
+            self.gcode_queue.put(self.gcodecanvas.gcode[self.gcodecanvas.gcodePos])
+            self.gcodecanvas.gcodePos = self.gcodecanvas.gcodePos + 1
+        except:
+            print "gcode run complete"
+    
     def stopRun(self):
         #stoprun stops the machine's movement imediatly when it is moving.
         stopflag = 0
@@ -537,7 +563,7 @@ class RunMenu(FloatLayout):
 
 class ConnectMenu(FloatLayout):
     
-    COMports = ListProperty(("Available Ports:", ""))
+    COMports = ListProperty(("Available Ports:", "None"))
     comPort = ""
     
     def setupQueues(self, message_queue, gcode_queue, quick_queue):
@@ -563,7 +589,7 @@ class ConnectMenu(FloatLayout):
             portsList.append(port)
         
         if len(portsList) == 1:
-            portsList.append(" ")
+            portsList.append("None")
         
         self.COMports = portsList
     
@@ -861,7 +887,7 @@ class GroundControlApp(App):
         btn1.bind(on_press=self.showFront)
         screenControls.add_widget(btn1)
         
-        btn2 = Button(text='Other Features', size_hint=(.5, .5))
+        btn2 = Button(text='Options', size_hint=(.5, .5))
         btn2.bind(on_press=self.showFeatures)
         screenControls.add_widget(btn2)
         
@@ -916,6 +942,12 @@ class GroundControlApp(App):
             message = self.otherfeatures.connectmenu.message_queue.get()
             if message[0:2] == "pz":
                 self.setPosOnScreen(message)
+            elif message[0:6] == "gready":
+                self.frontpage.gcodecanvas.readyFlag = 1
+                if self.frontpage.gcodecanvas.uploadFlag == 1:
+                    self.frontpage.sendLine()
+                    self.frontpage.gcodecanvas.readyFlag = 0
+            
             else:
                 try:
                     newText = self.frontpage.consoleText[-30:] + message
