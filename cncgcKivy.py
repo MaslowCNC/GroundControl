@@ -923,7 +923,7 @@ class GroundControlApp(App):
         self.otherfeatures.viewmenu.setGcodeLocation(self.frontpage.gcodecanvas)
         
         Clock.schedule_interval(self.otherfeatures.connectmenu.detectCOMports, 2)
-        Clock.schedule_interval(self.runPeriodically, .1)
+        Clock.schedule_interval(self.runPeriodically, .01)
         
         Clock.schedule_once(self.otherfeatures.connectmenu.connect, .1)
         
