@@ -581,7 +581,7 @@ class ConnectMenu(FloatLayout):
         
         self.recieveMessage()
     
-    def updatePorts(self):
+    def updatePorts(self, *args):
         
         portsList = ["Available Ports:"]
         
@@ -922,7 +922,7 @@ class GroundControlApp(App):
         
         self.otherfeatures.viewmenu.setGcodeLocation(self.frontpage.gcodecanvas)
         
-        Clock.schedule_interval(self.otherfeatures.connectmenu.detectCOMports, 2)
+        Clock.schedule_interval(self.otherfeatures.connectmenu.updatePorts, .5)
         Clock.schedule_interval(self.runPeriodically, .01)
         
         Clock.schedule_once(self.otherfeatures.connectmenu.connect, .1)
