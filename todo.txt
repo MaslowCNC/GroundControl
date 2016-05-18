@@ -2,4 +2,5 @@ To Do List
 
 Split program into files based on logical function blocks
 Determine which parts need to be rewritten
+Make pan/zoom work when gcode is loaded
 Focus on hardware/build system
