@@ -1,0 +1,5 @@
+To Do List
+
+Split program into files based on logical function blocks
+Determine which parts need to be rewritten
+Focus on hardware/build system
