@@ -38,8 +38,9 @@ Internal Module Imports
 
 '''
 
-from UIElements.frontPage import FrontPage
-from UIElements.gcodeCanvas import GcodeCanvas
+from UIElements.frontPage      import   FrontPage
+from UIElements.gcodeCanvas    import   GcodeCanvas
+from UIElements.otherFeatures  import   OtherFeatures
 
 '''
 
@@ -48,9 +49,6 @@ UI Elements
 '''
 
 
-
-class OtherFeatures(Screen):
-    viewmenu = ObjectProperty(None) #make viewmenu object accessable at this scope
 
 class SoftwareSettings(Screen):
     pass
