@@ -35,8 +35,6 @@ from UIElements.runMenu          import   RunMenu
 from UIElements.connectMenu      import   ConnectMenu
 from UIElements.diagnosticsMenu  import   Diagnostics
 from UIElements.manualControls   import   ManualControl
-from UIElements.loadDialog       import   LoadDialog
-from UIElements.saveDialog       import   SaveDialog
 from DataStructures.data         import   Data
 '''
 

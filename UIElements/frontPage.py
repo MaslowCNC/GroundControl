@@ -1,6 +1,6 @@
 '''
 
-This module defines the appearence and funcition of the front page of the program.
+This module defines the appearance and function of the front page of the program.
 
 This page is used to manually move the machine, see the positional readout, and view the file being cut
 
@@ -11,8 +11,8 @@ from kivy.properties import ObjectProperty, StringProperty
 
 class FrontPage(Screen):
     textconsole = ObjectProperty(None)
-    connectmenu = ObjectProperty(None) #make ConnectMenu object accessable at this scope
-    gcodecanvas = ObjectProperty(None) #make ConnectMenu object accessable at this scope
+    connectmenu = ObjectProperty(None) #make ConnectMenu object accessible at this scope
+    gcodecanvas = ObjectProperty(None) #make ConnectMenu object accessible at this scope
     
     target = [0,0,0]
     
@@ -153,7 +153,7 @@ class FrontPage(Screen):
             print "gcode run complete"
     
     def stopRun(self):
-        #stoprun stops the machine's movement imediatly when it is moving.
+        #stoprun stops the machine's movement immediately when it is moving.
         stopflag = 0
         #if self.uploadFlag == 1: 
         #    stopflag = 1

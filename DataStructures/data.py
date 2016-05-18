@@ -5,7 +5,7 @@ class Data( ):
 
     Data holds a set of variables which are essentially global variables which hold information 
     about the gcode file opened, the machine which is connected, and the user's settings. These 
-    variables are NOT thread-safe. The queue system shuld always be used for passing information 
+    variables are NOT thread-safe. The queue system should always be used for passing information 
     between threads.
 
     '''

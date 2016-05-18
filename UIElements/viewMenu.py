@@ -19,9 +19,6 @@ class ViewMenu(GridLayout):
     
     def setGcodeLocation(self,gcodeLocation):
         self.gcodeCanvas = gcodeLocation
-        
-        #self.gcodeCanvas.gcode = ["G01 X10", "G02 X Y I J"]
-        #gcodeLocation.updateGcode()
     
     def show_load(self):
         '''
@@ -38,7 +35,7 @@ class ViewMenu(GridLayout):
     
     def load(self, path, filename):
         '''
-        from kivy.uix.popup import Popup
+        
         Load A File (Any Type)
         
         Takes in a file path (from pop-up) and handles the file appropriately for the given file-type.
