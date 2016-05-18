@@ -1,6 +1,5 @@
 To Do List
 
-Fix Gcode loading
 Purge imports
 Determine which parts need to be rewritten
 Make pan/zoom work when gcode is loaded

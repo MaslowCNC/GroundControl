@@ -3,20 +3,14 @@
 Kivy Imports
 
 '''
-from kivy.app import App
-from kivy.properties import OptionProperty, NumericProperty, ListProperty, \
-        BooleanProperty, StringProperty, ObjectProperty
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.anchorlayout import AnchorLayout
-from kivy.graphics import Color, Ellipse, Line
-from kivy.graphics import InstructionGroup
-from kivy.core.window import Window
-from kivy.uix.button import Button
-from kivy.lang import Builder
-from kivy.clock import Clock
-from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
-from kivy.uix.popup import Popup
+from kivy.app                   import App
+from kivy.uix.floatlayout       import FloatLayout
+from kivy.uix.gridlayout        import GridLayout
+from kivy.uix.anchorlayout      import AnchorLayout
+from kivy.core.window           import Window
+from kivy.uix.button            import Button
+from kivy.clock                 import Clock
+from kivy.uix.screenmanager     import ScreenManager, Screen, SlideTransition
 
 '''
 
@@ -24,13 +18,7 @@ Other Imports
 
 '''
 
-import threading
 import Queue
-import serial
-from time import time
-import sys
-import re
-import math
 
 '''
 
