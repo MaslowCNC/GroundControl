@@ -7,6 +7,10 @@ and zooming features. It was not originally written as a stand alone module whic
 
 from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import NumericProperty
+from kivy.graphics import Color, Ellipse, Line
+
+import re
+import math
 
 class GcodeCanvas(FloatLayout):
     crossPosX = NumericProperty(0)
