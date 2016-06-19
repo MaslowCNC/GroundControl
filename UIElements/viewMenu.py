@@ -1,6 +1,7 @@
 from   kivy.uix.gridlayout         import   GridLayout
-from   UIElements.loadDialog       import   LoadDialog
-from   kivy.uix.popup              import   Popup
+from   UIElements.loadDialog           import   LoadDialog
+from   UIElements.scrollableTextPopup  import   ScrollableTextPopup
+from   kivy.uix.popup                  import   Popup
 import re
 
 
@@ -13,6 +14,8 @@ class ViewMenu(GridLayout):
         '''
         
         Open A File
+        
+        Why does this function exist if its just a nicer name for show_load() ?
         
         '''
         self.show_load()
@@ -81,6 +84,29 @@ class ViewMenu(GridLayout):
                 print "Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use File > Open G-code"
             self.gcodeFilePath = ""
         self.gcodeCanvas.updateGcode()
+    
+    def show_gcode(self):
+        '''
+        
+        Display the currently loaded gcode in a popup
+        
+        It would be cool if you could run the program stepping through using this popup
+        
+        '''
+        
+        popupText = ""
+        if len(self.gcodeCanvas.gcode) is 0:
+            popupText =  "No gcode to display"
+        else:
+            for gcodeLine in self.gcodeCanvas.gcode:
+                popupText = popupText + gcodeLine + "\n"
+        
+        print popupText
+                
+        content = ScrollableTextPopup(cancel = self.dismiss_popup, text = popupText)
+        self._popup = Popup(title="Gcode", content=content,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
     
     def dismiss_popup(self):
         '''

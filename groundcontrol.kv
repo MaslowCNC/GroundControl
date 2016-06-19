@@ -1,6 +1,7 @@
 #kivy 1.9.9
 
 #<Widget>:
+#This can be used to create boxes around each widget to clarify positioning issues. It is only for debug
 #    canvas.after:
 #        Line:
 #            rectangle: self.x+1,self.y+1,self.width-1,self.height-1
@@ -208,7 +209,8 @@
             on_press: root.reloadGcode()
         Button:
             text: 'View Gcode'
-            disabled: True
+            disabled: False
+            on_press: root.show_gcode()
         Button:
             text: 'Reset Origin'
             disabled: True
@@ -448,6 +450,23 @@
                 on_release: root.load(filechooser.path, filechooser.selection)
             Button:
                 text: "Cancel"
+                on_release: root.cancel()
+
+<ScrollableTextPopup>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        
+        Label:
+            id: text
+            text: root.text
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Close"
                 on_release: root.cancel()
 
 <SaveDialog>:
