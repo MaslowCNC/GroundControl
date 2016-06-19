@@ -1,6 +1,6 @@
-from kivy.uix.gridlayout         import   GridLayout
-from UIElements.loadDialog       import   LoadDialog
-from kivy.uix.popup              import   Popup
+from   kivy.uix.gridlayout         import   GridLayout
+from   UIElements.loadDialog       import   LoadDialog
+from   kivy.uix.popup              import   Popup
 import re
 
 
@@ -18,6 +18,11 @@ class ViewMenu(GridLayout):
         self.show_load()
     
     def setGcodeLocation(self,gcodeLocation):
+        '''
+        
+        Define the default location where gcode files are kept
+        
+        '''
         self.gcodeCanvas = gcodeLocation
     
     def show_load(self):
@@ -50,7 +55,11 @@ class ViewMenu(GridLayout):
         self.dismiss_popup()
     
     def reloadGcode(self):
-        #This reloads the gcode from the hard drive in case it has been updated.
+        '''
+        
+        This reloads the gcode from the hard drive in case it has been updated. 
+        
+        '''
         try:
             filename = self.gcodeFilePath
             filterfile = open(filename, 'r')

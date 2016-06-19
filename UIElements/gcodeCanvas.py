@@ -1,7 +1,7 @@
 '''
 
-This module provides a UI element which can display gcode on a Kivy canvas element. It also provides paning 
-and zooming features. It was not originally written as a stand alone module which might create some wierdness.
+This module provides a UI element which can display gcode on a Kivy canvas element. It also provides panning 
+and zooming features. It was not originally written as a stand alone module which might create some weirdness.
 
 '''
 
@@ -218,7 +218,7 @@ class GcodeCanvas(FloatLayout):
             opstring = self.gcode[i]
             opstring = opstring + " " #ensures that the is a space at the end of the line
             
-            if opstring[0] == 'X' or opstring[0] == 'Y' or opstring[0] == 'Z': #this adds the gcode operator if it is omited by the program
+            if opstring[0] == 'X' or opstring[0] == 'Y' or opstring[0] == 'Z': #this adds the gcode operator if it is omitted by the program
                 opstring = prependString + opstring
             
             if opstring[0:3] == 'G00' or opstring[0:3] == 'G01' or opstring[0:3] == 'G02' or opstring[0:3] == 'G03':
