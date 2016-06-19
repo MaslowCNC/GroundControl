@@ -452,15 +452,20 @@
                 text: "Cancel"
                 on_release: root.cancel()
 
+
+<ScrollableStencilLabel>
+    Label:
+        id: text
+        text: root.text
+
 <ScrollableTextPopup>:
     BoxLayout:
         size: root.size
         pos: root.pos
         orientation: "vertical"
         
-        Label:
+        ScrollableStencilLabel:
             id: text
-            text: root.text
 
         BoxLayout:
             size_hint_y: None
