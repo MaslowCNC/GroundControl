@@ -1,4 +1,4 @@
-from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.scrollview         import ScrollView
 
-class ScrollLabel(FloatLayout):
+class ScrollLabel(ScrollView):
     pass
