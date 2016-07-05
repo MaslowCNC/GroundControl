@@ -93,6 +93,16 @@ class GroundControlApp(App):
         
         self.otherfeatures.viewmenu.setGcodeLocation(self.frontpage.gcodecanvas)
         
+        '''
+        Initializations
+        '''
+        self.frontpage.gcodecanvas.initialzie()
+        
+        
+        '''
+        Scheduling
+        '''
+        
         Clock.schedule_interval(self.otherfeatures.connectmenu.updatePorts, .5)
         Clock.schedule_interval(self.runPeriodically, .01)
         

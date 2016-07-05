@@ -17,9 +17,20 @@ class GcodeCanvas(FloatLayout):
     
     scatterObject = ObjectProperty(None)
     
-    def updateGcode(self):
-        print "this ran"
+    def initialzie(self):
+        print "gcode canvas initialized"
         with self.scatterObject.canvas:
             Color(1, 1, 1)
-            Line(points = (0, 0, 100, 100))
+            
+            #create the position indicator
+            indicatorSize = 20
+            Line(points = (-indicatorSize, -indicatorSize, indicatorSize, indicatorSize))
+            Line(points = (indicatorSize, -indicatorSize, -indicatorSize, indicatorSize))
+            Line(circle=(0, 0, indicatorSize))
+            
+            #create the axis lines
+            crossLineLength = 10000
+            Line(points = (-crossLineLength,0,crossLineLength,0), dash_offset = 5)
+            Line(points = (0, -crossLineLength,0,crossLineLength), dash_offset = 5)
+            
      
