@@ -69,10 +69,8 @@ class GroundControlApp(App):
         btn3.bind(on_press=self.showSettings)
         screenControls.add_widget(btn3)
         
-        #interface.add_widget(screenControls)
-        
         layout = AnchorLayout(anchor_x='center', anchor_y='top')
-        #btn = Button(text='Hello World', size_hint=(.1,.05))
+        
         layout.add_widget(screenControls)
         
         interface.add_widget(layout)

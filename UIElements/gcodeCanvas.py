@@ -17,8 +17,9 @@ class GcodeCanvas(FloatLayout):
     
     scatterObject = ObjectProperty(None)
     
-    def drawgcode(self):
-        with scatterObject.canvas:
+    def updateGcode(self):
+        print "this ran"
+        with self.scatterObject.canvas:
             Color(1, 1, 1)
             Line(points = (0, 0, 100, 100))
      
