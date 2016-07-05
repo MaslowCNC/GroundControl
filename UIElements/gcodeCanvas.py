@@ -16,12 +16,13 @@ import math
 class GcodeCanvas(FloatLayout):
     
     scatterObject = ObjectProperty(None)
+    scatterInstance = ObjectProperty(None)
     
     crossPosX = NumericProperty(0)
     crossPosY = NumericProperty(0)
     
-    offsetX = NumericProperty(100)
-    offsetY = NumericProperty(100)
+    offsetX = NumericProperty(0)
+    offsetY = NumericProperty(0)
     lastTouchX = 0
     lastTouchY = 0
     motionFlag = 0
@@ -51,6 +52,10 @@ class GcodeCanvas(FloatLayout):
             crossLineLength = 10000
             Line(points = (-crossLineLength,0,crossLineLength,0), dash_offset = 5)
             Line(points = (0, -crossLineLength,0,crossLineLength), dash_offset = 5)
+            
+            from kivy.graphics.transformation import Matrix
+            mat = Matrix().translate(100, 100, 0)
+            self.scatterInstance.apply_transform(mat)
      
     def updateGcode(self):
         self.drawgcode()
