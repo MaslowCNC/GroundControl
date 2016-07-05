@@ -1,4 +1,4 @@
-from   kivy.uix.gridlayout         import   GridLayout
+from   kivy.uix.gridlayout             import   GridLayout
 from   UIElements.loadDialog           import   LoadDialog
 from   UIElements.scrollableTextPopup  import   ScrollableTextPopup
 from   kivy.uix.popup                  import   Popup
@@ -100,8 +100,6 @@ class ViewMenu(GridLayout):
         else:
             for gcodeLine in self.gcodeCanvas.gcode:
                 popupText = popupText + gcodeLine + "\n"
-        
-        print popupText
                 
         content = ScrollableTextPopup(cancel = self.dismiss_popup, text = popupText)
         self._popup = Popup(title="Gcode", content=content,

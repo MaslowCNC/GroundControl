@@ -234,6 +234,26 @@
         Button:
             text: 'Auto Zero Z'
             disabled: True
+
+<ScrollLabel>:
+    GridLayout:
+        cols: 1
+        size: root.size
+        pos: root.pos
+        Label:
+            text: "Run"
+        Button:
+            text: 'Pause'
+            disabled: True
+        Button:
+            text: 'Resume'
+            disabled: True
+        Button:
+            text: 'Zero Z'
+            disabled: True
+        Button:
+            text: 'Auto Zero Z'
+            disabled: True
                 
 <ConnectMenu>:
     GridLayout:
@@ -458,7 +478,7 @@
         pos: root.pos
         orientation: "vertical"
         
-        Label:
+        ScrollLabel:
             id: text
 			max_lines: 10
             text: root.text

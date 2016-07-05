@@ -1,6 +1,7 @@
-from kivy.uix.floatlayout    import    FloatLayout
-from kivy.properties         import    ObjectProperty
-from kivy.properties         import    StringProperty
+from kivy.uix.floatlayout             import    FloatLayout
+from kivy.properties                  import    ObjectProperty
+from kivy.properties                  import    StringProperty
+from UIElements.stencilScrollLabel    import    StencilScrollLabel
 
 
 class ScrollableTextPopup(FloatLayout):
