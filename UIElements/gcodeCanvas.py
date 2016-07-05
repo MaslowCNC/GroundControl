@@ -121,7 +121,7 @@ class GcodeCanvas(FloatLayout):
         if y:
             yTarget = float(y.groups()[0])*self.canvasScaleFactor
         
-        with self.canvas:
+        with self.scatterObject.canvas:
             Color(1, 1, 1)
             #print "drawing a line from (" + str(self.xPosition) + "," + str(self.yPosition) + ") to (" + str(xTarget) + "," + str(yTarget) + ")"
             Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode')
@@ -162,7 +162,7 @@ class GcodeCanvas(FloatLayout):
         if startAngle > endAngle:
             startAngle = startAngle - 360
         
-        with self.canvas:
+        with self.scatterObject.canvas:
             Color(1, 1, 1)
             Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, startAngle, endAngle), group = 'gcode')
         
@@ -203,7 +203,7 @@ class GcodeCanvas(FloatLayout):
         if endAngle > startAngle: #handles case where start and end are across 0 degrees
             endAngle = endAngle - 360
         
-        with self.canvas:
+        with self.scatterObject.canvas:
             Color(1, 1, 1)
             Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, startAngle, endAngle), group = 'gcode')
         
