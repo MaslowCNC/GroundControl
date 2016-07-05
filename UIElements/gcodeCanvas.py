@@ -192,7 +192,7 @@ class GcodeCanvas(FloatLayout):
         self.yPosition = yTarget
     
     def clearGcode(self):
-             self.canvas.remove_group('gcode')
+        self.canvas.remove_group('gcode')
     
     #This draws the gcode on the canvas.
     def drawgcode(self):
@@ -265,7 +265,10 @@ class GcodeCanvas(FloatLayout):
     
     def onMotion(self, etype, callback ,motionevent):
         
+        print "onmotion"
+        
         if motionevent.x != 0.0:
+            print "first"
             if self.motionFlag:
                 self.lastTouchX = motionevent.x
                 self.lastTouchY = motionevent.y
@@ -278,4 +281,5 @@ class GcodeCanvas(FloatLayout):
             #self.clearGcode()
             #self.drawgcode()
         else:
+            print "second"
             self.motionFlag = 1
