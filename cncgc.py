@@ -100,8 +100,6 @@ class GroundControlApp(App):
         
         Clock.schedule_once(self.otherfeatures.connectmenu.connect, .1)
         
-        Window.bind(on_motion = self.frontpage.gcodecanvas.onMotion)
-        
         return interface
     
     '''

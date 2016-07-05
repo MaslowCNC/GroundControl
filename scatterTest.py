@@ -15,11 +15,8 @@ class TutorialApp(App):
         scatterObject            = Scatter()
         ScatterableObject        = Label(text='Hello world', font_size=14)
         with ScatterableObject.canvas:
-            # Add a red color
             Color(1, 1, 1)
-
-            # Add a rectangle
-            Rectangle(pos=(10, 10), size=(500, 500))
+            Line(points = (0, 0, 100, 100))
 
         floatLayoutInstance.add_widget(scatterObject)
         scatterObject.add_widget(ScatterableObject)

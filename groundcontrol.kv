@@ -9,20 +9,12 @@
 #            dash_length: 3
 
 <GcodeCanvas>:
-    canvas:
-        Line:
-            points: 0,self.offsetY,self.width,self.offsetY
-            dash_offset: 5
-        Line:
-            points: self.offsetX,0,self.offsetX,self.height
-            dash_offset: 5
-        Line:
-            circle: self.offsetX + root.crossPosX, self.offsetY + root.crossPosY, 15
-        Line:
-            points: self.offsetX + root.crossPosX - 15, self.offsetY + root.crossPosY - 15, self.offsetX + root.crossPosX + 15, self.offsetY + root.crossPosY + 15
-        Line:
-            points: self.offsetX + root.crossPosX + 15, self.offsetY + root.crossPosY - 15, self.offsetX + root.crossPosX - 15, self.offsetY + root.crossPosY + 15
-
+    scatterObject:scatterObject
+    Scatter:
+        Label: 
+            id: scatterObject
+            text: "filename.nc"
+    
 <FrontPage>:
     textconsole:textconsole
     moveDistInput:moveDistInput
