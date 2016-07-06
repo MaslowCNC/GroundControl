@@ -8,13 +8,24 @@
 #            dash_offset: 5
 #            dash_length: 3
 
+<ScreenControls>
+    GridLayout:
+        rows: 1
+        
+        Button:
+            text: "one"
+            on_press: self.parent.showFeatures
+        Button: 
+            text: "two"
+        Button:
+            text: "three"
+
 <GcodeCanvas>:
     scatterObject:scatterObject
     scatterInstance:scatterInstance
     Scatter:
         do_rotation: False
         id: scatterInstance
-        
         Label: 
             id: scatterObject
             text: ""

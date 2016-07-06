@@ -27,6 +27,7 @@ Internal Module Imports
 '''
 
 from UIElements.frontPage        import   FrontPage
+from UIElements.screenControls   import   ScreenControls
 from UIElements.gcodeCanvas      import   GcodeCanvas
 from UIElements.otherFeatures    import   OtherFeatures
 from UIElements.softwareSettings import   SoftwareSettings
@@ -46,34 +47,15 @@ Main UI Program
 class GroundControlApp(App):
     
     def build(self):
-        interface = FloatLayout()
-        self.dataBack = Data()
+        interface       =  FloatLayout()
+        self.dataBack   =  Data()
         
         #create queues
-        message_queue = Queue.Queue()
-        gcode_queue = Queue.Queue()
-        quick_queue = Queue.Queue()
-        
-        screenControls = GridLayout(rows = 1, size_hint=(1, .05), pos = (0,Window.height - 50))
-        
-        btn1 = Button(text='Control', size_hint=(.5, .5))
-        btn1.bind(on_press=self.showFront)
-        screenControls.add_widget(btn1)
-        
-        btn2 = Button(text='Options', size_hint=(.5, .5))
-        btn2.bind(on_press=self.showFeatures)
-        screenControls.add_widget(btn2)
+        message_queue   =  Queue.Queue()
+        gcode_queue     =  Queue.Queue()
+        quick_queue     =  Queue.Queue()
         
         
-        btn3 = Button(text='Settings', size_hint=(.5, .5))
-        btn3.bind(on_press=self.showSettings)
-        screenControls.add_widget(btn3)
-        
-        layout = AnchorLayout(anchor_x='center', anchor_y='top')
-        
-        layout.add_widget(screenControls)
-        
-        interface.add_widget(layout)
         
         self.sm = ScreenManager(transition=SlideTransition(), size_hint=(1, .95), pos = (0,0), clearcolor=(1,1,1,1))
         
@@ -85,6 +67,10 @@ class GroundControlApp(App):
         
         self.softwaresettings = SoftwareSettings(name='SoftwareSettings')
         self.sm.add_widget(self.softwaresettings)
+        
+        
+        self.screenControls = ScreenControls()
+        interface.add_widget(self.screenControls)
         
         interface.add_widget(self.sm)
         
