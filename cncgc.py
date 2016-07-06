@@ -97,6 +97,7 @@ class GroundControlApp(App):
         Initializations
         '''
         self.frontpage.gcodecanvas.initialzie()
+        self.showFeatures(6)
         
         
         '''
