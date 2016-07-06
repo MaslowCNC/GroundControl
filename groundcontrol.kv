@@ -236,7 +236,7 @@
         size_hint_y: None
         height: self.texture_size[1]
         text_size: self.width, None
-        text: root.text
+        text: "test text"*1000
 
 <ConnectMenu>:
     GridLayout:
@@ -461,10 +461,7 @@
         pos: root.pos
         orientation: "vertical"
         
-        ScrollLabel:
-            id: text
-			max_lines: 10
-            text: root.text
+        ScrollableLabel:
 
         BoxLayout:
             size_hint_y: None
