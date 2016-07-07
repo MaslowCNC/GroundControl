@@ -33,7 +33,6 @@ from UIElements.otherFeatures    import   OtherFeatures
 from UIElements.softwareSettings import   SoftwareSettings
 from UIElements.viewMenu         import   ViewMenu
 from UIElements.runMenu          import   RunMenu
-from UIElements.scrollLabel      import   ScrollLabel
 from UIElements.connectMenu      import   ConnectMenu
 from UIElements.diagnosticsMenu  import   Diagnostics
 from UIElements.manualControls   import   ManualControl

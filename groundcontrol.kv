@@ -242,10 +242,13 @@
             text: 'Auto Zero Z'
             disabled: True
 
-<ScrollLabel>:
-	Label:
-		text: "Test Text\n\nis now too big\n\n\n\nmore text\n\nklsjjjjjjjjkjkjjjjjjjjjjjj\n\nbafkjs\n\n\n\n\nlksjlkjlksjlkj\nlkjlkjslfk\n\n\n\n\nand more text\n\n\n\n\n and more text final"
-			
+<ScrollableLabel>:
+    Label:
+        size_hint_y: None
+        height: self.texture_size[1]
+        text_size: self.width, None
+        text: root.text
+
 <ConnectMenu>:
     GridLayout:
         cols: 1
@@ -469,11 +472,9 @@
         pos: root.pos
         orientation: "vertical"
         
-        ScrollLabel:
-            id: text
-			max_lines: 10
+        ScrollableLabel:
             text: root.text
-
+            
         BoxLayout:
             size_hint_y: None
             height: 30
