@@ -57,6 +57,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitializationFunctions):
             from kivy.graphics.transformation import Matrix
             mat = Matrix().translate(100, 100, 0)
             self.scatterInstance.apply_transform(mat)
+            
+            print str(self.data)
+            self.data.bind(gcode = self.test_func)
+            
+    def test_func(self):
+        print "gcode change detected"
      
     def updateGcode(self):
         self.drawgcode()
