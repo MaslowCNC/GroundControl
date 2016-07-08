@@ -1,13 +1,15 @@
-from   kivy.uix.gridlayout             import   GridLayout
-from   UIElements.loadDialog           import   LoadDialog
-from   UIElements.scrollableTextPopup  import   ScrollableTextPopup
-from   kivy.uix.popup                  import   Popup
+from   kivy.uix.gridlayout                            import   GridLayout
+from   UIElements.loadDialog                          import   LoadDialog
+from   UIElements.scrollableTextPopup                 import   ScrollableTextPopup
+from   kivy.uix.popup                                 import   Popup
 import re
+from DataStructures.makesmithInitializationFunctions  import MakesmithInitializationFunctions
 
 
 
 
-class ViewMenu(GridLayout):
+
+class ViewMenu(GridLayout, MakesmithInitializationFunctions):
     gcodeFilePath = ""
     
     def openFile(self):

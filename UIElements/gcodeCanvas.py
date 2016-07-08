@@ -5,15 +5,16 @@ and zooming features. It was not originally written as a stand alone module whic
 
 '''
 
-from kivy.uix.floatlayout     import FloatLayout
-from kivy.properties          import NumericProperty, ObjectProperty
-from kivy.graphics            import Color, Ellipse, Line
-from kivy.uix.scatter         import Scatter
+from kivy.uix.floatlayout                             import FloatLayout
+from kivy.properties                                  import NumericProperty, ObjectProperty
+from kivy.graphics                                    import Color, Ellipse, Line
+from kivy.uix.scatter                                 import Scatter
+from DataStructures.makesmithInitializationFunctions  import MakesmithInitializationFunctions
 
 import re
 import math
 
-class GcodeCanvas(FloatLayout):
+class GcodeCanvas(FloatLayout, MakesmithInitializationFunctions):
     
     scatterObject = ObjectProperty(None)
     scatterInstance = ObjectProperty(None)

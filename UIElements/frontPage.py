@@ -6,10 +6,11 @@ This page is used to manually move the machine, see the positional readout, and 
 
 '''
 
-from kivy.uix.screenmanager import Screen
-from kivy.properties import ObjectProperty, StringProperty
+from kivy.uix.screenmanager                           import Screen
+from kivy.properties                                  import ObjectProperty, StringProperty
+from DataStructures.makesmithInitializationFunctions  import MakesmithInitializationFunctions
 
-class FrontPage(Screen):
+class FrontPage(Screen, MakesmithInitializationFunctions):
     textconsole = ObjectProperty(None)
     connectmenu = ObjectProperty(None) #make ConnectMenu object accessible at this scope
     gcodecanvas = ObjectProperty(None) #make ConnectMenu object accessible at this scope
@@ -35,10 +36,10 @@ class FrontPage(Screen):
         self.yReadoutPos = str(yPos) + " mm"
         self.zReadoutPos = str(zPos) + " mm"
     
-    def setupQueues(self, message_queue, gcode_queue, quick_queue):
-        self.message_queue = message_queue
-        self.gcode_queue = gcode_queue
-        self.quick_queue = quick_queue
+    def setUpData(self, data):
+        self.data = data
+        print "Initialized: " + str(self)
+        self.gcodecanvas.setUpData(data)
     
     def jmpsize(self):
         try:
