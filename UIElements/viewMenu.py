@@ -72,7 +72,7 @@ class ViewMenu(GridLayout, MakesmithInitializationFunctions):
         filtersparsed = [x.replace('F ','F') for x in filtersparsed]
 
         self.data.gcode = filtersparsed
-        print self.data.gcode
+        
         filterfile.close() #closes the filter save file
         #except:
         #    if filename is not "":

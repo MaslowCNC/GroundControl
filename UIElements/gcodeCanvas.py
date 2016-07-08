@@ -59,12 +59,13 @@ class GcodeCanvas(FloatLayout, MakesmithInitializationFunctions):
             self.scatterInstance.apply_transform(mat)
             
             print str(self.data)
-            self.data.bind(gcode = self.test_func)
+            self.data.bind(gcode = self.updateGcode)
             
-    def test_func(self):
+    def test_func(self, *args):
         print "gcode change detected"
+        print self.data.gcode
      
-    def updateGcode(self):
+    def updateGcode(self, *args):
         self.drawgcode()
     
     def setCrossPos(self, xPos, yPos):
@@ -240,14 +241,14 @@ class GcodeCanvas(FloatLayout, MakesmithInitializationFunctions):
         
         
         
-        if len(self.gcode) > 8000:
-            errorText = "The current file contains " + str(len(self.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.gcode)) + " lines simultanously may crash the\n program, only the first 8000 lines are shown here.\nThe complete program will cut if you choose to do so."
+        if len(self.data.gcode) > 8000:
+            errorText = "The current file contains " + str(len(self.data.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultanously may crash the\n program, only the first 8000 lines are shown here.\nThe complete program will cut if you choose to do so."
             print errorText
             #self.canv.create_text(xnow + 200, ynow - 50, text = errorText, fill = "red")
         
         
-        while i < len(self.gcode) and i < 8000: #maximum of 8,000 lines are drawn on the screen at a time
-            opstring = self.gcode[i]
+        while i < len(self.data.gcode) and i < 8000: #maximum of 8,000 lines are drawn on the screen at a time
+            opstring = self.data.gcode[i]
             opstring = opstring + " " #ensures that the is a space at the end of the line
             
             if opstring[0] == 'X' or opstring[0] == 'Y' or opstring[0] == 'Z': #this adds the gcode operator if it is omitted by the program
