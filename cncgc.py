@@ -4,13 +4,12 @@ Kivy Imports
 
 '''
 from kivy.app                   import App
-from kivy.uix.floatlayout       import FloatLayout
 from kivy.uix.gridlayout        import GridLayout
+from kivy.uix.floatlayout       import FloatLayout
 from kivy.uix.anchorlayout      import AnchorLayout
 from kivy.core.window           import Window
 from kivy.uix.button            import Button
 from kivy.clock                 import Clock
-from kivy.uix.screenmanager     import ScreenManager, Screen, SlideTransition
 
 '''
 
@@ -55,32 +54,17 @@ class GroundControlApp(App):
         quick_queue     =  Queue.Queue()
         
         
-        
-        self.sm = ScreenManager(transition=SlideTransition(), size_hint=(1, .95), pos = (0,0), clearcolor=(1,1,1,1))
-        
         self.frontpage = FrontPage(name='FrontPage')
-        self.sm.add_widget(self.frontpage)
-        
-        self.otherfeatures = OtherFeatures(name='OtherFeatures')
-        self.sm.add_widget(self.otherfeatures)
-        
-        self.softwaresettings = SoftwareSettings(name='SoftwareSettings')
-        self.sm.add_widget(self.softwaresettings)
-        
+        interface.add_widget(self.frontpage)
         
         self.screenControls = ScreenControls()
         interface.add_widget(self.screenControls)
-        
-        interface.add_widget(self.sm)
         
         '''
         Initializations
         '''
         
-        self.otherfeatures.connectmenu.setupQueues(message_queue, gcode_queue, quick_queue)
         self.frontpage.setupQueues(message_queue, gcode_queue, quick_queue)
-        
-        self.otherfeatures.viewmenu.setGcodeLocation(self.frontpage.gcodecanvas)
         
         self.frontpage.gcodecanvas.initialzie()
         
@@ -89,10 +73,7 @@ class GroundControlApp(App):
         Scheduling
         '''
         
-        Clock.schedule_interval(self.otherfeatures.connectmenu.updatePorts, .5)
         Clock.schedule_interval(self.runPeriodically, .01)
-        
-        Clock.schedule_once(self.otherfeatures.connectmenu.connect, .1)
         
         return interface
     
@@ -103,6 +84,9 @@ class GroundControlApp(App):
     '''
     
     def runPeriodically(self, *args):
+        pass
+        '''
+        this block should be handled within the appropriate widget
         if not self.otherfeatures.connectmenu.message_queue.empty(): #if there is new data to be read
             message = self.otherfeatures.connectmenu.message_queue.get()
             if message[0:2] == "pz":
@@ -119,6 +103,7 @@ class GroundControlApp(App):
                     self.frontpage.consoleText = newText
                 except:
                     print "text not displayed correctly"
+        '''
     
     def setPosOnScreen(self, message):
         
@@ -139,21 +124,6 @@ class GroundControlApp(App):
         self.frontpage.setPosReadout(xval,yval,zval)
         self.frontpage.gcodecanvas.setCrossPos(xval,yval)
         
-    
-    '''
-
-    Show page functions
-
-    '''
-    
-    def showFront(self, extra):
-        self.sm.current = 'FrontPage'
-    
-    def showFeatures(self, extra):
-        self.sm.current = 'OtherFeatures'
-    
-    def showSettings(self, extra):
-        self.sm.current = 'SoftwareSettings'
     
 if __name__ == '__main__':
     GroundControlApp().run()
