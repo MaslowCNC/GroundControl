@@ -1,4 +1,5 @@
-from time import time
+from time                                             import time
+from kivy.properties                                  import ObjectProperty
 
 class Data( ):
     '''
@@ -11,7 +12,7 @@ class Data( ):
     '''
     def __init__(self):
         #Gcodes contains all of the lines of gcode in the opened file
-        self.gcode = []
+        self.gcode = ObjectProperty([])
         self.version = '0.59'
         #all of the available COM ports
         self.comPorts = []
