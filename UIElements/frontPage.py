@@ -11,9 +11,10 @@ from kivy.properties                                  import ObjectProperty, Str
 from DataStructures.makesmithInitializationFunctions  import MakesmithInitializationFunctions
 
 class FrontPage(Screen, MakesmithInitializationFunctions):
-    textconsole = ObjectProperty(None)
-    connectmenu = ObjectProperty(None) #make ConnectMenu object accessible at this scope
-    gcodecanvas = ObjectProperty(None) #make ConnectMenu object accessible at this scope
+    textconsole    = ObjectProperty(None)
+    connectmenu    = ObjectProperty(None) #make ConnectMenu object accessible at this scope
+    gcodecanvas    = ObjectProperty(None) 
+    screenControls = ObjectProperty(None) 
     
     target = [0,0,0]
     
@@ -40,6 +41,7 @@ class FrontPage(Screen, MakesmithInitializationFunctions):
         self.data = data
         print "Initialized: " + str(self)
         self.gcodecanvas.setUpData(data)
+        self.screenControls.setUpData(data)
     
     def jmpsize(self):
         try:

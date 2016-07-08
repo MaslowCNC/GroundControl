@@ -1,9 +1,11 @@
-from kivy.uix.floatlayout              import   FloatLayout
-from kivy.uix.popup                    import   Popup
-from UIElements.otherFeatures          import   OtherFeatures
-from UIElements.softwareSettings       import   SoftwareSettings
+from kivy.uix.floatlayout                             import   FloatLayout
+from kivy.uix.popup                                   import   Popup
+from UIElements.otherFeatures                         import   OtherFeatures
+from UIElements.softwareSettings                      import   SoftwareSettings
+from DataStructures.makesmithInitializationFunctions  import MakesmithInitializationFunctions
 
-class ScreenControls(FloatLayout):
+
+class ScreenControls(FloatLayout, MakesmithInitializationFunctions):
     
     def show_actions(self):
         '''
@@ -14,6 +16,7 @@ class ScreenControls(FloatLayout):
         
         '''
         content = OtherFeatures()
+        content.setUpData(self.data)
         self._popup = Popup(title="Actions", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
