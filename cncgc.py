@@ -57,8 +57,8 @@ class GroundControlApp(App):
         self.frontpage = FrontPage(name='FrontPage')
         interface.add_widget(self.frontpage)
         
-        self.screenControls = ScreenControls()
-        interface.add_widget(self.screenControls)
+        #self.screenControls = ScreenControls(pos=(2000, 2000))
+        #interface.add_widget(self.screenControls)
         
         '''
         Initializations

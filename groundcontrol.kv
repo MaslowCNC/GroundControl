@@ -9,8 +9,10 @@
 #            dash_length: 3
 
 <ScreenControls>
-    GridLayout:
-        rows: 1
+    BoxLayout:
+        orientation: 'horizontal'
+        pos: (0, root.height - .05*root.height)
+        size_hint: (.4,.05)
         
         Button: 
             text: "Actions"
@@ -18,6 +20,8 @@
         Button:
             text: "Settings"
             on_press: root.show_settings()
+        Label:
+            text: str(root.size)
 
 <GcodeCanvas>:
     scatterObject:scatterObject
@@ -199,6 +203,10 @@
         size_hint: None, None
         max_lines: 3
         pos: root.width - 170, root.height-500
+    ScreenControls:
+        size_hint: (1, 1)
+    #ScreenControls:
+     #   pos: root.width - 170, root.height-700
 
 <ViewMenu>:
     GridLayout:

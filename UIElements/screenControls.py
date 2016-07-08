@@ -1,9 +1,9 @@
-from kivy.uix.gridlayout               import   GridLayout
+from kivy.uix.floatlayout              import   FloatLayout
 from kivy.uix.popup                    import   Popup
 from UIElements.otherFeatures          import   OtherFeatures
 from UIElements.softwareSettings       import   SoftwareSettings
 
-class ScreenControls(GridLayout):
+class ScreenControls(FloatLayout):
     
     def show_actions(self):
         '''
