@@ -12,7 +12,7 @@
     BoxLayout:
         orientation: 'horizontal'
         pos: (0, root.height - .05*root.height)
-        size_hint: (.4,.05)
+        size_hint: (.6,.05)
         
         Button: 
             text: "Actions"
@@ -20,8 +20,6 @@
         Button:
             text: "Settings"
             on_press: root.show_settings()
-        Label:
-            text: str(root.size)
 
 <GcodeCanvas>:
     scatterObject:scatterObject
