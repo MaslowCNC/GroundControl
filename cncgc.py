@@ -106,7 +106,11 @@ class GroundControlApp(App):
         '''
     
     def setPosOnScreen(self, message):
+        '''
         
+        This should be moved into the appropriate widget
+        
+        '''
  #       try:
         startpt = message.find('(')
         startpt = startpt + 1

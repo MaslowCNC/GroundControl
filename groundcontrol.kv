@@ -12,13 +12,11 @@
     GridLayout:
         rows: 1
         
-        Button:
-            text: "one"
-            on_press: print(root.root)
         Button: 
-            text: "two"
+            text: "Actions"
+            on_press: root.show_actions()
         Button:
-            text: "three"
+            text: "Settings"
 
 <GcodeCanvas>:
     scatterObject:scatterObject
