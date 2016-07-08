@@ -73,14 +73,15 @@ class GroundControlApp(App):
         
         interface.add_widget(self.sm)
         
+        '''
+        Initializations
+        '''
+        
         self.otherfeatures.connectmenu.setupQueues(message_queue, gcode_queue, quick_queue)
         self.frontpage.setupQueues(message_queue, gcode_queue, quick_queue)
         
         self.otherfeatures.viewmenu.setGcodeLocation(self.frontpage.gcodecanvas)
         
-        '''
-        Initializations
-        '''
         self.frontpage.gcodecanvas.initialzie()
         
         
