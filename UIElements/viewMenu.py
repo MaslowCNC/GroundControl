@@ -57,27 +57,27 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         This reloads the gcode from the hard drive in case it has been updated. 
         
         '''
-        #try:
-        filename = self.gcodeFilePath
-        filterfile = open(filename, 'r')
-        rawfilters = filterfile.read()
-        filtersparsed = re.split(r'\s(?=G)|\n|\s(?=g)|\s(?=M)', rawfilters) #splits the gcode into elements to be added to the list
-        filtersparsed = [x + ' ' for x in filtersparsed] #adds a space to the end of each line
-        filtersparsed = [x.lstrip() for x in filtersparsed]
-        filtersparsed = [x.replace('X ','X') for x in filtersparsed]
-        filtersparsed = [x.replace('Y ','Y') for x in filtersparsed]
-        filtersparsed = [x.replace('Z ','Z') for x in filtersparsed]
-        filtersparsed = [x.replace('I ','I') for x in filtersparsed]
-        filtersparsed = [x.replace('J ','J') for x in filtersparsed]
-        filtersparsed = [x.replace('F ','F') for x in filtersparsed]
+        try:
+            filename = self.gcodeFilePath
+            filterfile = open(filename, 'r')
+            rawfilters = filterfile.read()
+            filtersparsed = re.split(r'\s(?=G)|\n|\s(?=g)|\s(?=M)', rawfilters) #splits the gcode into elements to be added to the list
+            filtersparsed = [x + ' ' for x in filtersparsed] #adds a space to the end of each line
+            filtersparsed = [x.lstrip() for x in filtersparsed]
+            filtersparsed = [x.replace('X ','X') for x in filtersparsed]
+            filtersparsed = [x.replace('Y ','Y') for x in filtersparsed]
+            filtersparsed = [x.replace('Z ','Z') for x in filtersparsed]
+            filtersparsed = [x.replace('I ','I') for x in filtersparsed]
+            filtersparsed = [x.replace('J ','J') for x in filtersparsed]
+            filtersparsed = [x.replace('F ','F') for x in filtersparsed]
 
-        self.data.gcode = filtersparsed
-        
-        filterfile.close() #closes the filter save file
-        #except:
-        #    if filename is not "":
-        #        print "Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use File > Open G-code"
-        #    self.gcodeFilePath = ""
+            self.data.gcode = filtersparsed
+            
+            filterfile.close() #closes the filter save file
+        except:
+            if filename is not "":
+                print "Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use File > Open G-code"
+            self.gcodeFilePath = ""
     
     def show_gcode(self):
         '''
