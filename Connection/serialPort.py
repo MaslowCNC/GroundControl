@@ -12,8 +12,6 @@ class SerialPort(MakesmithInitFuncs):
     
     '''
 
-
-    comport = "COM3"
         
     def getmessage (self):
         print("Waiting for new message")
@@ -22,12 +20,12 @@ class SerialPort(MakesmithInitFuncs):
         
         try:
             print("connecting")
-            serialCAN = serial.Serial(self.comport, 9600, timeout = .25) #self.comport is the com port which is opened
+            serialCAN = serial.Serial(self.data.comport, 9600, timeout = .25) #self.data.comport is the com port which is opened
         except:
-            print(self.comport + " is unavailable or in use")
-            self.data.message_queue.put("\n" + self.comport + " is unavailable or in use")
+            print(self.data.comport + " is unavailable or in use")
+            self.data.message_queue.put("\n" + self.data.comport + " is unavailable or in use")
         else:
-            self.data.message_queue.put("\r\nConnected on port " + self.comport + "\r\n")
+            self.data.message_queue.put("\r\nConnected on port " + self.data.comport + "\r\n")
             gcode = ""
             msg = ""
             subReadyFlag = True

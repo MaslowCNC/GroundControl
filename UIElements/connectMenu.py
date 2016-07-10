@@ -11,12 +11,11 @@ import threading
 class ConnectMenu(FloatLayout, MakesmithInitFuncs):
     
     COMports = ListProperty(("Available Ports:", "None"))
-    comPort = ""
     
     def setPort(self, port):
         print "update ports"
         print port
-        self.comPort = port
+        self.data.comport = port
     
     def connect(self, *args):
         print "connect pressed"
