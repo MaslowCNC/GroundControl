@@ -11,3 +11,4 @@ class OtherFeatures(Screen, MakesmithInitFuncs):
         print "Initialized: " + str(self) 
         self.viewmenu.setUpData(data)
         self.connectmenu.setUpData(data)
+        self.connectmenu.updatePorts()
