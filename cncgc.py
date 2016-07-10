@@ -39,7 +39,7 @@ class GroundControlApp(App):
     
     def build(self):
         interface       =  FloatLayout()
-        self.dataBack   =  Data()
+        self.data   =  Data()
         
         
         self.frontpage = FrontPage(name='FrontPage')
@@ -49,7 +49,7 @@ class GroundControlApp(App):
         Initializations
         '''
         
-        self.frontpage.setUpData(self.dataBack)
+        self.frontpage.setUpData(self.data)
         
         self.frontpage.gcodecanvas.initialzie()
         
@@ -72,8 +72,9 @@ class GroundControlApp(App):
         '''
         this block should be handled within the appropriate widget
         '''
-        if not self.otherfeatures.connectmenu.message_queue.empty(): #if there is new data to be read
-            message = self.otherfeatures.connectmenu.message_queue.get()
+        if not self.data.message_queue.empty(): #if there is new data to be read
+            message = self.data.message_queue.get()
+            print message
             if message[0:2] == "pz":
                 self.setPosOnScreen(message)
             elif message[0:6] == "gready":
@@ -95,7 +96,7 @@ class GroundControlApp(App):
         This should be moved into the appropriate widget
         
         '''
- #       try:
+        
         startpt = message.find('(')
         startpt = startpt + 1
         

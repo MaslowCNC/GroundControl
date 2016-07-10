@@ -13,7 +13,7 @@ class SerialPort(MakesmithInitFuncs):
     '''
 
 
-    comport = "COM4"
+    comport = "COM3"
         
     def getmessage (self):
         print("Waiting for new message")
@@ -45,20 +45,22 @@ class SerialPort(MakesmithInitFuncs):
             while True:
                 
                 try:
-                    msg = serialCAN.readline() #rand.random()
+                    msg = serialCAN.readline()
                 except:
                     pass
                 try:
                     msg = msg.decode('utf-8')
                 except:
                     pass
-                    
+                
+                print msg
+                
                 if len(msg) > 0:
                     
                     
                     if msg == "gready\r\n":
                         subReadyFlag = True
-                        if self.gcode_queue.qsize() >= 1:
+                        if self.data.gcode_queue.qsize() >= 1:
                             msg = ""
                     
                     if msg == "Clear Buffer\r\n":
