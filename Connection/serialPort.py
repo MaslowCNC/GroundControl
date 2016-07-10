@@ -1,5 +1,8 @@
+from DataStructures.makesmithInitFuncs         import   MakesmithInitFuncs
+import serial
 
-class SerialPort():
+
+class SerialPort(MakesmithInitFuncs):
     '''
     
     SerialPort is the thread which handles direct communication with the CNC machine. 
@@ -9,12 +12,8 @@ class SerialPort():
     
     '''
 
-    def __init__( self, message_queue, gcode_queue, mainwindow, comport, quick_queue):
-        self.message_queue = message_queue
-        self.gcode_queue = gcode_queue
-        self.quick_queue = quick_queue
-        self.mainwindow = mainwindow
-        self.comport = comport
+
+    comport = "COM4"
         
     def getmessage (self):
         print("Waiting for new message")
@@ -25,10 +24,10 @@ class SerialPort():
             print("connecting")
             serialCAN = serial.Serial(self.comport, 9600, timeout = .25) #self.comport is the com port which is opened
         except:
-            print(self.comport + "is unavailable or in use")
-            self.message_queue.put("\n" + self.comport + " is unavailable or in use")
+            print(self.comport + " is unavailable or in use")
+            self.data.message_queue.put("\n" + self.comport + " is unavailable or in use")
         else:
-            self.message_queue.put("\r\nConnected on port " + self.comport + "\r\n")
+            self.data.message_queue.put("\r\nConnected on port " + self.comport + "\r\n")
             gcode = ""
             msg = ""
             subReadyFlag = True
@@ -64,20 +63,20 @@ class SerialPort():
                     
                     if msg == "Clear Buffer\r\n":
                         print("buffer cleared")
-                        while self.gcode_queue.empty() != True:
-                            gcode = self.gcode_queue.get_nowait()
+                        while self.data.gcode_queue.empty() != True:
+                            gcode = self.data.gcode_queue.get_nowait()
                         gcode = ""
                         msg = ""
                     
-                    self.message_queue.put(msg)
+                    self.data.message_queue.put(msg)
                     
                 msg = ""
                 
-                if self.gcode_queue.empty() != True and len(gcode) is 0:
-                        gcode = self.gcode_queue.get_nowait()
+                if self.data.gcode_queue.empty() != True and len(gcode) is 0:
+                        gcode = self.data.gcode_queue.get_nowait()
                         gcode = gcode + " "
-                if self.quick_queue.empty() != True:
-                        qcode = self.quick_queue.get_nowait()
+                if self.data.quick_queue.empty() != True:
+                        qcode = self.data.quick_queue.get_nowait()
                         qcode = qcode.encode()
                         if qcode == b'Reconnect': #this tells the machine serial thread to close the serial connection
                             qcode = ""

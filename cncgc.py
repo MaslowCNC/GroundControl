@@ -69,9 +69,9 @@ class GroundControlApp(App):
     '''
     
     def runPeriodically(self, *args):
-        pass
         '''
         this block should be handled within the appropriate widget
+        '''
         if not self.otherfeatures.connectmenu.message_queue.empty(): #if there is new data to be read
             message = self.otherfeatures.connectmenu.message_queue.get()
             if message[0:2] == "pz":
@@ -88,7 +88,6 @@ class GroundControlApp(App):
                     self.frontpage.consoleText = newText
                 except:
                     print "text not displayed correctly"
-        '''
     
     def setPosOnScreen(self, message):
         '''
