@@ -8,13 +8,25 @@
 #            dash_offset: 5
 #            dash_length: 3
 
+<ScreenControls>
+    BoxLayout:
+        orientation: 'horizontal'
+        pos: (0, root.height - .05*root.height)
+        size_hint: (.6,.05)
+        
+        Button: 
+            text: "Actions"
+            on_press: root.show_actions()
+        Button:
+            text: "Settings"
+            on_press: root.show_settings()
+
 <GcodeCanvas>:
     scatterObject:scatterObject
     scatterInstance:scatterInstance
     Scatter:
         do_rotation: False
         id: scatterInstance
-        
         Label: 
             id: scatterObject
             text: ""
@@ -24,6 +36,8 @@
     moveDistInput:moveDistInput
     moveSpeedInput:moveSpeedInput
     gcodecanvas:gcodecanvas
+    screenControls:screenControls
+    
     
     GcodeCanvas:
         id: gcodecanvas
@@ -189,6 +203,9 @@
         size_hint: None, None
         max_lines: 3
         pos: root.width - 170, root.height-500
+    ScreenControls:
+        id: screenControls
+        size_hint: (1, 1)
 
 <ViewMenu>:
     GridLayout:
