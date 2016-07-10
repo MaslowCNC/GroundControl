@@ -1,4 +1,4 @@
-class MakesmithInitializationFunctions ():
+class MakesmithInitFuncs ():
     
     def setUpData(self, data):
         self.data = data

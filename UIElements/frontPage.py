@@ -6,11 +6,11 @@ This page is used to manually move the machine, see the positional readout, and 
 
 '''
 
-from kivy.uix.screenmanager                           import Screen
-from kivy.properties                                  import ObjectProperty, StringProperty
-from DataStructures.makesmithInitializationFunctions  import MakesmithInitializationFunctions
+from kivy.uix.screenmanager                    import Screen
+from kivy.properties                           import ObjectProperty, StringProperty
+from DataStructures.makesmithInitFuncs         import MakesmithInitFuncs
 
-class FrontPage(Screen, MakesmithInitializationFunctions):
+class FrontPage(Screen, MakesmithInitFuncs):
     textconsole    = ObjectProperty(None)
     connectmenu    = ObjectProperty(None) #make ConnectMenu object accessible at this scope
     gcodecanvas    = ObjectProperty(None) 

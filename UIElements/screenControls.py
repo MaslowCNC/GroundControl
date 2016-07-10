@@ -1,11 +1,11 @@
-from kivy.uix.floatlayout                             import   FloatLayout
-from kivy.uix.popup                                   import   Popup
-from UIElements.otherFeatures                         import   OtherFeatures
-from UIElements.softwareSettings                      import   SoftwareSettings
-from DataStructures.makesmithInitializationFunctions  import   MakesmithInitializationFunctions
+from kivy.uix.floatlayout                      import   FloatLayout
+from kivy.uix.popup                            import   Popup
+from UIElements.otherFeatures                  import   OtherFeatures
+from UIElements.softwareSettings               import   SoftwareSettings
+from DataStructures.makesmithInitFuncs         import   MakesmithInitFuncs
 
 
-class ScreenControls(FloatLayout, MakesmithInitializationFunctions):
+class ScreenControls(FloatLayout, MakesmithInitFuncs):
     
     def show_actions(self):
         '''

@@ -1,9 +1,9 @@
-from kivy.uix.screenmanager                           import Screen
-from kivy.properties                                  import ObjectProperty
-from DataStructures.makesmithInitializationFunctions  import MakesmithInitializationFunctions
+from kivy.uix.screenmanager                 import Screen
+from kivy.properties                        import ObjectProperty
+from DataStructures.makesmithInitFuncs      import MakesmithInitFuncs
 
 
-class OtherFeatures(Screen, MakesmithInitializationFunctions):
+class OtherFeatures(Screen, MakesmithInitFuncs):
     viewmenu = ObjectProperty(None) #make viewmenu object accessible at this scope
     
     def setUpData(self, data):
