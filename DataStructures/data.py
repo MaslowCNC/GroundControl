@@ -65,4 +65,9 @@ class Data(EventDispatcher):
     contrast = 50
     backlight = 65
     heartBeat = time()
-    firstTimePosFlag = 0 #this is used to determine the first time the position is recieved from the machine
+    firstTimePosFlag = 0 #this is used to determine the first time the position is received from the machine
+    
+    #create queues
+    message_queue   =  Queue.Queue()
+    gcode_queue     =  Queue.Queue()
+    quick_queue     =  Queue.Queue()

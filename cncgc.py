@@ -48,11 +48,6 @@ class GroundControlApp(App):
         interface       =  FloatLayout()
         self.dataBack   =  Data()
         
-        #create queues
-        message_queue   =  Queue.Queue()
-        gcode_queue     =  Queue.Queue()
-        quick_queue     =  Queue.Queue()
-        
         
         self.frontpage = FrontPage(name='FrontPage')
         interface.add_widget(self.frontpage)
