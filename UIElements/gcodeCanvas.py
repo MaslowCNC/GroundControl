@@ -58,12 +58,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             mat = Matrix().translate(100, 100, 0)
             self.scatterInstance.apply_transform(mat)
             
-            print str(self.data)
             self.data.bind(gcode = self.updateGcode)
             
-    def test_func(self, *args):
-        print "gcode change detected"
-        print self.data.gcode
      
     def updateGcode(self, *args):
         self.drawgcode()
