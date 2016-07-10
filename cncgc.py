@@ -47,7 +47,6 @@ class GroundControlApp(App):
     def build(self):
         interface       =  FloatLayout()
         self.dataBack   =  Data()
-        print "Original Data Instance At: " + str(self.dataBack)
         
         #create queues
         message_queue   =  Queue.Queue()
