@@ -1,26 +1,21 @@
-from kivy.uix.floatlayout import    FloatLayout
-from kivy.properties      import    ListProperty
+from kivy.uix.floatlayout                      import  FloatLayout
+from kivy.properties                           import  ListProperty
 
-from Connection.serialPort import SerialPort
+from Connection.serialPort                     import  SerialPort
+from DataStructures.makesmithInitFuncs         import  MakesmithInitFuncs
 
 import sys
 import serial
 import threading
 
-class ConnectMenu(FloatLayout):
+class ConnectMenu(FloatLayout, MakesmithInitFuncs):
     
     COMports = ListProperty(("Available Ports:", "None"))
-    comPort = ""
-    
-    def setupQueues(self, message_queue, gcode_queue, quick_queue):
-        self.message_queue = message_queue
-        self.gcode_queue = gcode_queue
-        self.quick_queue = quick_queue
     
     def setPort(self, port):
         print "update ports"
         print port
-        self.comPort = port
+        self.data.comport = port
     
     def connect(self, *args):
         print "connect pressed"
@@ -41,7 +36,7 @@ class ConnectMenu(FloatLayout):
     
     def ports(self):
         print "ports"
-        self.gcode_queue.put("test gcode");
+        self.data.gcode_queue.put("test gcode");
     
         '''
     
@@ -54,8 +49,9 @@ class ConnectMenu(FloatLayout):
         #It only needs to be run once, it is run by connecting to the machine
         
         print("Starting Second Thread")
-        #self.message_queue is the queue which handles passing CAN messages between threads
-        x = SerialPort( self.message_queue, self.gcode_queue, self, self.comPort, self.quick_queue)
+        #self.data.message_queue is the queue which handles passing CAN messages between threads
+        x = SerialPort()
+        x.setUpData(self.data)
         self.th=threading.Thread(target=x.getmessage)
         self.th.daemon = True
         self.th.start()

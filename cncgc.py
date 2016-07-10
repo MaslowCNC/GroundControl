@@ -11,13 +11,6 @@ from kivy.core.window           import Window
 from kivy.uix.button            import Button
 from kivy.clock                 import Clock
 
-'''
-
-Other Imports
-
-'''
-
-import Queue
 
 '''
 
@@ -46,12 +39,7 @@ class GroundControlApp(App):
     
     def build(self):
         interface       =  FloatLayout()
-        self.dataBack   =  Data()
-        
-        #create queues
-        message_queue   =  Queue.Queue()
-        gcode_queue     =  Queue.Queue()
-        quick_queue     =  Queue.Queue()
+        self.data       =  Data()
         
         
         self.frontpage = FrontPage(name='FrontPage')
@@ -61,7 +49,7 @@ class GroundControlApp(App):
         Initializations
         '''
         
-        self.frontpage.setUpData(self.dataBack)
+        self.frontpage.setUpData(self.data)
         
         self.frontpage.gcodecanvas.initialzie()
         
@@ -81,11 +69,12 @@ class GroundControlApp(App):
     '''
     
     def runPeriodically(self, *args):
-        pass
         '''
         this block should be handled within the appropriate widget
-        if not self.otherfeatures.connectmenu.message_queue.empty(): #if there is new data to be read
-            message = self.otherfeatures.connectmenu.message_queue.get()
+        '''
+        if not self.data.message_queue.empty(): #if there is new data to be read
+            message = self.data.message_queue.get()
+            print message
             if message[0:2] == "pz":
                 self.setPosOnScreen(message)
             elif message[0:6] == "gready":
@@ -100,7 +89,6 @@ class GroundControlApp(App):
                     self.frontpage.consoleText = newText
                 except:
                     print "text not displayed correctly"
-        '''
     
     def setPosOnScreen(self, message):
         '''
@@ -108,7 +96,7 @@ class GroundControlApp(App):
         This should be moved into the appropriate widget
         
         '''
- #       try:
+        
         startpt = message.find('(')
         startpt = startpt + 1
         
