@@ -39,7 +39,7 @@ class GroundControlApp(App):
     
     def build(self):
         interface       =  FloatLayout()
-        self.data   =  Data()
+        self.data       =  Data()
         
         
         self.frontpage = FrontPage(name='FrontPage')
