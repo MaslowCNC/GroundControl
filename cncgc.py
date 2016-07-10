@@ -57,14 +57,11 @@ class GroundControlApp(App):
         self.frontpage = FrontPage(name='FrontPage')
         interface.add_widget(self.frontpage)
         
-        #self.screenControls = ScreenControls(pos=(2000, 2000))
-        #interface.add_widget(self.screenControls)
-        
         '''
         Initializations
         '''
         
-        self.frontpage.setupQueues(message_queue, gcode_queue, quick_queue)
+        self.frontpage.setUpData(self.dataBack)
         
         self.frontpage.gcodecanvas.initialzie()
         

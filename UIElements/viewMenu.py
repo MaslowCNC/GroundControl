@@ -1,13 +1,15 @@
-from   kivy.uix.gridlayout             import   GridLayout
-from   UIElements.loadDialog           import   LoadDialog
-from   UIElements.scrollableTextPopup  import   ScrollableTextPopup
-from   kivy.uix.popup                  import   Popup
+from   kivy.uix.gridlayout                       import   GridLayout
+from   UIElements.loadDialog                     import   LoadDialog
+from   UIElements.scrollableTextPopup            import   ScrollableTextPopup
+from   kivy.uix.popup                            import   Popup
 import re
+from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
 
 
 
 
-class ViewMenu(GridLayout):
+
+class ViewMenu(GridLayout, MakesmithInitFuncs):
     gcodeFilePath = ""
     
     def openFile(self):
@@ -19,14 +21,6 @@ class ViewMenu(GridLayout):
         
         '''
         self.show_load()
-    
-    def setGcodeLocation(self,gcodeLocation):
-        '''
-        
-        Define the default location where gcode files are kept
-        
-        '''
-        self.gcodeCanvas = gcodeLocation
     
     def show_load(self):
         '''
@@ -77,13 +71,13 @@ class ViewMenu(GridLayout):
             filtersparsed = [x.replace('J ','J') for x in filtersparsed]
             filtersparsed = [x.replace('F ','F') for x in filtersparsed]
 
-            self.gcodeCanvas.gcode = filtersparsed
+            self.data.gcode = filtersparsed
+            
             filterfile.close() #closes the filter save file
         except:
             if filename is not "":
                 print "Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use File > Open G-code"
             self.gcodeFilePath = ""
-        self.gcodeCanvas.updateGcode()
     
     def show_gcode(self):
         '''
