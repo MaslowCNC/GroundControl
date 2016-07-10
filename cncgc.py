@@ -11,13 +11,6 @@ from kivy.core.window           import Window
 from kivy.uix.button            import Button
 from kivy.clock                 import Clock
 
-'''
-
-Other Imports
-
-'''
-
-import Queue
 
 '''
 

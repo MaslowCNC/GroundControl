@@ -1,6 +1,7 @@
 from time                                             import time
 from kivy.properties                                  import ObjectProperty
 from kivy.event                                       import EventDispatcher
+import Queue
 
 class Data(EventDispatcher):
     '''
