@@ -125,8 +125,7 @@ class GroundControlApp(App):
         """
         The settings panel has been closed.
         """
-        Logger.info("main.py: App.close_settings: {0}".format(settings))
-        super(MyApp, self).close_settings(settings)
+        super(GroundControlApp, self).close_settings(settings)
     
     '''
     
