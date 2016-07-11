@@ -89,27 +89,24 @@ class GroundControlApp(App):
 
     def build_settings(self, settings):
         """
-        Add our custom section to the default configuration object.
+        Add custom section to the default configuration object.
         """
-        # We use the string defined above for our JSON, but it could also be
-        # loaded from a file as follows:
-        #     settings.add_json_panel('Makesmith Settings', self.config, 'settings.json')
         settings.add_json_panel('Makesmith Settings', self.config, data=self.json)
 
     def on_config_change(self, config, section, key, value):
         """
         Respond to changes in the configuration.
         """
-        print "ON CONFIG CHANGE HIT"
+        
         if section == "Makesmith Settings":
             if key == "COMport":
-                print "COMport changed"
+                self.data.comport = value
             elif key == 'xPitch':
                 print "xPitch changed"
 
     def close_settings(self, settings):
         """
-        The settings panel has been closed.
+        Close settings panel
         """
         super(GroundControlApp, self).close_settings(settings)
     
