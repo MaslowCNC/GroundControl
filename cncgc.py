@@ -134,9 +134,9 @@ class GroundControlApp(App):
             else:
                 try:
                     newText = self.frontpage.consoleText[-30:] + message
-                    self.frontpage.consoleText = newText
+                    self.frontpage.consoleText = message
                 except:
-                    print "text not displayed correctly"
+                    self.frontpage.consoleText = "text not displayed correctly"
     
     def setPosOnScreen(self, message):
         '''
