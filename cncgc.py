@@ -48,17 +48,17 @@ class GroundControlApp(App):
     [
         {
             "type": "string",
-            "title": "Label caption",
-            "desc": "Choose the text that appears in the label",
-            "section": "My Label",
-            "key": "text"
+            "title": "Serial Connection",
+            "desc": "Sellect the COM port to connect to machine",
+            "section": "Makesmith Settings",
+            "key": "COMport"
         },
         {
-            "type": "numeric",
-            "title": "Label font size",
-            "desc": "Choose the font size the label",
-            "section": "My Label",
-            "key": "font_size"
+            "type": "string",
+            "title": "X-Axis Pitch",
+            "desc": "The number of mm moved per rotation",
+            "section": "Makesmith Settings",
+            "key": "xPitch"
         }
     ]
     '''
@@ -97,7 +97,7 @@ class GroundControlApp(App):
         """
         Set the default values for the configs sections.
         """
-        config.setdefaults('My Label', {'text': 'Hello', 'font_size': 20})
+        config.setdefaults('Makesmith Settings', {'COMport': 'COM3', 'xPitch': 20})
 
     def build_settings(self, settings):
         """
@@ -105,21 +105,19 @@ class GroundControlApp(App):
         """
         # We use the string defined above for our JSON, but it could also be
         # loaded from a file as follows:
-        #     settings.add_json_panel('My Label', self.config, 'settings.json')
-        settings.add_json_panel('My Label', self.config, data=self.json)
+        #     settings.add_json_panel('Makesmith Settings', self.config, 'settings.json')
+        settings.add_json_panel('Makesmith Settings', self.config, data=self.json)
 
     def on_config_change(self, config, section, key, value):
         """
         Respond to changes in the configuration.
         """
-        Logger.info("main.py: App.on_config_change: {0}, {1}, {2}, {3}".format(
-            config, section, key, value))
-
-        if section == "My Label":
-            if key == "text":
-                self.root.ids.label.text = value
-            elif key == 'font_size':
-                self.root.ids.label.font_size = float(value)
+        print "ON CONFIG CHANGE HIT"
+        if section == "Makesmith Settings":
+            if key == "COMport":
+                print "COMport changed"
+            elif key == 'xPitch':
+                print "xPitch changed"
 
     def close_settings(self, settings):
         """
