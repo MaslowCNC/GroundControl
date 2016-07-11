@@ -39,7 +39,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     readyFlag = 0
     
     def initialzie(self):
-        print "gcode canvas initialized"
         with self.scatterObject.canvas:
             Color(1, 1, 1)
             

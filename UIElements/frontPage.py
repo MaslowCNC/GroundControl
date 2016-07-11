@@ -57,7 +57,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.jmpsize()
         xtarget = -1*self.target[0] - float(self.stepsizeval)
         ytarget = self.target[1] + float(self.stepsizeval)
-        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+        self.data.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
         self.target[0] = self.target[0] + float(self.stepsizeval)
         self.target[1] = self.target[1] + float(self.stepsizeval)
         
@@ -65,69 +65,69 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.jmpsize()
         xtarget = -1*self.target[0] + float(self.stepsizeval)
         ytarget = self.target[1] + float(self.stepsizeval)
-        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+        self.data.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
         self.target[0] = self.target[0] - float(self.stepsizeval)
         self.target[1] = self.target[1] + float(self.stepsizeval)
 
     def up(self):
         self.jmpsize()
         target = self.target[1] + float(self.stepsizeval)
-        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Y" + str(target) + " ")
+        self.data.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Y" + str(target) + " ")
         self.target[1] = self.target[1] + float(self.stepsizeval)
 
     def left(self):
         self.jmpsize()
         target = -1*self.target[0] - float(self.stepsizeval)
-        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(target) + " ")
+        self.data.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(target) + " ")
         self.target[0] = self.target[0] + float(self.stepsizeval)
         
     def right(self):
         self.jmpsize()
         target = -1*self.target[0] + float(self.stepsizeval)
-        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(target) + " ")
+        self.data.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(target) + " ")
         self.target[0] = self.target[0] - float(self.stepsizeval)
         
     def downLeft(self):
         self.jmpsize()
         xtarget = -1*self.target[0] - float(self.stepsizeval)
         ytarget = self.target[1] - float(self.stepsizeval)
-        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+        self.data.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
         self.target[0] = self.target[0] + float(self.stepsizeval)
         self.target[1] = self.target[1] - float(self.stepsizeval)    
 
     def down(self):
         self.jmpsize()
         target = self.target[1] - float(self.stepsizeval)
-        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Y" + str(target) + " ")
+        self.data.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Y" + str(target) + " ")
         self.target[1] = self.target[1] - float(self.stepsizeval)
 
     def downRight(self):
         self.jmpsize()
         xtarget = -1*self.target[0] + float(self.stepsizeval)
         ytarget = self.target[1] - float(self.stepsizeval)
-        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+        self.data.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
         self.target[0] = self.target[0] - float(self.stepsizeval)
         self.target[1] = self.target[1] - float(self.stepsizeval)
 
     def zUp(self):
         self.jmpsize()
         target = self.target[2] + float(self.stepsizeval)
-        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Z" + str(target) + " ")
+        self.data.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Z" + str(target) + " ")
         self.target[2] = self.target[2] + float(self.stepsizeval)
 
     def zDown(self):
         self.jmpsize()
         target = self.target[2] - float(self.stepsizeval)
-        self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Z" + str(target) + " ")
+        self.data.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Z" + str(target) + " ")
         self.target[2] = self.target[2] - float(self.stepsizeval)
 
     def home(self):
         if self.target[2] < 0:
-            self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Z0 ")
-            self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X0 Y0 Z0 ")
+            self.data.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Z0 ")
+            self.data.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X0 Y0 Z0 ")
         if self.target[2] >= 0:
-            self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X0 Y0 ")
-            self.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Z0 ")
+            self.data.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " X0 Y0 ")
+            self.data.gcode_queue.put("G01 F" + str(float(self.feedRate)) + " Z0 ")
         self.target[0] = 0.0
         self.target[1] = 0.0
         self.target[2] = 0.0
@@ -141,7 +141,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         self.gcodecanvas.setCrossPos(0,0)
         
-        self.gcode_queue.put("G10 X0 Y0 Z0 ")
+        self.data.gcode_queue.put("G10 X0 Y0 Z0 ")
     
     def startRun(self):
         self.reZero()
@@ -150,7 +150,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def sendLine(self):
         try:
-            self.gcode_queue.put(self.gcodecanvas.gcode[self.gcodecanvas.gcodePos])
+            self.data.gcode_queue.put(self.gcodecanvas.gcode[self.gcodecanvas.gcodePos])
             self.gcodecanvas.gcodePos = self.gcodecanvas.gcodePos + 1
         except:
             print "gcode run complete"
@@ -162,9 +162,9 @@ class FrontPage(Screen, MakesmithInitFuncs):
         #    stopflag = 1
         #self.uploadFlag = 0
         #self.gcodeIndex = 0
-        self.quick_queue.put("STOP") 
-        with self.gcode_queue.mutex:
-            self.gcode_queue.queue.clear()
+        self.data.quick_queue.put("STOP") 
+        with self.data.gcode_queue.mutex:
+            self.data.gcode_queue.queue.clear()
         print("Gode Stopped")
         
         #self.target[0] = self.dataBack.currentpos[0]/self.dataBack.unitsScale
@@ -174,8 +174,8 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def toggleSpindle(self):
     #toggleSpindle turns on and off the dremel if a relay is attached
         if(self.spindleFlag == 1):
-            self.gcode_queue.put("S5000 ")
+            self.data.gcode_queue.put("S5000 ")
             self.spindleFlag = 0
         elif(self.dataBack.spindleFlag == 0):
-            self.gcode_queue.put("S0 ")
+            self.data.gcode_queue.put("S0 ")
             self.spindleFlag = 1
