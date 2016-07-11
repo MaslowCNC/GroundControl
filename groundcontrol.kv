@@ -19,7 +19,7 @@
             on_press: root.show_actions()
         Button:
             text: "Settings"
-            on_press: root.show_settings()
+            on_press: app.open_settings()
 
 <GcodeCanvas>:
     scatterObject:scatterObject
@@ -447,10 +447,7 @@
                 id: manualcontrol
 
 <SoftwareSettings>:
-    settingsPanel:settingsPanel
     
-    Settings:
-        id: settingsPanel
 
 <LoadDialog>:
     BoxLayout:

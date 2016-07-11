@@ -32,8 +32,6 @@ class ScreenControls(FloatLayout, MakesmithInitFuncs):
         
         '''
         
-        config = ConfigParser()
-        config.read('settings.ini')
 
         content = SoftwareSettings()
         
