@@ -37,6 +37,25 @@ Main UI Program
 
 class GroundControlApp(App):
     
+    json = '''
+    [
+        {
+            "type": "string",
+            "title": "Serial Connection",
+            "desc": "Sellect the COM port to connect to machine",
+            "section": "Makesmith Settings",
+            "key": "COMport"
+        },
+        {
+            "type": "string",
+            "title": "X-Axis Pitch",
+            "desc": "The number of mm moved per rotation",
+            "section": "Makesmith Settings",
+            "key": "xPitch"
+        }
+    ]
+    '''
+    
     def build(self):
         interface       =  FloatLayout()
         self.data       =  Data()
@@ -61,6 +80,35 @@ class GroundControlApp(App):
         Clock.schedule_interval(self.runPeriodically, .01)
         
         return interface
+    
+    def build_config(self, config):
+        """
+        Set the default values for the configs sections.
+        """
+        config.setdefaults('Makesmith Settings', {'COMport': 'COM3', 'xPitch': 20})
+
+    def build_settings(self, settings):
+        """
+        Add custom section to the default configuration object.
+        """
+        settings.add_json_panel('Makesmith Settings', self.config, data=self.json)
+
+    def on_config_change(self, config, section, key, value):
+        """
+        Respond to changes in the configuration.
+        """
+        
+        if section == "Makesmith Settings":
+            if key == "COMport":
+                self.data.comport = value
+            elif key == 'xPitch':
+                print "xPitch changed"
+
+    def close_settings(self, settings):
+        """
+        Close settings panel
+        """
+        super(GroundControlApp, self).close_settings(settings)
     
     '''
     
