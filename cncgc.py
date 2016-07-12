@@ -18,17 +18,18 @@ Internal Module Imports
 
 '''
 
-from UIElements.frontPage        import   FrontPage
-from UIElements.screenControls   import   ScreenControls
-from UIElements.gcodeCanvas      import   GcodeCanvas
-from UIElements.otherFeatures    import   OtherFeatures
-from UIElements.softwareSettings import   SoftwareSettings
-from UIElements.viewMenu         import   ViewMenu
-from UIElements.runMenu          import   RunMenu
-from UIElements.connectMenu      import   ConnectMenu
-from UIElements.diagnosticsMenu  import   Diagnostics
-from UIElements.manualControls   import   ManualControl
-from DataStructures.data         import   Data
+from UIElements.frontPage         import   FrontPage
+from UIElements.screenControls    import   ScreenControls
+from UIElements.gcodeCanvas       import   GcodeCanvas
+from UIElements.otherFeatures     import   OtherFeatures
+from UIElements.softwareSettings  import   SoftwareSettings
+from UIElements.viewMenu          import   ViewMenu
+from UIElements.runMenu           import   RunMenu
+from UIElements.connectMenu       import   ConnectMenu
+from UIElements.diagnosticsMenu   import   Diagnostics
+from UIElements.manualControls    import   ManualControl
+from DataStructures.data          import   Data
+from Connection.nonVisibleWidgets import   NonVisibleWidgets
 '''
 
 Main UI Program
@@ -64,12 +65,14 @@ class GroundControlApp(App):
         self.frontpage = FrontPage(name='FrontPage')
         interface.add_widget(self.frontpage)
         
+        self.nonVisibleWidgets = NonVisibleWidgets()
+        
         '''
         Initializations
         '''
         
         self.frontpage.setUpData(self.data)
-        
+        self.nonVisibleWidgets.setUpData(self.data)
         self.frontpage.gcodecanvas.initialzie()
         
         
