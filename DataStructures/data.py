@@ -40,6 +40,7 @@ class Data(EventDispatcher):
     #the current position of the cutting head
     currentpos = [0.0, 0.0, 0.0]
     target = [0.0, 0.0, 0.0]
+    config = None #pointer to the program configuration object...used for writing to settings 
     #click values for drag window
     xclickstart = 0
     xclickend = 0
