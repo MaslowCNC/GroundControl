@@ -79,13 +79,21 @@ class GroundControlApp(App):
         
         Clock.schedule_interval(self.runPeriodically, .01)
         
+        
+        '''
+        Load User Settings
+        '''
+        self.data.comport = self.config.get('Makesmith Settings', 'COMport')
+        
+        
+        
         return interface
-    
+        
     def build_config(self, config):
         """
         Set the default values for the configs sections.
         """
-        config.setdefaults('Makesmith Settings', {'COMport': 'COM3', 'xPitch': 20})
+        config.setdefaults('Makesmith Settings', {'COMport': 'COM5', 'xPitch': 20})
 
     def build_settings(self, settings):
         """
