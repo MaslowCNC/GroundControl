@@ -20,7 +20,7 @@ class SerialPort(MakesmithInitFuncs):
         
         try:
             print("connecting")
-            serialCAN = serial.Serial(self.data.comport, 9600, timeout = .25) #self.data.comport is the com port which is opened
+            serialCAN = serial.Serial(self.data.comport, 19200, timeout = .25) #self.data.comport is the com port which is opened
         except:
             print(self.data.comport + " is unavailable or in use")
             self.data.message_queue.put("\n" + self.data.comport + " is unavailable or in use")
