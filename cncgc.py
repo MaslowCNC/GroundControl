@@ -84,6 +84,7 @@ class GroundControlApp(App):
         Load User Settings
         '''
         self.data.comport = self.config.get('Makesmith Settings', 'COMport')
+        self.data.config  = self.config
         
         
         

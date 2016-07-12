@@ -1,6 +1,5 @@
 from kivy.uix.floatlayout                      import  FloatLayout
 from kivy.properties                           import  ListProperty
-
 from Connection.serialPort                     import  SerialPort
 from DataStructures.makesmithInitFuncs         import  MakesmithInitFuncs
 
@@ -19,6 +18,9 @@ class ConnectMenu(FloatLayout, MakesmithInitFuncs):
     
     def connect(self, *args):
         print "connect pressed"
+        
+        self.data.config.set('Makesmith Settings', 'COMport', str(self.data.comport))
+        self.data.config.write()
         
         self.recieveMessage()
     
