@@ -1,5 +1,6 @@
 from kivy.uix.floatlayout                      import  FloatLayout
 from kivy.properties                           import  ListProperty
+from kivy.clock                                import Clock
 from Connection.serialPort                     import  SerialPort
 from DataStructures.makesmithInitFuncs         import  MakesmithInitFuncs
 
@@ -10,6 +11,11 @@ import threading
 class ConnectMenu(FloatLayout, MakesmithInitFuncs):
     
     COMports = ListProperty(("Available Ports:", "None"))
+    
+    
+    def __init__(self, **kwargs):
+        super(ConnectMenu, self).__init__(**kwargs)
+        #Clock.schedule_interval(self.connect, 1)
     
     def setPort(self, port):
         print "update ports"
