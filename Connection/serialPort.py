@@ -8,22 +8,52 @@ import serial
 import threading
 
 class SerialPort(MakesmithInitFuncs):
+    '''
+    
+    The SerialPort is an object which manages communication with the device over the serial port.
+    
+    The actual connection is run in a separate thread by an instance of a SerialPortThread object.
+    
+    '''
+    
     
     COMports = ListProperty(("Available Ports:", "None"))
     
     def __init__(self):
-        Clock.schedule_interval(self.recieveMessage, 1)
+        '''
+        
+        Runs on creation, schedules the software to attempt to connect to the machine
+        
+        '''
+        Clock.schedule_interval(self.recieveMessage, 2)
     
     def setPort(self, port):
+        '''
+        
+        Defines which port the machine is attached to
+        
+        '''
         print "update ports"
         print port
         self.data.comport = port
     
     def connect(self, *args):
+        '''
+        
+        Forces the software to begin trying to connect on the new port.
+        
+        This function may not be necessary, but it should stay in because it simplifies the user experience.
+        
+        '''
         self.data.config.set('Makesmith Settings', 'COMport', str(self.data.comport))
         self.data.config.write()
     
     def updatePorts(self, *args):
+        '''
+        
+        Talks to the OS and determines which devices are available on which ports.
+        
+        '''
         
         portsList = ["Available Ports:"]
         
@@ -35,11 +65,7 @@ class SerialPort(MakesmithInitFuncs):
         
         self.COMports = portsList
     
-    def ports(self):
-        print "ports"
-        self.data.gcode_queue.put("test gcode");
-    
-        '''
+    '''
     
     Serial Connection Functions
     
