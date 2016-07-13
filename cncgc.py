@@ -18,17 +18,18 @@ Internal Module Imports
 
 '''
 
-from UIElements.frontPage        import   FrontPage
-from UIElements.screenControls   import   ScreenControls
-from UIElements.gcodeCanvas      import   GcodeCanvas
-from UIElements.otherFeatures    import   OtherFeatures
-from UIElements.softwareSettings import   SoftwareSettings
-from UIElements.viewMenu         import   ViewMenu
-from UIElements.runMenu          import   RunMenu
-from UIElements.connectMenu      import   ConnectMenu
-from UIElements.diagnosticsMenu  import   Diagnostics
-from UIElements.manualControls   import   ManualControl
-from DataStructures.data         import   Data
+from UIElements.frontPage         import   FrontPage
+from UIElements.screenControls    import   ScreenControls
+from UIElements.gcodeCanvas       import   GcodeCanvas
+from UIElements.otherFeatures     import   OtherFeatures
+from UIElements.softwareSettings  import   SoftwareSettings
+from UIElements.viewMenu          import   ViewMenu
+from UIElements.runMenu           import   RunMenu
+from UIElements.connectMenu       import   ConnectMenu
+from UIElements.diagnosticsMenu   import   Diagnostics
+from UIElements.manualControls    import   ManualControl
+from DataStructures.data          import   Data
+from Connection.nonVisibleWidgets import   NonVisibleWidgets
 '''
 
 Main UI Program
@@ -64,12 +65,14 @@ class GroundControlApp(App):
         self.frontpage = FrontPage(name='FrontPage')
         interface.add_widget(self.frontpage)
         
+        self.nonVisibleWidgets = NonVisibleWidgets()
+        
         '''
         Initializations
         '''
         
         self.frontpage.setUpData(self.data)
-        
+        self.nonVisibleWidgets.setUpData(self.data)
         self.frontpage.gcodecanvas.initialzie()
         
         
@@ -79,13 +82,22 @@ class GroundControlApp(App):
         
         Clock.schedule_interval(self.runPeriodically, .01)
         
+        
+        '''
+        Load User Settings
+        '''
+        self.data.comport = self.config.get('Makesmith Settings', 'COMport')
+        self.data.config  = self.config
+        
+        
+        
         return interface
-    
+        
     def build_config(self, config):
         """
         Set the default values for the configs sections.
         """
-        config.setdefaults('Makesmith Settings', {'COMport': 'COM3', 'xPitch': 20})
+        config.setdefaults('Makesmith Settings', {'COMport': 'COM5', 'xPitch': 20})
 
     def build_settings(self, settings):
         """
@@ -122,7 +134,6 @@ class GroundControlApp(App):
         '''
         if not self.data.message_queue.empty(): #if there is new data to be read
             message = self.data.message_queue.get()
-            print message
             if message[0:2] == "pz":
                 self.setPosOnScreen(message)
             elif message[0:6] == "gready":
@@ -130,7 +141,6 @@ class GroundControlApp(App):
                 if self.frontpage.gcodecanvas.uploadFlag == 1:
                     self.frontpage.sendLine()
                     self.frontpage.gcodecanvas.readyFlag = 0
-            
             else:
                 try:
                     newText = self.frontpage.consoleText[-30:] + message
