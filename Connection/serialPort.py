@@ -1,4 +1,3 @@
-from kivy.uix.floatlayout                      import  FloatLayout
 from kivy.properties                           import  ListProperty
 from kivy.clock                                import  Clock
 from DataStructures.makesmithInitFuncs         import  MakesmithInitFuncs
@@ -8,9 +7,12 @@ import sys
 import serial
 import threading
 
-class SerialPort(FloatLayout, MakesmithInitFuncs):
+class SerialPort(MakesmithInitFuncs):
     
     COMports = ListProperty(("Available Ports:", "None"))
+    
+    def __init__(self):
+        Clock.schedule_interval(self.recieveMessage, 1)
     
     def setPort(self, port):
         print "update ports"
@@ -22,8 +24,6 @@ class SerialPort(FloatLayout, MakesmithInitFuncs):
         
         self.data.config.set('Makesmith Settings', 'COMport', str(self.data.comport))
         self.data.config.write()
-        
-        self.recieveMessage()
     
     def updatePorts(self, *args):
         
@@ -47,7 +47,7 @@ class SerialPort(FloatLayout, MakesmithInitFuncs):
     
     '''
     
-    def recieveMessage(self):
+    def recieveMessage(self, *args):
         #This function opens the thread which handles the input from the serial port
         #It only needs to be run once, it is run by connecting to the machine
         
