@@ -20,8 +20,6 @@ class SerialPort(MakesmithInitFuncs):
         self.data.comport = port
     
     def connect(self, *args):
-        print "connect pressed"
-        
         self.data.config.set('Makesmith Settings', 'COMport', str(self.data.comport))
         self.data.config.write()
     
@@ -51,7 +49,6 @@ class SerialPort(MakesmithInitFuncs):
         #This function opens the thread which handles the input from the serial port
         #It only needs to be run once, it is run by connecting to the machine
         
-        print("Starting Second Thread")
         #self.data.message_queue is the queue which handles passing CAN messages between threads
         x = SerialPortThread()
         x.setUpData(self.data)

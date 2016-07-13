@@ -14,15 +14,15 @@ class SerialPortThread(MakesmithInitFuncs):
 
         
     def getmessage (self):
-        print("Waiting for new message")
+        #print("Waiting for new message")
         #opens a serial connection called serialCAN
         from time import sleep
         
         try:
-            print("connecting")
+            #print("connecting")
             serialCAN = serial.Serial(self.data.comport, 19200, timeout = .25) #self.data.comport is the com port which is opened
         except:
-            print(self.data.comport + " is unavailable or in use")
+            #print(self.data.comport + " is unavailable or in use")
             self.data.message_queue.put("\n" + self.data.comport + " is unavailable or in use")
         else:
             self.data.message_queue.put("\r\nConnected on port " + self.data.comport + "\r\n")
@@ -37,8 +37,8 @@ class SerialPortThread(MakesmithInitFuncs):
             serialCAN.parity = serial.PARITY_NONE
             serialCAN.open()
             
-            print "port open?:"
-            print serialCAN.isOpen()
+            #print "port open?:"
+            #print serialCAN.isOpen()
             
             while True:
                 
@@ -50,8 +50,6 @@ class SerialPortThread(MakesmithInitFuncs):
                     msg = msg.decode('utf-8')
                 except:
                     pass
-                
-                print msg
                 
                 if len(msg) > 0:
                     

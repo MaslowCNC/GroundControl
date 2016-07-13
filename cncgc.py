@@ -134,7 +134,6 @@ class GroundControlApp(App):
         '''
         if not self.data.message_queue.empty(): #if there is new data to be read
             message = self.data.message_queue.get()
-            print message
             if message[0:2] == "pz":
                 self.setPosOnScreen(message)
             elif message[0:6] == "gready":
@@ -142,7 +141,6 @@ class GroundControlApp(App):
                 if self.frontpage.gcodecanvas.uploadFlag == 1:
                     self.frontpage.sendLine()
                     self.frontpage.gcodecanvas.readyFlag = 0
-            
             else:
                 try:
                     newText = self.frontpage.consoleText[-30:] + message
