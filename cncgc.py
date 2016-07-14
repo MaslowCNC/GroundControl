@@ -144,7 +144,7 @@ class GroundControlApp(App):
             else:
                 try:
                     newText = self.frontpage.consoleText[-30:] + message
-                    self.frontpage.consoleText = message
+                    self.frontpage.consoleText = newText
                 except:
                     self.frontpage.consoleText = "text not displayed correctly"
     
