@@ -30,7 +30,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     lastTouchY = 0
     motionFlag = 0
     
-    canvasScaleFactor = 8 #scale from mm to pixels
+    canvasScaleFactor = 24 #scale from mm to pixels
     
     xPosition = 0
     yPosition = 0
@@ -61,15 +61,14 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.scatterInstance.apply_transform(mat)
             
             self.data.bind(gcode = self.updateGcode)
-            
-     
+    
     def updateGcode(self, *args):
         self.drawgcode()
     
     def setCrossPos(self, xPos, yPos):
-        self.crossPosX = xPos
-        self.crossPosY = yPos
-        self.positionIndicator.move(10,29)
+        self.crossPosX = xPos*self.canvasScaleFactor
+        self.crossPosY = yPos*self.canvasScaleFactor
+        self.positionIndicator.move(self.crossPosX,self.crossPosY)
     
     def angleGet(self, X, Y, centerX, centerY):
         '''
