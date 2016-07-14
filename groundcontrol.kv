@@ -30,6 +30,7 @@
         Label: 
             id: scatterObject
             text: ""
+        PositionIndicator:
     
 <FrontPage>:
     textconsole:textconsole
@@ -448,7 +449,13 @@
 
 <SoftwareSettings>:
     
-
+<PositionIndicator>:
+    size: 50, 50 
+    canvas:
+        Ellipse:
+            pos: self.pos
+            size: self.size   
+    
 <LoadDialog>:
     BoxLayout:
         size: root.size

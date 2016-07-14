@@ -46,7 +46,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             indicatorSize = 20
             Line(points = (-indicatorSize, -indicatorSize, indicatorSize, indicatorSize))
             Line(points = (indicatorSize, -indicatorSize, -indicatorSize, indicatorSize))
-            Line(circle=(0, 0, indicatorSize))
+            indicatorCircle = Line(circle=(self.crossPosX, self.crossPosY, indicatorSize))
+            print indicatorCircle.circle.center_x
             
             #create the axis lines
             crossLineLength = 10000
@@ -64,8 +65,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.drawgcode()
     
     def setCrossPos(self, xPos, yPos):
-        self.crossPosX = xPos * self.canvasScaleFactor
-        self.crossPosY = yPos * self.canvasScaleFactor
+        self.crossPosX = xPos
+        self.crossPosY = yPos
     
     def angleGet(self, X, Y, centerX, centerY):
         '''
