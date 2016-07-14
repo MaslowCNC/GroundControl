@@ -24,12 +24,16 @@
 <GcodeCanvas>:
     scatterObject:scatterObject
     scatterInstance:scatterInstance
+    positionIndicator:positionIndicator
+    
     Scatter:
         do_rotation: False
         id: scatterInstance
         Label: 
             id: scatterObject
             text: ""
+        PositionIndicator:
+            id: positionIndicator
     
 <FrontPage>:
     textconsole:textconsole
@@ -448,7 +452,23 @@
 
 <SoftwareSettings>:
     
-
+<PositionIndicator>:
+    size: 50, 50 
+    canvas:
+#        Ellipse:
+#            pos: self.pos
+#            size: self.size
+        Line:
+            circle:
+                (self.center_x-self.width/2, self.center_y-self.height/2, min(self.width, self.height)/ 2)
+            width: 1.5
+        Line:
+            points: (self.x-self.width/2, self.y-self.height/2, self.width/2+self.x, self.height/2+self.y)
+            width: 1.5
+        Line:
+            points: (self.x-self.width/2, self.height/2+self.y, self.width/2+self.x, self.y-self.height/2)
+            width: 1.5
+    
 <LoadDialog>:
     BoxLayout:
         size: root.size

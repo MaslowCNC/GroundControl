@@ -10,6 +10,7 @@ from kivy.properties                       import NumericProperty, ObjectPropert
 from kivy.graphics                         import Color, Ellipse, Line
 from kivy.uix.scatter                      import Scatter
 from DataStructures.makesmithInitFuncs     import MakesmithInitFuncs
+from UIElements.positionIndicator          import PositionIndicator
 
 import re
 import math
@@ -18,6 +19,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     scatterObject = ObjectProperty(None)
     scatterInstance = ObjectProperty(None)
+    positionIndicator = ObjectProperty(None)
     
     crossPosX = NumericProperty(0)
     crossPosY = NumericProperty(0)
@@ -28,7 +30,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     lastTouchY = 0
     motionFlag = 0
     
-    canvasScaleFactor = 8 #scale from mm to pixels
+    canvasScaleFactor = 24 #scale from mm to pixels
     
     xPosition = 0
     yPosition = 0
@@ -42,12 +44,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         with self.scatterObject.canvas:
             Color(1, 1, 1)
             
-            #create the position indicator
-            indicatorSize = 20
-            Line(points = (-indicatorSize, -indicatorSize, indicatorSize, indicatorSize))
-            Line(points = (indicatorSize, -indicatorSize, -indicatorSize, indicatorSize))
-            Line(circle=(0, 0, indicatorSize))
-            
             #create the axis lines
             crossLineLength = 10000
             Line(points = (-crossLineLength,0,crossLineLength,0), dash_offset = 5)
@@ -58,14 +54,19 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.scatterInstance.apply_transform(mat)
             
             self.data.bind(gcode = self.updateGcode)
-            
-     
+    
     def updateGcode(self, *args):
         self.drawgcode()
     
     def setCrossPos(self, xPos, yPos):
-        self.crossPosX = xPos * self.canvasScaleFactor
-        self.crossPosY = yPos * self.canvasScaleFactor
+        '''
+        
+        Move cross-hairs on UI
+        
+        '''
+        self.crossPosX = xPos*self.canvasScaleFactor
+        self.crossPosY = yPos*self.canvasScaleFactor
+        self.positionIndicator.move(self.crossPosX,self.crossPosY)
     
     def angleGet(self, X, Y, centerX, centerY):
         '''
