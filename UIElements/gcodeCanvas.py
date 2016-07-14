@@ -44,13 +44,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         with self.scatterObject.canvas:
             Color(1, 1, 1)
             
-            #create the position indicator
-            #indicatorSize = 20
-            #Line(points = (-indicatorSize, -indicatorSize, indicatorSize, indicatorSize))
-            #Line(points = (indicatorSize, -indicatorSize, -indicatorSize, indicatorSize))
-            #indicatorCircle = Line(circle=(self.crossPosX, self.crossPosY, indicatorSize))
-            
-            
             #create the axis lines
             crossLineLength = 10000
             Line(points = (-crossLineLength,0,crossLineLength,0), dash_offset = 5)
@@ -66,6 +59,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.drawgcode()
     
     def setCrossPos(self, xPos, yPos):
+        '''
+        
+        Move cross-hairs on UI
+        
+        '''
         self.crossPosX = xPos*self.canvasScaleFactor
         self.crossPosY = yPos*self.canvasScaleFactor
         self.positionIndicator.move(self.crossPosX,self.crossPosY)
