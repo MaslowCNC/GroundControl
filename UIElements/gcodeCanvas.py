@@ -10,6 +10,7 @@ from kivy.properties                       import NumericProperty, ObjectPropert
 from kivy.graphics                         import Color, Ellipse, Line
 from kivy.uix.scatter                      import Scatter
 from DataStructures.makesmithInitFuncs     import MakesmithInitFuncs
+from UIElements.positionIndicator          import PositionIndicator
 
 import re
 import math
@@ -18,6 +19,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     scatterObject = ObjectProperty(None)
     scatterInstance = ObjectProperty(None)
+    positionIndicator = ObjectProperty(None)
     
     crossPosX = NumericProperty(0)
     crossPosY = NumericProperty(0)
@@ -43,11 +45,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Color(1, 1, 1)
             
             #create the position indicator
-            indicatorSize = 20
-            Line(points = (-indicatorSize, -indicatorSize, indicatorSize, indicatorSize))
-            Line(points = (indicatorSize, -indicatorSize, -indicatorSize, indicatorSize))
-            indicatorCircle = Line(circle=(self.crossPosX, self.crossPosY, indicatorSize))
-            print indicatorCircle.circle.center_x
+            #indicatorSize = 20
+            #Line(points = (-indicatorSize, -indicatorSize, indicatorSize, indicatorSize))
+            #Line(points = (indicatorSize, -indicatorSize, -indicatorSize, indicatorSize))
+            #indicatorCircle = Line(circle=(self.crossPosX, self.crossPosY, indicatorSize))
+            
             
             #create the axis lines
             crossLineLength = 10000
@@ -67,6 +69,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     def setCrossPos(self, xPos, yPos):
         self.crossPosX = xPos
         self.crossPosY = yPos
+        self.positionIndicator.move(10,29)
     
     def angleGet(self, X, Y, centerX, centerY):
         '''
