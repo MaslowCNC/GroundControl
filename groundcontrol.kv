@@ -168,44 +168,36 @@
         height: 40
         pos: root.width - 75 , root.height-280
         disabled: True
-    Label:
-        text: root.xReadoutPos
-        size_hint: None, None
-        pos: root.width - 220, root.height-360
-    Label:
-        text: root.yReadoutPos
-        size_hint: None, None
-        pos: root.width - 220, root.height-380
-    Label:
-        text: root.zReadoutPos
+    
+    GridLayout:
+        cols: 2
         size_hint: None, None
         pos: root.width - 220, root.height-400
-    Label:
-        text: "Estimated Time Remaining:"
-        size_hint: None, None
-        pos: root.width - 120, root.height-360
-        font_size: '11sp'
-        disabled: True
-    Label:
-        text: "TBD"
-        size_hint: None, None
-        pos: root.width - 120, root.height-380
-        disabled: True
-    Label:
-        text: "0.0"
-        size_hint: None, None
-        pos: root.width - 120, root.height-400
-        disabled: True
+        Label:
+            text: root.xReadoutPos
+        Label:
+            text: root.yReadoutPos
+        Label:
+            text: root.zReadoutPos
+        Label:
+            text: "Estimated Time Remaining:"
+            font_size: '11sp'
+            disabled: True
+        Label:
+            text: "TBD"
+            disabled: True
+        Label:
+            text: "0.0"
+            disabled: True
     Label:
         text: "Connected on COM11"
         size_hint: None, None
         pos: root.width - 170, root.height-430
         disabled: True
-    Label:
+    ScrollableLabel:
         id: textconsole
         text: root.consoleText
         size_hint: None, None
-        max_lines: 3
         pos: root.width - 170, root.height-500
     ScreenControls:
         id: screenControls
