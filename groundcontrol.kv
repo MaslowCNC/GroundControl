@@ -172,23 +172,40 @@
     GridLayout:
         cols: 2
         pos: root.width - 320, root.height-350
-        size_hint: (.25,.09)
         Label:
             text: root.xReadoutPos
+            size_hint: None, None
+            width:20
+            height: 20
         Label:
             text: "Estimated Time Remaining:"
             font_size: '11sp'
             disabled: True
+            size_hint: None, None
+            width:20
+            height: 20
         Label:
             text: root.yReadoutPos
+            size_hint: None, None
+            width:20
+            height: 20
         Label:
             text: "TBD"
             disabled: True
+            size_hint: None, None
+            width:20
+            height: 20
         Label:
             text: root.zReadoutPos
+            size_hint: None, None
+            width:20
+            height: 20
         Label:
             text: str(root.width) #"0.0%"
             disabled: True
+            size_hint: None, None
+            width:20
+            height: 20
 
     Label:
         text: "Connected on COM11"
