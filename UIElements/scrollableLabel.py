@@ -12,5 +12,9 @@ class ScrollableLabel(ScrollView):
     text = StringProperty('')
     
     def gotToBottom(self):
-        print "go to bottom ran"
+        '''
+        
+        Scroll the widget to the bottom
+        
+        '''
         self.scroll_y = 0

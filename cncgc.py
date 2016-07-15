@@ -142,11 +142,10 @@ class GroundControlApp(App):
                     self.frontpage.sendLine()
                     self.frontpage.gcodecanvas.readyFlag = 0
             else:
-                self.frontpage.textconsole.gotToBottom()
                 try:
                     newText = self.frontpage.consoleText[-3000:] + message
                     self.frontpage.consoleText = newText
-                    
+                    self.frontpage.textconsole.gotToBottom()
                 except:
                     self.frontpage.consoleText = "text not displayed correctly"
     
