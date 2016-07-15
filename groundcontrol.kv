@@ -201,12 +201,12 @@
         size_hint: None, None
         pos: root.width - 170, root.height-430
         disabled: True
-    Label:
+    ScrollableLabel:
         id: textconsole
+        size: 300, 200
         text: root.consoleText
         size_hint: None, None
-        max_lines: 3
-        pos: root.width - 170, root.height-500
+        pos: root.width - 310, root.height-600
     ScreenControls:
         id: screenControls
         size_hint: (1, 1)
