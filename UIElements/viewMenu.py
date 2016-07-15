@@ -89,10 +89,10 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         '''
         
         popupText = ""
-        if len(self.gcodeCanvas.gcode) is 0:
+        if len(self.data.gcode) is 0:
             popupText =  "No gcode to display"
         else:
-            for gcodeLine in self.gcodeCanvas.gcode:
+            for gcodeLine in self.data.gcode:
                 popupText = popupText + gcodeLine + "\n"
                 
         content = ScrollableTextPopup(cancel = self.dismiss_popup, text = popupText)
