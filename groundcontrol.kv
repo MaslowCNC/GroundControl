@@ -1,12 +1,12 @@
 #kivy 1.9.9
 
-#<Widget>:
+<Widget>:
 #This can be used to create boxes around each widget to clarify positioning issues. It is only for debug
-#    canvas.after:
-#        Line:
-#            rectangle: self.x+1,self.y+1,self.width-1,self.height-1
-#            dash_offset: 5
-#            dash_length: 3
+    canvas.after:
+        Line:
+            rectangle: self.x+1,self.y+1,self.width-1,self.height-1
+            dash_offset: 5
+            dash_length: 3
 
 <ScreenControls>
     BoxLayout:
@@ -203,10 +203,10 @@
         disabled: True
     ScrollableLabel:
         id: textconsole
+        size: 300, 200
         text: root.consoleText
         size_hint: None, None
-        max_lines: 3
-        pos: root.width - 170, root.height-500
+        pos: root.width - 310, root.height-600
     ScreenControls:
         id: screenControls
         size_hint: (1, 1)
