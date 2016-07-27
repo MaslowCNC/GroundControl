@@ -80,7 +80,7 @@ class GroundControlApp(App):
         Scheduling
         '''
         
-        Clock.schedule_interval(self.runPeriodically, .001)
+        Clock.schedule_interval(self.runPeriodically, .01)
         
         
         '''
