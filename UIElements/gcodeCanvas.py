@@ -49,6 +49,15 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Line(points = (-crossLineLength,0,crossLineLength,0), dash_offset = 5)
             Line(points = (0, -crossLineLength,0,crossLineLength), dash_offset = 5)
             
+            #create 4'X8' bounding box
+            workspaceHeight    = 1219 #4' in mm
+            workspaceWidth     = 2438 #8' in mm
+            Line(points = ( -workspaceWidth/2 , -workspaceHeight/2 , workspaceWidth/2 , -workspaceHeight/2), dash_offset = 5)
+            Line(points = ( -workspaceWidth/2 , workspaceHeight/2 , workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
+            Line(points = ( -workspaceWidth/2 , -workspaceHeight/2 , -workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
+            Line(points = ( workspaceWidth/2 , -workspaceHeight/2 , workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
+            
+            
             from kivy.graphics.transformation import Matrix
             mat = Matrix().translate(100, 100, 0)
             self.scatterInstance.apply_transform(mat)
