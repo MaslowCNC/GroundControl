@@ -165,9 +165,9 @@ class GroundControlApp(App):
         
         valz = numz.split(",")
         
-        xval = -1*float(valz[0])*1.27
-        yval = float(valz[1])*1.27
-        zval = float(valz[2])*1.27
+        xval = float(valz[0])
+        yval = float(valz[1])
+        zval = float(valz[2])
     
         self.frontpage.setPosReadout(xval,yval,zval)
         self.frontpage.gcodecanvas.setCrossPos(xval,yval)
