@@ -80,7 +80,7 @@ class GroundControlApp(App):
         Scheduling
         '''
         
-        Clock.schedule_interval(self.runPeriodically, .01)
+        Clock.schedule_interval(self.runPeriodically, .001)
         
         
         '''
@@ -165,7 +165,7 @@ class GroundControlApp(App):
         
         valz = numz.split(",")
         
-        xval = -1*float(valz[0])
+        xval = float(valz[0])
         yval = float(valz[1])
         zval = float(valz[2])
     
