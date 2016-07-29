@@ -150,10 +150,14 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def sendLine(self):
         try:
-            self.data.gcode_queue.put(self.gcodecanvas.gcode[self.gcodecanvas.gcodePos])
-            self.gcodecanvas.gcodePos = self.gcodecanvas.gcodePos + 1
+            self.data.gcode_queue.put(self.data.gcode[self.data.gcodeIndex])
+            self.data.gcodeIndex = self.data.gcodeIndex + 1
         except:
             print "gcode run complete"
+            self.gcodecanvas.uploadFlag = 0
+            self.data.gcodeIndex = 0
+            
+            
     
     def stopRun(self):
         #stoprun stops the machine's movement immediately when it is moving.
