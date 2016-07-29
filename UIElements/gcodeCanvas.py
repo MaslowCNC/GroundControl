@@ -30,7 +30,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     lastTouchY = 0
     motionFlag = 0
     
-    canvasScaleFactor = 24 #scale from mm to pixels
+    canvasScaleFactor = 1 #scale from mm to pixels
     
     xPosition = 0
     yPosition = 0
