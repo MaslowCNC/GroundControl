@@ -272,12 +272,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 self.drawG3(opstring)
             
             if opstring[0:3] == 'G20':
-                if self.canvasScaleFactor < 15: #if the machine is currently in mm (this prevents the code from running EVERY time the gcode is redrawn
-                    #self.switchinches()
-                    pass
+                self.canvasScaleFactor = 25.4
                 
             if opstring[0:3] == 'G21':
-                pass
+                self.canvasScaleFactor = 1
                 
             if opstring[0:3] == 'G90':
                 self.absoluteFlag = 1
