@@ -32,6 +32,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     motionFlag = 0
     
     canvasScaleFactor = 1 #scale from mm to pixels
+    INCHES            = 25.4
+    MILLIMETERS       = 1 
     
     xPosition = 0
     yPosition = 0
@@ -67,14 +69,21 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     def updateGcode(self, *args):
         self.drawgcode()
     
-    def setCrossPos(self, xPos, yPos):
+    def setCrossPos(self, xPos, yPos, units):
         '''
         
         Move cross-hairs on UI
         
         '''
-        self.crossPosX = xPos*self.canvasScaleFactor
-        self.crossPosY = yPos*self.canvasScaleFactor
+        
+        if units == "mm":
+            self.crossPosX = xPos*self.MILLIMETERS
+            self.crossPosY = yPos*self.MILLIMETERS
+        elif units == "in":
+            self.crossPosX = xPos*self.INCHES
+            self.crossPosY = yPos*self.INCHES
+        
+        
         self.positionIndicator.move(self.crossPosX,self.crossPosY)
     
     def angleGet(self, X, Y, centerX, centerY):
@@ -272,10 +281,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 self.drawG3(opstring)
             
             if opstring[0:3] == 'G20':
-                self.canvasScaleFactor = 25.4
+                self.canvasScaleFactor = self.INCHES
                 
             if opstring[0:3] == 'G21':
-                self.canvasScaleFactor = 1
+                self.canvasScaleFactor = self.MILLIMETERS
                 
             if opstring[0:3] == 'G90':
                 self.absoluteFlag = 1

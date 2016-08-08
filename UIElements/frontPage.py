@@ -32,10 +32,10 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     consoleText = StringProperty(" ")
     
-    def setPosReadout(self, xPos, yPos, zPos):
-        self.xReadoutPos = str(xPos) + " mm"
-        self.yReadoutPos = str(yPos) + " mm"
-        self.zReadoutPos = str(zPos) + " mm"
+    def setPosReadout(self, xPos, yPos, zPos, units):
+        self.xReadoutPos = str(xPos) + " " + units
+        self.yReadoutPos = str(yPos) + " " + units
+        self.zReadoutPos = str(zPos) + " " + units
     
     def setUpData(self, data):
         self.data = data
@@ -134,12 +134,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def reZero(self): 
         self.target = [0,0,0]
-        
-        self.xReadoutPos = "0 mm"
-        self.yReadoutPos = "0 mm"
-        self.zReadoutPos = "0 mm"
-        
-        self.gcodecanvas.setCrossPos(0,0)
         
         self.data.gcode_queue.put("G10 X0 Y0 Z0 ")
     
