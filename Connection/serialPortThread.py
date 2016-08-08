@@ -1,6 +1,5 @@
 from DataStructures.makesmithInitFuncs         import   MakesmithInitFuncs
 import serial
-import time
 
 
 class SerialPortThread(MakesmithInitFuncs):
@@ -12,16 +11,13 @@ class SerialPortThread(MakesmithInitFuncs):
     queue where they are added to the GUI
     
     '''
-    lastTime = time.time()
+    
     machineIsReadyForData = False
     
     def _write (self, message):
         message = message + " "
         message = message.encode()
-        print("Sending: ")
-        print(message)
-        print "time to send line: " + str(time.time() - self.lastTime)
-        self.lastTime = time.time()
+        print("Sending: " + str(message))
         try:
             self.serialInstance.write(message)
         except:
@@ -30,7 +26,6 @@ class SerialPortThread(MakesmithInitFuncs):
     def getmessage (self):
         #print("Waiting for new message")
         #opens a serial connection called self.serialInstance
-        from time import sleep
         
         try:
             #print("connecting")
@@ -69,7 +64,6 @@ class SerialPortThread(MakesmithInitFuncs):
                 if len(msg) > 0:
                     
                     if msg == "gready\r\n":
-                        print "ready"
                         self.machineIsReadyForData = True
                     else:
                         self.data.message_queue.put(msg);
@@ -79,8 +73,6 @@ class SerialPortThread(MakesmithInitFuncs):
                 if self.machineIsReadyForData:
                     if self.data.gcode_queue.empty() != True:
                         gcode = self.data.gcode_queue.get_nowait() + " "
-                        print "got some gcode"
-                        print gcode
                         self._write(gcode)
                         self.machineIsReadyForData = False
                         
