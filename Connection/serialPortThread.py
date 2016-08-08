@@ -13,6 +13,7 @@ class SerialPortThread(MakesmithInitFuncs):
     
     '''
     lastTime = time.time()
+    machineIsReadyForData = False
     
     def _write (self, message):
         message = message.encode()
@@ -67,10 +68,23 @@ class SerialPortThread(MakesmithInitFuncs):
                 if len(msg) > 0:
                     
                     if msg == "gready\r\n":
-                        if self.data.uploadFlag:
-                            self._write("G01 X123 Y213 F100 ")
-                
-                #check to see if there are new commands to be sent to the machine
-                if self.data.gcode_queue.empty
+                        print "ready"
+                        self.machineIsReadyForData = True
+                    else:
+                        self.data.message_queue.put(msg);
                     
+                        
+                #send information to machine if necessary
+                if self.machineIsReadyForData:
+                    if self.data.gcode_queue.empty() != True:
+                        gcode = self.data.gcode_queue.get_nowait() + " "
+                        print "got some gcode"
+                        print gcode
+                        self._write(gcode)
+                        self.machineIsReadyForData = False
+                        
+                    elif self.data.uploadFlag:
+                        self._write("G01 X123 Y213 F100 ")
+                        self.machineIsReadyForData = False
+                
                     
