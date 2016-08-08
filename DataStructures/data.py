@@ -61,7 +61,7 @@ class Data(EventDispatcher):
     #all of the available COM ports
     comPorts = []
     #This defines which COM port is used
-    comport = "COM4"
+    comport = ""
     #The index of the next unread line of Gcode
     gcodeIndex = 0
     #Holds the current value of the feed rate
