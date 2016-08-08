@@ -25,7 +25,7 @@ class SerialPort(MakesmithInitFuncs):
         Runs on creation, schedules the software to attempt to connect to the machine
         
         '''
-        Clock.schedule_interval(self.recieveMessage, 2)
+        Clock.schedule_interval(self.openConnection, 2)
     
     def setPort(self, port):
         '''
@@ -71,7 +71,7 @@ class SerialPort(MakesmithInitFuncs):
     
     '''
     
-    def recieveMessage(self, *args):
+    def openConnection(self, *args):
         #This function opens the thread which handles the input from the serial port
         #It only needs to be run once, it is run by connecting to the machine
         

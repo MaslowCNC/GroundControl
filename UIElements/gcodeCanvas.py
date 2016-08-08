@@ -35,11 +35,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     xPosition = 0
     yPosition = 0
     
-    gcode = []
-    gcodePos = 0
-    uploadFlag = 0
-    readyFlag = 0
-    
     def initialzie(self):
         with self.scatterObject.canvas:
             Color(1, 1, 1)

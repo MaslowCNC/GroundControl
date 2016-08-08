@@ -132,20 +132,15 @@ class GroundControlApp(App):
         '''
         this block should be handled within the appropriate widget
         '''
-        if not self.data.message_queue.empty(): #if there is new data to be read
+        while not self.data.message_queue.empty(): #if there is new data to be read
             message = self.data.message_queue.get()
             if message[0:2] == "pz":
                 self.setPosOnScreen(message)
-            elif message[0:6] == "gready":
-                self.frontpage.gcodecanvas.readyFlag = 1
-                if self.frontpage.gcodecanvas.uploadFlag == 1:
-                    self.frontpage.sendLine()
-                    self.frontpage.gcodecanvas.readyFlag = 0
             else:
                 try:
                     newText = self.frontpage.consoleText[-3000:] + message
                     self.frontpage.consoleText = newText
-                    self.frontpage.textconsole.gotToBottom()
+                    self.frontpage.textconsole.gotToBottom()  
                 except:
                     self.frontpage.consoleText = "text not displayed correctly"
     
