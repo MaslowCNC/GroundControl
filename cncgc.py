@@ -43,7 +43,7 @@ class GroundControlApp(App):
         {
             "type": "string",
             "title": "Serial Connection",
-            "desc": "Sellect the COM port to connect to machine",
+            "desc": "Select the COM port to connect to machine",
             "section": "Makesmith Settings",
             "key": "COMport"
         },
@@ -53,6 +53,13 @@ class GroundControlApp(App):
             "desc": "The number of mm moved per rotation",
             "section": "Makesmith Settings",
             "key": "xPitch"
+        },
+        {
+            "type": "string",
+            "title": "Open File",
+            "desc": "The path to the open file",
+            "section": "Makesmith Settings",
+            "key": "openFile"
         }
     ]
     '''
@@ -66,6 +73,14 @@ class GroundControlApp(App):
         interface.add_widget(self.frontpage)
         
         self.nonVisibleWidgets = NonVisibleWidgets()
+        
+        '''
+        Load User Settings
+        '''
+        self.data.comport = self.config.get('Makesmith Settings', 'COMport')
+        self.data.gcodeFile = self.config.get('Makesmith Settings', 'openFile')
+        self.data.config  = self.config
+        
         
         '''
         Initializations
@@ -83,21 +98,13 @@ class GroundControlApp(App):
         Clock.schedule_interval(self.runPeriodically, .01)
         
         
-        '''
-        Load User Settings
-        '''
-        self.data.comport = self.config.get('Makesmith Settings', 'COMport')
-        self.data.config  = self.config
-        
-        
-        
         return interface
         
     def build_config(self, config):
         """
         Set the default values for the configs sections.
         """
-        config.setdefaults('Makesmith Settings', {'COMport': 'COM5', 'xPitch': 20})
+        config.setdefaults('Makesmith Settings', {'COMport': 'COM5', 'xPitch': 20, 'openFile': " "})
 
     def build_settings(self, settings):
         """
