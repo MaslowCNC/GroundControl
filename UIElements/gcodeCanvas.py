@@ -11,6 +11,7 @@ from kivy.graphics                         import Color, Ellipse, Line
 from kivy.uix.scatter                      import Scatter
 from DataStructures.makesmithInitFuncs     import MakesmithInitFuncs
 from UIElements.positionIndicator          import PositionIndicator
+from UIElements.viewMenu                   import ViewMenu
 
 import re
 import math
@@ -58,6 +59,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.scatterInstance.apply_transform(mat)
             
             self.data.bind(gcode = self.updateGcode)
+        
+        tempViewMenu = ViewMenu()
+        tempViewMenu.setUpData(self.data)
+        tempViewMenu.reloadGcode()
     
     def updateGcode(self, *args):
         self.drawgcode()

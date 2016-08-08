@@ -10,7 +10,6 @@ from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
 
 
 class ViewMenu(GridLayout, MakesmithInitFuncs):
-    gcodeFilePath = ""
     
     def openFile(self):
         '''
@@ -47,7 +46,10 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         filename = filename[0]
         fileExtension = filename[-4:]
         
-        self.gcodeFilePath = filename
+        self.data.gcodeFile = filename
+        self.data.config.set('Makesmith Settings', 'openFile', str(self.data.gcodeFile))
+        self.data.config.write()
+        
         self.reloadGcode()
         self.dismiss_popup()
     
@@ -57,8 +59,8 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         This reloads the gcode from the hard drive in case it has been updated. 
         
         '''
+        filename = self.data.gcodeFile
         try:
-            filename = self.gcodeFilePath
             filterfile = open(filename, 'r')
             rawfilters = filterfile.read()
             filtersparsed = re.split(r'\s(?=G)|\n|\s(?=g)|\s(?=M)', rawfilters) #splits the gcode into elements to be added to the list
@@ -77,7 +79,7 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         except:
             if filename is not "":
                 print "Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use File > Open G-code"
-            self.gcodeFilePath = ""
+            self.data.gcodeFile = ""
     
     def show_gcode(self):
         '''
