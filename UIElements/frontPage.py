@@ -153,8 +153,8 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def sendLine(self):
         try:
-            print "Time for line: " + str(timeSince)
-            timeSince = time.time()
+            print "Time for line: " + str(time.time() - self.timeSince)
+            self.timeSince = time.time()
             self.data.gcode_queue.put(self.data.gcode[self.data.gcodeIndex])
             self.data.gcodeIndex = self.data.gcodeIndex + 1
         except:
