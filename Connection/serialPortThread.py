@@ -16,6 +16,7 @@ class SerialPortThread(MakesmithInitFuncs):
     machineIsReadyForData = False
     
     def _write (self, message):
+        message = message + " "
         message = message.encode()
         print("Sending: ")
         print(message)
@@ -84,7 +85,11 @@ class SerialPortThread(MakesmithInitFuncs):
                         self.machineIsReadyForData = False
                         
                     elif self.data.uploadFlag:
-                        self._write("G01 X123 Y213 F100 ")
-                        self.machineIsReadyForData = False
+                        try:
+                            self._write(self.data.gcode[self.data.gcodeIndex])
+                            self.data.gcodeIndex = self.data.gcodeIndex + 1
+                            self.machineIsReadyForData = False
+                        except:
+                            print "fail"
                 
                     
