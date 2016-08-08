@@ -12,16 +12,27 @@ class SerialPortThread(MakesmithInitFuncs):
     queue where they are added to the GUI
     
     '''
-
+    lastTime = time.time()
+    
+    def _write (self, message):
+        message = message.encode()
+        print("Sending: ")
+        print(message)
+        print "time to send line: " + str(time.time() - self.lastTime)
+        self.lastTime = time.time()
+        try:
+            self.serialInstance.write(message)
+        except:
+            print("write issue")
         
     def getmessage (self):
         #print("Waiting for new message")
-        #opens a serial connection called serialCAN
+        #opens a serial connection called self.serialInstance
         from time import sleep
         
         try:
             #print("connecting")
-            serialCAN = serial.Serial(self.data.comport, 19200, timeout = .25) #self.data.comport is the com port which is opened
+            self.serialInstance = serial.Serial(self.data.comport, 19200, timeout = .25) #self.data.comport is the com port which is opened
         except:
             #print(self.data.comport + " is unavailable or in use")
             self.data.message_queue.put("\n" + self.data.comport + " is unavailable or in use")
@@ -33,28 +44,26 @@ class SerialPortThread(MakesmithInitFuncs):
             msg = ""
             subReadyFlag = True
             
-            serialCAN.parity = serial.PARITY_ODD #This is something you have to do to get the connection to open properly. I have no idea why.
-            serialCAN.close()
-            serialCAN.open()
-            serialCAN.close()
-            serialCAN.parity = serial.PARITY_NONE
-            serialCAN.open()
+            self.serialInstance.parity = serial.PARITY_ODD #This is something you have to do to get the connection to open properly. I have no idea why.
+            self.serialInstance.close()
+            self.serialInstance.open()
+            self.serialInstance.close()
+            self.serialInstance.parity = serial.PARITY_NONE
+            self.serialInstance.open()
             
             #print "port open?:"
-            #print serialCAN.isOpen()
+            #print self.serialInstance.isOpen()
             
             while True:
                 
                 try:
-                    msg = serialCAN.readline()
+                    msg = self.serialInstance.readline()
                 except:
                     pass
                 try:
                     msg = msg.decode('utf-8')
                 except:
                     pass
-                
-                print msg
                 
                 if len(msg) > 0:
                     
@@ -63,6 +72,8 @@ class SerialPortThread(MakesmithInitFuncs):
                         subReadyFlag = True
                         if self.data.gcode_queue.qsize() >= 1:
                             msg = ""
+                        else:
+                            self._write("G01 X123 Y213 F100 ")
                     
                     if msg == "Clear Buffer\r\n":
                         print("buffer cleared")
@@ -84,26 +95,19 @@ class SerialPortThread(MakesmithInitFuncs):
                         if qcode == b'Reconnect': #this tells the machine serial thread to close the serial connection
                             qcode = ""
                             print("Attempting to Re-establish connection")
-                            serialCAN.close() #closes the serial port
+                            self.serialInstance.close() #closes the serial port
                             sleep(.25)
                             try:
-                                serialCAN.open()
+                                self.serialInstance.open()
                             except:
                                 return -1
                         else:
                             try:
-                                serialCAN.write(qcode)
+                                self.serialInstance.write(qcode)
                             except:
                                 print("write issue 2")
                 if len(gcode) > 0 and subReadyFlag is True:
-                    gcode = gcode.encode()
-                    print("Sending: ")
-                    print(gcode)
-                    try:
-                        serialCAN.write(gcode)
-                        gcode = ""  
-                    except:
-                        print("write issue")
+                    
                     subReadyFlag = False
                 else:
                     pass

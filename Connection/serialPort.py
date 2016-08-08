@@ -75,7 +75,7 @@ class SerialPort(MakesmithInitFuncs):
     def openConnection(self, *args):
         #This function opens the thread which handles the input from the serial port
         #It only needs to be run once, it is run by connecting to the machine
-        print "open connection"
+        
         #self.data.message_queue is the queue which handles passing CAN messages between threads
         x = SerialPortThread()
         x.setUpData(self.data)
