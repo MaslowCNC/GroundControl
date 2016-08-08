@@ -163,16 +163,18 @@ class GroundControlApp(App):
         
         endpt = message.find(')')
         
-        numz = message[startpt:endpt]
+        numz  = message[startpt:endpt]
+        units = message[endpt+1:endpt+3]
         
         valz = numz.split(",")
         
         xval = float(valz[0])
         yval = float(valz[1])
         zval = float(valz[2])
+        
     
-        self.frontpage.setPosReadout(xval,yval,zval)
-        self.frontpage.gcodecanvas.setCrossPos(xval,yval)
+        self.frontpage.setPosReadout(xval,yval,zval,units)
+        self.frontpage.gcodecanvas.setCrossPos(xval,yval,units)
         
     
 if __name__ == '__main__':
