@@ -149,7 +149,8 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def startRun(self):
         self.reZero()
         
-        self.gcodecanvas.uploadFlag = 1
+        self.data.uploadFlag = 1
+        self.sendLine()
     
     def sendLine(self):
         try:
