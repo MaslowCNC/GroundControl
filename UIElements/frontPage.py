@@ -164,20 +164,13 @@ class FrontPage(Screen, MakesmithInitFuncs):
             self.data.gcodeIndex = 0
     
     def stopRun(self):
-        #stoprun stops the machine's movement immediately when it is moving.
-        stopflag = 0
-        #if self.uploadFlag == 1: 
-        #    stopflag = 1
-        #self.uploadFlag = 0
-        #self.gcodeIndex = 0
+        self.data.uploadFlag = 0
         self.data.quick_queue.put("STOP") 
         with self.data.gcode_queue.mutex:
             self.data.gcode_queue.queue.clear()
         print("Gode Stopped")
         
-        #self.target[0] = self.dataBack.currentpos[0]/self.dataBack.unitsScale
-        #self.target[1] = self.dataBack.currentpos[1]/self.dataBack.unitsScale
-        #self.target[2] = self.dataBack.currentpos[2]/self.dataBack.unitsScale
+        
     
     def toggleSpindle(self):
     #toggleSpindle turns on and off the dremel if a relay is attached

@@ -90,6 +90,7 @@ class SerialPortThread(MakesmithInitFuncs):
                             self.data.gcodeIndex = self.data.gcodeIndex + 1
                             self.machineIsReadyForData = False
                         except:
-                            print "fail"
+                            self.data.uploadFlag = 0
+                            print "Gcode Ended"
                 
                     
