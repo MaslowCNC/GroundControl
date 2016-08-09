@@ -80,6 +80,7 @@ class GroundControlApp(App):
         '''
         Load User Settings
         '''
+        
         self.data.comport = self.config.get('Makesmith Settings', 'COMport')
         self.data.gcodeFile = self.config.get('Makesmith Settings', 'openFile')
         self.data.config  = self.config
