@@ -12,6 +12,8 @@ from kivy.uix.scatter                      import Scatter
 from DataStructures.makesmithInitFuncs     import MakesmithInitFuncs
 from UIElements.positionIndicator          import PositionIndicator
 from UIElements.viewMenu                   import ViewMenu
+from kivy.graphics.transformation          import Matrix
+from kivy.core.window                      import Window
 
 import re
 import math
@@ -56,15 +58,22 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Line(points = ( workspaceWidth/2 , -workspaceHeight/2 , workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
             
             
-            from kivy.graphics.transformation import Matrix
-            mat = Matrix().translate(400, 400, 0)
+            mat = Matrix().translate(Window.width/2, Window.height/2, 0)
             self.scatterInstance.apply_transform(mat)
+            
+            Window.bind(on_resize=self.centerScatter)
+            
+            print "THIS BIT HERE"
+            print Window.width
             
             self.data.bind(gcode = self.updateGcode)
         
         tempViewMenu = ViewMenu()
         tempViewMenu.setUpData(self.data)
         tempViewMenu.reloadGcode()
+    
+    def centerScatter(self, *args):
+        print "maximize happened!"
     
     def updateGcode(self, *args):
         self.drawgcode()
