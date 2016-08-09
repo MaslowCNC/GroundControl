@@ -15,7 +15,7 @@ class SerialPortThread(MakesmithInitFuncs):
     machineIsReadyForData = False
     
     def _write (self, message):
-        message = message + " "
+        message = message + " \n"
         message = message.encode()
         print("Sending: " + str(message))
         try:
