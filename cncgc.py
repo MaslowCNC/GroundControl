@@ -65,6 +65,8 @@ class GroundControlApp(App):
     '''
     
     def build(self):
+        Window.maximize()
+        
         interface       =  FloatLayout()
         self.data       =  Data()
         
@@ -74,9 +76,11 @@ class GroundControlApp(App):
         
         self.nonVisibleWidgets = NonVisibleWidgets()
         
+        
         '''
         Load User Settings
         '''
+        
         self.data.comport = self.config.get('Makesmith Settings', 'COMport')
         self.data.gcodeFile = self.config.get('Makesmith Settings', 'openFile')
         self.data.config  = self.config

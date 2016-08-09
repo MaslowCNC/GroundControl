@@ -12,6 +12,8 @@ from kivy.uix.scatter                      import Scatter
 from DataStructures.makesmithInitFuncs     import MakesmithInitFuncs
 from UIElements.positionIndicator          import PositionIndicator
 from UIElements.viewMenu                   import ViewMenu
+from kivy.graphics.transformation          import Matrix
+from kivy.core.window                      import Window
 
 import re
 import math
@@ -55,16 +57,29 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Line(points = ( -workspaceWidth/2 , -workspaceHeight/2 , -workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
             Line(points = ( workspaceWidth/2 , -workspaceHeight/2 , workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
             
+            Window.bind(on_resize = self.centerScatter)
             
-            from kivy.graphics.transformation import Matrix
-            mat = Matrix().translate(100, 100, 0)
-            self.scatterInstance.apply_transform(mat)
+            Window.bind(on_motion = self.zoom)
             
             self.data.bind(gcode = self.updateGcode)
         
         tempViewMenu = ViewMenu()
         tempViewMenu.setUpData(self.data)
         tempViewMenu.reloadGcode()
+    
+    def centerScatter(self, *args):
+        mat = Matrix().translate(Window.width/2, Window.height/2, 0)
+        self.scatterInstance.transform = mat
+    
+    def zoom(self, callback, type, motion, *args):
+        if motion.is_mouse_scrolling:
+            scaleFactor = .01
+            if motion.button == 'scrollup':
+                mat = Matrix().scale(1-scaleFactor, 1-scaleFactor, 1)
+                self.scatterInstance.apply_transform(mat)
+            elif motion.button == 'scrolldown':
+                mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
+                self.scatterInstance.apply_transform(mat)
     
     def updateGcode(self, *args):
         self.drawgcode()
