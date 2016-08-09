@@ -57,7 +57,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             
             
             from kivy.graphics.transformation import Matrix
-            mat = Matrix().translate(100, 100, 0)
+            mat = Matrix().translate(400, 400, 0)
             self.scatterInstance.apply_transform(mat)
             
             self.data.bind(gcode = self.updateGcode)
