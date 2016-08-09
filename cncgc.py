@@ -10,6 +10,7 @@ from kivy.uix.anchorlayout      import AnchorLayout
 from kivy.core.window           import Window
 from kivy.uix.button            import Button
 from kivy.clock                 import Clock
+from kivy.config                import Config
 
 
 '''
@@ -37,6 +38,7 @@ Main UI Program
 '''
 
 class GroundControlApp(App):
+    
     
     json = '''
     [
@@ -74,12 +76,15 @@ class GroundControlApp(App):
         
         self.nonVisibleWidgets = NonVisibleWidgets()
         
+        Window.maximize()
+        
         '''
         Load User Settings
         '''
         self.data.comport = self.config.get('Makesmith Settings', 'COMport')
         self.data.gcodeFile = self.config.get('Makesmith Settings', 'openFile')
         self.data.config  = self.config
+        
         
         
         '''
