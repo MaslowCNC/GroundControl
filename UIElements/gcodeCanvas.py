@@ -57,14 +57,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Line(points = ( -workspaceWidth/2 , -workspaceHeight/2 , -workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
             Line(points = ( workspaceWidth/2 , -workspaceHeight/2 , workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
             
-            
-            mat = Matrix().translate(Window.width/2, Window.height/2, 0)
-            self.scatterInstance.apply_transform(mat)
-            
             Window.bind(on_resize=self.centerScatter)
-            
-            print "THIS BIT HERE"
-            print Window.width
             
             self.data.bind(gcode = self.updateGcode)
         
@@ -73,7 +66,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         tempViewMenu.reloadGcode()
     
     def centerScatter(self, *args):
-        print "maximize happened!"
+        mat = Matrix().translate(Window.width/2, Window.height/2, 0)
+        self.scatterInstance.transform = mat
     
     def updateGcode(self, *args):
         self.drawgcode()
