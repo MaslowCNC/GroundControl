@@ -39,7 +39,6 @@ Main UI Program
 
 class GroundControlApp(App):
     
-    
     json = '''
     [
         {
@@ -84,7 +83,6 @@ class GroundControlApp(App):
         self.data.comport = self.config.get('Makesmith Settings', 'COMport')
         self.data.gcodeFile = self.config.get('Makesmith Settings', 'openFile')
         self.data.config  = self.config
-        
         
         
         '''
