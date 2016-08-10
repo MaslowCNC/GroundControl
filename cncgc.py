@@ -150,7 +150,6 @@ class GroundControlApp(App):
             if message[0:2] == "pz":
                 self.setPosOnScreen(message)
             elif message[0:8] == "Message:":
-                print "MESSAGE RECOGNIZED"
                 self.data.uploadFlag = 0
                 content = NotificationPopup(cancel = self.dismiss_popup, text = message[9:])
                 self._popup = Popup(title="Notification: ", content=content,
