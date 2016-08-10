@@ -10,6 +10,7 @@ from kivy.uix.anchorlayout      import AnchorLayout
 from kivy.core.window           import Window
 from kivy.uix.button            import Button
 from kivy.clock                 import Clock
+from kivy.uix.popup             import Popup
 
 
 '''
@@ -30,6 +31,7 @@ from UIElements.diagnosticsMenu   import   Diagnostics
 from UIElements.manualControls    import   ManualControl
 from DataStructures.data          import   Data
 from Connection.nonVisibleWidgets import   NonVisibleWidgets
+from UIElements.notificationPopup import   NotificationPopup
 '''
 
 Main UI Program
@@ -147,6 +149,12 @@ class GroundControlApp(App):
             message = self.data.message_queue.get()
             if message[0:2] == "pz":
                 self.setPosOnScreen(message)
+            elif message[0:8] == "Message:":
+                self.data.uploadFlag = 0
+                content = NotificationPopup(cancel = self.dismiss_popup, text = message[9:])
+                self._popup = Popup(title="Notification: ", content=content,
+                            size_hint=(0.25, 0.25))
+                self._popup.open()
             else:
                 try:
                     newText = self.frontpage.consoleText[-3000:] + message
@@ -154,6 +162,15 @@ class GroundControlApp(App):
                     self.frontpage.textconsole.gotToBottom()  
                 except:
                     self.frontpage.consoleText = "text not displayed correctly"
+    
+    def dismiss_popup(self):
+        '''
+        
+        Close The Pop-up
+        
+        '''
+        self._popup.dismiss()
+        self.data.uploadFlag = 1
     
     def setPosOnScreen(self, message):
         '''
