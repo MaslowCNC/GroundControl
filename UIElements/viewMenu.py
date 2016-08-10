@@ -76,7 +76,7 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
             self.data.gcode = filtersparsed
             
             filterfile.close() #closes the filter save file
-        except:
+        except KeyboardInterrupt:
             if filename is not "":
                 print "Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use File > Open G-code"
             self.data.gcodeFile = ""
