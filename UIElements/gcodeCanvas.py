@@ -5,15 +5,15 @@ and zooming features. It was not originally written as a stand alone module whic
 
 '''
 
-from kivy.uix.floatlayout                  import FloatLayout
-from kivy.properties                       import NumericProperty, ObjectProperty
-from kivy.graphics                         import Color, Ellipse, Line
-from kivy.uix.scatter                      import Scatter
-from DataStructures.makesmithInitFuncs     import MakesmithInitFuncs
-from UIElements.positionIndicator          import PositionIndicator
-from UIElements.viewMenu                   import ViewMenu
-from kivy.graphics.transformation          import Matrix
-from kivy.core.window                      import Window
+from kivy.uix.floatlayout                    import FloatLayout
+from kivy.properties                         import NumericProperty, ObjectProperty
+from kivy.graphics                           import Color, Ellipse, Line
+from kivy.uix.scatter                        import Scatter
+from DataStructures.makesmithInitFuncs       import MakesmithInitFuncs
+from UIElements.positionIndicator            import PositionIndicator
+from UIElements.viewMenu                     import ViewMenu
+from kivy.graphics.transformation            import Matrix
+from kivy.core.window                        import Window
 
 import re
 import math
@@ -165,7 +165,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         with self.scatterObject.canvas:
             Color(1, 1, 1)
-            #print "drawing a line from (" + str(self.xPosition) + "," + str(self.yPosition) + ") to (" + str(xTarget) + "," + str(yTarget) + ")"
             Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode')
         
         self.xPosition = xTarget
@@ -254,7 +253,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.yPosition = yTarget
     
     def clearGcode(self):
-        self.canvas.remove_group('gcode')
+        self.scatterObject.canvas.remove_group('gcode')
     
     #This draws the gcode on the canvas.
     def drawgcode(self):
@@ -268,7 +267,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         i = 0
         opstring = ""
         
-        
+        self.clearGcode()
         
         if len(self.data.gcode) > 8000:
             errorText = "The current file contains " + str(len(self.data.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultanously may crash the\n program, only the first 8000 lines are shown here.\nThe complete program will cut if you choose to do so."
