@@ -78,8 +78,6 @@ class Data(EventDispatcher):
     '''
     #sets a flag if the gcode is being uploaded currently
     uploadFlag = 0
-    #flag is 1 if the machine is ready for a command
-    readyFlag = 0
     
     '''
     Pointers to Objects
