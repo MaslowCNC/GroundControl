@@ -8,7 +8,6 @@ and zooming features. It was not originally written as a stand alone module whic
 from kivy.uix.floatlayout                    import FloatLayout
 from kivy.properties                         import NumericProperty, ObjectProperty
 from kivy.graphics                           import Color, Ellipse, Line
-from kivy.uix.scatter                        import Scatter
 from DataStructures.makesmithInitFuncs       import MakesmithInitFuncs
 from UIElements.positionIndicator            import PositionIndicator
 from UIElements.viewMenu                     import ViewMenu
@@ -20,8 +19,8 @@ import math
 
 class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
-    scatterObject = ObjectProperty(None)
-    scatterInstance = ObjectProperty(None)
+    scatterObject     = ObjectProperty(None)
+    scatterInstance   = ObjectProperty(None)
     positionIndicator = ObjectProperty(None)
     
     crossPosX = NumericProperty(0)
@@ -80,6 +79,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             elif motion.button == 'scrolldown':
                 mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
                 self.scatterInstance.apply_transform(mat)
+            self.scatterInstance.height = 10000
+            print self.scatterInstance.height
     
     def updateGcode(self, *args):
         self.drawgcode()
