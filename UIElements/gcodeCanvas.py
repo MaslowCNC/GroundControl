@@ -79,8 +79,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             elif motion.button == 'scrolldown':
                 mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
                 self.scatterInstance.apply_transform(mat)
-            self.scatterInstance.height = 10000
-            print self.scatterInstance.height
     
     def updateGcode(self, *args):
         self.drawgcode()
