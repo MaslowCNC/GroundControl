@@ -44,6 +44,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         print "Initialized: " + str(self)
         self.gcodecanvas.setUpData(data)
         self.screenControls.setUpData(data)
+        self.connectionStatus = self.data.comport
     
     def jmpsize(self):
         try:
