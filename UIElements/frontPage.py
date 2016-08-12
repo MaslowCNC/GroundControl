@@ -21,6 +21,8 @@ class FrontPage(Screen, MakesmithInitFuncs):
     distMove = 0
     speedMove = 0
     
+    connectionStatus = StringProperty("Not Connected")
+    
     xReadoutPos = StringProperty("0 mm")
     yReadoutPos = StringProperty("0 mm")
     zReadoutPos = StringProperty("0 mm")
@@ -42,6 +44,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         print "Initialized: " + str(self)
         self.gcodecanvas.setUpData(data)
         self.screenControls.setUpData(data)
+        self.connectionStatus = self.data.comport
     
     def jmpsize(self):
         try:
@@ -159,8 +162,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         with self.data.gcode_queue.mutex:
             self.data.gcode_queue.queue.clear()
         print("Gode Stopped")
-        
-        
     
     def toggleSpindle(self):
     #toggleSpindle turns on and off the dremel if a relay is attached

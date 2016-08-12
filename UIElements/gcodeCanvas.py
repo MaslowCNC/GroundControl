@@ -8,7 +8,6 @@ and zooming features. It was not originally written as a stand alone module whic
 from kivy.uix.floatlayout                    import FloatLayout
 from kivy.properties                         import NumericProperty, ObjectProperty
 from kivy.graphics                           import Color, Ellipse, Line
-from kivy.uix.scatter                        import Scatter
 from DataStructures.makesmithInitFuncs       import MakesmithInitFuncs
 from UIElements.positionIndicator            import PositionIndicator
 from UIElements.viewMenu                     import ViewMenu
@@ -20,8 +19,8 @@ import math
 
 class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
-    scatterObject = ObjectProperty(None)
-    scatterInstance = ObjectProperty(None)
+    scatterObject     = ObjectProperty(None)
+    scatterInstance   = ObjectProperty(None)
     positionIndicator = ObjectProperty(None)
     
     crossPosX = NumericProperty(0)

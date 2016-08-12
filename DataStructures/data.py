@@ -1,5 +1,6 @@
 from time                                             import time
 from kivy.properties                                  import ObjectProperty
+from kivy.properties                                  import StringProperty
 from kivy.event                                       import EventDispatcher
 import Queue
 
@@ -61,7 +62,7 @@ class Data(EventDispatcher):
     #all of the available COM ports
     comPorts = []
     #This defines which COM port is used
-    comport = ""
+    comport = StringProperty("")
     #The index of the next unread line of Gcode
     gcodeIndex = 0
     #Holds the current value of the feed rate

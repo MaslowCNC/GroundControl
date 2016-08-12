@@ -26,7 +26,7 @@
     scatterInstance:scatterInstance
     positionIndicator:positionIndicator
     
-    Scatter:
+    ScatterPlane:
         do_rotation: False
         id: scatterInstance
         Label: 
@@ -197,10 +197,10 @@
         pos: root.width - 120, root.height-400
         disabled: True
     Label:
-        text: "Connected on COM11"
+        text: root.connectionStatus
         size_hint: None, None
         pos: root.width - 170, root.height-430
-        disabled: True
+        disabled: False
     ScrollableLabel:
         id: textconsole
         size: 300, 200
