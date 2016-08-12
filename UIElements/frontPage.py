@@ -159,8 +159,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         with self.data.gcode_queue.mutex:
             self.data.gcode_queue.queue.clear()
         print("Gode Stopped")
-        
-        
     
     def toggleSpindle(self):
     #toggleSpindle turns on and off the dremel if a relay is attached
