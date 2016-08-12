@@ -21,6 +21,8 @@ class FrontPage(Screen, MakesmithInitFuncs):
     distMove = 0
     speedMove = 0
     
+    connectionStatus = StringProperty("Not Connected")
+    
     xReadoutPos = StringProperty("0 mm")
     yReadoutPos = StringProperty("0 mm")
     zReadoutPos = StringProperty("0 mm")
