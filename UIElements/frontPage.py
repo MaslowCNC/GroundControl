@@ -9,6 +9,7 @@ This page is used to manually move the machine, see the positional readout, and 
 from kivy.uix.screenmanager                    import Screen
 from kivy.properties                           import ObjectProperty, StringProperty
 from DataStructures.makesmithInitFuncs         import MakesmithInitFuncs
+import re
 
 class FrontPage(Screen, MakesmithInitFuncs):
     textconsole    = ObjectProperty(None)
@@ -140,8 +141,50 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         self.data.gcode_queue.put("G10 X0 Y0 Z0 ")
     
+    def moveLine(self, gcodeLine, moveXBy, moveYBy):
+        
+        originalLine = gcodeLine
+        
+        try:
+            gcodeLine = gcodeLine.upper() + " "
+            
+            
+            x = gcodeLine.find('X')
+            if x != -1:
+                space = gcodeLine.find(' ', x)
+                number = float(gcodeLine[x+1:space]) + moveXBy
+                gcodeLine = gcodeLine[0:x+1] + str(number) + gcodeLine[space:]
+            
+            y = gcodeLine.find('Y')
+            if y != -1:
+                space = gcodeLine.find(' ', y)
+                number = float(gcodeLine[y+1:space]) + moveYBy
+                gcodeLine = gcodeLine[0:y+1] + str(number) + gcodeLine[space:]
+            
+            return gcodeLine
+        except ValueError:
+            print "line could not be moved:"
+            print originalLine
+            return originalLine
+    
+    def moveOrigin(self):
+        print "Origin shifted by:"
+        print self.gcodecanvas.crossPosX
+        print self.gcodecanvas.crossPosY
+        
+        shiftX = self.gcodecanvas.crossPosX
+        shiftY = self.gcodecanvas.crossPosY
+        
+        shiftedGcode = []
+        
+        for line in self.data.gcode:
+            shiftedGcode.append(self.moveLine(line , shiftX, shiftY))
+            
+        print "finished moving lines"
+        
+        self.data.gcode = shiftedGcode
+    
     def startRun(self):
-        self.reZero()
         
         self.data.uploadFlag = 1
         self.sendLine()
@@ -163,11 +206,3 @@ class FrontPage(Screen, MakesmithInitFuncs):
             self.data.gcode_queue.queue.clear()
         print("Gode Stopped")
     
-    def toggleSpindle(self):
-    #toggleSpindle turns on and off the dremel if a relay is attached
-        if(self.spindleFlag == 1):
-            self.data.gcode_queue.put("S5000 ")
-            self.spindleFlag = 0
-        elif(self.dataBack.spindleFlag == 0):
-            self.data.gcode_queue.put("S0 ")
-            self.spindleFlag = 1
