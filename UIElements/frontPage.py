@@ -9,7 +9,6 @@ This page is used to manually move the machine, see the positional readout, and 
 from kivy.uix.screenmanager                    import Screen
 from kivy.properties                           import ObjectProperty, StringProperty
 from DataStructures.makesmithInitFuncs         import MakesmithInitFuncs
-import re
 
 class FrontPage(Screen, MakesmithInitFuncs):
     textconsole    = ObjectProperty(None)
