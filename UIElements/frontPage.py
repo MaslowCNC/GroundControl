@@ -35,10 +35,13 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     consoleText = StringProperty(" ")
     
+    units = "mm"
+    
     def setPosReadout(self, xPos, yPos, zPos, units):
         self.xReadoutPos = str(xPos) + " " + units
         self.yReadoutPos = str(yPos) + " " + units
         self.zReadoutPos = str(zPos) + " " + units
+        self.units = units
     
     def setUpData(self, data):
         self.data = data
@@ -172,8 +175,12 @@ class FrontPage(Screen, MakesmithInitFuncs):
         print self.gcodecanvas.crossPosX
         print self.gcodecanvas.crossPosY
         
-        shiftX = self.gcodecanvas.crossPosX
-        shiftY = self.gcodecanvas.crossPosY
+        if self.units == "in":
+            shiftX = self.gcodecanvas.crossPosX/25.4
+            shiftY = self.gcodecanvas.crossPosY/25.4
+        else:
+            shiftX = self.gcodecanvas.crossPosX
+            shiftY = self.gcodecanvas.crossPosY
         
         shiftedGcode = []
         
