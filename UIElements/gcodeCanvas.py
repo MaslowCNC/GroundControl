@@ -295,9 +295,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             
             if opstring[0:3] == 'G20':
                 self.canvasScaleFactor = self.INCHES
+                self.data.gcode_queue.put('G20 ')
                 
             if opstring[0:3] == 'G21':
                 self.canvasScaleFactor = self.MILLIMETERS
+                self.data.gcode_queue.put('G21 ')
                 
             if opstring[0:3] == 'G90':
                 self.absoluteFlag = 1
@@ -319,24 +321,3 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             
             i = i + 1
     
-    def onMotion(self, etype, callback ,motionevent):
-        
-        print "onmotion"
-        
-        if motionevent.x != 0.0:
-            print "first"
-            if self.motionFlag:
-                self.lastTouchX = motionevent.x
-                self.lastTouchY = motionevent.y
-                self.motionFlag = 0
-            
-            self.offsetX =  self.offsetX + (motionevent.x - self.lastTouchX)
-            self.lastTouchX = motionevent.x
-            self.offsetY =  self.offsetY + (motionevent.y - self.lastTouchY)
-            self.lastTouchY = motionevent.y
-            #self.clearGcode()
-            #self.drawgcode()
-        else:
-            print "second"
-            self.motionFlag = 1
-     

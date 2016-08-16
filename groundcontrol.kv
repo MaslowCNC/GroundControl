@@ -121,13 +121,14 @@
             height: 60
             on_press: root.stopRun()
         Button:
-            text: 'Toggle\nSpindle'
+            text: 'Zero'
             size_hint: None, None
             width:75
             height: 60
-            disabled: True
+            on_press: root.moveOrigin()
+            disabled: False
         Button:
-            text: 'Re-Zero'
+            text: 'Center'
             size_hint: None, None
             width:75
             height: 60

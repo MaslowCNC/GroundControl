@@ -30,14 +30,18 @@ class FrontPage(Screen, MakesmithInitFuncs):
     stepsizeval = 0
     feedRate = 0
     
-    spindleFlag = 0
+    shiftX = 0
+    shiftY = 0
     
     consoleText = StringProperty(" ")
+    
+    units = "mm"
     
     def setPosReadout(self, xPos, yPos, zPos, units):
         self.xReadoutPos = str(xPos) + " " + units
         self.yReadoutPos = str(yPos) + " " + units
         self.zReadoutPos = str(zPos) + " " + units
+        self.units = units
     
     def setUpData(self, data):
         self.data = data
@@ -140,8 +144,53 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         self.data.gcode_queue.put("G10 X0 Y0 Z0 ")
     
+    def moveLine(self, gcodeLine, moveXBy, moveYBy):
+        
+        originalLine = gcodeLine
+        
+        try:
+            gcodeLine = gcodeLine.upper() + " "
+            
+            
+            x = gcodeLine.find('X')
+            if x != -1:
+                space = gcodeLine.find(' ', x)
+                number = float(gcodeLine[x+1:space]) + moveXBy
+                gcodeLine = gcodeLine[0:x+1] + str(number) + gcodeLine[space:]
+            
+            y = gcodeLine.find('Y')
+            if y != -1:
+                space = gcodeLine.find(' ', y)
+                number = float(gcodeLine[y+1:space]) + moveYBy
+                gcodeLine = gcodeLine[0:y+1] + str(number) + gcodeLine[space:]
+            
+            return gcodeLine
+        except ValueError:
+            print "line could not be moved:"
+            print originalLine
+            return originalLine
+    
+    def moveOrigin(self):
+        
+        if self.units == "in":
+            amtToShiftX = self.gcodecanvas.crossPosX/25.4 - self.shiftX
+            amtToShiftY = self.gcodecanvas.crossPosY/25.4 - self.shiftY
+            self.shiftX = self.shiftX + amtToShiftX
+            self.shiftY = self.shiftY + amtToShiftY
+        else:
+            amtToShiftX = self.gcodecanvas.crossPosX - self.shiftX
+            amtToShiftY = self.gcodecanvas.crossPosY - self.shiftY
+            self.shiftX = self.shiftX + amtToShiftX
+            self.shiftY = self.shiftY + amtToShiftY
+        
+        shiftedGcode = []
+        
+        for line in self.data.gcode:
+            shiftedGcode.append(self.moveLine(line , amtToShiftX, amtToShiftY))
+        
+        self.data.gcode = shiftedGcode
+    
     def startRun(self):
-        self.reZero()
         
         self.data.uploadFlag = 1
         self.sendLine()
@@ -163,11 +212,3 @@ class FrontPage(Screen, MakesmithInitFuncs):
             self.data.gcode_queue.queue.clear()
         print("Gode Stopped")
     
-    def toggleSpindle(self):
-    #toggleSpindle turns on and off the dremel if a relay is attached
-        if(self.spindleFlag == 1):
-            self.data.gcode_queue.put("S5000 ")
-            self.spindleFlag = 0
-        elif(self.dataBack.spindleFlag == 0):
-            self.data.gcode_queue.put("S0 ")
-            self.spindleFlag = 1
