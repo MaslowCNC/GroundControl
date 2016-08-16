@@ -31,7 +31,8 @@ class FrontPage(Screen, MakesmithInitFuncs):
     stepsizeval = 0
     feedRate = 0
     
-    spindleFlag = 0
+    shiftX = 0
+    shiftY = 0
     
     consoleText = StringProperty(" ")
     
@@ -171,23 +172,22 @@ class FrontPage(Screen, MakesmithInitFuncs):
             return originalLine
     
     def moveOrigin(self):
-        print "Origin shifted by:"
-        print self.gcodecanvas.crossPosX
-        print self.gcodecanvas.crossPosY
         
         if self.units == "in":
-            shiftX = self.gcodecanvas.crossPosX/25.4
-            shiftY = self.gcodecanvas.crossPosY/25.4
+            amtToShiftX = self.gcodecanvas.crossPosX/25.4 - self.shiftX
+            amtToShiftY = self.gcodecanvas.crossPosY/25.4 - self.shiftY
+            self.shiftX = self.shiftX + amtToShiftX
+            self.shiftY = self.shiftY + amtToShiftY
         else:
-            shiftX = self.gcodecanvas.crossPosX
-            shiftY = self.gcodecanvas.crossPosY
+            amtToShiftX = self.gcodecanvas.crossPosX - self.shiftX
+            amtToShiftY = self.gcodecanvas.crossPosY - self.shiftY
+            self.shiftX = self.shiftX + amtToShiftX
+            self.shiftY = self.shiftY + amtToShiftY
         
         shiftedGcode = []
         
         for line in self.data.gcode:
-            shiftedGcode.append(self.moveLine(line , shiftX, shiftY))
-            
-        print "finished moving lines"
+            shiftedGcode.append(self.moveLine(line , amtToShiftX, amtToShiftY))
         
         self.data.gcode = shiftedGcode
     
