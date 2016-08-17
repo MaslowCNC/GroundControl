@@ -462,13 +462,17 @@
         Line:
             circle:
                 (self.center_x-self.width/2, self.center_y-self.height/2, min(self.width, self.height)/ 2)
-            width: 1.5
+            #width: 1.5
+        Line:
+            circle:
+                (self.center_x-self.width/2, self.center_y-self.height/2, .5)
+            #width: 1.5
         Line:
             points: (self.x-self.width/2, self.y-self.height/2, self.width/2+self.x, self.height/2+self.y)
-            width: 1.5
+            #width: 1.5
         Line:
             points: (self.x-self.width/2, self.height/2+self.y, self.width/2+self.x, self.y-self.height/2)
-            width: 1.5
+            #width: 1.5
     
 <LoadDialog>:
     BoxLayout:

@@ -149,6 +149,8 @@ class GroundControlApp(App):
             message = self.data.message_queue.get()
             if message[0:2] == "pz":
                 self.setPosOnScreen(message)
+            if message[0:2] == "pt":
+                self.setTargetOnScreen(message)
             elif message[0:8] == "Message:":
                 self.data.uploadFlag = 0
                 content = NotificationPopup(cancel = self.dismiss_popup, text = message[9:])
@@ -195,7 +197,30 @@ class GroundControlApp(App):
         
     
         self.frontpage.setPosReadout(xval,yval,zval,units)
-        self.frontpage.gcodecanvas.setCrossPos(xval,yval,units)
+        self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,units)
+    
+    def setTargetOnScreen(self, message):
+        '''
+        
+        This should be moved into the appropriate widget
+        
+        '''
+        
+        startpt = message.find('(')
+        startpt = startpt + 1
+        
+        endpt = message.find(')')
+        
+        numz  = message[startpt:endpt]
+        units = message[endpt+1:endpt+3]
+        
+        valz = numz.split(",")
+        
+        xval = float(valz[0])
+        yval = float(valz[1])
+        zval = float(valz[2])
+        
+        #self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,units)
         
     
 if __name__ == '__main__':
