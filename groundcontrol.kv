@@ -25,6 +25,7 @@
     scatterObject:scatterObject
     scatterInstance:scatterInstance
     positionIndicator:positionIndicator
+    targetIndicator:targetIndicator
     
     ScatterPlane:
         do_rotation: False
@@ -34,6 +35,8 @@
             text: ""
         PositionIndicator:
             id: positionIndicator
+        PositionIndicator:
+            id: targetIndicator
     
 <FrontPage>:
     textconsole:textconsole
@@ -456,9 +459,8 @@
 <PositionIndicator>:
     size: 50, 50 
     canvas:
-#        Ellipse:
-#            pos: self.pos
-#            size: self.size
+        Color:
+            rgb: root.color
         Line:
             circle:
                 (self.center_x-self.width/2, self.center_y-self.height/2, min(self.width, self.height)/ 2)

@@ -149,7 +149,7 @@ class GroundControlApp(App):
             message = self.data.message_queue.get()
             if message[0:2] == "pz":
                 self.setPosOnScreen(message)
-            if message[0:2] == "pt":
+            elif message[0:2] == "pt":
                 self.setTargetOnScreen(message)
             elif message[0:8] == "Message:":
                 self.data.uploadFlag = 0
@@ -220,7 +220,7 @@ class GroundControlApp(App):
         yval = float(valz[1])
         zval = float(valz[2])
         
-        #self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,units)
+        self.frontpage.gcodecanvas.targetIndicator.setPos(xval,yval,units)
         
     
 if __name__ == '__main__':

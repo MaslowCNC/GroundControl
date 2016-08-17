@@ -22,6 +22,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     scatterObject     = ObjectProperty(None)
     scatterInstance   = ObjectProperty(None)
     positionIndicator = ObjectProperty(None)
+    targetIndicator   = ObjectProperty(None)
     
     crossPosX = NumericProperty(0)
     crossPosY = NumericProperty(0)
@@ -61,6 +62,9 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Window.bind(on_motion = self.zoom)
             
             self.data.bind(gcode = self.updateGcode)
+        
+        
+        self.targetIndicator.color = (1,0,0)
         
         tempViewMenu = ViewMenu()
         tempViewMenu.setUpData(self.data)

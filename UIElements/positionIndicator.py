@@ -1,5 +1,7 @@
 from DataStructures.makesmithInitFuncs     import MakesmithInitFuncs
 from kivy.uix.widget                       import Widget
+from kivy.graphics                         import Color
+from kivy.properties                       import ObjectProperty
 
 
 class PositionIndicator(Widget):
@@ -11,6 +13,7 @@ class PositionIndicator(Widget):
     '''
     INCHES            = 25.4
     MILLIMETERS       = 1 
+    color             = ObjectProperty((1, 1, 1))
     
     def setPos(self, xPos, yPos, units):
         '''
