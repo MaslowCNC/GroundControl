@@ -23,11 +23,13 @@ class PositionIndicator(Widget):
         '''
         
         if units == "mm":
-            self.crossPosX = xPos*self.MILLIMETERS
-            self.crossPosY = yPos*self.MILLIMETERS
+            crossPosX = xPos*self.MILLIMETERS
+            crossPosY = yPos*self.MILLIMETERS
         elif units == "in":
-            self.crossPosX = xPos*self.INCHES
-            self.crossPosY = yPos*self.INCHES
+            crossPosX = xPos*self.INCHES
+            crossPosY = yPos*self.INCHES
         
+        print "cross pos x"
+        print crossPosX
         
-        self.pos = (self.crossPosX,self.crossPosY)
+        self.pos = (crossPosX,crossPosY)

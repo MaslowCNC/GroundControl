@@ -24,9 +24,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     positionIndicator = ObjectProperty(None)
     targetIndicator   = ObjectProperty(None)
     
-    crossPosX = NumericProperty(0)
-    crossPosY = NumericProperty(0)
-    
     offsetX = NumericProperty(0)
     offsetY = NumericProperty(0)
     lastTouchX = 0
