@@ -29,7 +29,4 @@ class PositionIndicator(Widget):
             crossPosX = xPos*self.INCHES
             crossPosY = yPos*self.INCHES
         
-        print "cross pos x"
-        print crossPosX
-        
         self.pos = (crossPosX,crossPosY)

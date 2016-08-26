@@ -28,7 +28,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     zReadoutPos = StringProperty("0 mm")
     
     numericalPosX  = 0.0
-    numbericalPosY = 0.0
+    numericalPosY  = 0.0
     
     stepsizeval = 0
     feedRate = 0
