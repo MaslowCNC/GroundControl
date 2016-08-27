@@ -27,6 +27,9 @@ class FrontPage(Screen, MakesmithInitFuncs):
     yReadoutPos = StringProperty("0 mm")
     zReadoutPos = StringProperty("0 mm")
     
+    numericalPosX  = 0.0
+    numericalPosY  = 0.0
+    
     stepsizeval = 0
     feedRate = 0
     
@@ -38,10 +41,12 @@ class FrontPage(Screen, MakesmithInitFuncs):
     units = "mm"
     
     def setPosReadout(self, xPos, yPos, zPos, units):
-        self.xReadoutPos = str(xPos) + " " + units
-        self.yReadoutPos = str(yPos) + " " + units
-        self.zReadoutPos = str(zPos) + " " + units
-        self.units = units
+        self.xReadoutPos    = str(xPos) + " " + units
+        self.yReadoutPos    = str(yPos) + " " + units
+        self.zReadoutPos    = str(zPos) + " " + units
+        self.units          = units
+        self.numericalPosX  = xPos
+        self.numericalPosY  = yPos
     
     def setUpData(self, data):
         self.data = data
@@ -173,13 +178,13 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def moveOrigin(self):
         
         if self.units == "in":
-            amtToShiftX = self.gcodecanvas.crossPosX/25.4 - self.shiftX
-            amtToShiftY = self.gcodecanvas.crossPosY/25.4 - self.shiftY
+            amtToShiftX = self.numericalPosX - self.shiftX
+            amtToShiftY = self.numericalPosY - self.shiftY
             self.shiftX = self.shiftX + amtToShiftX
             self.shiftY = self.shiftY + amtToShiftY
         else:
-            amtToShiftX = self.gcodecanvas.crossPosX - self.shiftX
-            amtToShiftY = self.gcodecanvas.crossPosY - self.shiftY
+            amtToShiftX = self.numericalPosX - self.shiftX
+            amtToShiftY = self.numericalPosY - self.shiftY
             self.shiftX = self.shiftX + amtToShiftX
             self.shiftY = self.shiftY + amtToShiftY
         

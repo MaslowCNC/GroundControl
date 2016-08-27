@@ -22,9 +22,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     scatterObject     = ObjectProperty(None)
     scatterInstance   = ObjectProperty(None)
     positionIndicator = ObjectProperty(None)
-    
-    crossPosX = NumericProperty(0)
-    crossPosY = NumericProperty(0)
+    targetIndicator   = ObjectProperty(None)
     
     offsetX = NumericProperty(0)
     offsetY = NumericProperty(0)
@@ -62,6 +60,9 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             
             self.data.bind(gcode = self.updateGcode)
         
+        
+        self.targetIndicator.color = (1,0,0)
+        
         tempViewMenu = ViewMenu()
         tempViewMenu.setUpData(self.data)
         tempViewMenu.reloadGcode()
@@ -82,23 +83,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     def updateGcode(self, *args):
         self.drawgcode()
-    
-    def setCrossPos(self, xPos, yPos, units):
-        '''
-        
-        Move cross-hairs on UI
-        
-        '''
-        
-        if units == "mm":
-            self.crossPosX = xPos*self.MILLIMETERS
-            self.crossPosY = yPos*self.MILLIMETERS
-        elif units == "in":
-            self.crossPosX = xPos*self.INCHES
-            self.crossPosY = yPos*self.INCHES
-        
-        
-        self.positionIndicator.move(self.crossPosX,self.crossPosY)
     
     def angleGet(self, X, Y, centerX, centerY):
         '''
