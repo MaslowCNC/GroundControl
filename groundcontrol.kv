@@ -1,0 +1,555 @@
+#kivy 1.9.9
+
+#<Widget>:
+#This can be used to create boxes around each widget to clarify positioning issues. It is only for debug
+#    canvas.after:
+#        Line:
+#            rectangle: self.x+1,self.y+1,self.width-1,self.height-1
+#            dash_offset: 5
+#            dash_length: 3
+
+<ScreenControls>
+    BoxLayout:
+        orientation: 'horizontal'
+        pos: (0, root.height - .05*root.height)
+        size_hint: (.6,.05)
+        
+        Button: 
+            text: "Actions"
+            on_press: root.show_actions()
+        Button:
+            text: "Settings"
+            on_press: app.open_settings()
+
+<GcodeCanvas>:
+    scatterObject:scatterObject
+    scatterInstance:scatterInstance
+    positionIndicator:positionIndicator
+    targetIndicator:targetIndicator
+    
+    ScatterPlane:
+        do_rotation: False
+        id: scatterInstance
+        Label: 
+            id: scatterObject
+            text: ""
+        PositionIndicator:
+            id: positionIndicator
+        PositionIndicator:
+            id: targetIndicator
+    
+<FrontPage>:
+    textconsole:textconsole
+    moveDistInput:moveDistInput
+    moveSpeedInput:moveSpeedInput
+    gcodecanvas:gcodecanvas
+    screenControls:screenControls
+    
+    
+    GcodeCanvas:
+        id: gcodecanvas
+    GridLayout:
+        cols: 4
+        pos: self.width - 4*75, 0
+        Button:
+            text: '<^'
+            size_hint: None, None
+            width:75
+            height: 60
+            on_press: root.upLeft()
+        Button:
+            text: '^'
+            size_hint: None, None
+            width:75
+            height: 60
+            on_press: root.up()
+        Button:
+            text: '>^'
+            size_hint: None, None
+            width:75
+            height: 60
+            on_press: root.upRight()
+        Button:
+            text: 'UP'
+            size_hint: None, None
+            width:75
+            height: 60
+            on_press: root.zUp()
+        Button:
+            text: '<'
+            size_hint: None, None
+            width:75
+            height: 60
+            on_press: root.left()
+        Button:
+            text: 'HOME'
+            size_hint: None, None
+            width:75
+            height: 60
+            on_press: root.home()
+        Button:
+            text: '>'
+            size_hint: None, None
+            width:75
+            height: 60
+            on_press: root.right()
+        Button:
+            text: 'DOWN'
+            size_hint: None, None
+            width:75
+            height: 60
+            on_press: root.zDown()
+        Button:
+            text: '<\/'
+            size_hint: None, None
+            width:75
+            height: 60
+            on_press: root.downLeft()
+        Button:
+            text: '\/'
+            size_hint: None, None
+            width:75
+            height: 60
+            on_press: root.down()
+        Button:
+            text: '\/>'
+            size_hint: None, None
+            width:75
+            height: 60
+            on_press: root.downRight()
+        Button:
+            text: 'Stop'
+            size_hint: None, None
+            width:75
+            height: 60
+            on_press: root.stopRun()
+        Button:
+            text: 'Zero'
+            size_hint: None, None
+            width:75
+            height: 60
+            on_release: root.moveOrigin()
+            disabled: False
+        Button:
+            text: 'Center'
+            size_hint: None, None
+            width:75
+            height: 60
+            on_press: root.reZero()
+        Button:
+            text: 'Scroll\nEnable'
+            size_hint: None, None
+            width:75
+            height: 60
+            disabled: True
+        Button:
+            text: 'RUN'
+            size_hint: None, None
+            width:75
+            height: 60
+            on_press: root.startRun()
+    TextInput:
+        id: moveDistInput
+        text: "1"
+        size_hint: None, None
+        width: 225/2
+        height: 40
+        pos: root.width - 300, root.height-280
+        multiline: False
+        on_text: 
+    TextInput:
+        id: moveSpeedInput
+        text: "30"
+        size_hint: None, None
+        width: 225/2
+        height: 40
+        pos: root.width - 188 , root.height-280
+        multiline: False
+    Button:
+        text: 'mm'
+        size_hint: None, None
+        width:75
+        height: 40
+        pos: root.width - 75 , root.height-280
+        disabled: True
+    Label:
+        text: root.xReadoutPos
+        size_hint: None, None
+        pos: root.width - 220, root.height-360
+    Label:
+        text: root.yReadoutPos
+        size_hint: None, None
+        pos: root.width - 220, root.height-380
+    Label:
+        text: root.zReadoutPos
+        size_hint: None, None
+        pos: root.width - 220, root.height-400
+    Label:
+        text: "Estimated Time Remaining:"
+        size_hint: None, None
+        pos: root.width - 120, root.height-360
+        font_size: '11sp'
+        disabled: True
+    Label:
+        text: "TBD"
+        size_hint: None, None
+        pos: root.width - 120, root.height-380
+        disabled: True
+    Label:
+        text: "0.0"
+        size_hint: None, None
+        pos: root.width - 120, root.height-400
+        disabled: True
+    Label:
+        text: root.connectionStatus
+        size_hint: None, None
+        pos: root.width - 170, root.height-430
+        disabled: False
+    ScrollableLabel:
+        id: textconsole
+        size: 300, 200
+        text: root.consoleText
+        size_hint: None, None
+        pos: root.width - 310, root.height-600
+    ScreenControls:
+        id: screenControls
+        size_hint: (1, 1)
+
+<ViewMenu>:
+    GridLayout:
+        cols:1
+        size: root.size
+        pos: root.pos
+        Label:
+            text: "View"
+        Button:
+            text: 'Open File'
+            on_press: root.openFile()
+        Button:
+            text: 'Update Gcode'
+            on_press: root.reloadGcode()
+        Button:
+            text: 'View Gcode'
+            disabled: False
+            on_press: root.show_gcode()
+        Button:
+            text: 'Reset Origin'
+            disabled: True
+                
+<RunMenu>:
+    GridLayout:
+        cols: 1
+        size: root.size
+        pos: root.pos
+        Label:
+            text: "Run"
+        Button:
+            text: 'Pause'
+            disabled: True
+        Button:
+            text: 'Resume'
+            disabled: True
+        Button:
+            text: 'Zero Z'
+            disabled: True
+        Button:
+            text: 'Auto Zero Z'
+            disabled: True
+
+<ScrollableLabel>:
+    Label:
+        size_hint_y: None
+        height: self.texture_size[1]
+        text_size: self.width, None
+        text: root.text
+
+<ConnectMenu>:
+    GridLayout:
+        cols: 1
+        size: root.size
+        pos: root.pos
+        Label:
+            text: "Connect"
+        Button:
+            text: 'Connect'
+            on_press: root.connect()
+        Spinner:
+            id: ports
+            text: "Ports"
+            values: root.COMports
+            on_text: root.setPort(ports.text)   
+        Button:
+            text: 'Update List'
+            on_press: root.updatePorts()
+                
+<Diagnostics>:
+    GridLayout:
+        rows: 2
+        size: root.size
+        pos: root.pos
+        Label:
+            text: "Diagnostic features"
+        GridLayout:
+            cols: 3
+            Button:
+                text: 'Test Encoders'
+                disabled: True
+            Button:
+                text: 'Test Motors'
+                disabled: True
+            Button:
+                text: 'Test Both'
+                disabled: True
+            Button:
+                text: 'Calibrate Motors'
+                disabled: True
+            Button:
+                text: 'Calibrate Magnets'
+                disabled: True
+            Button:
+                text: 'About'
+                disabled: True
+
+<ManualControl>:
+    GridLayout:
+        rows: 2
+        size: root.size
+        pos: root.pos
+        Label:
+            text: "Manual Control"
+        GridLayout:
+            cols: 12
+            Label:
+                text: "X:"
+            Button:
+                text: '-5'
+                disabled: True
+            Button:
+                text: '-4'
+                disabled: True
+            Button:
+                text: '-3'
+                disabled: True
+            Button:
+                text: '-2'
+                disabled: True
+            Button:
+                text: '-1'
+                disabled: True
+            Button:
+                text: '0'
+                disabled: True
+            Button:
+                text: '1'
+                disabled: True
+            Button:
+                text: '2'
+                disabled: True
+            Button:
+                text: '3'
+                disabled: True
+            Button:
+                text: '4'
+                disabled: True
+            Button:
+                disabled: True
+                text: '5'
+            
+            Label:
+                text: "Y:"
+            Button:
+                disabled: True
+                text: '-5'
+            Button:
+                disabled: True
+                text: '-4'
+            Button:
+                disabled: True
+                text: '-3'
+            Button:
+                disabled: True
+                text: '-2'
+            Button:
+                disabled: True
+                text: '-1'
+            Button:
+                disabled: True
+                text: '0'
+            Button:
+                disabled: True
+                text: '1'
+            Button:
+                disabled: True
+                text: '2'
+            Button:
+                disabled: True
+                text: '3'
+            Button:
+                disabled: True
+                text: '4'
+            Button:
+                disabled: True
+                text: '5'
+            
+            Label:
+                text: "Z:"
+            Button:
+                disabled: True
+                text: '-5'
+            Button:
+                disabled: True
+                text: '-4'
+            Button:
+                disabled: True
+                text: '-3'
+            Button:
+                disabled: True
+                text: '-2'
+            Button:
+                disabled: True
+                text: '-1'
+            Button:
+                disabled: True
+                text: '0'
+            Button:
+                disabled: True
+                text: '1'
+            Button:
+                disabled: True
+                text: '2'
+            Button:
+                disabled: True
+                text: '3'
+            Button:
+                disabled: True
+                text: '4'
+            Button:
+                disabled: True
+                text: '5'
+                
+<OtherFeatures>:
+    connectmenu:connectmenu
+    viewmenu:viewmenu
+    
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            orientation: 'horizontal'
+            padding:2
+            spacing:0
+            
+            ViewMenu:
+                id: viewmenu
+            RunMenu:
+                id: runmenu
+            ConnectMenu:
+                id: connectmenu
+        BoxLayout:
+            orientation: 'vertical'
+            padding:2
+            spacing:0
+            
+            Diagnostics:
+                id: diagnostics
+            ManualControl:
+                id: manualcontrol
+
+<SoftwareSettings>:
+    
+<PositionIndicator>:
+    size: 50, 50 
+    canvas:
+        Color:
+            rgb: root.color
+        Line:
+            circle:
+                (self.center_x-self.width/2, self.center_y-self.height/2, min(self.width, self.height)/ 2)
+            #width: 1.5
+        Line:
+            circle:
+                (self.center_x-self.width/2, self.center_y-self.height/2, .5)
+            #width: 1.5
+        Line:
+            points: (self.x-self.width/2, self.y-self.height/2, self.width/2+self.x, self.height/2+self.y)
+            #width: 1.5
+        Line:
+            points: (self.x-self.width/2, self.height/2+self.y, self.width/2+self.x, self.y-self.height/2)
+            #width: 1.5
+    
+<LoadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+#            multiselect: root.multiselect
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Load"
+                on_release: root.load(filechooser.path, filechooser.selection)
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+<NotificationPopup>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        
+        ScrollableLabel:
+            text: root.text
+            
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "OK"
+                on_release: root.cancel()
+
+<ScrollableTextPopup>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        
+        ScrollableLabel:
+            text: root.text
+            
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Close"
+                on_release: root.cancel()
+
+<SaveDialog>:
+    text_input: text_input
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+            on_selection: text_input.text = self.selection and self.selection[0] or ''
+
+        TextInput:
+            id: text_input
+            size_hint_y: None
+            height: 30
+            multiline: False
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Save"
+                on_release: root.save(filechooser.path, text_input.text)
