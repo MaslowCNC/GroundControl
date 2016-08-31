@@ -72,13 +72,15 @@ class Data(EventDispatcher):
     #the current position of the cutting head
     currentpos = [0.0, 0.0, 0.0]
     target = [0.0, 0.0, 0.0]
-    firstTimePosFlag = 0 #this is used to determine the first time the position is received from the machine
-    
     '''
     Flags
     '''
     #sets a flag if the gcode is being uploaded currently
     uploadFlag = 0
+    #this is used to determine the first time the position is received from the machine
+    firstTimePosFlag = 0
+    #report if the serial connection is open
+    connectionStatus = 0
     
     '''
     Pointers to Objects
