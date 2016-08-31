@@ -53,7 +53,15 @@ class FrontPage(Screen, MakesmithInitFuncs):
         print "Initialized: " + str(self)
         self.gcodecanvas.setUpData(data)
         self.screenControls.setUpData(data)
-        self.connectionStatus = self.data.comport
+        self.data.bind(connectionStatus = self.updateConnectionStatus)
+    
+    def updateConnectionStatus(self, callback, connected):
+        
+        if connected:
+            self.connectionStatus = "Connected"
+        else:
+            self.connectionStatus = "Connection Lost"
+        
     
     def jmpsize(self):
         try:

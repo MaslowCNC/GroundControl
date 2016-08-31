@@ -1,6 +1,7 @@
 from time                                             import time
 from kivy.properties                                  import ObjectProperty
 from kivy.properties                                  import StringProperty
+from kivy.properties                                  import BooleanProperty
 from kivy.event                                       import EventDispatcher
 import Queue
 
@@ -80,7 +81,7 @@ class Data(EventDispatcher):
     #this is used to determine the first time the position is received from the machine
     firstTimePosFlag = 0
     #report if the serial connection is open
-    connectionStatus = 0
+    connectionStatus = BooleanProperty(0)
     
     '''
     Pointers to Objects
