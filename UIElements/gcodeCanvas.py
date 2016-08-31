@@ -73,13 +73,16 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     def zoom(self, callback, type, motion, *args):
         if motion.is_mouse_scrolling:
-            scaleFactor = .01
+            scaleFactor = .03
+            
+            anchor = (0,0)
+            
             if motion.button == 'scrollup':
                 mat = Matrix().scale(1-scaleFactor, 1-scaleFactor, 1)
-                self.scatterInstance.apply_transform(mat)
+                self.scatterInstance.apply_transform(mat, anchor)
             elif motion.button == 'scrolldown':
                 mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
-                self.scatterInstance.apply_transform(mat)
+                self.scatterInstance.apply_transform(mat, anchor)
     
     def updateGcode(self, *args):
         self.drawgcode()
@@ -279,11 +282,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             
             if opstring[0:3] == 'G20':
                 self.canvasScaleFactor = self.INCHES
-                self.data.gcode_queue.put('G20 ')
+                self.data.units = "INCHES"
                 
             if opstring[0:3] == 'G21':
                 self.canvasScaleFactor = self.MILLIMETERS
-                self.data.gcode_queue.put('G21 ')
+                Self.data.units = "MM"
                 
             if opstring[0:3] == 'G90':
                 self.absoluteFlag = 1

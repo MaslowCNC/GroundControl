@@ -9,6 +9,7 @@ This page is used to manually move the machine, see the positional readout, and 
 from kivy.uix.screenmanager                    import Screen
 from kivy.properties                           import ObjectProperty, StringProperty
 from DataStructures.makesmithInitFuncs         import MakesmithInitFuncs
+import re
 
 class FrontPage(Screen, MakesmithInitFuncs):
     textconsole    = ObjectProperty(None)
@@ -17,9 +18,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
     screenControls = ObjectProperty(None) 
     
     target = [0,0,0]
-    
-    distMove = 0
-    speedMove = 0
     
     connectionStatus = StringProperty("Not Connected")
     
@@ -38,22 +36,78 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     consoleText = StringProperty(" ")
     
-    units = "mm"
+    units = StringProperty("MM")
+    gcodeLineNumber = StringProperty('0')
+    
+    def __init__(self, data, **kwargs):
+        super(FrontPage, self).__init__(**kwargs)
+        self.data = data
     
     def setPosReadout(self, xPos, yPos, zPos, units):
         self.xReadoutPos    = str(xPos) + " " + units
         self.yReadoutPos    = str(yPos) + " " + units
         self.zReadoutPos    = str(zPos) + " " + units
-        self.units          = units
         self.numericalPosX  = xPos
         self.numericalPosY  = yPos
     
     def setUpData(self, data):
-        self.data = data
-        print "Initialized: " + str(self)
         self.gcodecanvas.setUpData(data)
         self.screenControls.setUpData(data)
-        self.connectionStatus = self.data.comport
+        self.data.bind(connectionStatus = self.updateConnectionStatus)
+        self.data.bind(units            = self.onUnitsSwitch)
+        self.data.bind(gcodeIndex       = self.onIndexMove)
+    
+    def updateConnectionStatus(self, callback, connected):
+        
+        if connected:
+            self.connectionStatus = "Connected"
+        else:
+            self.connectionStatus = "Connection Lost"
+    
+    def switchUnits(self):
+        if self.data.units == "INCHES":
+            self.data.units = "MM"
+        else:
+            self.data.units = "INCHES"
+    
+    def onUnitsSwitch(self, callback, newUnits):
+        self.units = newUnits
+        #the behavior of notifying the machine doesn't really belong here
+        #but I'm not really sure where else it does belong
+        if newUnits == "INCHES":
+            self.data.gcode_queue.put('G20 ')
+            self.moveDistInput.text = str(float(self.moveDistInput.text)/25)
+        else:
+            self.data.gcode_queue.put('G21 ')
+            self.moveDistInput.text = str(float(self.moveDistInput.text)*25)
+    
+    def onIndexMove(self, callback, newIndex):
+        self.gcodeLineNumber = str(newIndex)
+    
+    def moveGcodeIndex(self, dist):
+        self.data.gcodeIndex = self.data.gcodeIndex + dist
+        gCodeLine = self.data.gcode[self.data.gcodeIndex]
+        print gCodeLine
+        
+        xTarget = 0
+        yTarget = 0
+        
+        x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if x:
+            xTarget = float(x.groups()[0])
+        
+        y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if y:
+            yTarget = float(y.groups()[0])
+        
+        self.gcodecanvas.targetIndicator.setPos(xTarget,yTarget,self.data.units)
+    
+    def pause(self):
+        self.data.uploadFlag = 0
+        self.data.quick_queue.put("STOP") 
+        with self.data.gcode_queue.mutex:
+            self.data.gcode_queue.queue.clear()
+        print("Run Paused")
     
     def jmpsize(self):
         try:
@@ -177,7 +231,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def moveOrigin(self):
         
-        if self.units == "in":
+        if self.data.units == "INCHES":
             amtToShiftX = self.numericalPosX - self.shiftX
             amtToShiftY = self.numericalPosY - self.shiftY
             self.shiftX = self.shiftX + amtToShiftX

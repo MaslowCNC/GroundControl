@@ -73,7 +73,7 @@ class GroundControlApp(App):
         self.data       =  Data()
         
         
-        self.frontpage = FrontPage(name='FrontPage')
+        self.frontpage = FrontPage(self.data, name='FrontPage')
         interface.add_widget(self.frontpage)
         
         self.nonVisibleWidgets = NonVisibleWidgets()
@@ -155,7 +155,7 @@ class GroundControlApp(App):
                 self.data.uploadFlag = 0
                 content = NotificationPopup(cancel = self.dismiss_popup, text = message[9:])
                 self._popup = Popup(title="Notification: ", content=content,
-                            size_hint=(0.25, 0.25))
+                            auto_dismiss=False, size_hint=(0.25, 0.25))
                 self._popup.open()
             else:
                 try:
@@ -181,23 +181,26 @@ class GroundControlApp(App):
         
         '''
         
-        startpt = message.find('(')
-        startpt = startpt + 1
+        try:
+            startpt = message.find('(')
+            startpt = startpt + 1
+            
+            endpt = message.find(')')
+            
+            numz  = message[startpt:endpt]
+            units = message[endpt+1:endpt+3]
+            
+            valz = numz.split(",")
+            
+            xval = float(valz[0])
+            yval = float(valz[1])
+            zval = float(valz[2])
+        except:
+            print "bad data"
+            return
         
-        endpt = message.find(')')
-        
-        numz  = message[startpt:endpt]
-        units = message[endpt+1:endpt+3]
-        
-        valz = numz.split(",")
-        
-        xval = float(valz[0])
-        yval = float(valz[1])
-        zval = float(valz[2])
-        
-    
         self.frontpage.setPosReadout(xval,yval,zval,units)
-        self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,units)
+        self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,self.data.units)
     
     def setTargetOnScreen(self, message):
         '''
@@ -220,7 +223,7 @@ class GroundControlApp(App):
         yval = float(valz[1])
         zval = float(valz[2])
         
-        self.frontpage.gcodecanvas.targetIndicator.setPos(xval,yval,units)
+        self.frontpage.gcodecanvas.targetIndicator.setPos(xval,yval,self.data.units)
         
     
 if __name__ == '__main__':

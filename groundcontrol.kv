@@ -48,169 +48,138 @@
     
     GcodeCanvas:
         id: gcodecanvas
-    GridLayout:
-        cols: 4
-        pos: self.width - 4*75, 0
-        Button:
-            text: '<^'
+    BoxLayout:
+        orientation: 'vertical'
+        pos: root.width - 300, root.height - 600
+        GridLayout:
+            cols: 4
             size_hint: None, None
-            width:75
-            height: 60
-            on_press: root.upLeft()
-        Button:
-            text: '^'
+            width:300
+            height: 60*4
+            Button:
+                text: '<^'
+                on_press: root.upLeft()
+            Button:
+                text: '^'
+                on_press: root.up()
+            Button:
+                text: '>^'
+                on_press: root.upRight()
+            Button:
+                text: 'UP'
+                on_press: root.zUp()
+            Button:
+                text: '<'
+                on_press: root.left()
+            Button:
+                text: 'HOME'
+                on_press: root.home()
+            Button:
+                text: '>'
+                on_press: root.right()
+            Button:
+                text: 'DOWN'
+                on_press: root.zDown()
+            Button:
+                text: '<\/'
+                on_press: root.downLeft()
+            Button:
+                text: '\/'
+                on_press: root.down()
+            Button:
+                text: '\/>'
+                on_press: root.downRight()
+            Button:
+                text: 'Stop'
+                on_press: root.stopRun()
+            Button:
+                text: 'Zero'
+                on_release: root.moveOrigin()
+                disabled: False
+            Button:
+                text: 'Center'
+                on_press: root.reZero()
+            Button:
+                text: 'Scroll\nEnable'
+                disabled: True
+            Button:
+                text: 'RUN'
+                on_press: root.startRun()
+        BoxLayout:
+            orentation: 'horizontal'
             size_hint: None, None
-            width:75
-            height: 60
-            on_press: root.up()
-        Button:
-            text: '>^'
+            width: 300
+            height: 30
+            TextInput:
+                id: moveDistInput
+                text: '100'
+                multiline: False
+                size_hint_x: .4
+            TextInput:
+                id: moveSpeedInput
+                text: "30"
+                multiline: False
+                size_hint_x: .4
+            Button:
+                text: root.units
+                on_press: root.switchUnits()
+                size_hint_x: .2
+        GridLayout:
+            cols: 5
             size_hint: None, None
-            width:75
-            height: 60
-            on_press: root.upRight()
-        Button:
-            text: 'UP'
+            width: 300
+            height: 30
+            Button:
+                text: "<<10"
+                on_press: root.moveGcodeIndex(-10)
+            Button:
+                text: "<1"
+                on_press: root.moveGcodeIndex(-1)
+            Button:
+                text: "||"
+                on_press: root.pause()
+            Button:
+                text: "1>"
+                on_press: root.moveGcodeIndex(1)
+            Button:
+                text: "10>>"
+                on_press: root.moveGcodeIndex(10)
+        BoxLayout:
+            orentation: 'horizontal'
             size_hint: None, None
-            width:75
-            height: 60
-            on_press: root.zUp()
-        Button:
-            text: '<'
+            width: 300
+            height: 70
+            GridLayout:
+                cols: 1
+                Label:
+                    text: root.xReadoutPos
+                Label:
+                    text: root.yReadoutPos
+                Label:
+                    text: root.zReadoutPos
+            GridLayout:
+                cols: 1
+                Label:
+                    text: "Estimated Time Remaining:"
+                    font_size: '11sp'
+                    disabled: True
+                Label:
+                    text: "TBD"
+                    disabled: True
+                Label:
+                    text: root.gcodeLineNumber
+        Label:
+            text: root.connectionStatus
             size_hint: None, None
-            width:75
-            height: 60
-            on_press: root.left()
-        Button:
-            text: 'HOME'
-            size_hint: None, None
-            width:75
-            height: 60
-            on_press: root.home()
-        Button:
-            text: '>'
-            size_hint: None, None
-            width:75
-            height: 60
-            on_press: root.right()
-        Button:
-            text: 'DOWN'
-            size_hint: None, None
-            width:75
-            height: 60
-            on_press: root.zDown()
-        Button:
-            text: '<\/'
-            size_hint: None, None
-            width:75
-            height: 60
-            on_press: root.downLeft()
-        Button:
-            text: '\/'
-            size_hint: None, None
-            width:75
-            height: 60
-            on_press: root.down()
-        Button:
-            text: '\/>'
-            size_hint: None, None
-            width:75
-            height: 60
-            on_press: root.downRight()
-        Button:
-            text: 'Stop'
-            size_hint: None, None
-            width:75
-            height: 60
-            on_press: root.stopRun()
-        Button:
-            text: 'Zero'
-            size_hint: None, None
-            width:75
-            height: 60
-            on_release: root.moveOrigin()
+            width: 300
+            height: 30
             disabled: False
-        Button:
-            text: 'Center'
+        ScrollableLabel:
+            id: textconsole
+            size: 300, 200
+            text: root.consoleText
             size_hint: None, None
-            width:75
-            height: 60
-            on_press: root.reZero()
-        Button:
-            text: 'Scroll\nEnable'
-            size_hint: None, None
-            width:75
-            height: 60
-            disabled: True
-        Button:
-            text: 'RUN'
-            size_hint: None, None
-            width:75
-            height: 60
-            on_press: root.startRun()
-    TextInput:
-        id: moveDistInput
-        text: "1"
-        size_hint: None, None
-        width: 225/2
-        height: 40
-        pos: root.width - 300, root.height-280
-        multiline: False
-        on_text: 
-    TextInput:
-        id: moveSpeedInput
-        text: "30"
-        size_hint: None, None
-        width: 225/2
-        height: 40
-        pos: root.width - 188 , root.height-280
-        multiline: False
-    Button:
-        text: 'mm'
-        size_hint: None, None
-        width:75
-        height: 40
-        pos: root.width - 75 , root.height-280
-        disabled: True
-    Label:
-        text: root.xReadoutPos
-        size_hint: None, None
-        pos: root.width - 220, root.height-360
-    Label:
-        text: root.yReadoutPos
-        size_hint: None, None
-        pos: root.width - 220, root.height-380
-    Label:
-        text: root.zReadoutPos
-        size_hint: None, None
-        pos: root.width - 220, root.height-400
-    Label:
-        text: "Estimated Time Remaining:"
-        size_hint: None, None
-        pos: root.width - 120, root.height-360
-        font_size: '11sp'
-        disabled: True
-    Label:
-        text: "TBD"
-        size_hint: None, None
-        pos: root.width - 120, root.height-380
-        disabled: True
-    Label:
-        text: "0.0"
-        size_hint: None, None
-        pos: root.width - 120, root.height-400
-        disabled: True
-    Label:
-        text: root.connectionStatus
-        size_hint: None, None
-        pos: root.width - 170, root.height-430
-        disabled: False
-    ScrollableLabel:
-        id: textconsole
-        size: 300, 200
-        text: root.consoleText
-        size_hint: None, None
-        pos: root.width - 310, root.height-600
+    
     ScreenControls:
         id: screenControls
         size_hint: (1, 1)
@@ -505,10 +474,9 @@
             text: root.text
             
         BoxLayout:
-            size_hint_y: None
-            height: 30
+            #size_hint_y: 1
             Button:
-                text: "OK"
+                text: "Continue"
                 on_release: root.cancel()
 
 <ScrollableTextPopup>:
