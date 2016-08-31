@@ -200,7 +200,7 @@ class GroundControlApp(App):
             return
         
         self.frontpage.setPosReadout(xval,yval,zval,units)
-        self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,units)
+        self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,self.data.units)
     
     def setTargetOnScreen(self, message):
         '''
@@ -223,7 +223,7 @@ class GroundControlApp(App):
         yval = float(valz[1])
         zval = float(valz[2])
         
-        self.frontpage.gcodecanvas.targetIndicator.setPos(xval,yval,units)
+        self.frontpage.gcodecanvas.targetIndicator.setPos(xval,yval,self.data.units)
         
     
 if __name__ == '__main__':

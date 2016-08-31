@@ -11,8 +11,8 @@ class PositionIndicator(Widget):
     position on the screen.
     
     '''
-    INCHES            = 25.4
-    MILLIMETERS       = 1 
+    INCH            = 25.4
+    MILLIMETER       = 1 
     color             = ObjectProperty((1, 1, 1))
     
     def setPos(self, xPos, yPos, units):
@@ -22,11 +22,11 @@ class PositionIndicator(Widget):
         
         '''
         
-        if units == "mm":
-            crossPosX = xPos*self.MILLIMETERS
-            crossPosY = yPos*self.MILLIMETERS
-        elif units == "in":
-            crossPosX = xPos*self.INCHES
-            crossPosY = yPos*self.INCHES
+        if units == "MM":
+            crossPosX = xPos*self.MILLIMETER
+            crossPosY = yPos*self.MILLIMETER
+        elif units == "INCHES":
+            crossPosX = xPos*self.INCH
+            crossPosY = yPos*self.INCH
         
         self.pos = (crossPosX,crossPosY)

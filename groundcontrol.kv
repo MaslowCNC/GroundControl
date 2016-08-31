@@ -131,14 +131,19 @@
             height: 30
             Button:
                 text: "<<10"
+                on_press: root.moveGcodeIndex(-10)
             Button:
                 text: "<1"
+                on_press: root.moveGcodeIndex(-1)
             Button:
                 text: "||"
+                on_press: root.pause()
             Button:
                 text: "1>"
+                on_press: root.moveGcodeIndex(1)
             Button:
                 text: "10>>"
+                on_press: root.moveGcodeIndex(10)
         BoxLayout:
             orentation: 'horizontal'
             size_hint: None, None

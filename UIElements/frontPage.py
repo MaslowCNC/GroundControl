@@ -9,6 +9,7 @@ This page is used to manually move the machine, see the positional readout, and 
 from kivy.uix.screenmanager                    import Screen
 from kivy.properties                           import ObjectProperty, StringProperty
 from DataStructures.makesmithInitFuncs         import MakesmithInitFuncs
+import re
 
 class FrontPage(Screen, MakesmithInitFuncs):
     textconsole    = ObjectProperty(None)
@@ -77,6 +78,31 @@ class FrontPage(Screen, MakesmithInitFuncs):
         else:
             self.data.gcode_queue.put('G21 ')
             self.moveDistInput.text = str(float(self.moveDistInput.text)*25)
+    
+    def moveGcodeIndex(self, dist):
+        self.data.gcodeIndex = self.data.gcodeIndex + dist
+        gCodeLine = self.data.gcode[self.data.gcodeIndex]
+        print gCodeLine
+        
+        xTarget = 0
+        yTarget = 0
+        
+        x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if x:
+            xTarget = float(x.groups()[0])
+        
+        y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if y:
+            yTarget = float(y.groups()[0])
+        
+        self.gcodecanvas.targetIndicator.setPos(xTarget,yTarget,self.data.units)
+    
+    def pause(self):
+        self.data.uploadFlag = 0
+        self.data.quick_queue.put("STOP") 
+        with self.data.gcode_queue.mutex:
+            self.data.gcode_queue.queue.clear()
+        print("Run Paused")
     
     def jmpsize(self):
         try:
