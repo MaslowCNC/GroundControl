@@ -18,8 +18,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     target = [0,0,0]
     
-    howFarToMoveOnArrowPress = StringProperty("100")
-    
     connectionStatus = StringProperty("Not Connected")
     
     xReadoutPos = StringProperty("0 mm")
@@ -73,13 +71,12 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.units = newUnits
         #the behavior of notifying the machine doesn't really belong here
         #but I'm not really sure where else it does belong
-        self.howFarToMoveOnArrowPress = self.moveDistInput.text
         if newUnits == "INCHES":
             self.data.gcode_queue.put('G20 ')
-            self.howFarToMoveOnArrowPress = str(float(self.howFarToMoveOnArrowPress)/25)
+            self.moveDistInput.text = str(float(self.moveDistInput.text)/25)
         else:
             self.data.gcode_queue.put('G21 ')
-            self.howFarToMoveOnArrowPress = str(float(self.howFarToMoveOnArrowPress)*25)
+            self.moveDistInput.text = str(float(self.moveDistInput.text)*25)
     
     def jmpsize(self):
         try:
