@@ -38,22 +38,24 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     consoleText = StringProperty(" ")
     
-    units = "mm"
+    units = StringProperty("MM")
+    
+    def __init__(self, data, **kwargs):
+        super(FrontPage, self).__init__(**kwargs)
+        self.data = data
     
     def setPosReadout(self, xPos, yPos, zPos, units):
         self.xReadoutPos    = str(xPos) + " " + units
         self.yReadoutPos    = str(yPos) + " " + units
         self.zReadoutPos    = str(zPos) + " " + units
-        self.units          = units
         self.numericalPosX  = xPos
         self.numericalPosY  = yPos
     
     def setUpData(self, data):
-        self.data = data
-        print "Initialized: " + str(self)
         self.gcodecanvas.setUpData(data)
         self.screenControls.setUpData(data)
         self.data.bind(connectionStatus = self.updateConnectionStatus)
+        self.data.bind(units            = self.onUnitsSwitch)
     
     def updateConnectionStatus(self, callback, connected):
         
@@ -61,7 +63,21 @@ class FrontPage(Screen, MakesmithInitFuncs):
             self.connectionStatus = "Connected"
         else:
             self.connectionStatus = "Connection Lost"
-        
+    
+    def switchUnits(self):
+        if self.data.units == "INCHES":
+            self.data.units = "MM"
+        else:
+            self.data.units = "INCHES"
+    
+    def onUnitsSwitch(self, callback, newUnits):
+        self.units = newUnits
+        #the behavior of notifying the machine doesn't really belong here
+        #but I'm not really sure where else it does belong
+        if newUnits == "INCHES":
+            self.data.gcode_queue.put('G20 ')
+        else:
+            self.data.gcode_queue.put('G21 ')
     
     def jmpsize(self):
         try:
@@ -185,7 +201,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def moveOrigin(self):
         
-        if self.units == "in":
+        if self.data.units == "INCHES":
             amtToShiftX = self.numericalPosX - self.shiftX
             amtToShiftY = self.numericalPosY - self.shiftY
             self.shiftX = self.shiftX + amtToShiftX

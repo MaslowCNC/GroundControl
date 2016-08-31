@@ -73,7 +73,7 @@ class GroundControlApp(App):
         self.data       =  Data()
         
         
-        self.frontpage = FrontPage(name='FrontPage')
+        self.frontpage = FrontPage(self.data, name='FrontPage')
         interface.add_widget(self.frontpage)
         
         self.nonVisibleWidgets = NonVisibleWidgets()

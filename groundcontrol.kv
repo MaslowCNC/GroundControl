@@ -166,12 +166,12 @@
         pos: root.width - 188 , root.height-280
         multiline: False
     Button:
-        text: 'mm'
+        text: root.units
         size_hint: None, None
         width:75
         height: 40
         pos: root.width - 75 , root.height-280
-        disabled: True
+        on_press: root.switchUnits()
     Label:
         text: root.xReadoutPos
         size_hint: None, None
