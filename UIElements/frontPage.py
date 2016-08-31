@@ -37,6 +37,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     consoleText = StringProperty(" ")
     
     units = StringProperty("MM")
+    gcodeLineNumber = StringProperty('0')
     
     def __init__(self, data, **kwargs):
         super(FrontPage, self).__init__(**kwargs)
@@ -54,6 +55,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.screenControls.setUpData(data)
         self.data.bind(connectionStatus = self.updateConnectionStatus)
         self.data.bind(units            = self.onUnitsSwitch)
+        self.data.bind(gcodeIndex       = self.onIndexMove)
     
     def updateConnectionStatus(self, callback, connected):
         
@@ -78,6 +80,9 @@ class FrontPage(Screen, MakesmithInitFuncs):
         else:
             self.data.gcode_queue.put('G21 ')
             self.moveDistInput.text = str(float(self.moveDistInput.text)*25)
+    
+    def onIndexMove(self, callback, newIndex):
+        self.gcodeLineNumber = str(newIndex)
     
     def moveGcodeIndex(self, dist):
         self.data.gcodeIndex = self.data.gcodeIndex + dist

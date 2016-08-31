@@ -3,6 +3,7 @@ from kivy.properties                                  import ObjectProperty
 from kivy.properties                                  import StringProperty
 from kivy.properties                                  import BooleanProperty
 from kivy.properties                                  import OptionProperty
+from kivy.properties                                  import NumericProperty
 from kivy.event                                       import EventDispatcher
 import Queue
 
@@ -66,7 +67,7 @@ class Data(EventDispatcher):
     #This defines which COM port is used
     comport    = StringProperty("")
     #The index of the next unread line of Gcode
-    gcodeIndex = 0
+    gcodeIndex = NumericProperty(0)
     #Holds the current value of the feed rate
     feedRate   = 20
     #holds the address of the g-code file so that the gcode can be refreshed
