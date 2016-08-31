@@ -279,10 +279,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             
             if opstring[0:3] == 'G20':
                 self.canvasScaleFactor = self.INCHES
+                self.data.units = "INCHES"
                 self.data.gcode_queue.put('G20 ')
                 
             if opstring[0:3] == 'G21':
                 self.canvasScaleFactor = self.MILLIMETERS
+                Self.data.units = "MM"
                 self.data.gcode_queue.put('G21 ')
                 
             if opstring[0:3] == 'G90':

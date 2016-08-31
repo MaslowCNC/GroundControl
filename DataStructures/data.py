@@ -2,6 +2,7 @@ from time                                             import time
 from kivy.properties                                  import ObjectProperty
 from kivy.properties                                  import StringProperty
 from kivy.properties                                  import BooleanProperty
+from kivy.properties                                  import OptionProperty
 from kivy.event                                       import EventDispatcher
 import Queue
 
@@ -58,21 +59,23 @@ class Data(EventDispatcher):
     Data available to all widgets
     '''
     #Gcodes contains all of the lines of gcode in the opened file
-    gcode = ObjectProperty([])
-    version = '0.60'
+    gcode      = ObjectProperty([])
+    version    = '0.60'
     #all of the available COM ports
-    comPorts = []
+    comPorts   = []
     #This defines which COM port is used
-    comport = StringProperty("")
+    comport    = StringProperty("")
     #The index of the next unread line of Gcode
     gcodeIndex = 0
     #Holds the current value of the feed rate
-    feedRate = 20
+    feedRate   = 20
     #holds the address of the g-code file so that the gcode can be refreshed
-    gcodeFile = ""
+    gcodeFile  = ""
     #the current position of the cutting head
     currentpos = [0.0, 0.0, 0.0]
-    target = [0.0, 0.0, 0.0]
+    target     = [0.0, 0.0, 0.0]
+    units      = OptionProperty("MM", options=["MM", "INCHES"])
+    
     '''
     Flags
     '''
