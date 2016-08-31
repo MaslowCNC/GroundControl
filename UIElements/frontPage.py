@@ -73,6 +73,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.units = newUnits
         #the behavior of notifying the machine doesn't really belong here
         #but I'm not really sure where else it does belong
+        self.howFarToMoveOnArrowPress = self.moveDistInput.text
         if newUnits == "INCHES":
             self.data.gcode_queue.put('G20 ')
             self.howFarToMoveOnArrowPress = str(float(self.howFarToMoveOnArrowPress)/25)
