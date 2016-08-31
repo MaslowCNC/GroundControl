@@ -18,8 +18,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     target = [0,0,0]
     
-    distMove = 0
-    speedMove = 0
+    howFarToMoveOnArrowPress = StringProperty("100")
     
     connectionStatus = StringProperty("Not Connected")
     
@@ -76,8 +75,10 @@ class FrontPage(Screen, MakesmithInitFuncs):
         #but I'm not really sure where else it does belong
         if newUnits == "INCHES":
             self.data.gcode_queue.put('G20 ')
+            self.howFarToMoveOnArrowPress = str(float(self.howFarToMoveOnArrowPress)/25)
         else:
             self.data.gcode_queue.put('G21 ')
+            self.howFarToMoveOnArrowPress = str(float(self.howFarToMoveOnArrowPress)*25)
     
     def jmpsize(self):
         try:
