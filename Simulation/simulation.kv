@@ -1,0 +1,15 @@
+#nothing
+
+<SimulationCanvas>:
+    
+    SimulationLine:
+
+<SimulationLine>:
+    canvas:
+        Color:
+            rgb: root.color
+        Line:
+            points: root.fromPos[0], root.fromPos[1],root.toPos[0], root.toPos[1]
+    Label:
+        text: "test"
+        pos: -root.width/2 + (root.fromPos[0] + root.toPos[0])/2, -root.height/2 + (root.fromPos[1] + root.toPos[1])/2
