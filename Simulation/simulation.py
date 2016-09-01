@@ -27,14 +27,14 @@ class SimulationApp(App):
         self.simulationCanvas = SimulationCanvas()
         interface.add_widget(self.simulationCanvas)
         
-        Clock.schedule_interval(self.recalculate, 2)
+        Clock.schedule_once(self.initialize, 2)
         
         
         return interface
         
-    def recalculate(self, *args):
-        print "recalculating"
+    def initialize(self, *args):
         self.simulationCanvas.initialize()
+        
         
 if __name__ == '__main__':
     SimulationApp().run()

@@ -4,6 +4,14 @@
     chainA:chainA
     chainB:chainB
     lineT:lineT
+    frameLeft:frameLeft
+    frameTop:frameTop
+    frameRight:frameRight
+    frameBottom:frameBottom
+    scatterInstance:scatterInstance
+    xPosSlider:xPosSlider
+    yPosSlider:yPosSlider
+    
     
     ScatterPlane:
         do_rotation: False
@@ -17,6 +25,27 @@
             id: chainB
         SimulationLine:
             id: lineT
+        SimulationLine:
+            id: frameLeft
+        SimulationLine:
+            id: frameTop
+        SimulationLine:
+            id: frameRight
+        SimulationLine:
+            id: frameBottom
+    Slider:
+        id: xPosSlider
+        size_hint_x: .25
+        pos: 0,-root.height/2 + 25
+        min:0
+        max:root.bedWidth
+    Slider:
+        id: yPosSlider
+        size_hint_x: .25
+        pos: 400,-root.height/2 + 25
+        min:0
+        max:root.bedWidth
+        
 
 <SimulationLine>:
     canvas:

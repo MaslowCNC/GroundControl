@@ -11,7 +11,7 @@ class SimulationLine(FloatLayout):
     
     #scatterObject     = ObjectProperty(None)
     
-    color           = (1,1,1)
+    color           = ObjectProperty([1,1,1])
     fromPos         = ObjectProperty([0,0])
     toPos           = ObjectProperty([0,0])
     lengthAsString  = StringProperty("0")
