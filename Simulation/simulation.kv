@@ -1,8 +1,22 @@
 #nothing
 
 <SimulationCanvas>:
+    chainA:chainA
+    chainB:chainB
+    lineT:lineT
     
-    SimulationLine:
+    ScatterPlane:
+        do_rotation: False
+        id: scatterInstance
+        Label: 
+            id: scatterObject
+            text: ""
+        SimulationLine:
+            id: chainA
+        SimulationLine:
+            id: chainB
+        SimulationLine:
+            id: lineT
 
 <SimulationLine>:
     canvas:
@@ -11,5 +25,5 @@
         Line:
             points: root.fromPos[0], root.fromPos[1],root.toPos[0], root.toPos[1]
     Label:
-        text: "test"
+        text: root.lengthAsString
         pos: -root.width/2 + (root.fromPos[0] + root.toPos[0])/2, -root.height/2 + (root.fromPos[1] + root.toPos[1])/2

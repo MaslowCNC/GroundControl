@@ -9,6 +9,16 @@ import re
 import math
 
 class SimulationCanvas(FloatLayout):
+    scatterObject     = ObjectProperty(None)
     
-    #scatterObject     = ObjectProperty(None)
+    def initialize(self):
+        self.chainA.initialize()
+        self.chainB.initialize()
+        self.lineT.initialize()
+        
+        
+        self.chainA.setEnd(100,200)
+        self.chainB.setEnd(400,200)
+        self.lineT.setEnd(2946,1439.2)
+    
     pass
