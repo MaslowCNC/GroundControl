@@ -11,6 +11,10 @@
     scatterInstance:scatterInstance
     xPosSlider:xPosSlider
     yPosSlider:yPosSlider
+    angleA:angleA
+    angleB:angleB
+    angleP:angleP
+    sled:sled
     
     
     ScatterPlane:
@@ -33,6 +37,14 @@
             id: frameRight
         SimulationLine:
             id: frameBottom
+        SimulationAngle
+            id: angleA
+        SimulationAngle
+            id: angleB
+        SimulationAngle
+            id: angleP
+        SimulationSled
+            id: sled
     Slider:
         id: xPosSlider
         size_hint_x: .25
@@ -44,8 +56,13 @@
         size_hint_x: .25
         pos: 400,-root.height/2 + 25
         min:0
-        max:root.bedWidth
+        max:root.bedHeight
         
+<SimulationAngle>:
+    Label:
+        text: root.angleAsString
+        font_size: 35
+        pos: root.textPos
 
 <SimulationLine>:
     canvas:
@@ -55,4 +72,24 @@
             points: root.fromPos[0], root.fromPos[1],root.toPos[0], root.toPos[1]
     Label:
         text: root.lengthAsString
+        font_size: 35
         pos: -root.width/2 + (root.fromPos[0] + root.toPos[0])/2, -root.height/2 + (root.fromPos[1] + root.toPos[1])/2
+        
+<SimulationSled>:
+    canvas:
+        Color:
+            rgb: (1,0,0)
+        Line:
+            points: root.sledPointOne[0] - root.sledWidth/2, root.sledPointOne[1] - root.sledHeight, root.sledPointOne[0],root.sledPointOne[1]
+        Color:
+            rgb: (0,1,0)
+        Line:
+            points: root.sledPointOne[0] - root.sledWidth/2, root.sledPointOne[1] - root.sledHeight,root.sledPointTwo[0],root.sledPointTwo[1]
+        Color:
+            rgb: (0,0,1)
+        Line:
+            points: root.sledPointOne[0], root.sledPointOne[1], root.sledPointTwo[0], root.sledPointTwo[1]
+    Label:
+        text: root.slantAsString
+        font_size:35
+        pos:root.sledPointOne[0],root.sledPointOne[1]-200

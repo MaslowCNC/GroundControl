@@ -16,6 +16,7 @@ class SimulationLine(FloatLayout):
     toPos           = ObjectProperty([0,0])
     lengthAsString  = StringProperty("0")
     length          = 0
+    slope           = .5
     
     def initialize(self):
         self.updateLength()
@@ -25,7 +26,11 @@ class SimulationLine(FloatLayout):
     def updateLength(self, *args):
         self.length = math.sqrt(math.pow((self.fromPos[0] - self.toPos[0]),2) + math.pow((self.fromPos[1] - self.toPos[1]),2))
         self.lengthAsString = str(self.length)
-    
+        try:
+            self.slope = (self.fromPos[1] - self.toPos[1])/(self.fromPos[0] - self.toPos[0])
+        except:
+            pass
+        
     def setStart(self,x,y):
         self.fromPos = [x,y]
     

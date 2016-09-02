@@ -4,6 +4,8 @@ from kivy.graphics                           import Color, Ellipse, Line
 from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
 from simulationLine                          import SimulationLine
+from simulationAngle                         import SimulationAngle
+from simulationSled                          import SimulationSled
 from kivy.graphics.transformation            import Matrix
 
 import re
@@ -33,6 +35,10 @@ class SimulationCanvas(FloatLayout):
         
         self.xPosSlider.bind(value=self.xPosSliderValueChange)
         self.yPosSlider.bind(value=self.yPosSliderValueChange)
+        
+        self.setupAngles()
+        
+        self.setupSled()
         
     def setSpindleLocation(self,x,y):
         self.chainA.setEnd(x,y)
@@ -66,6 +72,14 @@ class SimulationCanvas(FloatLayout):
         self.frameBottom.setStart(0,0)
         self.frameBottom.setEnd(self.bedWidth,0)
         self.frameBottom.color = (1,0,0)
+    
+    def setupAngles(self):
+        self.angleA.initialize(self.chainA, self.lineT, 0)
+        self.angleB.initialize(self.chainB, self.lineT, 0)
+        self.angleP.initialize(self.chainA, self.chainB, 1)
+    
+    def setupSled(self):
+        self.sled.initialize(self.chainA, self.chainB, 1, self.angleP)
     
     def setInitialZoom(self):
         mat = Matrix().scale(.4, .4, 1)
