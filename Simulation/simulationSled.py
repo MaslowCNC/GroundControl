@@ -20,8 +20,8 @@ class SimulationSled(FloatLayout):
     sledToolPos     = ObjectProperty([0,0]) #top left corner
     sledMidpointTop = ObjectProperty([0,0])
     
-    sledHeight = 100
-    sledWidth  = 200
+    sledHeight = 130
+    sledWidth  = 300
     
     slant = 0
     slantAsString = StringProperty("Slant: ")
@@ -81,12 +81,15 @@ class SimulationSled(FloatLayout):
         
         except:
             pass
-            
+        
         x = self.sledHeight/math.sqrt(math.pow(perpindicularSlope,2) + 1)
         y = perpindicularSlope*x
         
-        self.sledToolPos[0] = self.sledMidpointTop[0] + x
-        self.sledToolPos[1] = self.sledMidpointTop[1] + y
+        slopeSign = math.copysign(1, perpindicularSlope)
+        self.sledToolPos[0] = self.sledMidpointTop[0] - slopeSign*x
+        self.sledToolPos[1] = self.sledMidpointTop[1] - slopeSign*y
+        
+        print math.copysign(1, perpindicularSlope)
         
         
     
