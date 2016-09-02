@@ -24,7 +24,15 @@ class SimulationSled(FloatLayout):
     sledWidth  = 300
     
     slant = 0
-    slantAsString = StringProperty("Slant: ")
+    slantAsString       = StringProperty("Slant: ")
+    toolPosAsString     = StringProperty("Pos: ")
+    topLengthAsString   = StringProperty("Length: ")
+    lengthOfTopBar      = sledWidth
+    correctionFactor    = [0,0]
+    correctionFactorString = StringProperty("Correction: " + str(correctionFactor))
+    errorDist           = 0
+    errorDistString     = StringProperty("Error: " + str(errorDist))
+    
     
     def initialize(self, lineOne, lineTwo, end, angle):
         self.lineOne = lineOne
@@ -60,6 +68,8 @@ class SimulationSled(FloatLayout):
         
         self.sledPointTwo = (xDist,yDist)
         
+        self.lengthOfTopBar = math.sqrt(math.pow((self.sledPointOne[1] - self.sledPointTwo[1]), 2) + math.pow((self.sledPointOne[0] - self.sledPointTwo[0]), 2))
+        self.topLengthAsString = "Length: " + str(self.lengthOfTopBar)
         
         try:
             slopeBetweenPoints = ( self.sledPointOne[1]-self.sledPointTwo[1] ) / (self.sledPointOne[0] - self.sledPointTwo[0])
@@ -88,8 +98,16 @@ class SimulationSled(FloatLayout):
         slopeSign = math.copysign(1, perpindicularSlope)
         self.sledToolPos[0] = self.sledMidpointTop[0] - slopeSign*x
         self.sledToolPos[1] = self.sledMidpointTop[1] - slopeSign*y
+        self.toolPosAsString = "Pos: " + str(self.sledToolPos)
         
-        print math.copysign(1, perpindicularSlope)
+        self.correctionFactor[0] = self.sledToolPos[0] - self.lineOne.toPos[0]
+        self.correctionFactor[1] = self.sledToolPos[1] - self.lineOne.toPos[1]
+        self.correctionFactorString = "Correction: " + str(self.correctionFactor)
+        
+        self.errorDist = math.sqrt(math.pow(self.correctionFactor[0],2) + math.pow(self.correctionFactor[1],2))
+        self.errorDistString     = "Error: " + str(self.errorDist)
+        
+        
         
         
     

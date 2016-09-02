@@ -94,4 +94,20 @@
     Label:
         text: root.slantAsString
         font_size:35
-        pos:root.sledPointOne[0],root.sledPointOne[1]-200
+        pos:root.sledToolPos[0]+.000000001*root.sledPointTwo[1],root.sledToolPos[1]-75
+    Label:
+        text: root.toolPosAsString
+        font_size:35
+        pos:root.sledToolPos[0]+.000000001*root.sledPointTwo[1],root.sledToolPos[1]-125
+    Label:
+        text: root.topLengthAsString
+        font_size:35
+        pos:root.sledToolPos[0]+.000000001*root.sledPointTwo[1],root.sledToolPos[1]-175
+    Label:
+        text: root.correctionFactorString
+        font_size:35
+        pos:root.sledToolPos[0]+.000000001*root.sledPointTwo[1],root.sledToolPos[1]-225
+    Label:
+        text: root.errorDistString
+        font_size:35
+        pos:root.sledToolPos[0]+.000000001*root.sledPointTwo[1],root.sledToolPos[1]-275
