@@ -50,7 +50,15 @@ class SimulationSled(FloatLayout):
     
     def updateSled(self, *args):
         
-        distUpLine = 100
+        
+        #here we are going to try to find values for distUpLine which will preserve the correct width
+        a = self.sledWidth/(math.sqrt(2)*math.sqrt(1-math.cos(math.radians(self.angleObject.angle))))
+        print "a"
+        print a
+        print self.angleObject.angle
+        
+        
+        distUpLine = a
         x = distUpLine/math.sqrt(math.pow(self.lineTwo.slope,2) + 1)
         y = self.lineTwo.slope*x
         
