@@ -41,6 +41,8 @@ class SimulationCanvas(FloatLayout):
         
         self.setupSled()
         
+        self.lengthToXY.initialize(self.chainA, self.chainB, self.bedWidth+2*self.motorTranslate, self.bedHeight+self.motorLift, self.motorTranslate, self.motorLift)
+        
     def setSpindleLocation(self,x,y):
         self.chainA.setEnd(x,y)
         self.chainB.setEnd(x,y)

@@ -15,6 +15,7 @@
     angleB:angleB
     angleP:angleP
     sled:sled
+    lengthToXY:lengthToXY
     
     
     ScatterPlane:
@@ -46,6 +47,7 @@
         SimulationSled:
             id: sled
         ChainLengthtoXY:
+            id: lengthToXY
     Slider:
         id: xPosSlider
         size_hint_x: .25
@@ -78,11 +80,11 @@
 
 <ChainLengthtoXY>:
     Label:
-        text: root.x
+        text: root.xVal
         font_size:35
         pos:2400,50
     Label:
-        text: root.y
+        text: root.yVal
         font_size:35
         pos:2400,100
         
@@ -90,12 +92,12 @@
     canvas:
         Color:
             rgb: (1,0,0)
-        Line:
-            points: root.sledToolPos[0]+.000000001*root.sledPointTwo[1], root.sledToolPos[1], root.sledPointOne[0],root.sledPointOne[1]
-            width: 6
-        Line:
-            points: root.sledToolPos[0]+.000000001*root.sledPointTwo[1], root.sledToolPos[1],root.sledPointTwo[0],root.sledPointTwo[1]
-            width: 6
+        #Line:
+        #    points: root.sledToolPos[0]+.000000001*root.sledPointTwo[1], root.sledToolPos[1], root.sledPointOne[0],root.sledPointOne[1]
+        #    width: 6
+        #Line:
+        #    points: root.sledToolPos[0]+.000000001*root.sledPointTwo[1], root.sledToolPos[1],root.sledPointTwo[0],root.sledPointTwo[1]
+        #    width: 6
         Line:
             points: root.sledPointOne[0], root.sledPointOne[1], root.sledPointTwo[0], root.sledPointTwo[1]
             width: 6
@@ -114,20 +116,20 @@
     Label:
         text: root.slantAsString
         font_size:35
-        pos:-200,50
+        pos:-100,50
     Label:
         text: root.toolPosAsString
         font_size:35
-        pos:-200,0
+        pos:-100,0
     Label:
         text: root.topLengthAsString
         font_size:35
-        pos:-200,-50
+        pos:-100,-50
     Label:
         text: root.correctionFactorString
         font_size:35
-        pos:-200,-100
+        pos:-100,-100
     Label:
         text: root.errorDistString
         font_size:35
-        pos:-200,-150
+        pos:-100,-150
