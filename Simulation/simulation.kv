@@ -43,8 +43,9 @@
             id: angleB
         SimulationAngle
             id: angleP
-        SimulationSled
+        SimulationSled:
             id: sled
+        ChainLengthtoXY:
     Slider:
         id: xPosSlider
         size_hint_x: .25
@@ -74,6 +75,16 @@
         text: root.lengthAsString
         font_size: 35
         pos: -root.width/2 + (root.fromPos[0] + root.toPos[0])/2, -root.height/2 + (root.fromPos[1] + root.toPos[1])/2
+
+<ChainLengthtoXY>:
+    Label:
+        text: root.x
+        font_size:35
+        pos:2400,50
+    Label:
+        text: root.y
+        font_size:35
+        pos:2400,100
         
 <SimulationSled>:
     canvas:

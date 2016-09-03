@@ -6,6 +6,7 @@ from kivy.core.window                        import Window
 from simulationLine                          import SimulationLine
 from simulationAngle                         import SimulationAngle
 from simulationSled                          import SimulationSled
+from chainLengthToXY                         import ChainLengthtoXY
 from kivy.graphics.transformation            import Matrix
 
 import re
