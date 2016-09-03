@@ -91,6 +91,15 @@
         Line:
             points: root.sledToolPos[0]+.000000001*root.sledPointTwo[1], root.sledToolPos[1], root.sledMidpointTop[0], root.sledMidpointTop[1]
             width: 6
+        Line:
+            points: root.sledPointOne[0], root.sledPointOne[1], root.bottomRight[0], root.bottomRight[1]
+            width: 6
+        Line:
+            points: root.sledPointTwo[0], root.sledPointTwo[1], root.bottomLeft[0], root.bottomLeft[1]
+            width: 6
+        Line:
+            points: root.bottomLeft[0]+.000000001*root.sledPointTwo[1], root.bottomLeft[1], root.bottomRight[0], root.bottomRight[1]
+            width: 6
     Label:
         text: root.slantAsString
         font_size:35

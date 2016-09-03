@@ -19,6 +19,8 @@ class SimulationSled(FloatLayout):
     sledPointTwo    = ObjectProperty([0,0]) #top left corner
     sledToolPos     = ObjectProperty([0,0]) #top left corner
     sledMidpointTop = ObjectProperty([0,0])
+    bottomLeft      = ObjectProperty([0,0])
+    bottomRight     = ObjectProperty([0,0])
     
     sledHeight = 130
     sledWidth  = 300
@@ -107,6 +109,11 @@ class SimulationSled(FloatLayout):
         self.sledToolPos[0] = self.sledMidpointTop[0] - slopeSign*x
         self.sledToolPos[1] = self.sledMidpointTop[1] - slopeSign*y
         self.toolPosAsString = "Pos: " + str(self.sledToolPos)
+        
+        self.bottomRight[0]  = self.sledPointOne[0] - 2*slopeSign*x
+        self.bottomRight[1]  = self.sledPointOne[1] - 2*slopeSign*y
+        self.bottomLeft[0]   = self.sledPointTwo[0] - 2*slopeSign*x
+        self.bottomLeft[1]   = self.sledPointTwo[1] - 2*slopeSign*y
         
         self.correctionFactor[0] = self.sledToolPos[0] - self.lineOne.toPos[0]
         self.correctionFactor[1] = self.sledToolPos[1] - self.lineOne.toPos[1]
