@@ -102,8 +102,7 @@ class SimulationSled(FloatLayout):
         y = perpindicularSlope*x
         
         slopeSign = math.copysign(1, perpindicularSlope)
-        self.sledToolPos[0] = self.sledMidpointTop[0] - slopeSign*x
-        self.sledToolPos[1] = self.sledMidpointTop[1] - slopeSign*y
+        self.sledToolPos     = (self.sledMidpointTop[0] - slopeSign*x, self.sledMidpointTop[1] - slopeSign*y)
         self.toolPosAsString = "Pos: " + str(self.sledToolPos)
         
         self.bottomRight[0]  = self.sledPointOne[0] - 2*slopeSign*x

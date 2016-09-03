@@ -16,6 +16,7 @@
     angleP:angleP
     sled:sled
     lengthToXY:lengthToXY
+    posToLength:posToLength
     
     
     ScatterPlane:
@@ -38,14 +39,16 @@
             id: frameRight
         SimulationLine:
             id: frameBottom
-        SimulationAngle
+        SimulationAngle:
             id: angleA
-        SimulationAngle
+        SimulationAngle:
             id: angleB
-        SimulationAngle
+        SimulationAngle:
             id: angleP
         SimulationSled:
             id: sled
+        PosToChainLength:
+            id: posToLength
         ChainLengthtoXY:
             id: lengthToXY
     Slider:
@@ -87,7 +90,17 @@
         text: root.yVal
         font_size:35
         pos:2400,100
-        
+
+<PosToChainLength>:
+    Label:
+        text: root.lenAString
+        font_size:35
+        pos:2400,250
+    Label:
+        text: root.lenBString
+        font_size:35
+        pos:2400,300
+    
 <SimulationSled>:
     canvas:
         Color:
@@ -103,7 +116,7 @@
             width: 6
         Line:
             points: root.sledToolPos[0]+.000000001*root.sledPointTwo[1], root.sledToolPos[1], root.sledMidpointTop[0], root.sledMidpointTop[1]
-            width: 6
+            width: 1
         Line:
             points: root.sledPointOne[0], root.sledPointOne[1], root.bottomRight[0], root.bottomRight[1]
             width: 6

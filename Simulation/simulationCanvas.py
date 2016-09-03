@@ -7,6 +7,7 @@ from simulationLine                          import SimulationLine
 from simulationAngle                         import SimulationAngle
 from simulationSled                          import SimulationSled
 from chainLengthToXY                         import ChainLengthtoXY
+from posToChainLength                        import PosToChainLength
 from kivy.graphics.transformation            import Matrix
 
 import re
@@ -42,6 +43,7 @@ class SimulationCanvas(FloatLayout):
         self.setupSled()
         
         self.lengthToXY.initialize(self.chainA, self.chainB, self.bedWidth+2*self.motorTranslate, self.bedHeight+self.motorLift, self.motorTranslate, self.motorLift)
+        self.posToLength.initialize(self.sled, self.bedWidth+2*self.motorTranslate, self.bedHeight+self.motorLift, self.motorTranslate, self.motorLift)
         
     def setSpindleLocation(self,x,y):
         self.chainA.setEnd(x,y)

@@ -7,6 +7,24 @@ from kivy.core.window                        import Window
 import re
 import math
 
-class posToChainLength(FloatLayout):
+class PosToChainLength(FloatLayout):
     
+    lenAString = StringProperty("none")
+    lenBString = StringProperty("none")
     
+    motorSpacing = 0
+    motorHeight = 0
+    sledHeight = 130
+    sledWidth  = 300
+    motorTranslate = 0
+    motorLift = 0
+    
+    posObject = None
+    
+    def initialize(self, posObject, motorSpacing, motorHeight, motorTranslate, motorLift):
+        
+        self.posObject = posObject
+        self.posObject.bind(sledToolPos = self.update)
+    
+    def update(self, callback, value):
+        print "update ran"
