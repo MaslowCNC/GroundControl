@@ -52,17 +52,44 @@ class ChainLengthtoXY(FloatLayout):
         
         La = lengthA
         Lb = lengthB
+        Ax = 0
+        Ay = 0
         Bx = self.motorSpacing
+        By = 0
+        b  = self.sledWidth
+        h  = self.sledHeight
         
         thetaCAB = math.acos((pow(La,2)+pow(Bx,2)-pow(Lb,2))/(2*La*Bx))
         
         Cx = La*(pow(La,2)+pow(Bx,2)-pow(Lb,2))/(2*La*Bx)
         Cy = La*math.sin(math.acos((pow(La,2)+pow(Bx,2)-pow(Lb,2))/(2*La*Bx)))
         
-        print "this"
-        print Cx
-        print Cy
-        print La
-        print math.degrees(thetaCAB)
+        thetaACB = math.acos((pow(La,2)+pow(Lb,2)-pow(Bx,2))/(2*La*Lb))
+        
+        lCD = b//(math.sqrt(2)*math.sqrt(1-math.cos(thetaACB)))
+        mAC = Cy/Cx
+        
+        Dx = Cx - lCD/math.sqrt(math.pow(mAC,2) + 1)
+        Dy = mAC*Dx
+        
+        mBC = Cy/(Cx-Bx)
+        
+        Ex = Cx + lCD/math.sqrt(math.pow(mBC,2) + 1)
+        Ey = mBC*(Ex - Bx)
+        
+        Mx = (Dx + Ex)/2
+        My = (Dy + Ey)/2
+        
+        try:
+            mMF = (Ex-Dx)/(Dy-Ey)
+        except:
+            mMF = 10000
+        
+        Fx = Mx - h/math.sqrt(pow(mMF,2) + 1)
+        Fy = My - mMF*(Mx-Fx)
+        
+        print "lksdj"
+        print Fy
+        
         
         return 1 , 2
