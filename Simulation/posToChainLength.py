@@ -30,7 +30,5 @@ class PosToChainLength(FloatLayout):
         self.posToLengths(self.posObject.sledToolPos[0], self.posObject.sledToolPos[1])
     
     def posToLengths(self, xVal, yVal):
-        print "pos to len ran"
-        print xVal
-        print yVal
+        pass
         
