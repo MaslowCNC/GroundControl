@@ -88,8 +88,5 @@ class ChainLengthtoXY(FloatLayout):
         Fx = Mx - h/math.sqrt(pow(mMF,2) + 1)
         Fy = My - mMF*(Mx-Fx)
         
-        print "lksdj"
-        print Fy
         
-        
-        return 1 , 2
+        return Fx-self.motorTranslate , self.motorHeight - (Fy+self.motorLift)
