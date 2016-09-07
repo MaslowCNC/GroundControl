@@ -54,12 +54,15 @@ class ChainLengthtoXY(FloatLayout):
         Lb = lengthB
         Bx = self.motorSpacing
         
-        thetaCAB = math.acos((pow(La,2)+pow(Lb,2)-pow(Bx,2))/(2*La*Lb))
+        thetaCAB = math.acos((pow(La,2)+pow(Bx,2)-pow(Lb,2))/(2*La*Bx))
         
-        print "theta two"
-        print lengthA
-        print lengthB
-        print Bx
+        Cx = La*(pow(La,2)+pow(Bx,2)-pow(Lb,2))/(2*La*Bx)
+        Cy = La*math.sin(math.acos((pow(La,2)+pow(Bx,2)-pow(Lb,2))/(2*La*Bx)))
+        
+        print "this"
+        print Cx
+        print Cy
+        print La
         print math.degrees(thetaCAB)
         
         return 1 , 2
