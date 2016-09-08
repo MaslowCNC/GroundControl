@@ -84,13 +84,8 @@ class ChainLengthtoXY(FloatLayout):
             mMF = (Ex-Dx)/(Dy-Ey)
             Fx = Mx + (mMF/abs(mMF))*(h/math.sqrt(pow(mMF,2) + 1))
             Fy = My - mMF*(Mx-Fx)
-            print mMF*(Mx-Fx)
         except:
             Fx = Mx
             Fy = My + h
-        
-        
-        print h
-        
         
         return Fx-self.motorTranslate , self.motorHeight - Fy
