@@ -49,67 +49,43 @@ class ChainLengthtoXY(FloatLayout):
         
         
     def chainLengthstoxy(self, lengthA, lengthB):
-        #find the top angle
         
-        a = self.motorSpacing
-        b = lengthA
-        c = lengthB
+        La = lengthA
+        Lb = lengthB
+        Ax = 0
+        Ay = 0
+        Bx = self.motorSpacing
+        By = 0
+        b  = self.sledWidth
+        h  = self.sledHeight
         
-        theta = math.acos((math.pow(a,2)+math.pow(b,2)-math.pow(c,2))/(2*a*b))
+        thetaCAB = math.acos((pow(La,2)+pow(Bx,2)-pow(Lb,2))/(2*La*Bx))
         
-        #find the tip of the triangle
+        Cx = La*(pow(La,2)+pow(Bx,2)-pow(Lb,2))/(2*La*Bx)
+        Cy = La*math.sin(math.acos((pow(La,2)+pow(Bx,2)-pow(Lb,2))/(2*La*Bx)))
         
-        tipX = lengthA*math.cos(theta)
-        tipY = lengthA*math.sin(theta)
+        thetaACB = math.acos((pow(La,2)+pow(Lb,2)-pow(Bx,2))/(2*La*Lb))
         
-        #find the line slopes
-        lineASlope = -tipY/tipX
-        lineBSlope = tipY/(self.motorSpacing - tipX)
+        lCD = b//(math.sqrt(2)*math.sqrt(1-math.cos(thetaACB)))
+        mAC = Cy/Cx
         
+        Dx = Cx - lCD/math.sqrt(math.pow(mAC,2) + 1)
+        Dy = mAC*Dx
         
-        #convert to real worl cordinates
-        tipX =  tipX - self.motorTranslate
-        tipY =  self.motorHeight - (tipY)
+        mBC = Cy/(Cx-Bx)
         
-        #find the angle between the two lines
-        c = self.motorSpacing
-        a = lengthA
-        b = lengthB
+        Ex = Cx + lCD/math.sqrt(math.pow(mBC,2) + 1)
+        Ey = mBC*(Ex - Bx)
         
-        theta = math.acos((math.pow(a,2)+math.pow(b,2)-math.pow(c,2))/(2*a*b))
-        
-        #find the distance from the tip to the cross line
-        lengthFromTip = self.sledWidth/(math.sqrt(2)*math.sqrt(1-math.cos(theta)))
-        
-        
-        #find the two points where the distance is the width of the sled
-        x = lengthFromTip/math.sqrt(math.pow(lineASlope,2) + 1)
-        y = lineASlope*x
-        pointOne = (tipX - x,tipY - y)
-        
-        x = lengthFromTip/math.sqrt(math.pow(lineBSlope,2) + 1)
-        y = lineBSlope*x
-        pointTwo = (tipX + x,tipY + y)
-        
-        
-        #find the slope of the line
+        Mx = (Dx + Ex)/2
+        My = (Dy + Ey)/2
         
         try:
-            slope = -1/((pointOne[1]-pointTwo[1])/(pointOne[0]-pointTwo[0]))
+            mMF = (Ex-Dx)/(Dy-Ey)
+            Fx = Mx + (mMF/abs(mMF))*(h/math.sqrt(pow(mMF,2) + 1))
+            Fy = My - mMF*(Mx-Fx)
         except:
-            slope = -1000000000
+            Fx = Mx
+            Fy = My + h
         
-        #find the midpoint
-        
-        midpoint = ((pointOne[0]+pointTwo[0])/2, (pointOne[1]+pointTwo[1])/2)
-        
-        #find the point sled width down from the mid point
-        
-        x = self.sledHeight/math.sqrt(math.pow(slope,2) + 1)
-        y = slope*x
-        
-        slopeSign = math.copysign(1, slope)
-        yPos = midpoint[0] - slopeSign*x
-        xPos = midpoint[1] - slopeSign*y
-        
-        return xPos, yPos
+        return Fx-self.motorTranslate , self.motorHeight - Fy

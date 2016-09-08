@@ -55,14 +55,14 @@
         id: xPosSlider
         size_hint_x: .25
         pos: 0,-root.height/2 + 25
-        min:0
-        max:root.bedWidth
+        min:-100
+        max:root.bedWidth+100
     Slider:
         id: yPosSlider
         size_hint_x: .25
         pos: 400,-root.height/2 + 25
-        min:0
-        max:root.bedHeight
+        min:-100
+        max:root.bedHeight+100
         
 <SimulationAngle>:
     Label:
@@ -85,11 +85,11 @@
     Label:
         text: root.xVal
         font_size:35
-        pos:2400,50
+        pos:2400,100
     Label:
         text: root.yVal
         font_size:35
-        pos:2400,100
+        pos:2400,50
 
 <PosToChainLength>:
     Label:
