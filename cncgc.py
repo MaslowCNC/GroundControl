@@ -208,22 +208,24 @@ class GroundControlApp(App):
         This should be moved into the appropriate widget
         
         '''
-        
-        startpt = message.find('(')
-        startpt = startpt + 1
-        
-        endpt = message.find(')')
-        
-        numz  = message[startpt:endpt]
-        units = message[endpt+1:endpt+3]
-        
-        valz = numz.split(",")
-        
-        xval = float(valz[0])
-        yval = float(valz[1])
-        zval = float(valz[2])
-        
-        self.frontpage.gcodecanvas.targetIndicator.setPos(xval,yval,self.data.units)
+        try:
+            startpt = message.find('(')
+            startpt = startpt + 1
+            
+            endpt = message.find(')')
+            
+            numz  = message[startpt:endpt]
+            units = message[endpt+1:endpt+3]
+            
+            valz = numz.split(",")
+            
+            xval = float(valz[0])
+            yval = float(valz[1])
+            zval = float(valz[2])
+            
+            self.frontpage.gcodecanvas.targetIndicator.setPos(xval,yval,self.data.units)
+        except:
+            print "unable to convert to number"
         
     
 if __name__ == '__main__':
