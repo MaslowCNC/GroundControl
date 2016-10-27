@@ -179,13 +179,13 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.jmpsize()
         target = self.target[2] + 0.10*float(self.stepsizeval)
         self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " Z" + str(target) + " ")
-        self.target[2] = self.target[2] + float(self.stepsizeval)
+        self.target[2] = self.target[2] + 0.10*float(self.stepsizeval)
 
     def zDown(self):
         self.jmpsize()
         target = self.target[2] - 0.10*float(self.stepsizeval)
         self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " Z" + str(target) + " ")
-        self.target[2] = self.target[2] - float(self.stepsizeval)
+        self.target[2] = self.target[2] - 0.10*float(self.stepsizeval)
 
     def home(self):
         if self.target[2] < 0:
