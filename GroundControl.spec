@@ -26,10 +26,11 @@ exe = EXE(pyz,
           strip=False,
           upx=True,
           console=True )
-coll = COLLECT(exe,
+coll = COLLECT(exe, Tree('C:\\Users\\Bar\\Git\\GroundControl'),
                a.binaries,
                a.zipfiles,
                a.datas,
+               *[Tree(p) for p in (sdl2.dep_bins + glew.dep_bins)],
                strip=False,
                upx=True,
                name='GroundControl')
