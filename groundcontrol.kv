@@ -110,11 +110,12 @@
             size_hint: None, None
             width: 300
             height: 30
-            TextInput:
+            Button:
                 id: moveDistInput
                 text: '100'
                 multiline: False
                 size_hint_x: .4
+                on_press: root.textInputPopup(self)
             TextInput:
                 id: moveSpeedInput
                 text: "30"
@@ -521,3 +522,40 @@
             Button:
                 text: "Save"
                 on_release: root.save(filechooser.path, text_input.text)
+
+<TouchNumberInput>:
+    GridLayout:
+        cols: 1
+        size: root.size
+        pos: root.pos
+        TextInput:
+            size_hint_y:.25
+            text: root.inputText
+        GridLayout:
+            cols: 3
+            Button:
+                text: "1"
+                on_release: root.addText("1")
+            Button:
+                text: "2"
+            Button:
+                text: "3"
+            Button:
+                text: "4"
+            Button:
+                text: "5"
+            Button:
+                text: "6"
+            Button:
+                text: "7"
+            Button:
+                text: "8"
+            Button:
+                text: "9"
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+            Button:
+                text: "0"
+            Button:
+                text: "Done"
