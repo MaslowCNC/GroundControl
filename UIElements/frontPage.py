@@ -277,12 +277,13 @@ class FrontPage(Screen, MakesmithInitFuncs):
         print target
         target.text = "56"
         
+        self.targetWidget = target
+        
         numberText = ""
-        content = TouchNumberInput(textNumber = numberText, cancel=self.dismiss_popup)
-        self._popup = Popup(title="Load file", content=content,
+        self.popupContent = TouchNumberInput(textNumber = numberText, cancel=self.dismiss_popup)
+        self._popup = Popup(title="Load file", content=self.popupContent,
                             size_hint=(0.9, 0.9))
         self._popup.open()
-        target.text = numberText
     
     def dismiss_popup(self):
         '''
@@ -290,5 +291,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         Close The Pop-up
         
         '''
-        print "popup close is running"
+        
+        self.targetWidget.text = self.popupContent.inputText
         self._popup.dismiss()

@@ -11,7 +11,5 @@ class TouchNumberInput(GridLayout):
     cancel = ObjectProperty(None)
     done   = ObjectProperty(None)
     
-    inputText = StringProperty("this")
-    
     def addText(self, text):
-        self.inputText = self.inputText + text
+        self.textInput.text = self.textInput.text + text
