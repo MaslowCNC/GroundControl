@@ -292,5 +292,5 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         '''
         
-        self.targetWidget.text = self.popupContent.inputText
+        self.targetWidget.text = self.popupContent.textInput.text
         self._popup.dismiss()
