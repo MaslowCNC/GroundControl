@@ -9,6 +9,8 @@ This page is used to manually move the machine, see the positional readout, and 
 from kivy.uix.screenmanager                    import Screen
 from kivy.properties                           import ObjectProperty, StringProperty
 from DataStructures.makesmithInitFuncs         import MakesmithInitFuncs
+from kivy.uix.popup                            import Popup
+from UIElements.touchNumberInput               import TouchNumberInput
 import re
 
 class FrontPage(Screen, MakesmithInitFuncs):
@@ -271,3 +273,21 @@ class FrontPage(Screen, MakesmithInitFuncs):
             self.data.gcode_queue.queue.clear()
         print("Gode Stopped")
     
+    def textInputPopup(self, target):
+        
+        self.targetWidget = target
+        
+        self.popupContent = TouchNumberInput(done=self.dismiss_popup)
+        self._popup = Popup(title="Load file", content=self.popupContent,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
+    
+    def dismiss_popup(self):
+        '''
+        
+        Close The Pop-up
+        
+        '''
+        
+        self.targetWidget.text = self.popupContent.textInput.text
+        self._popup.dismiss()
