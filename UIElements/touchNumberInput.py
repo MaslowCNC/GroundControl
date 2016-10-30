@@ -8,7 +8,6 @@ from   kivy.properties                           import   ObjectProperty
 from   kivy.properties                           import   StringProperty
 
 class TouchNumberInput(GridLayout):
-    cancel = ObjectProperty(None)
     done   = ObjectProperty(None)
     
     def addText(self, text):

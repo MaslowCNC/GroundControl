@@ -274,13 +274,10 @@ class FrontPage(Screen, MakesmithInitFuncs):
         print("Gode Stopped")
     
     def textInputPopup(self, target):
-        print target
-        target.text = "56"
         
         self.targetWidget = target
         
-        numberText = ""
-        self.popupContent = TouchNumberInput(textNumber = numberText, cancel=self.dismiss_popup)
+        self.popupContent = TouchNumberInput(done=self.dismiss_popup)
         self._popup = Popup(title="Load file", content=self.popupContent,
                             size_hint=(0.9, 0.9))
         self._popup.open()
