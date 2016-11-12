@@ -21,18 +21,19 @@ Two of the goals of Ground Control are that it run on as many platforms as possi
 that it is as easy as possible for members of the community to contribute to making the 
 program better.
 
+##Setup
 
 ##How To Run GC
-======================
+
 Ground Control can be run from the command line using the command 
 '''
 >python cncgc.py
 '''
 
-Setup
-======================
+
+##How To Contribute
 
 
-Current Program Data Flow
+##Current Program Data Flow
 
 ![Program Data Flow](/Documentation/GroundControlDataFlow.png)
