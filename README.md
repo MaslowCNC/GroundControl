@@ -22,13 +22,22 @@ that it is as easy as possible for members of the community to contribute to mak
 program better.
 
 ##Setup
+Ground Control is built using the 2.7.x version of the python language. 2.7 was chosen 
+instead of 3.x because the support for compiling binaries for the 3.x version is not 
+good enough yet. Maslow uses the Kivy framework for the UI (https://kivy.org/#home) and
+the pyserial module for USB communication ().
+
+To setup your computer to run Ground Control from the source code, first install python
+version 2.7.x, available for free here: https://www.python.org/downloads/
+
+
+
 
 ##How To Run GC
 
 Ground Control can be run from the command line using the command 
 '''
->python cncgc.py
-'''
+> >python cncgc.py
 
 
 ##How To Contribute
