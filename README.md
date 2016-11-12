@@ -9,7 +9,7 @@ From within Ground Control, you can move the machine to where you want to begin 
  cut.
 
  At present, the UI looks like this:
- ![UI](/Documentation/GroundControl.png)
+ ![UI](/Documentation/GroundControl.jpg)
  
 Ground Control is w
 
