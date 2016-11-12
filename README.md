@@ -84,13 +84,15 @@ the forums at http://www.maslowcnc.com/forums/#!/dev . If you had any issues whi
 were able to resolve, please consider editing this README file to correct the parts which
 were unclear.
 
-##How To Run GC
+##How To Run Ground Control
 
 Ground Control can be run from the command line using the command 
 
 ```
 >python cncgc.py
 ```
+
+run from within the folder where cncgc.py is located.
 
 If you are looking for a binary version of the software, check the releases on this page
 or visit our website at www.maslowcnc.com. As of this writing, no binaries or installers
@@ -99,7 +101,15 @@ evolving so rapidly.
 
 
 ##How To Contribute
+Maslow is an open source project, get involved!
 
+If you find a bug in the software, report it here through GitHub! 
+
+If you have an idea for a new feature, let us know in the forums at http://www.maslowcnc.com/forums/#!/dev
+
+If you want to get involved, say hi in the forums http://www.maslowcnc.com/forums/#!/dev or
+if you've already jumped in and started making the software better, feel free to submit a 
+pull request! You can learn more about how to do that here: https://help.github.com/articles/creating-a-pull-request/
 
 ##Current Program Data Flow
 
