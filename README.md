@@ -36,13 +36,29 @@ Once you have installed python 2.7.x open the command prompt and type
 >python
 ```
 
-You should then see something like:
+You should then see something similar to this:
 
 ```
 Python 2.7.11 (v2.7.11:6d1b6a68f775, Dec  5 2015, 20:32:19) [MSC v.1500 32 bit (Intel)] on win32
 Type "help", "copyright", "credits" or "license" for more information.
 >>>|
 ```
+
+If python does not open, it is most likely an issue with needing to add python to you PATH.
+You can find out more information about that here: http://superuser.com/questions/143119/how-to-add-python-to-the-windows-path
+
+Next, you need to install Kivy and Pyserial. Fortunately, python comes with a built in
+package manager which will install both of them for you. The python package manager is 
+called pip.
+
+To install pyserial, type:
+```
+>pip install pyserial
+```
+
+and let pip do it's magic.
+
+
 
 ##How To Run GC
 
