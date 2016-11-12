@@ -4,7 +4,6 @@ GroundControl
 
 
 #Overview
-======================
 
 Ground Control is the program which allows you to control the Maslow machine.
 
@@ -22,15 +21,13 @@ that it is as easy as possible for members of the community to contribute to mak
 program better.
 
 
-***********************************
 How To Run GC
-***********************************
+======================
 
 
 
-***********************************
 Setup
-***********************************
+======================
 
 
 Current Program Data Flow
