@@ -25,8 +25,9 @@ program better.
 Ground Control is built using the 2.7.x version of the python language. 2.7 was chosen 
 instead of 3.x because the support for compiling binaries for the 3.x version is not 
 good enough yet. Maslow uses the Kivy framework for the UI (https://kivy.org/#home) and
-the pyserial module for USB communication ().
+the pyserial module for USB communication (https://pythonhosted.org/pyserial/).
 
+####Installing Python
 To setup your computer to run Ground Control from the source code, first install python
 version 2.7.x, available for free here: https://www.python.org/downloads/
 
