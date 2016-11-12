@@ -33,15 +33,13 @@ version 2.7.x, available for free here: https://www.python.org/downloads/
 Once you have installed python 2.7.x open the command prompt and type 
 
 ```
->python
+>python --version
 ```
 
 You should then see something similar to this:
 
 ```
-Python 2.7.11 (v2.7.11:6d1b6a68f775, Dec  5 2015, 20:32:19) [MSC v.1500 32 bit (Intel)] on win32
-Type "help", "copyright", "credits" or "license" for more information.
->>>|
+Python 2.7.11
 ```
 
 If python does not open, it is most likely an issue with needing to add python to you PATH.
@@ -53,12 +51,33 @@ called pip.
 
 To install pyserial, type:
 ```
->pip install pyserial
+>python -m pip install pyserial
 ```
 
 and let pip do it's magic.
 
+Installing Kivy is a little more complicated. First, check to make sure your version of
+pip is up to date by running:
 
+```
+>python -m pip install --upgrade pip wheel setuptools
+```
+
+Then install dependencies by running:
+```
+python -m pip install docutils pygments pypiwin32 kivy.deps.sdl2 kivy.deps.glew
+```
+
+and finally install Kivy by running:
+
+```
+python -m pip install kivy
+```
+
+If you have any questions or issues with this process please get in touch through
+the forums at http://www.maslowcnc.com/forums/#!/dev . If you had any issues which you
+were able to resolve, please consider editing this README file to correct the parts which
+were unclear.
 
 ##How To Run GC
 
