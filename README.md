@@ -3,7 +3,7 @@ GroundControl
 
 
 
-#Overview
+##Overview
 
 Ground Control is the program which allows you to control the Maslow machine.
 
