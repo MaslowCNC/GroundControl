@@ -36,8 +36,15 @@ version 2.7.x, available for free here: https://www.python.org/downloads/
 ##How To Run GC
 
 Ground Control can be run from the command line using the command 
-'''
-> >python cncgc.py
+
+```
+> python cncgc.py
+```
+
+If you are looking for a binary version of the software, check the releases on this page
+or visit our website at www.maslowcnc.com. As of this writing, no binaries or installers
+for the newest version of Ground Control are available because the software is still 
+evolving so rapidly.
 
 
 ##How To Contribute
