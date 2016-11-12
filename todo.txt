@@ -1,6 +1,0 @@
-To Do List
-
-Determine which parts need to be rewritten
-	Run periodically function might no need to be at the top level
-Make pan/zoom work when gcode is loaded
-Focus on hardware/build system
