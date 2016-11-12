@@ -101,7 +101,7 @@ evolving so rapidly.
 
 
 ##How To Contribute
-Maslow is an open source project, get involved!
+Maslow is an open source project, get involved.
 
 If you find a bug in the software, report it here through GitHub! 
 
