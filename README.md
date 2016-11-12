@@ -50,12 +50,16 @@ Next, you need to install Kivy and Pyserial. Fortunately, python comes with a bu
 package manager which will install both of them for you. The python package manager is 
 called pip.
 
+###Installing pyserial
+
 To install pyserial, type:
 ```
 >python -m pip install pyserial
 ```
 
 and let pip do it's magic.
+
+###Installing Kivy
 
 Installing Kivy is a little more complicated. First, check to make sure your version of
 pip is up to date by running:
