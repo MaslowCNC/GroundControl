@@ -121,6 +121,9 @@ class FrontPage(Screen, MakesmithInitFuncs):
         except:
             pass
     
+    def test(self):
+        self.data.gcode_queue.put("B01")
+    
     def upLeft(self):
         self.jmpsize()
         xtarget = -1*self.target[0] - float(self.stepsizeval)
