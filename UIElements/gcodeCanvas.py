@@ -163,11 +163,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             if zTarget - self.zPosition > 0:
                 with self.scatterObject.canvas:
                     Color(0, 1, 0)
-                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 2), width = 2)
+                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 2), width = 2, group = 'gcode')
             else:
                 with self.scatterObject.canvas:
                     Color(1, 0, 0)
-                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 4), width = 2)
+                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 4), width = 2, group = 'gcode')
         
         self.xPosition = xTarget
         self.yPosition = yTarget
