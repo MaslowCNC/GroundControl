@@ -36,6 +36,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     xPosition = 0
     yPosition = 0
+    zPosition = 0
     
     def initialzie(self):
         with self.scatterObject.canvas:
@@ -140,6 +141,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         xTarget = self.xPosition
         yTarget = self.yPosition
+        zTarget = self.zPosition
         
         x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if x:
@@ -149,12 +151,27 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if y:
             yTarget = float(y.groups()[0])*self.canvasScaleFactor
         
+        z = re.search("Z(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if z:
+            zTarget = float(z.groups()[0])*self.canvasScaleFactor
+        
         with self.scatterObject.canvas:
             Color(1, 1, 1)
             Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode')
         
+        if not zTarget == self.zPosition: #If the zposition has changed, add indicators
+            if zTarget - self.zPosition > 0:
+                with self.scatterObject.canvas:
+                    Color(0, 1, 0)
+                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 2), width = 2)
+            else:
+                with self.scatterObject.canvas:
+                    Color(1, 0, 0)
+                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 4), width = 2)
+        
         self.xPosition = xTarget
         self.yPosition = yTarget
+        self.zPosition = zTarget
     
     def drawG2(self,gCodeLine):
         
