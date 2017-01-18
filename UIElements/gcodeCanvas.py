@@ -160,21 +160,14 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode')
         
         if not zTarget == self.zPosition:
-            print "z change in line:"
-            print gCodeLine
-            print zTarget
-            print self.zPosition
-            print zTarget - self.zPosition
             if zTarget - self.zPosition > 0:
-                print "going up"
                 with self.scatterObject.canvas:
                     Color(0, 1, 0)
-                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 3))
+                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 2), width = 2)
             else:
-                print "going down"
                 with self.scatterObject.canvas:
                     Color(1, 0, 0)
-                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 5))
+                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 4), width = 2)
         
         self.xPosition = xTarget
         self.yPosition = yTarget
