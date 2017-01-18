@@ -159,7 +159,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Color(1, 1, 1)
             Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode')
         
-        if not zTarget == self.zPosition:
+        if not zTarget == self.zPosition: #If the zposition has changed, add indicators
             if zTarget - self.zPosition > 0:
                 with self.scatterObject.canvas:
                     Color(0, 1, 0)
