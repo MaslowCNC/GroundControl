@@ -198,7 +198,7 @@
             on_press: root.openFile()
         Button:
             text: 'Update Gcode'
-            on_press: root.reloadGcode()
+            on_release: root.reloadGcode()
         Button:
             text: 'View Gcode'
             disabled: False
