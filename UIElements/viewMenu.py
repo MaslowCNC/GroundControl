@@ -4,6 +4,7 @@ from   UIElements.scrollableTextPopup            import   ScrollableTextPopup
 from   kivy.uix.popup                            import   Popup
 import re
 from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
+from os                                          import    path
 
 
 
@@ -30,6 +31,7 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         
         '''
         content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
+        content.path = path.dirname(self.data.gcodeFile)
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
