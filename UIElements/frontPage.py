@@ -192,7 +192,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " Z" + str(target) + " ")
         self.target[2] = self.target[2] - 0.10*float(self.stepsizeval)
 
-    def zeroS(self):
+    def zeroZ(self):
         self.data.gcode_queue.put("G10 Z0 ")
         
     def home(self):
