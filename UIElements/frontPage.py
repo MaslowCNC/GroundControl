@@ -195,9 +195,9 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def home(self):
         if self.target[2] < 0:
             self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " Z0 ")
-            self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X0 Y0 Z0 ")
+            self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
         if self.target[2] >= 0:
-            self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X0 Y0 ")
+            self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
             self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " Z0 ")
         self.target[0] = 0.0
         self.target[1] = 0.0
