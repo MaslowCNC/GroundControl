@@ -122,7 +122,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
             pass
     
     def test(self):
-        self.data.gcode_queue.put("B01")
+        print "test has no current function"
     
     def upLeft(self):
         self.jmpsize()

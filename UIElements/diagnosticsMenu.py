@@ -1,4 +1,13 @@
-from kivy.uix.floatlayout import    FloatLayout
+from kivy.uix.floatlayout                        import    FloatLayout
+from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
 
-class Diagnostics(FloatLayout):
+class Diagnostics(FloatLayout, MakesmithInitFuncs):
     pass
+    
+    def returnToCenter(self):
+        self.data.gcode_queue.put("G00 Z0 ")
+        self.data.gcode_queue.put("G00 X0 Y0 Z0 ")
+    
+    def calibrateMotors(self):
+        self.data.gcode_queue.put("B01")
+    
