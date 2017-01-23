@@ -203,11 +203,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.target[1] = 0.0
         self.target[2] = 0.0
     
-    def reZero(self): 
-        self.target = [0,0,0]
-        
-        self.data.gcode_queue.put("G10 X0 Y0 Z0 ")
-    
     def moveLine(self, gcodeLine, moveXBy, moveYBy):
         
         originalLine = gcodeLine

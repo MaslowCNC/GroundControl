@@ -10,4 +10,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
     
     def calibrateMotors(self):
         self.data.gcode_queue.put("B01")
+        
+    def calibrateChainLengths(self):
+        self.data.gcode_queue.put("G10 X0 Y0 Z0 ")
     

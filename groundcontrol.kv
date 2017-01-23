@@ -93,16 +93,17 @@
                 text: 'Stop'
                 on_press: root.stopRun()
             Button:
-                text: 'Define\n  Zero'
+                text: 'Define\n Origin '
                 on_release: root.moveOrigin()
                 disabled: False
             Button:
-                text: 'Define\nCenter'
-                on_press: root.reZero()
+                text: 'Zero Z'
+                disabled: False
+                on_press: root.zeroZ()
             Button:
                 text: 'Test'
                 on_press: root.test()
-                disabled: False
+                disabled: True
             Button:
                 text: 'RUN'
                 on_press: root.startRun()
@@ -270,7 +271,8 @@
                 disabled: True
             Button:
                 text: 'Calibrate Chain Lengths'
-                disabled: True
+                disabled: False
+                on_release: root.calibrateChainLengths()
             Button:
                 text: 'Calibrate Motors'
                 disabled: False
