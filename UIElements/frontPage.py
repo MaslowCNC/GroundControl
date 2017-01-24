@@ -122,7 +122,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
             pass
     
     def test(self):
-        self.data.gcode_queue.put("B01")
+        print "test has no current function"
     
     def upLeft(self):
         self.jmpsize()
@@ -192,21 +192,19 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " Z" + str(target) + " ")
         self.target[2] = self.target[2] - 0.10*float(self.stepsizeval)
 
+    def zeroZ(self):
+        self.data.gcode_queue.put("G10 Z0 ")
+        
     def home(self):
         if self.target[2] < 0:
             self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " Z0 ")
-            self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X0 Y0 Z0 ")
+            self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
         if self.target[2] >= 0:
-            self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X0 Y0 ")
+            self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
             self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " Z0 ")
         self.target[0] = 0.0
         self.target[1] = 0.0
         self.target[2] = 0.0
-    
-    def reZero(self): 
-        self.target = [0,0,0]
-        
-        self.data.gcode_queue.put("G10 X0 Y0 Z0 ")
     
     def moveLine(self, gcodeLine, moveXBy, moveYBy):
         
