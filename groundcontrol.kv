@@ -50,12 +50,12 @@
         id: gcodecanvas
     BoxLayout:
         orientation: 'vertical'
-        pos: root.width - 300, root.height - 600
+        pos: root.width - dp(300), root.height - dp(600)
         GridLayout:
             cols: 4
             size_hint: None, None
-            width:300
-            height: 60*4
+            width:dp(300)
+            height: dp(60*4)
             Button:
                 text: '<^'
                 on_press: root.upLeft()
@@ -93,25 +93,24 @@
                 text: 'Stop'
                 on_press: root.stopRun()
             Button:
-                text: 'Define\n Origin '
+                text: 'Define\n  Zero'
                 on_release: root.moveOrigin()
                 disabled: False
             Button:
-                text: 'Zero Z'
-                disabled: False
-                on_press: root.zeroZ()
+                text: 'Define\nCenter'
+                on_press: root.reZero()
             Button:
                 text: 'Test'
                 on_press: root.test()
-                disabled: True
+                disabled: False
             Button:
                 text: 'RUN'
                 on_press: root.startRun()
         BoxLayout:
             orentation: 'horizontal'
             size_hint: None, None
-            width: 300
-            height: 30
+            width: dp(300)
+            height: dp(30)
             Button:
                 id: moveDistInput
                 text: '100'
@@ -130,8 +129,8 @@
         GridLayout:
             cols: 5
             size_hint: None, None
-            width: 300
-            height: 30
+            width: dp(300)
+            height: dp(30)
             Button:
                 text: "<<10"
                 on_press: root.moveGcodeIndex(-10)
@@ -150,8 +149,8 @@
         BoxLayout:
             orentation: 'horizontal'
             size_hint: None, None
-            width: 300
-            height: 70
+            width: dp(300)
+            height: dp(70)
             GridLayout:
                 cols: 1
                 Label:
@@ -174,12 +173,12 @@
         Label:
             text: root.connectionStatus
             size_hint: None, None
-            width: 300
-            height: 30
+            width: dp(300)
+            height: dp(30)
             disabled: False
         ScrollableLabel:
             id: textconsole
-            size: 300, 200
+            size: dp(300), dp(200)
             text: root.consoleText
             size_hint: None, None
     
@@ -264,23 +263,20 @@
         GridLayout:
             cols: 3
             Button:
-                text: 'Test Motors/Encoders'
+                text: 'Test Encoders'
                 disabled: True
             Button:
                 text: 'Test Motors'
                 disabled: True
             Button:
-                text: 'Calibrate Chain Lengths'
-                disabled: False
-                on_release: root.calibrateChainLengths()
+                text: 'Test Both'
+                disabled: True
             Button:
                 text: 'Calibrate Motors'
-                disabled: False
-                on_release: root.calibrateMotors()
+                disabled: True
             Button:
-                text: 'Return to Center'
-                disabled: False
-                on_release: root.returnToCenter()
+                text: 'Calibrate Magnets'
+                disabled: True
             Button:
                 text: 'About'
                 disabled: True
@@ -405,7 +401,6 @@
 <OtherFeatures>:
     connectmenu:connectmenu
     viewmenu:viewmenu
-    diagnostics:diagnostics
     
     BoxLayout:
         orientation: 'vertical'
@@ -465,7 +460,7 @@
 
         BoxLayout:
             size_hint_y: None
-            height: 30
+            height: dp(30)
             Button:
                 text: "Load"
                 on_release: root.load(filechooser.path, filechooser.selection)
@@ -499,7 +494,7 @@
             
         BoxLayout:
             size_hint_y: None
-            height: 30
+            height: dp(30)
             Button:
                 text: "Close"
                 on_release: root.cancel()
@@ -517,12 +512,12 @@
         TextInput:
             id: text_input
             size_hint_y: None
-            height: 30
+            height: dp(30)
             multiline: False
 
         BoxLayout:
             size_hint_y: None
-            height: 30
+            height: dp(30)
             Button:
                 text: "Cancel"
                 on_release: root.cancel()
