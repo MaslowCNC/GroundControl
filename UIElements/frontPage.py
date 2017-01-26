@@ -194,6 +194,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
 
     def zeroZ(self):
         self.data.gcode_queue.put("G10 Z0 ")
+        self.target[2] = 0
         
     def home(self):
         if self.target[2] < 0:
