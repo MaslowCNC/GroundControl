@@ -43,6 +43,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     firstPosFlag = 1
     
+    
     def __init__(self, data, **kwargs):
         super(FrontPage, self).__init__(**kwargs)
         self.data = data
@@ -86,14 +87,23 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def onUnitsSwitch(self, callback, newUnits):
         self.units = newUnits
+        INCHESTOMM  =    1/25.4
+        MMTOINCHES  =    25.4
         #the behavior of notifying the machine doesn't really belong here
         #but I'm not really sure where else it does belong
         if newUnits == "INCHES":
             self.data.gcode_queue.put('G20 ')
             self.moveDistInput.text = str(float(self.moveDistInput.text)/25)
+            self.target[0] = self.target[0]*INCHESTOMM
+            self.target[1] = self.target[1]*INCHESTOMM
+            self.target[2] = self.target[2]*INCHESTOMM
         else:
             self.data.gcode_queue.put('G21 ')
             self.moveDistInput.text = str(float(self.moveDistInput.text)*25)
+            self.target[0] = self.target[0]*MMTOINCHES
+            self.target[1] = self.target[1]*MMTOINCHES
+            self.target[2] = self.target[2]*MMTOINCHES
+            print "xTarget becomes: " + str(self.target[0])
     
     def onIndexMove(self, callback, newIndex):
         self.gcodeLineNumber = str(newIndex)
@@ -160,15 +170,15 @@ class FrontPage(Screen, MakesmithInitFuncs):
 
     def left(self):
         self.jmpsize()
-        target = -1*self.target[0] - float(self.stepsizeval)
+        target = self.target[0] - float(self.stepsizeval)
         self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X" + str(target) + " ")
-        self.target[0] = self.target[0] + float(self.stepsizeval)
+        self.target[0] = target
         
     def right(self):
         self.jmpsize()
-        target = -1*self.target[0] + float(self.stepsizeval)
+        target = self.target[0] + float(self.stepsizeval)
         self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X" + str(target) + " ")
-        self.target[0] = self.target[0] - float(self.stepsizeval)
+        self.target[0] = target
         
     def downLeft(self):
         self.jmpsize()
