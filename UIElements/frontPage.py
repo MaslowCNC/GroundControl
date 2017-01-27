@@ -56,13 +56,9 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.numericalPosY  = yPos
         
         if self.firstPosFlag == True:
-            print "first time run"
             self.target[0] = xPos
             self.target[1] = yPos
             self.target[2] = zPos
-            print xPos
-            print yPos
-            print zPos
             self.firstPosFlag = False
     
     def setUpData(self, data):
@@ -103,7 +99,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
             self.target[0] = self.target[0]*MMTOINCHES
             self.target[1] = self.target[1]*MMTOINCHES
             self.target[2] = self.target[2]*MMTOINCHES
-            print "xTarget becomes: " + str(self.target[0])
     
     def onIndexMove(self, callback, newIndex):
         self.gcodeLineNumber = str(newIndex)
