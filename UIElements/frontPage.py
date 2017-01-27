@@ -41,6 +41,8 @@ class FrontPage(Screen, MakesmithInitFuncs):
     units = StringProperty("MM")
     gcodeLineNumber = StringProperty('0')
     
+    firstPosFlag = 1
+    
     def __init__(self, data, **kwargs):
         super(FrontPage, self).__init__(**kwargs)
         self.data = data
@@ -51,6 +53,16 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.zReadoutPos    = str(zPos) + " " + units
         self.numericalPosX  = xPos
         self.numericalPosY  = yPos
+        
+        if self.firstPosFlag == True:
+            print "first time run"
+            self.target[0] = xPos
+            self.target[1] = yPos
+            self.target[2] = zPos
+            print xPos
+            print yPos
+            print zPos
+            self.firstPosFlag = False
     
     def setUpData(self, data):
         self.gcodecanvas.setUpData(data)
