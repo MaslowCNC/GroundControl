@@ -67,6 +67,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.data.bind(connectionStatus = self.updateConnectionStatus)
         self.data.bind(units            = self.onUnitsSwitch)
         self.data.bind(gcodeIndex       = self.onIndexMove)
+        self.data.bind(gcode            = self.onGcodeUpdate)
     
     def updateConnectionStatus(self, callback, connected):
         
@@ -102,6 +103,12 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def onIndexMove(self, callback, newIndex):
         self.gcodeLineNumber = str(newIndex)
+    
+    def onGcodeUpdate(self, callback, newGcode):
+    
+        #reset the shift values to 0 because the new gcode is not loaded with a shift applied
+        self.shiftX = 0
+        self.shiftY = 0
     
     def moveGcodeIndex(self, dist):
         self.data.gcodeIndex = self.data.gcodeIndex + dist
