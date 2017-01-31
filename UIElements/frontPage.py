@@ -27,7 +27,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     yReadoutPos = StringProperty("0 mm")
     zReadoutPos = StringProperty("0 mm")
     
-    percentComplete = StringProperty("TBD")
+    percentComplete = StringProperty("0.0%")
     
     numericalPosX  = 0.0
     numericalPosY  = 0.0
@@ -105,11 +105,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def onIndexMove(self, callback, newIndex):
         self.gcodeLineNumber = str(newIndex)
-        self.percentComplete = '%.1f' %(100* (float(newIndex) / len(self.data.gcode)))
-        print newIndex
-        print len(self.data.gcode)
-        print 100* (float(newIndex) / len(self.data.gcode))
-        print '%.2f' % 1.2345
+        self.percentComplete = '%.1f' %(100* (float(newIndex) / len(self.data.gcode))) + "%"
     
     def onGcodeUpdate(self, callback, newGcode):
     
