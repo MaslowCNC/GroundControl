@@ -162,12 +162,12 @@
             GridLayout:
                 cols: 1
                 Label:
-                    text: "Estimated Time Remaining:"
+                    text: "Percent Complete/Line:"
                     font_size: '11sp'
-                    disabled: True
+                    disabled: False
                 Label:
-                    text: "TBD"
-                    disabled: True
+                    text: root.percentComplete
+                    disabled: False
                 Label:
                     text: root.gcodeLineNumber
         Label:
