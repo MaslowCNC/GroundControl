@@ -88,7 +88,10 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def moveGcodeIndex(self, dist):
         self.data.gcodeIndex = self.data.gcodeIndex + dist
-        gCodeLine = self.data.gcode[self.data.gcodeIndex]
+        try:
+            gCodeLine = self.data.gcode[self.data.gcodeIndex]
+        except IndexError:
+            gCodeLine = 'end of file'
         print gCodeLine
         
         xTarget = 0
