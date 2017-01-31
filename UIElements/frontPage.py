@@ -100,10 +100,26 @@ class FrontPage(Screen, MakesmithInitFuncs):
         x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if x:
             xTarget = float(x.groups()[0])
+        else:
+            if self.data.units == "INCHES":
+                xTarget = self.gcodecanvas.targetIndicator.pos[0] / 25.4
+            else:
+                xTarget = self.gcodecanvas.targetIndicator.pos[0]              
         
         y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if y:
             yTarget = float(y.groups()[0])
+        else:
+            if self.data.units == "INCHES":
+                yTarget = self.gcodecanvas.targetIndicator.pos[1] / 25.4
+            else:
+                yTarget = self.gcodecanvas.targetIndicator.pos[1] 
+
+        z = re.search("Z", gCodeLine)
+        if z:
+            self.gcodecanvas.targetIndicator.color = (1,1,1)
+        else:
+            self.gcodecanvas.targetIndicator.color = (1,0,0)
         
         self.gcodecanvas.targetIndicator.setPos(xTarget,yTarget,self.data.units)
     
