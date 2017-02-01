@@ -42,10 +42,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         with self.scatterObject.canvas:
             Color(1, 1, 1)
             
-            #create the axis lines
-            crossLineLength = 10000
-            Line(points = (-crossLineLength,0,crossLineLength,0), dash_offset = 5)
-            Line(points = (0, -crossLineLength,0,crossLineLength), dash_offset = 5)
             
             #create 4'X8' bounding box
             workspaceHeight    = 1219 #4' in mm
@@ -54,6 +50,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Line(points = ( -workspaceWidth/2 , workspaceHeight/2 , workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
             Line(points = ( -workspaceWidth/2 , -workspaceHeight/2 , -workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
             Line(points = ( workspaceWidth/2 , -workspaceHeight/2 , workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
+            
+            #create the axis lines
+            Line(points = (-workspaceWidth/2,0,workspaceWidth/2,0), dash_offset = 5)
+            Line(points = (0, -workspaceHeight/2,0,workspaceHeight/2), dash_offset = 5)
             
             Window.bind(on_resize = self.centerScatter)
             
