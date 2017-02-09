@@ -99,6 +99,8 @@ class SerialPortThread(MakesmithInitFuncs):
                             print "Gcode Ended"
                 
                 #check for serial connection loss
+                print "Downtime: "
+                print time.time() - self.lastMessageTime
                 if time.time() - self.lastMessageTime > 1:
                     print "connection lost"
                     self.data.message_queue.put("Connection Lost")
