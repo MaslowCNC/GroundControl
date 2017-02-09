@@ -75,6 +75,8 @@ class SerialPortThread(MakesmithInitFuncs):
                 if len(msg) > 0:
                     
                     self.lastMessageTime = time.time()
+                    print "message length: "
+                    print len(msg)
                     
                     if msg == "gready\r\n":
                         self.machineIsReadyForData = True
