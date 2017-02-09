@@ -113,5 +113,5 @@ class SerialPortThread(MakesmithInitFuncs):
                     self.data.connectionStatus = 0
                     self.serialInstance.close()
                     return
-                
+                msg = ""
                     
