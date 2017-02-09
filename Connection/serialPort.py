@@ -6,6 +6,7 @@ from Connection.serialPortThread               import  SerialPortThread
 import sys
 import serial
 import threading
+import time
 
 class SerialPort(MakesmithInitFuncs):
     '''
