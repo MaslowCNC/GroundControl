@@ -77,6 +77,7 @@ class SerialPort(MakesmithInitFuncs):
         
         print "connection Status"
         print self.data.connectionStatus
+        print time.time()
         
         if not self.data.connectionStatus:
             #self.data.message_queue is the queue which handles passing CAN messages between threads
