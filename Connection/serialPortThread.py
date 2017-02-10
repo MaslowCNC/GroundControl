@@ -75,10 +75,6 @@ class SerialPortThread(MakesmithInitFuncs):
                 if len(msg) > 0:
                     
                     self.lastMessageTime = time.time()
-                    print "message length: "
-                    print len(msg)
-                    print "test"
-                    print msg
                     
                     if msg == "gready\r\n":
                         self.machineIsReadyForData = True
@@ -103,8 +99,6 @@ class SerialPortThread(MakesmithInitFuncs):
                             print "Gcode Ended"
                 
                 #check for serial connection loss
-                print "Downtime: "
-                print time.time() - self.lastMessageTime
                 if time.time() - self.lastMessageTime > 1:
                     print "connection lost"
                     self.data.message_queue.put("Connection Lost")

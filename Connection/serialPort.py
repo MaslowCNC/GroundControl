@@ -6,7 +6,6 @@ from Connection.serialPortThread               import  SerialPortThread
 import sys
 import serial
 import threading
-import time
 
 class SerialPort(MakesmithInitFuncs):
     '''
@@ -76,9 +75,6 @@ class SerialPort(MakesmithInitFuncs):
         #This function opens the thread which handles the input from the serial port
         #It only needs to be run once, it is run by connecting to the machine
         
-        print "connection Status"
-        print self.data.connectionStatus
-        print time.time()
         
         if not self.data.connectionStatus:
             #self.data.message_queue is the queue which handles passing CAN messages between threads
