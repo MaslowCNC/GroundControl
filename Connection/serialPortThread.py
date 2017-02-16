@@ -99,7 +99,7 @@ class SerialPortThread(MakesmithInitFuncs):
                             print "Gcode Ended"
                 
                 #check for serial connection loss
-                if time.time() - self.lastMessageTime > 1:
+                if time.time() - self.lastMessageTime > 2:
                     print "connection lost"
                     self.data.message_queue.put("Connection Lost")
                     if self.data.uploadFlag:
@@ -107,5 +107,5 @@ class SerialPortThread(MakesmithInitFuncs):
                     self.data.connectionStatus = 0
                     self.serialInstance.close()
                     return
-                
+                msg = ""
                     
