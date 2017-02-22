@@ -1,5 +1,0 @@
-('C:\\Python27\\share\\glew\\bin',
- None,
- [],
- 'DATA',
- [('glew32.dll', 'C:\\Python27\\share\\glew\\bin\\glew32.dll', 'DATA')])
