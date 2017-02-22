@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = My Application
+title = Maslow Ground Control
 
 # (str) Package name
-package.name = myapp
+package.name = groundcontrol
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.test
+package.domain = maslowcnc.com
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -36,7 +36,7 @@ version = 0.1
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy
-requirements = kivy
+requirements = kivy, pyserial
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
