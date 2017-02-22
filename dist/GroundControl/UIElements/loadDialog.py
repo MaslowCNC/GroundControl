@@ -1,5 +1,6 @@
 from kivy.uix.floatlayout    import    FloatLayout
 from kivy.properties         import    ObjectProperty
+from kivy.properties         import    StringProperty
 
 
 class LoadDialog(FloatLayout):
@@ -10,3 +11,4 @@ class LoadDialog(FloatLayout):
     '''
     load = ObjectProperty(None)
     cancel = ObjectProperty(None)
+    path    = StringProperty("")

@@ -2129,9 +2129,6 @@
   ('kivy.factory_registers',
    'c:\\python27\\lib\\site-packages\\kivy\\factory_registers.py',
    'PYMODULE'),
-  ('kivy.config',
-   'c:\\python27\\lib\\site-packages\\kivy\\config.py',
-   'PYMODULE'),
   ('kivy.compat',
    'c:\\python27\\lib\\site-packages\\kivy\\compat.py',
    'PYMODULE'),
@@ -2246,4 +2243,7 @@
   ('kivy.uix.gridlayout',
    'c:\\python27\\lib\\site-packages\\kivy\\uix\\gridlayout.py',
    'PYMODULE'),
-  ('kivy.app', 'c:\\python27\\lib\\site-packages\\kivy\\app.py', 'PYMODULE')])
+  ('kivy.app', 'c:\\python27\\lib\\site-packages\\kivy\\app.py', 'PYMODULE'),
+  ('kivy.config',
+   'c:\\python27\\lib\\site-packages\\kivy\\config.py',
+   'PYMODULE')])

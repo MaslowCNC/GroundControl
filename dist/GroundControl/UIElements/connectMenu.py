@@ -16,12 +16,10 @@ class ConnectMenu(FloatLayout, MakesmithInitFuncs):
         self.data.comport = port
     
     def connect(self, *args):
-        print "connect pressed"
         
         self.data.config.set('Makesmith Settings', 'COMport', str(self.data.comport))
         self.data.config.write()
         
-        self.data.serialPort.recieveMessage()
     
     def updatePorts(self, *args):
         

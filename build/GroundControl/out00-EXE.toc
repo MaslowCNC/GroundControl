@@ -6,7 +6,7 @@
  None,
  False,
  False,
- <PyInstaller.utils.win32.winmanifest.Manifest object at 0x0627DBB0>,
+ <PyInstaller.utils.win32.winmanifest.Manifest object at 0x03B8C770>,
  True,
  'GroundControl.pkg',
  [('out00-PYZ.pyz',
@@ -44,7 +44,7 @@
  [],
  False,
  False,
- 1477789539L,
+ 1487805160L,
  [('run.exe',
    'C:\\Python27\\lib\\site-packages\\PyInstaller\\bootloader\\Windows-32bit\\run.exe',
    'EXECUTABLE')])
