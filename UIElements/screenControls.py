@@ -16,7 +16,13 @@ class ScreenControls(FloatLayout, MakesmithInitFuncs):
         '''
         content = OtherFeatures()
         content.setUpData(self.data)
+        content.cancel = self.close_actions
         self._popup = Popup(title="Actions", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
     
+    def close_actions(self):
+        '''
+        Close pop-up
+        '''
+        self._popup.dismiss()

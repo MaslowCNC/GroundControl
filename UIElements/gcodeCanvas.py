@@ -36,15 +36,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     xPosition = 0
     yPosition = 0
+    zPosition = 0
     
     def initialzie(self):
         with self.scatterObject.canvas:
             Color(1, 1, 1)
             
-            #create the axis lines
-            crossLineLength = 10000
-            Line(points = (-crossLineLength,0,crossLineLength,0), dash_offset = 5)
-            Line(points = (0, -crossLineLength,0,crossLineLength), dash_offset = 5)
             
             #create 4'X8' bounding box
             workspaceHeight    = 1219 #4' in mm
@@ -53,6 +50,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Line(points = ( -workspaceWidth/2 , workspaceHeight/2 , workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
             Line(points = ( -workspaceWidth/2 , -workspaceHeight/2 , -workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
             Line(points = ( workspaceWidth/2 , -workspaceHeight/2 , workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
+            
+            #create the axis lines
+            Line(points = (-workspaceWidth/2,0,workspaceWidth/2,0), dash_offset = 5)
+            Line(points = (0, -workspaceHeight/2,0,workspaceHeight/2), dash_offset = 5)
             
             Window.bind(on_resize = self.centerScatter)
             
@@ -135,11 +136,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         return(theta)   
     
-    def drawG1(self,gCodeLine):
+    def drawG1(self,gCodeLine, isG1):
         
         
         xTarget = self.xPosition
         yTarget = self.yPosition
+        zTarget = self.zPosition
         
         x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if x:
@@ -149,12 +151,36 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if y:
             yTarget = float(y.groups()[0])*self.canvasScaleFactor
         
-        with self.scatterObject.canvas:
-            Color(1, 1, 1)
-            Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode')
+        z = re.search("Z(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if z:
+            zTarget = float(z.groups()[0])*self.canvasScaleFactor
+        
+        
+        #Draw lines for G1 and G0
+        if isG1:
+            with self.scatterObject.canvas:
+                Color(1, 1, 1)
+                Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode')
+        else:
+            with self.scatterObject.canvas:
+                Color(1, 1, 1)
+                Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode', dash_length = 4, dash_offset = 2)
+        
+        
+        #If the zposition has changed, add indicators
+        if not zTarget == self.zPosition: 
+            if zTarget - self.zPosition > 0:
+                with self.scatterObject.canvas:
+                    Color(0, 1, 0)
+                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 2), width = 2, group = 'gcode')
+            else:
+                with self.scatterObject.canvas:
+                    Color(1, 0, 0)
+                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 4), width = 2, group = 'gcode')
         
         self.xPosition = xTarget
         self.yPosition = yTarget
+        self.zPosition = zTarget
     
     def drawG2(self,gCodeLine):
         
@@ -271,8 +297,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             if opstring[0:3] == 'G00' or opstring[0:3] == 'G01' or opstring[0:3] == 'G02' or opstring[0:3] == 'G03':
                 prependString = opstring[0:3] + " "
             
-            if opstring[0:3] == 'G01' or opstring[0:3] == 'G00' or opstring[0:3] == 'G1 ' or opstring[0:3] == 'G0 ':
-                self.drawG1(opstring)
+            if opstring[0:3] == 'G01' or opstring[0:3] == 'G1 ':
+                self.drawG1(opstring, 1)
+            
+            if opstring[0:3] == 'G00' or opstring[0:3] == 'G0 ':
+                self.drawG1(opstring, 0)
                         
             if opstring[0:3] == 'G02' or opstring[0:3] == 'G2 ':
                 self.drawG2(opstring)
