@@ -315,7 +315,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 
             if opstring[0:3] == 'G21':
                 self.canvasScaleFactor = self.MILLIMETERS
-                Self.data.units = "MM"
+                self.data.units = "MM"
                 
             if opstring[0:3] == 'G90':
                 self.absoluteFlag = 1
