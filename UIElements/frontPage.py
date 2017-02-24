@@ -283,7 +283,8 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         if self.data.units == "INCHES":
             amtToShiftX = self.numericalPosX - self.shiftX
-            amtToShiftY = self.numericalPosY - self.shiftYself.shiftX = self.shiftX + amtToShiftX
+            amtToShiftY = self.numericalPosY - self.shiftY
+            self.shiftX = self.shiftX + amtToShiftX
             self.shiftY = self.shiftY + amtToShiftY
         else:
             amtToShiftX = self.numericalPosX - self.shiftX
