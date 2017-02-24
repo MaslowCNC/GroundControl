@@ -37,7 +37,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     shiftX = 0
     shiftY = 0
-    count  = 0
     
     consoleText = StringProperty(" ")
     
@@ -284,19 +283,9 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         if self.data.units == "INCHES":
             amtToShiftX = self.numericalPosX - self.shiftX
-            amtToShiftY = self.numericalPosY - self.shiftY
-            
-            print "hold over: " + str(self.shiftY)
-            
-            self.shiftX = self.shiftX + amtToShiftX
+            amtToShiftY = self.numericalPosY - self.shiftYself.shiftX = self.shiftX + amtToShiftX
             self.shiftY = self.shiftY + amtToShiftY
-            
-            print "for next time: " + str(self.shiftY)
-            
-            print "count: " + str(self.count)
-            self.count = self.count + 1
         else:
-            print "else ran"
             amtToShiftX = self.numericalPosX - self.shiftX
             amtToShiftY = self.numericalPosY - self.shiftY
             self.shiftX = self.shiftX + amtToShiftX
