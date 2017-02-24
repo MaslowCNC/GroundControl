@@ -37,6 +37,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     shiftX = 0
     shiftY = 0
+    count  = 0
     
     consoleText = StringProperty(" ")
     
@@ -69,7 +70,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.data.bind(connectionStatus = self.updateConnectionStatus)
         self.data.bind(units            = self.onUnitsSwitch)
         self.data.bind(gcodeIndex       = self.onIndexMove)
-        self.data.bind(gcode            = self.onGcodeUpdate)
+        self.data.bind(gcodeFile        = self.onGcodeFileChange)
     
     def updateConnectionStatus(self, callback, connected):
         
@@ -107,7 +108,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.gcodeLineNumber = str(newIndex)
         self.percentComplete = '%.1f' %(100* (float(newIndex) / len(self.data.gcode))) + "%"
     
-    def onGcodeUpdate(self, callback, newGcode):
+    def onGcodeFileChange(self, callback, newGcode):
     
         #reset the shift values to 0 because the new gcode is not loaded with a shift applied
         self.shiftX = 0
@@ -284,9 +285,18 @@ class FrontPage(Screen, MakesmithInitFuncs):
         if self.data.units == "INCHES":
             amtToShiftX = self.numericalPosX - self.shiftX
             amtToShiftY = self.numericalPosY - self.shiftY
+            
+            print "hold over: " + str(self.shiftY)
+            
             self.shiftX = self.shiftX + amtToShiftX
             self.shiftY = self.shiftY + amtToShiftY
+            
+            print "for next time: " + str(self.shiftY)
+            
+            print "count: " + str(self.count)
+            self.count = self.count + 1
         else:
+            print "else ran"
             amtToShiftX = self.numericalPosX - self.shiftX
             amtToShiftY = self.numericalPosY - self.shiftY
             self.shiftX = self.shiftX + amtToShiftX
