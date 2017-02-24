@@ -34,7 +34,7 @@
   ('pyi_rth_gstreamer',
    'C:\\Python27\\lib\\site-packages\\PyInstaller\\loader\\rthooks\\pyi_rth_gstreamer.py',
    'PYSOURCE'),
-  ('cncgc', 'C:\\Users\\Bar\\Git\\GroundControl\\cncgc.py', 'PYSOURCE'),
+  ('main', 'C:\\Users\\Bar\\Git\\GroundControl\\main.py', 'PYSOURCE'),
   ('GroundControl.exe.manifest',
    'C:\\Users\\Bar\\Git\\GroundControl\\build\\GroundControl\\GroundControl.exe.manifest',
    'BINARY')],
