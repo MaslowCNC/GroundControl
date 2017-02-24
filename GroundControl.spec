@@ -5,7 +5,7 @@ from kivy.deps import sdl2, glew
 block_cipher = None
 
 
-a = Analysis(['C:\\Users\\Bar\\Git\\GroundControl\\cncgc.py'],
+a = Analysis(['C:\\Users\\Bar\\Git\\GroundControl\\main.py'],
              pathex=['C:\\Users\\Bar\\Git\\GroundControl'],
              binaries=None,
              datas=None,
