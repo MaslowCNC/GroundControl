@@ -57,38 +57,78 @@
             width:dp(300)
             height: dp(60*4)
             Button:
-                text: '<^'
                 on_press: root.upLeft()
+                Image:
+                    source: 'UIElements/arrow-upLeft.png'
+                    y: self.parent.y + self.parent.height/2 - self.parent.height/8
+                    x: self.parent.x + self.parent.width/2 - self.parent.width/8
+                    height:self.parent.height/4
+                    width:self.parent.width/4
             Button:
-                text: '^'
                 on_press: root.up()
+                Image:
+                    source: 'UIElements/arrow-up.png'
+                    y: self.parent.y + self.parent.height/2 - self.parent.height/8
+                    x: self.parent.x + self.parent.width/2 - self.parent.width/8
+                    height:self.parent.height/4
+                    width:self.parent.width/4
             Button:
-                text: '>^'
                 on_press: root.upRight()
+                Image:
+                    source: 'UIElements/arrow-upRight.png'
+                    y: self.parent.y + self.parent.height/2 - self.parent.height/8
+                    x: self.parent.x + self.parent.width/2 - self.parent.width/8
+                    height:self.parent.height/4
+                    width:self.parent.width/4
             Button:
                 text: 'Z-OUT'
                 on_press: root.zUp()
             Button:
-                text: '<'
                 on_press: root.left()
+                Image:
+                    source: 'UIElements/arrow-left.png'
+                    y: self.parent.y + self.parent.height/2 - self.parent.height/8
+                    x: self.parent.x + self.parent.width/2 - self.parent.width/8
+                    height:self.parent.height/4
+                    width:self.parent.width/4
             Button:
                 text: 'HOME'
                 on_press: root.home()
             Button:
-                text: '>'
                 on_press: root.right()
+                Image:
+                    source: 'UIElements/arrow-right.png'
+                    y: self.parent.y + self.parent.height/2 - self.parent.height/8
+                    x: self.parent.x + self.parent.width/2 - self.parent.width/8
+                    height:self.parent.height/4
+                    width:self.parent.width/4
             Button:
                 text: 'Z-IN'
                 on_press: root.zDown()
             Button:
-                text: '<\/'
                 on_press: root.downLeft()
+                Image:
+                    source: 'UIElements/arrow-downLeft.png'
+                    y: self.parent.y + self.parent.height/2 - self.parent.height/8
+                    x: self.parent.x + self.parent.width/2 - self.parent.width/8
+                    height:self.parent.height/4
+                    width:self.parent.width/4
             Button:
-                text: '\/'
                 on_press: root.down()
+                Image:
+                    source: 'UIElements/arrow-down.png'
+                    y: self.parent.y + self.parent.height/2 - self.parent.height/8
+                    x: self.parent.x + self.parent.width/2 - self.parent.width/8
+                    height:self.parent.height/4
+                    width:self.parent.width/4
             Button:
-                text: '\/>'
                 on_press: root.downRight()
+                Image:
+                    source: 'UIElements/arrow-downRight.png'
+                    y: self.parent.y + self.parent.height/2 - self.parent.height/8
+                    x: self.parent.x + self.parent.width/2 - self.parent.width/8
+                    height:self.parent.height/4
+                    width:self.parent.width/4
             Button:
                 text: 'Stop'
                 on_press: root.stopRun()
