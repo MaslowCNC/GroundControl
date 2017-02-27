@@ -57,38 +57,54 @@
             width:dp(300)
             height: dp(60*4)
             Button:
-                text: '<^'
                 on_press: root.upLeft()
+                canvas.after:
+                    Triangle:
+                        points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+3*self.width/4,self.y+self.width/2,
             Button:
-                text: '^'
                 on_press: root.up()
+                canvas.after:
+                    Triangle:
+                        points: self.x+self.width/3,self.y+self.height/3,self.x+2*self.width/3,self.y+self.height/3,self.x+self.width/2,self.y+2*self.height/3,
             Button:
-                text: '>^'
                 on_press: root.upRight()
+                canvas.after:
+                    Triangle:
+                        points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/2,
             Button:
                 text: 'Z-OUT'
                 on_press: root.zUp()
             Button:
-                text: '<'
                 on_press: root.left()
+                canvas.after:
+                    Triangle:
+                        points: self.x+self.width/3,self.y+self.height/2,self.x+2*self.width/3,self.y+self.height/3,self.x+2*self.width/3,self.y+2*self.height/3,
             Button:
                 text: 'HOME'
                 on_press: root.home()
             Button:
-                text: '>'
                 on_press: root.right()
+                canvas.after:
+                    Triangle:
+                        points: self.x+2*self.width/3,self.y+self.height/2,self.x+self.width/3,self.y+self.height/3,self.x+self.width/3,self.y+2*self.height/3,
             Button:
                 text: 'Z-IN'
                 on_press: root.zDown()
             Button:
-                text: '<\/'
                 on_press: root.downLeft()
+                canvas.after:
+                    Triangle:
+                        points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+3*self.width/4,self.y+self.width/4,
             Button:
-                text: '\/'
                 on_press: root.down()
+                canvas.after:
+                    Triangle:
+                        points: self.x+self.width/3,self.y+2*self.height/3,self.x+2*self.width/3,self.y+2*self.height/3,self.x+self.width/2,self.y+self.height/3,
             Button:
-                text: '\/>'
                 on_press: root.downRight()
+                canvas.after:
+                    Triangle:
+                        points: self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/4,self.x+self.width/2,self.y+self.width/2,
             Button:
                 text: 'Stop'
                 on_press: root.stopRun()
