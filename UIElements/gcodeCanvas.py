@@ -38,7 +38,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     yPosition = 0
     zPosition = 0
     
-    def initialzie(self):
+    def initialize(self):
         with self.scatterObject.canvas:
             Color(1, 1, 1)
             
