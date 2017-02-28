@@ -474,13 +474,24 @@
         size: root.size
         pos: root.pos
         orientation: "vertical"
-        FileChooserIconView:
+        FileChooser:
             id: filechooser
             path: root.path
+            FileChooserIconLayout
+            FileChooserListLayout
 
         BoxLayout:
             size_hint_y: None
             height: dp(30)
+            Button:
+                text: 'Icon View'
+                on_press: filechooser.view_mode = 'icon'
+                size_hint_x: 0.3
+            Button:
+                text: 'List View'
+                on_press: filechooser.view_mode = 'list'
+                size: root.width/8,root.height
+                size_hint_x: 0.3
             Button:
                 text: "Load"
                 on_release: root.load(filechooser.path, filechooser.selection)
