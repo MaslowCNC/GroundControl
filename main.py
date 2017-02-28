@@ -96,7 +96,7 @@ class GroundControlApp(App):
         
         self.frontpage.setUpData(self.data)
         self.nonVisibleWidgets.setUpData(self.data)
-        self.frontpage.gcodecanvas.initialzie()
+        self.frontpage.gcodecanvas.initialize()
         
         
         '''
