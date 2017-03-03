@@ -48,21 +48,21 @@ class GroundControlApp(App):
             "type": "string",
             "title": "Serial Connection",
             "desc": "Select the COM port to connect to machine",
-            "section": "Makesmith Settings",
+            "section": "Maslow Settings",
             "key": "COMport"
         },
         {
             "type": "string",
             "title": "X-Axis Pitch",
             "desc": "The number of mm moved per rotation",
-            "section": "Makesmith Settings",
+            "section": "Maslow Settings",
             "key": "xPitch"
         },
         {
             "type": "string",
             "title": "Open File",
             "desc": "The path to the open file",
-            "section": "Makesmith Settings",
+            "section": "Maslow Settings",
             "key": "openFile"
         }
     ]
@@ -85,8 +85,8 @@ class GroundControlApp(App):
         Load User Settings
         '''
         
-        self.data.comport = self.config.get('Makesmith Settings', 'COMport')
-        self.data.gcodeFile = self.config.get('Makesmith Settings', 'openFile')
+        self.data.comport = self.config.get('Maslow Settings', 'COMport')
+        self.data.gcodeFile = self.config.get('Maslow Settings', 'openFile')
         self.data.config  = self.config
         
         
@@ -112,13 +112,13 @@ class GroundControlApp(App):
         """
         Set the default values for the configs sections.
         """
-        config.setdefaults('Makesmith Settings', {'COMport': 'COM5', 'xPitch': 20, 'openFile': " "})
+        config.setdefaults('Maslow Settings', {'COMport': 'COM5', 'xPitch': 20, 'openFile': " "})
 
     def build_settings(self, settings):
         """
         Add custom section to the default configuration object.
         """
-        settings.add_json_panel('Makesmith Settings', self.config, data=self.json)
+        settings.add_json_panel('Maslow Settings', self.config, data=self.json)
 
     def on_config_change(self, config, section, key, value):
         """
