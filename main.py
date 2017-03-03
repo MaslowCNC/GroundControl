@@ -173,11 +173,11 @@ class GroundControlApp(App):
                                                'zAxis': False, 
                                                'bedWidth':2438.4, 
                                                'bedHeight':1219.2, 
-                                               'motorOffsetY':100, 
-                                               'motorOffsetX':100, 
-                                               'sledWidth':100, 
-                                               'sledHeight':100, 
-                                               'sledCG':100, 
+                                               'motorOffsetY':463, 
+                                               'motorOffsetX':270, 
+                                               'sledWidth':310, 
+                                               'sledHeight':139, 
+                                               'sledCG':79, 
                                                'openFile': " "})
 
     def build_settings(self, settings):
@@ -191,18 +191,19 @@ class GroundControlApp(App):
         Respond to changes in the configuration.
         """
         
-        if section == "Makesmith Settings":
-            print "this is where it should push to machine"
+        if section == "Maslow Settings":
             if key == "COMport":
                 self.data.comport = value
-            elif key == 'zPitch':
-                print "zPitch changed"
+            self.push_settings_to_machine()
 
     def close_settings(self, settings):
         """
         Close settings panel
         """
         super(GroundControlApp, self).close_settings(settings)
+    
+    def push_settings_to_machine(self):
+        print "pushing to machine"
     
     '''
     
