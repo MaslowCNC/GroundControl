@@ -306,7 +306,7 @@ class GroundControlApp(App):
             yval = float(valz[1])
             zval = float(valz[2])
             
-            self.frontpage.gcodecanvas.targetIndicator.setPos(xval,yval,self.data.units)
+            #self.frontpage.gcodecanvas.targetIndicator.setPos(xval,yval,self.data.units)
         except:
             print "unable to convert to number"
         
