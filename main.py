@@ -203,7 +203,7 @@ class GroundControlApp(App):
         super(GroundControlApp, self).close_settings(settings)
     
     def push_settings_to_machine(self):
-        print "pushing to machine:"
+        
         cmdString = ("B03" 
             +" A" + str(self.data.config.get('Maslow Settings', 'bedWidth'))
             +" B" + str(self.data.config.get('Maslow Settings', 'bedHeight'))
@@ -214,7 +214,7 @@ class GroundControlApp(App):
             +" G" + str(self.data.config.get('Maslow Settings', 'sledCG'))
             + " "
         )
-        print cmdString
+        
         self.data.gcode_queue.put(cmdString)
     
     '''
