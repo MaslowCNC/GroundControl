@@ -17,7 +17,7 @@ class ConnectMenu(FloatLayout, MakesmithInitFuncs):
     
     def connect(self, *args):
         
-        self.data.config.set('Makesmith Settings', 'COMport', str(self.data.comport))
+        self.data.config.set('Maslow Settings', 'COMport', str(self.data.comport))
         self.data.config.write()
         
     
