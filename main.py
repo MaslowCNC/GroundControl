@@ -3,7 +3,7 @@
 Kivy Imports
 
 '''
-from kivy.config import Config
+from kivy.config                import Config
 Config.set('input', 'mouse', 'mouse,disable_multitouch')
 from kivy.app                   import App
 from kivy.uix.gridlayout        import GridLayout
@@ -203,7 +203,18 @@ class GroundControlApp(App):
         super(GroundControlApp, self).close_settings(settings)
     
     def push_settings_to_machine(self):
-        print "pushing to machine"
+        print "pushing to machine:"
+        cmdString = ("B03" 
+            +" A" + str(self.data.config.get('Maslow Settings', 'bedWidth'))
+            +" B" + str(self.data.config.get('Maslow Settings', 'bedHeight'))
+            +" C" + str(self.data.config.get('Maslow Settings', 'motorOffsetX'))
+            +" D" + str(self.data.config.get('Maslow Settings', 'motorOffsetY'))
+            +" E" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
+            +" F" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
+            +" G" + str(self.data.config.get('Maslow Settings', 'sledCG'))
+        )
+        print cmdString
+        #self.data.gcode_queue.put('G20 ')
     
     '''
     
