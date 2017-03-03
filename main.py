@@ -53,10 +53,66 @@ class GroundControlApp(App):
         },
         {
             "type": "string",
-            "title": "X-Axis Pitch",
-            "desc": "The number of mm moved per rotation",
+            "title": "Z-Axis Pitch",
+            "desc": "The number of mm moved per rotation of the z-axis",
             "section": "Maslow Settings",
-            "key": "xPitch"
+            "key": "zPitch"
+        },
+        {
+            "type": "bool",
+            "title": "z-axis installed",
+            "desc": "Does the machine have an automatic z-axis?",
+            "section": "Maslow Settings",
+            "key": "zAxis"
+        },
+        {
+            "type": "string",
+            "title": "Work Area Width in MM",
+            "desc": "The width of the machine working area (normally 8 feet).",
+            "section": "Maslow Settings",
+            "key": "bedWidth"
+        },
+        {
+            "type": "string",
+            "title": "Work Area Height in MM",
+            "desc": "The Height of the machine working area (normally 4 feet).",
+            "section": "Maslow Settings",
+            "key": "bedHeight"
+        },
+        {
+            "type": "string",
+            "title": "Motor Offset Height in MM",
+            "desc": "The vertical distance from the corner of the work area to the motor.",
+            "section": "Maslow Settings",
+            "key": "motorOffsetY"
+        },
+        {
+            "type": "string",
+            "title": "Motor Offset Horizontal in MM",
+            "desc": "The horizontal distance from the corner of the work area to the motor.",
+            "section": "Maslow Settings",
+            "key": "motorOffsetX"
+        },
+        {
+            "type": "string",
+            "title": "Distance Between Sled Mounting Points",
+            "desc": "The horizontal distance between the points where the chains mount to the sled.",
+            "section": "Maslow Settings",
+            "key": "sledWidth"
+        },
+        {
+            "type": "string",
+            "title": "Vertical Distance Sled Mounts to Cutter",
+            "desc": "The vertical distance between where the chains mount on the sled to the cutting tool.",
+            "section": "Maslow Settings",
+            "key": "sledHeight"
+        },
+        {
+            "type": "string",
+            "title": "Center Of Gravity",
+            "desc": "How far below the cutting bit is the center of gravity. This can be found by resting the sled on a round object and observing where it balances.",
+            "section": "Maslow Settings",
+            "key": "sledCG"
         },
         {
             "type": "string",
@@ -112,7 +168,17 @@ class GroundControlApp(App):
         """
         Set the default values for the configs sections.
         """
-        config.setdefaults('Maslow Settings', {'COMport': 'COM5', 'xPitch': 20, 'openFile': " "})
+        config.setdefaults('Maslow Settings', {'COMport': '',
+                                               'zPitch': 20,
+                                               'zAxis': False, 
+                                               'bedWidth':2438.4, 
+                                               'bedHeight':1219.2, 
+                                               'motorOffsetY':100, 
+                                               'motorOffsetX':100, 
+                                               'sledWidth':100, 
+                                               'sledHeight':100, 
+                                               'sledCG':100, 
+                                               'openFile': " "})
 
     def build_settings(self, settings):
         """
@@ -126,10 +192,11 @@ class GroundControlApp(App):
         """
         
         if section == "Makesmith Settings":
+            print "this is where it should push to machine"
             if key == "COMport":
                 self.data.comport = value
-            elif key == 'xPitch':
-                print "xPitch changed"
+            elif key == 'zPitch':
+                print "zPitch changed"
 
     def close_settings(self, settings):
         """
