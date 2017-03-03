@@ -274,15 +274,16 @@ class GroundControlApp(App):
             
             valz = numz.split(",")
             
-            xval = float(valz[0])
-            yval = float(valz[1])
-            zval = float(valz[2])
+            xval  = float(valz[0])
+            yval  = float(valz[1])
+            zval  = float(valz[2])
+            error = float(valz[3])
         except:
             print "bad data"
             return
         
         self.frontpage.setPosReadout(xval,yval,zval,units)
-        self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,self.data.units)
+        self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,self.data.units, error)
     
     def setTargetOnScreen(self, message):
         '''
