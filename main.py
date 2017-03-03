@@ -53,20 +53,6 @@ class GroundControlApp(App):
         },
         {
             "type": "string",
-            "title": "Z-Axis Pitch",
-            "desc": "The number of mm moved per rotation of the z-axis",
-            "section": "Maslow Settings",
-            "key": "zPitch"
-        },
-        {
-            "type": "bool",
-            "title": "z-axis installed",
-            "desc": "Does the machine have an automatic z-axis?",
-            "section": "Maslow Settings",
-            "key": "zAxis"
-        },
-        {
-            "type": "string",
             "title": "Work Area Width in MM",
             "desc": "The width of the machine working area (normally 8 feet).",
             "section": "Maslow Settings",
@@ -120,6 +106,20 @@ class GroundControlApp(App):
             "desc": "The path to the open file",
             "section": "Maslow Settings",
             "key": "openFile"
+        },
+        {
+            "type": "bool",
+            "title": "z-axis installed",
+            "desc": "Does the machine have an automatic z-axis?",
+            "section": "Maslow Settings",
+            "key": "zAxis"
+        },
+        {
+            "type": "string",
+            "title": "Z-Axis Pitch",
+            "desc": "The number of mm moved per rotation of the z-axis",
+            "section": "Maslow Settings",
+            "key": "zPitch"
         }
     ]
     '''
