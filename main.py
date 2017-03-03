@@ -212,9 +212,10 @@ class GroundControlApp(App):
             +" E" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
             +" F" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
             +" G" + str(self.data.config.get('Maslow Settings', 'sledCG'))
+            + " "
         )
         print cmdString
-        #self.data.gcode_queue.put('G20 ')
+        self.data.gcode_queue.put(cmdString)
     
     '''
     
