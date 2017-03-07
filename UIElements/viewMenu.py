@@ -51,7 +51,7 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         fileExtension = filename[-4:]
         
         self.data.gcodeFile = filename
-        self.data.config.set('Makesmith Settings', 'openFile', str(self.data.gcodeFile))
+        self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
         self.data.config.write()
         
         self.reloadGcode()

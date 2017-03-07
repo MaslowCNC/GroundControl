@@ -22,7 +22,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     scatterObject     = ObjectProperty(None)
     scatterInstance   = ObjectProperty(None)
     positionIndicator = ObjectProperty(None)
-    targetIndicator   = ObjectProperty(None)
+    #targetIndicator   = ObjectProperty(None)
     
     offsetX = NumericProperty(0)
     offsetY = NumericProperty(0)
@@ -38,7 +38,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     yPosition = 0
     zPosition = 0
     
-    def initialzie(self):
+    def initialize(self):
         with self.scatterObject.canvas:
             Color(1, 1, 1)
             
@@ -62,7 +62,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.data.bind(gcode = self.updateGcode)
         
         
-        self.targetIndicator.color = (1,0,0)
+        #self.targetIndicator.color = (1,0,0)
         
         tempViewMenu = ViewMenu()
         tempViewMenu.setUpData(self.data)
