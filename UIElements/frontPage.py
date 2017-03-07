@@ -113,8 +113,9 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.shiftX = 0
         self.shiftY = 0
         
-        #reset the gcode index to the beginning
-        self.moveGcodeIndex(0);
+        #reset the gcode index to the beginning and update the display
+        self.data.gcodeIndex = 0
+        self.moveGcodeIndex(0)
     
     def moveGcodeIndex(self, dist):
         maxIndex = len(self.data.gcode)-1
