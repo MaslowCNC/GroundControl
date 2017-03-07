@@ -125,7 +125,29 @@ class FrontPage(Screen, MakesmithInitFuncs):
             self.data.gcodeIndex = targetIndex
 
         gCodeLine = self.data.gcode[self.data.gcodeIndex]
-        print gCodeLine
+        
+        xTarget = 0
+        yTarget = 0
+        
+        x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if x:
+            xTarget = float(x.groups()[0])
+        else:
+            if self.data.units == "INCHES":
+                xTarget = self.gcodecanvas.positionIndicator.pos[0] / 25.4
+            else:
+                xTarget = self.gcodecanvas.positionIndicator.pos[0]              
+        
+        y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if y:
+            yTarget = float(y.groups()[0])
+        else:
+            if self.data.units == "INCHES":
+                yTarget = self.gcodecanvas.positionIndicator.pos[1] / 25.4
+            else:
+                yTarget = self.gcodecanvas.positionIndicator.pos[1] 
+        
+        self.gcodecanvas.positionIndicator.setPos(xTarget,yTarget,self.data.units, 0)
     
     def pause(self):
         self.data.uploadFlag = 0
