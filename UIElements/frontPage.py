@@ -105,7 +105,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def onIndexMove(self, callback, newIndex):
         self.gcodeLineNumber = str(newIndex)
-        self.percentComplete = '%.1f' %(100* (float(newIndex) / len(self.data.gcode))) + "%"
+        self.percentComplete = '%.1f' %(100* (float(newIndex) / (len(self.data.gcode)-1))) + "%"
     
     def onGcodeFileChange(self, callback, newGcode):
     
