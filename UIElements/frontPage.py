@@ -114,41 +114,18 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.shiftY = 0
     
     def moveGcodeIndex(self, dist):
-        self.data.gcodeIndex = self.data.gcodeIndex + dist
-        try:
-            gCodeLine = self.data.gcode[self.data.gcodeIndex]
-        except IndexError:
-            gCodeLine = 'end of file'
-        print gCodeLine
-        
-        xTarget = 0
-        yTarget = 0
-        
-        x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if x:
-            xTarget = float(x.groups()[0])
-        else:
-            if self.data.units == "INCHES":
-                xTarget = self.gcodecanvas.targetIndicator.pos[0] / 25.4
-            else:
-                xTarget = self.gcodecanvas.targetIndicator.pos[0]              
-        
-        y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if y:
-            yTarget = float(y.groups()[0])
-        else:
-            if self.data.units == "INCHES":
-                yTarget = self.gcodecanvas.targetIndicator.pos[1] / 25.4
-            else:
-                yTarget = self.gcodecanvas.targetIndicator.pos[1] 
+        maxIndex = len(self.data.gcode)-1
+        targetIndex = self.data.gcodeIndex + dist
 
-        z = re.search("Z", gCodeLine)
-        if z:
-            self.gcodecanvas.targetIndicator.color = (1,1,1)
+        if targetIndex < 0:
+            self.data.gcodeIndex = 0
+        elif targetIndex > maxIndex:
+            self.data.gcodeIndex = maxIndex
         else:
-            self.gcodecanvas.targetIndicator.color = (1,0,0)
-        
-        self.gcodecanvas.targetIndicator.setPos(xTarget,yTarget,self.data.units)
+            self.data.gcodeIndex = targetIndex
+
+        gCodeLine = self.data.gcode[self.data.gcodeIndex]
+        print gCodeLine
     
     def pause(self):
         self.data.uploadFlag = 0
