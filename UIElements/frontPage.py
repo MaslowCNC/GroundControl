@@ -105,21 +105,30 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def onIndexMove(self, callback, newIndex):
         self.gcodeLineNumber = str(newIndex)
-        self.percentComplete = '%.1f' %(100* (float(newIndex) / len(self.data.gcode))) + "%"
+        self.percentComplete = '%.1f' %(100* (float(newIndex) / (len(self.data.gcode)-1))) + "%"
     
     def onGcodeFileChange(self, callback, newGcode):
     
         #reset the shift values to 0 because the new gcode is not loaded with a shift applied
         self.shiftX = 0
         self.shiftY = 0
+        
+        #reset the gcode index to the beginning and update the display
+        self.data.gcodeIndex = 0
+        self.moveGcodeIndex(0)
     
     def moveGcodeIndex(self, dist):
-        self.data.gcodeIndex = self.data.gcodeIndex + dist
-        try:
-            gCodeLine = self.data.gcode[self.data.gcodeIndex]
-        except IndexError:
-            gCodeLine = 'end of file'
-        print gCodeLine
+        maxIndex = len(self.data.gcode)-1
+        targetIndex = self.data.gcodeIndex + dist
+
+        if targetIndex < 0:
+            self.data.gcodeIndex = 0
+        elif targetIndex > maxIndex:
+            self.data.gcodeIndex = maxIndex
+        else:
+            self.data.gcodeIndex = targetIndex
+
+        gCodeLine = self.data.gcode[self.data.gcodeIndex]
         
         xTarget = 0
         yTarget = 0
@@ -129,26 +138,20 @@ class FrontPage(Screen, MakesmithInitFuncs):
             xTarget = float(x.groups()[0])
         else:
             if self.data.units == "INCHES":
-                xTarget = self.gcodecanvas.targetIndicator.pos[0] / 25.4
+                xTarget = self.gcodecanvas.positionIndicator.pos[0] / 25.4
             else:
-                xTarget = self.gcodecanvas.targetIndicator.pos[0]              
+                xTarget = self.gcodecanvas.positionIndicator.pos[0]              
         
         y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if y:
             yTarget = float(y.groups()[0])
         else:
             if self.data.units == "INCHES":
-                yTarget = self.gcodecanvas.targetIndicator.pos[1] / 25.4
+                yTarget = self.gcodecanvas.positionIndicator.pos[1] / 25.4
             else:
-                yTarget = self.gcodecanvas.targetIndicator.pos[1] 
-
-        z = re.search("Z", gCodeLine)
-        if z:
-            self.gcodecanvas.targetIndicator.color = (1,1,1)
-        else:
-            self.gcodecanvas.targetIndicator.color = (1,0,0)
+                yTarget = self.gcodecanvas.positionIndicator.pos[1] 
         
-        self.gcodecanvas.targetIndicator.setPos(xTarget,yTarget,self.data.units)
+        self.gcodecanvas.positionIndicator.setPos(xTarget,yTarget,self.data.units, 0)
     
     def pause(self):
         self.data.uploadFlag = 0
