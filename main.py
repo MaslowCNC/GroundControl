@@ -13,6 +13,7 @@ from kivy.core.window           import Window
 from kivy.uix.button            import Button
 from kivy.clock                 import Clock
 from kivy.uix.popup             import Popup
+import math
 
 
 '''
@@ -278,6 +279,15 @@ class GroundControlApp(App):
             yval  = float(valz[1])
             zval  = float(valz[2])
             error = float(valz[3])
+            
+            if math.isnan(xval):
+                xval = 0
+            if math.isnan(yval):
+                yval = 0
+            if math.isnan(zval):
+                zval = 0
+            if math.isnan(error):
+                error = 0
         except:
             print "bad data"
             return
