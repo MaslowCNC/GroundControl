@@ -79,7 +79,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     def calcAngle(self, X, Y, centerX, centerY):
         '''
         
-        angle returns the angle from the positive x axis to a point given the center of the circle 
+        calcAngle returns the angle from the positive x axis to a point given the center of the circle 
         and the point. Angle returned in degrees.
     
         '''
