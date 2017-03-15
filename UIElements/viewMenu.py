@@ -31,9 +31,9 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         
         '''
         content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
+        content.path = path.dirname(self.data.gcodeFile)
         if content.path is "": 
             content.path = path.expanduser('~')
-        content.path = path.dirname(self.data.gcodeFile)
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
@@ -67,7 +67,9 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         try:
             filterfile = open(filename, 'r')
             rawfilters = filterfile.read()
-            filtersparsed = re.split(r'\s(?=G)|\n|\s(?=g)|\s(?=M)', rawfilters) #splits the gcode into elements to be added to the list
+            filtersparsed = re.sub(r'\(([^)]*)\)','',rawfilters) #removes mach3 style gcode comments
+            filtersparsed = re.sub(r';([^\n]*)\n','',filtersparsed) #removes standard ; intiated gcode comments
+            filtersparsed = re.split(r'\s(?=G)|\n|\s(?=g)|\s(?=M)', filtersparsed) #splits the gcode into elements to be added to the list
             filtersparsed = [x + ' ' for x in filtersparsed] #adds a space to the end of each line
             filtersparsed = [x.lstrip() for x in filtersparsed]
             filtersparsed = [x.replace('X ','X') for x in filtersparsed]

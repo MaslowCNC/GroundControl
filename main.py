@@ -13,6 +13,7 @@ from kivy.core.window           import Window
 from kivy.uix.button            import Button
 from kivy.clock                 import Clock
 from kivy.uix.popup             import Popup
+import math
 
 
 '''
@@ -206,12 +207,12 @@ class GroundControlApp(App):
         
         cmdString = ("B03" 
             +" A" + str(self.data.config.get('Maslow Settings', 'bedWidth'))
-            +" B" + str(self.data.config.get('Maslow Settings', 'bedHeight'))
-            +" C" + str(self.data.config.get('Maslow Settings', 'motorOffsetX'))
-            +" D" + str(self.data.config.get('Maslow Settings', 'motorOffsetY'))
-            +" E" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
-            +" F" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
-            +" G" + str(self.data.config.get('Maslow Settings', 'sledCG'))
+            +" C" + str(self.data.config.get('Maslow Settings', 'bedHeight'))
+            +" D" + str(self.data.config.get('Maslow Settings', 'motorOffsetX'))
+            +" E" + str(self.data.config.get('Maslow Settings', 'motorOffsetY'))
+            +" F" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
+            +" G" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
+            +" H" + str(self.data.config.get('Maslow Settings', 'sledCG'))
             + " "
         )
         
@@ -278,6 +279,15 @@ class GroundControlApp(App):
             yval  = float(valz[1])
             zval  = float(valz[2])
             error = float(valz[3])
+            
+            if math.isnan(xval):
+                xval = 0
+            if math.isnan(yval):
+                yval = 0
+            if math.isnan(zval):
+                zval = 0
+            if math.isnan(error):
+                error = 0
         except:
             print "bad data"
             return
