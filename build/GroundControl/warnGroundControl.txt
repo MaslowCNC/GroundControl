@@ -85,11 +85,6 @@ missing module named math.exp - imported by math, random
 missing module named math.log - imported by math, random
 missing module named math.e - imported by math, random
 missing module named math.pi - imported by math, random, kivy.animation, kivy.multistroke, kivy.uix.colorpicker
-missing module named math.atan2 - imported by math, kivy.multistroke
-missing module named math.pow - imported by math, kivy.multistroke
-missing module named math.atan - imported by math, kivy.multistroke, kivy.uix.colorpicker
-missing module named math.floor - imported by math, kivy.uix.listview, kivy.multistroke
-missing module named math.radians - imported by math, kivy.core.window, kivy.uix.scatter, kivy.multistroke
 missing module named _io.DEFAULT_BUFFER_SIZE - imported by _io, io
 missing module named _io.BytesIO - imported by _io, io
 missing module named _io.open - imported by _io, io
@@ -480,9 +475,11 @@ missing module named _xmlrpclib - imported by xmlrpclib
 missing module named multiprocessing.current_process - imported by multiprocessing, multiprocessing.connection, multiprocessing.managers, multiprocessing.reduction
 missing module named multiprocessing.AuthenticationError - imported by multiprocessing, multiprocessing.connection
 missing module named kivy.properties.BoundedNumericProperty - imported by kivy.properties, kivy.uix.scatter, kivy.uix.gridlayout, kivy.uix.slider, kivy.uix.colorpicker
+missing module named math.atan - imported by math, kivy.multistroke, kivy.uix.colorpicker
 missing module named kivy._event.Observable - imported by kivy._event, kivy.lang
 missing module named kivy._event.EventDispatcher - imported by kivy._event, kivy.lang
 missing module named kivy.graphics.transformation.Matrix - imported by kivy.graphics.transformation, kivy.core.window, kivy.uix.widget, kivy.uix.scatter, UIElements.gcodeCanvas
+missing module named math.radians - imported by math, kivy.core.window, kivy.uix.scatter, kivy.multistroke
 missing module named ffmpeg - imported by kivy.core.video.video_ffmpeg
 missing module named kivy.core.text.text_layout.layout_text - imported by kivy.core.text.text_layout, kivy.core.text, kivy.core.text.markup
 missing module named kivy.core.text.text_layout.LayoutLine - imported by kivy.core.text.text_layout, kivy.core.text.markup
@@ -537,6 +534,9 @@ missing module named 'ffpyplayer.pic' - imported by kivy.core.image.img_ffpyplay
 missing module named cv - imported by kivy.core.camera.camera_opencv
 missing module named 'opencv.highgui' - imported by kivy.core.camera.camera_opencv
 missing module named opencv - imported by kivy.core.camera.camera_opencv
+missing module named math.atan2 - imported by math, kivy.multistroke
+missing module named math.pow - imported by math, kivy.multistroke
+missing module named math.floor - imported by math, kivy.uix.listview, kivy.multistroke
 missing module named kivy.lib.vidcore_lite.egl - imported by kivy.lib.vidcore_lite, kivy.core.window.window_egl_rpi
 missing module named kivy.lib.vidcore_lite.bcm - imported by kivy.lib.vidcore_lite, kivy.core.window.window_egl_rpi
 missing module named 'pyglet.gl' - imported by kivy.core.video.video_pyglet
@@ -619,7 +619,7 @@ missing module named kivy.properties.ListProperty - imported by kivy.properties,
 missing module named kivy.properties.AliasProperty - imported by kivy.properties, kivy.core.window, kivy.uix.behaviors.button, kivy.uix.behaviors.focus, kivy.uix.scatter, kivy.uix.widget, kivy.atlas, kivy.uix.scrollview, kivy.uix.tabbedpanel, kivy.uix.screenmanager, kivy.uix.filechooser, kivy.uix.image, kivy.uix.textinput, kivy.uix.progressbar, kivy.uix.carousel, kivy.core.audio, kivy.uix.behaviors.knspace, kivy.uix.treeview, kivy.uix.slider, kivy.uix.actionbar, kivy.uix.colorpicker, kivy.uix.rst
 missing module named kivy.properties.BooleanProperty - imported by kivy.properties, kivy.core.window, kivy.uix.behaviors.button, kivy.uix.behaviors.togglebutton, kivy.uix.behaviors.focus, kivy.uix.behaviors.compoundselection, kivy.uix.scatter, kivy.uix.widget, kivy.uix.label, kivy.uix.vkeyboard, kivy.effects.kinetic, kivy.effects.dampedscroll, kivy.uix.scrollview, kivy.uix.gridlayout, kivy.uix.tabbedpanel, kivy.uix.screenmanager, kivy.uix.filechooser, kivy.uix.modalview, kivy.uix.image, kivy.uix.bubble, kivy.uix.textinput, kivy.uix.settings, DataStructures.data, kivy.uix.videoplayer, kivy.uix.video, kivy.uix.carousel, kivy.core.audio, kivy.adapters.listadapter, kivy.uix.switch, kivy.uix.checkbox, kivy.uix.spinner, kivy.uix.dropdown, kivy.uix.listview, kivy.uix.treeview, kivy.uix.accordion, kivy.uix.gesturesurface, kivy.uix.splitter, kivy.uix.actionbar, kivy.uix.camera, kivy.uix.rst
 missing module named kivy.properties.OptionProperty - imported by kivy.properties, kivy.core.window, kivy.uix.behaviors.button, kivy.uix.behaviors.focus, kivy.uix.label, kivy.uix.vkeyboard, kivy.uix.boxlayout, kivy.uix.scrollview, kivy.uix.tabbedpanel, kivy.uix.screenmanager, kivy.uix.filechooser, kivy.uix.anchorlayout, kivy.uix.popup, kivy.uix.bubble, kivy.uix.textinput, DataStructures.data, kivy.uix.stacklayout, kivy.uix.videoplayer, kivy.uix.video, kivy.uix.carousel, kivy.core.audio, kivy.adapters.listadapter, kivy.uix.accordion, kivy.uix.slider, kivy.uix.splitter, kivy.uix.actionbar, kivy.uix.codeinput, kivy.uix.rst
-missing module named kivy.properties.NumericProperty - imported by kivy.properties, kivy.core.window, kivy.uix.behaviors.button, kivy.uix.behaviors.drag, kivy.uix.behaviors.compoundselection, kivy.uix.scatter, kivy.uix.widget, kivy.uix.label, kivy.uix.vkeyboard, kivy.uix.boxlayout, kivy.effects.kinetic, kivy.effects.scroll, kivy.effects.dampedscroll, kivy.uix.scrollview, kivy.uix.gridlayout, kivy.uix.tabbedpanel, kivy.uix.screenmanager, kivy.uix.filechooser, kivy.uix.modalview, kivy.uix.popup, kivy.uix.image, kivy.uix.textinput, kivy.uix.settings, UIElements.gcodeCanvas, DataStructures.data, kivy.uix.stacklayout, kivy.uix.videoplayer, kivy.uix.progressbar, kivy.uix.video, kivy.uix.effectwidget, kivy.uix.carousel, kivy.core.audio, kivy.adapters.listadapter, kivy.uix.switch, kivy.uix.pagelayout, kivy.uix.dropdown, kivy.uix.listview, kivy.uix.treeview, kivy.uix.accordion, kivy.uix.slider, kivy.uix.gesturesurface, kivy.uix.splitter, kivy.uix.actionbar, kivy.uix.camera, kivy.uix.colorpicker, kivy.uix.rst
+missing module named kivy.properties.NumericProperty - imported by kivy.properties, kivy.core.window, kivy.uix.behaviors.button, kivy.uix.behaviors.drag, kivy.uix.behaviors.compoundselection, kivy.uix.scatter, kivy.uix.widget, kivy.uix.label, kivy.uix.vkeyboard, kivy.uix.boxlayout, kivy.effects.kinetic, kivy.effects.scroll, kivy.effects.dampedscroll, kivy.uix.scrollview, kivy.uix.gridlayout, kivy.uix.tabbedpanel, kivy.uix.screenmanager, kivy.uix.filechooser, kivy.uix.modalview, kivy.uix.popup, kivy.uix.image, kivy.uix.textinput, kivy.uix.settings, UIElements.gcodeCanvas, UIElements.positionIndicator, DataStructures.data, kivy.uix.stacklayout, kivy.uix.videoplayer, kivy.uix.progressbar, kivy.uix.video, kivy.uix.effectwidget, kivy.uix.carousel, kivy.core.audio, kivy.adapters.listadapter, kivy.uix.switch, kivy.uix.pagelayout, kivy.uix.dropdown, kivy.uix.listview, kivy.uix.treeview, kivy.uix.accordion, kivy.uix.slider, kivy.uix.gesturesurface, kivy.uix.splitter, kivy.uix.actionbar, kivy.uix.camera, kivy.uix.colorpicker, kivy.uix.rst
 missing module named ios - imported by kivy.metrics
 missing module named kivy.factory.Factory - imported by kivy.factory, kivy.factory_registers, kivy.lang, kivy.uix.widget, kivy.app, kivy.uix.settings, kivy.uix.tabbedpanel, kivy.uix.scrollview, kivy.uix.filechooser, kivy.uix.videoplayer, kivy.uix.carousel, kivy.adapters.adapter, kivy.uix.spinner, kivy.uix.splitter, kivy.uix.actionbar
 missing module named kivy.properties.StringProperty - imported by kivy.properties, kivy.core.window, kivy.uix.widget, kivy.uix.label, kivy.uix.vkeyboard, kivy.app, kivy.uix.button, kivy.uix.tabbedpanel, kivy.uix.screenmanager, kivy.uix.filechooser, kivy.uix.modalview, kivy.uix.popup, kivy.uix.image, kivy.uix.bubble, kivy.uix.textinput, kivy.uix.settings, UIElements.frontPage, UIElements.touchNumberInput, UIElements.loadDialog, UIElements.scrollableTextPopup, UIElements.scrollableLabel, DataStructures.data, UIElements.notificationPopup, kivy.uix.videoplayer, kivy.uix.effectwidget, kivy.uix.carousel, kivy.core.audio, kivy.uix.checkbox, kivy.uix.behaviors.knspace, kivy.uix.accordion, kivy.uix.actionbar, kivy.uix.colorpicker, kivy.uix.rst
