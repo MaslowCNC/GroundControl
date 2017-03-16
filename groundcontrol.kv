@@ -127,17 +127,17 @@
             size_hint: None, None
             width: dp(300)
             height: dp(30)
+            Label:
+                id: moveSpeedInput
+                text: "Dist To Move:"
+                multiline: False
+                size_hint_x: .4
             Button:
                 id: moveDistInput
                 text: '100'
                 multiline: False
                 size_hint_x: .4
                 on_press: root.textInputPopup(self)
-            TextInput:
-                id: moveSpeedInput
-                text: "30"
-                multiline: False
-                size_hint_x: .4
             Button:
                 text: root.units
                 on_press: root.switchUnits()
