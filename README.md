@@ -89,10 +89,10 @@ were unclear.
 Ground Control can be run from the command line using the command 
 
 ```
->python cncgc.py
+>python main.py
 ```
 
-run from within the folder where cncgc.py is located.
+run from within the folder where main.py is located.
 
 If you are looking for a binary version of the software, check the releases on this page
 or visit our website at www.maslowcnc.com. As of this writing, no binaries or installers
