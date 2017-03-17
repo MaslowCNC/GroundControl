@@ -83,12 +83,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         and the point. Angle returned in degrees.
     
         '''
-        
+
         #Special cases at quadrant boundaries (resolves /div0 errors)
         if X == centerX:
             if Y >= centerY: theta = -0.5*math.pi
             if Y < centerY:  theta = 0.5*math.pi
-        if Y == centerY:
+        elif Y == centerY:
             if X > centerX: theta = 0.0*math.pi
             if X < centerX: theta = 1.0*math.pi
 
@@ -100,7 +100,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             theta = 1.0*math.pi - theta
         if X < centerX and Y < centerY: #quadrant three
             theta = math.atan((Y - centerY)/(X - centerX))
-            theta = 1.0*maht.pi - theta
+            theta = 1.0*math.pi - theta
         if X > centerX and Y < centerY: #quadrant four
             theta = math.atan((centerY - Y)/(X - centerX))
         
@@ -192,14 +192,14 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         angle2 = self.calcAngle(xTarget, yTarget, centerX, centerY)
         
         if command == 'G02':
-            angleStart = angle1
-            angleEnd = angle2
-        elif command == 'G03':
             angleStart = angle2
             angleEnd = angle1
+        elif command == 'G03':
+            angleStart = angle1
+            angleEnd = angle2
         
-        if angleStart > angleEnd:
-            angleStart = angleStart - 360
+        if angleStart < angleEnd:
+            angleEnd = angleEnd - 360
         
         #Draw arc for G02 and G03
         with self.scatterObject.canvas:
@@ -238,8 +238,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             errorText = "The current file contains " + str(len(self.data.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultanously may crash the\n program, only the first 8000 lines are shown here.\nThe complete program will cut if you choose to do so."
             print errorText
             #self.canv.create_text(xnow + 200, ynow - 50, text = errorText, fill = "red")
-        
-        
+
         for i in range(0, min(len(self.data.gcode),8000)): #maximum of 8,000 lines are drawn on the screen at a time
             opstring = self.data.gcode[i]
             opstring = opstring + " " #ensures that the is a space at the end of the line
