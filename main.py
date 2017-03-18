@@ -197,6 +197,9 @@ class GroundControlApp(App):
                 self.data.comport = value
             self.push_settings_to_machine()
 
+            if (key == "bedHeight" or key == "bedWidth"):
+                self.frontpage.gcodecanvas.drawWorkspace()
+
     def close_settings(self, settings):
         """
         Close settings panel

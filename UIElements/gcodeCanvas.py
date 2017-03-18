@@ -35,25 +35,13 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     zPosition = 0
     
     def initialize(self):
-        with self.scatterObject.canvas:
-            Color(1, 1, 1)
 
-            #create 4'X8' bounding box
-            workspaceHeight    = 1219 #4' in mm
-            workspaceWidth     = 2438 #8' in mm
-            Line(points = ( -workspaceWidth/2 , -workspaceHeight/2 , workspaceWidth/2 , -workspaceHeight/2), dash_offset = 5)
-            Line(points = ( -workspaceWidth/2 , workspaceHeight/2 , workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
-            Line(points = ( -workspaceWidth/2 , -workspaceHeight/2 , -workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
-            Line(points = ( workspaceWidth/2 , -workspaceHeight/2 , workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
+        self.drawWorkspace()
             
-            #create the axis lines
-            Line(points = (-workspaceWidth/2,0,workspaceWidth/2,0), dash_offset = 5)
-            Line(points = (0, -workspaceHeight/2,0,workspaceHeight/2), dash_offset = 5)
+        Window.bind(on_resize = self.centerCanvas)
+        Window.bind(on_motion = self.zoomCanvas)
 
-            Window.bind(on_resize = self.centerCanvas)
-            Window.bind(on_motion = self.zoomCanvas)
-
-            self.data.bind(gcode = self.updateGcode)
+        self.data.bind(gcode = self.updateGcode)
 
         tempViewMenu = ViewMenu()
         tempViewMenu.setUpData(self.data)
@@ -75,6 +63,25 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             elif motion.button == 'scrolldown':
                 mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
                 self.scatterInstance.apply_transform(mat, anchor)
+
+    def drawWorkspace(self, *args):
+
+        self.scatterObject.canvas.remove_group('workspace')
+ 
+        with self.scatterObject.canvas:
+            Color(1, 1, 1)
+
+            #create the bounding box
+            height = float(self.data.config.get('Maslow Settings', 'bedHeight'))
+            width  = float(self.data.config.get('Maslow Settings', 'bedWidth'))
+            Line(points = ( -width/2 , -height/2 ,  width/2 , -height/2), dash_offset = 5, group='workspace')
+            Line(points = ( -width/2 ,  height/2 ,  width/2 ,  height/2), dash_offset = 5, group='workspace')
+            Line(points = ( -width/2 , -height/2 , -width/2 ,  height/2), dash_offset = 5, group='workspace')
+            Line(points = (  width/2 , -height/2 ,  width/2 ,  height/2), dash_offset = 5, group='workspace')
+            
+            #create the axis lines
+            Line(points = (-width/2,0,width/2,0), dash_offset = 5, group='workspace')
+            Line(points = (0, -height/2,0,height/2), dash_offset = 5, group='workspace')
 
     def calcAngle(self, X, Y, centerX, centerY):
         '''
