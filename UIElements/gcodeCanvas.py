@@ -38,8 +38,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
 
         self.drawWorkspace()
             
-        Window.bind(on_resize = self.centerScatter)
-        Window.bind(on_motion = self.zoom)
+        Window.bind(on_resize = self.centerCanvas)
+        Window.bind(on_motion = self.zoomCanvas)
 
         self.data.bind(gcode = self.updateGcode)
 
