@@ -162,6 +162,11 @@ class GroundControlApp(App):
         
         Clock.schedule_interval(self.runPeriodically, .01)
         
+        '''
+        Push settings to machine
+        '''
+        self.push_settings_to_machine()
+        
         
         return interface
         
