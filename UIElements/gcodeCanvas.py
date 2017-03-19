@@ -22,13 +22,9 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     scatterObject     = ObjectProperty(None)
     scatterInstance   = ObjectProperty(None)
     positionIndicator = ObjectProperty(None)
-    #targetIndicator   = ObjectProperty(None)
     
     offsetX = NumericProperty(0)
     offsetY = NumericProperty(0)
-    lastTouchX = 0
-    lastTouchY = 0
-    motionFlag = 0
     
     canvasScaleFactor = 1 #scale from mm to pixels
     INCHES            = 25.4
@@ -39,40 +35,23 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     zPosition = 0
     
     def initialize(self):
-        with self.scatterObject.canvas:
-            Color(1, 1, 1)
+
+        self.drawWorkspace()
             
-            
-            #create 4'X8' bounding box
-            workspaceHeight    = 1219 #4' in mm
-            workspaceWidth     = 2438 #8' in mm
-            Line(points = ( -workspaceWidth/2 , -workspaceHeight/2 , workspaceWidth/2 , -workspaceHeight/2), dash_offset = 5)
-            Line(points = ( -workspaceWidth/2 , workspaceHeight/2 , workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
-            Line(points = ( -workspaceWidth/2 , -workspaceHeight/2 , -workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
-            Line(points = ( workspaceWidth/2 , -workspaceHeight/2 , workspaceWidth/2 , workspaceHeight/2), dash_offset = 5)
-            
-            #create the axis lines
-            Line(points = (-workspaceWidth/2,0,workspaceWidth/2,0), dash_offset = 5)
-            Line(points = (0, -workspaceHeight/2,0,workspaceHeight/2), dash_offset = 5)
-            
-            Window.bind(on_resize = self.centerScatter)
-            
-            Window.bind(on_motion = self.zoom)
-            
-            self.data.bind(gcode = self.updateGcode)
-        
-        
-        #self.targetIndicator.color = (1,0,0)
-        
+        Window.bind(on_resize = self.centerCanvas)
+        Window.bind(on_motion = self.zoomCanvas)
+
+        self.data.bind(gcode = self.updateGcode)
+
         tempViewMenu = ViewMenu()
         tempViewMenu.setUpData(self.data)
         tempViewMenu.reloadGcode()
     
-    def centerScatter(self, *args):
+    def centerCanvas(self, *args):
         mat = Matrix().translate(Window.width/2, Window.height/2, 0)
         self.scatterInstance.transform = mat
     
-    def zoom(self, callback, type, motion, *args):
+    def zoomCanvas(self, callback, type, motion, *args):
         if motion.is_mouse_scrolling:
             scaleFactor = .03
             
@@ -84,60 +63,65 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             elif motion.button == 'scrolldown':
                 mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
                 self.scatterInstance.apply_transform(mat, anchor)
-    
-    def updateGcode(self, *args):
-        self.drawgcode()
-    
-    def angleGet(self, X, Y, centerX, centerY):
+
+    def drawWorkspace(self, *args):
+
+        self.scatterObject.canvas.remove_group('workspace')
+ 
+        with self.scatterObject.canvas:
+            Color(1, 1, 1)
+
+            #create the bounding box
+            height = float(self.data.config.get('Maslow Settings', 'bedHeight'))
+            width  = float(self.data.config.get('Maslow Settings', 'bedWidth'))
+            Line(points = ( -width/2 , -height/2 ,  width/2 , -height/2), dash_offset = 5, group='workspace')
+            Line(points = ( -width/2 ,  height/2 ,  width/2 ,  height/2), dash_offset = 5, group='workspace')
+            Line(points = ( -width/2 , -height/2 , -width/2 ,  height/2), dash_offset = 5, group='workspace')
+            Line(points = (  width/2 , -height/2 ,  width/2 ,  height/2), dash_offset = 5, group='workspace')
+            
+            #create the axis lines
+            Line(points = (-width/2,0,width/2,0), dash_offset = 5, group='workspace')
+            Line(points = (0, -height/2,0,height/2), dash_offset = 5, group='workspace')
+
+    def calcAngle(self, X, Y, centerX, centerY):
         '''
         
-        angleGet returns the angle from the positive x axis to a point given the center of the circle 
-        and the point. It is called when plotting circles in the drawGcode() function. Result is returned
-        in pi-radians. 
+        calcAngle returns the angle from the positive x axis to a point given the center of the circle 
+        and the point. Angle returned in degrees.
     
         '''
-        
-        if X == centerX: #this resolves /div0 errors
-            #print("special case X")
-            if Y >= centerY:
-                #print("special case one")
-                return(0)
-            if Y <= centerY:
-                #print("special case two")
-                return(1)
-        if Y == centerY: #this resolves /div0 errors
-            #print("special case Y")
-            if X >= centerX:
-                #print("special case three")
-                return(.5)
-            if X <= centerX:
-                #print("special case four")
-                return(1.5)
+
+        #Special cases at quadrant boundaries (resolves /div0 errors)
+        if X == centerX:
+            if Y >= centerY: theta = -0.5*math.pi
+            if Y < centerY:  theta = 0.5*math.pi
+        elif Y == centerY:
+            if X > centerX: theta = 0.0*math.pi
+            if X < centerX: theta = 1.0*math.pi
+
+        #Normal cases
         if X > centerX and Y > centerY: #quadrant one
-            #print("Quadrant 1")
             theta = math.atan((centerY - Y)/(X - centerX))
-            theta = theta/math.pi
-            theta = theta + .5
         if X < centerX and Y > centerY: #quadrant two
-            #print("Quadrant 2")
             theta = math.atan((Y - centerY)/(X - centerX))
-            theta = 1 - theta/math.pi
-            theta = theta + .5
+            theta = 1.0*math.pi - theta
         if X < centerX and Y < centerY: #quadrant three
-            #print("Quadrant 3")
             theta = math.atan((Y - centerY)/(X - centerX))
-            theta = 1 - theta/math.pi
-            theta = theta + .5
+            theta = 1.0*math.pi - theta
         if X > centerX and Y < centerY: #quadrant four
-            #print("Quadrant 4")
             theta = math.atan((centerY - Y)/(X - centerX))
-            theta = theta/math.pi
-            theta = theta + .5
         
-        return(theta)   
+        return(math.degrees(theta + 0.5*math.pi))   
     
-    def drawG1(self,gCodeLine, isG1):
+    def drawLine(self,gCodeLine,command):
+        '''
         
+        drawLine draws a line using the previous command as the start point and the xy coordinates
+        from the current command as the end point. The line is styled based on the command to allow
+        visually differentiating between normal and rapid moves. If the z-axis depth is changed a
+        circle is placed at the location of the depth change to alert the user. 
+    
+        '''
         
         xTarget = self.xPosition
         yTarget = self.yPosition
@@ -157,32 +141,37 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         
         #Draw lines for G1 and G0
-        if isG1:
-            with self.scatterObject.canvas:
-                Color(1, 1, 1)
-                Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode')
-        else:
-            with self.scatterObject.canvas:
-                Color(1, 1, 1)
+        with self.scatterObject.canvas:
+            Color(1, 1, 1)
+            if command == 'G00':
                 Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode', dash_length = 4, dash_offset = 2)
-        
-        tol = 0.05 #Acceptable error in mm
+            elif command == 'G01':
+                Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode')
+       
         #If the zposition has changed, add indicators
+        tol = 0.05 #Acceptable error in mm
         if abs(zTarget - self.zPosition) >= tol:
-            if zTarget - self.zPosition > 0:
-                with self.scatterObject.canvas:
+            with self.scatterObject.canvas:
+                if zTarget - self.zPosition > 0:
                     Color(0, 1, 0)
-                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 2), width = 2, group = 'gcode')
-            else:
-                with self.scatterObject.canvas:
+                    radius = 2
+                else:
                     Color(1, 0, 0)
-                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, 4), width = 2, group = 'gcode')
+                    radius = 4
+                Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, radius), width = 2, group = 'gcode')
         
         self.xPosition = xTarget
         self.yPosition = yTarget
         self.zPosition = zTarget
     
-    def drawG2(self,gCodeLine):
+    def drawArc(self,gCodeLine,command):
+        '''
+        
+        drawArc draws an arc using the previous command as the start point, the xy coordinates from
+        the current command as the end point, and the ij coordinates from the current command as the
+        circle center. Clockwise or counter-clockwise travel is based on the command. 
+    
+        '''
         
         xTarget = self.xPosition
         yTarget = self.yPosition
@@ -206,77 +195,48 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         centerX = self.xPosition + iTarget
         centerY = self.yPosition + jTarget
         
-        getAngle1 = self.angleGet(self.xPosition, self.yPosition, centerX, centerY)
-        getAngle2 = self.angleGet(xTarget, yTarget, centerX, centerY)
+        angle1 = self.calcAngle(self.xPosition, self.yPosition, centerX, centerY)
+        angle2 = self.calcAngle(xTarget, yTarget, centerX, centerY)
         
-        startAngle = math.degrees(math.pi * getAngle1)
-        endAngle = math.degrees(math.pi * getAngle2)
+        if command == 'G02':
+            angleStart = angle2
+            angleEnd = angle1
+        elif command == 'G03':
+            angleStart = angle1
+            angleEnd = angle2
         
-        if startAngle > endAngle:
-            startAngle = startAngle - 360
+        if angleStart < angleEnd:
+            angleEnd = angleEnd - 360
         
+        #Draw arc for G02 and G03
         with self.scatterObject.canvas:
             Color(1, 1, 1)
-            Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, startAngle, endAngle), group = 'gcode')
-        
-        
+            Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, angleStart, angleEnd), group = 'gcode')
+
         self.xPosition = xTarget
         self.yPosition = yTarget
-    
-    def drawG3(self,gCodeLine):
-        
-        xTarget = self.xPosition
-        yTarget = self.yPosition
-        iTarget = self.xPosition
-        jTarget = self.yPosition
-        
-        x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if x:
-            xTarget = float(x.groups()[0])*self.canvasScaleFactor
-        y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if y:
-            yTarget = float(y.groups()[0])*self.canvasScaleFactor
-        i = re.search("I(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if i:
-            iTarget = float(i.groups()[0])*self.canvasScaleFactor
-        j = re.search("J(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if j:
-            jTarget = float(j.groups()[0])*self.canvasScaleFactor
-        
-        radius = math.sqrt(iTarget**2 + jTarget**2)
-        centerX = self.xPosition + iTarget
-        centerY = self.yPosition + jTarget
-        
-        getAngle1 = self.angleGet(self.xPosition, self.yPosition, centerX, centerY)
-        getAngle2 = self.angleGet(xTarget, yTarget, centerX, centerY)
-        
-        startAngle = math.degrees(math.pi * getAngle1)
-        endAngle = math.degrees(math.pi * getAngle2)
-        
-        if endAngle > startAngle: #handles case where start and end are across 0 degrees
-            endAngle = endAngle - 360
-        
-        with self.scatterObject.canvas:
-            Color(1, 1, 1)
-            Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, startAngle, endAngle), group = 'gcode')
-        
-        
-        self.xPosition = xTarget
-        self.yPosition = yTarget
-    
+
     def clearGcode(self):
-        self.scatterObject.canvas.remove_group('gcode')
+        '''
+        
+        clearGcode deletes the lines and arcs corresponding to gcode commands from the canvas. 
     
-    #This draws the gcode on the canvas.
-    def drawgcode(self):
-        xnow = 800.0
-        ynow = 800.0
-        znow = 0
-        cutdi = 1
-        fillcolor = "green"
+        '''
+        self.scatterObject.canvas.remove_group('gcode')
+
+    def updateGcode(self, *args):
+        '''
+        
+        updateGcode parses the gcode commands and calls the appropriate drawing function for the 
+        specified command. 
+    
+        '''
+        self.xPosition = 0
+        self.yPosition = 0
+        self.zPosition = 0
+
         prependString = "G00 "
         
-        i = 0
         opstring = ""
         
         self.clearGcode()
@@ -285,9 +245,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             errorText = "The current file contains " + str(len(self.data.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultanously may crash the\n program, only the first 8000 lines are shown here.\nThe complete program will cut if you choose to do so."
             print errorText
             #self.canv.create_text(xnow + 200, ynow - 50, text = errorText, fill = "red")
-        
-        
-        while i < len(self.data.gcode) and i < 8000: #maximum of 8,000 lines are drawn on the screen at a time
+
+        for i in range(0, min(len(self.data.gcode),8000)): #maximum of 8,000 lines are drawn on the screen at a time
             opstring = self.data.gcode[i]
             opstring = opstring + " " #ensures that the is a space at the end of the line
             
@@ -297,17 +256,17 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             if opstring[0:3] == 'G00' or opstring[0:3] == 'G01' or opstring[0:3] == 'G02' or opstring[0:3] == 'G03':
                 prependString = opstring[0:3] + " "
             
-            if opstring[0:3] == 'G01' or opstring[0:3] == 'G1 ':
-                self.drawG1(opstring, 1)
-            
             if opstring[0:3] == 'G00' or opstring[0:3] == 'G0 ':
-                self.drawG1(opstring, 0)
+                self.drawLine(opstring, 'G00')
+
+            if opstring[0:3] == 'G01' or opstring[0:3] == 'G1 ':
+                self.drawLine(opstring, 'G01')
                         
             if opstring[0:3] == 'G02' or opstring[0:3] == 'G2 ':
-                self.drawG2(opstring)
+                self.drawArc(opstring, 'G02')
                                
             if opstring[0:3] == 'G03' or opstring[0:3] == 'G3 ':
-                self.drawG3(opstring)
+                self.drawArc(opstring, 'G03')
             
             if opstring[0:3] == 'G20':
                 self.canvasScaleFactor = self.INCHES
@@ -324,16 +283,5 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 self.absoluteFlag = 0
             
             if opstring[0] == 'D':
-                startpt = opstring.find('D')
-                startpt = startpt + 1
-                endpt = 0
-                j = startpt
-                while opstring[j] != ' ':
-                    j = j + 1
-                endpt = j
-                tooldi = float(opstring[startpt : endpt])
-                cutdi = scalor*20*tooldi
-            
-            
-            i = i + 1
+                pass
     
