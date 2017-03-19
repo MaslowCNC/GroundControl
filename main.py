@@ -293,12 +293,16 @@ class GroundControlApp(App):
             error = float(valz[3])
             
             if math.isnan(xval):
+                self.writeToTextConsole("Unable to resolve x Kinematics.")
                 xval = 0
             if math.isnan(yval):
+                self.writeToTextConsole("Unable to resolve y Kinematics.")
                 yval = 0
             if math.isnan(zval):
+                self.writeToTextConsole("Unable to resolve z Kinematics.")
                 zval = 0
             if math.isnan(error):
+                self.writeToTextConsole("Unable to resolve position error.")
                 error = 0
         except:
             print "bad data"
