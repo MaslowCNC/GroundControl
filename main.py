@@ -243,6 +243,7 @@ class GroundControlApp(App):
             elif message[0:2] == "pt":
                 self.setTargetOnScreen(message)
             elif message[0:8] == "Message:":
+                self.previousUploadStatus = self.data.uploadFlag 
                 self.data.uploadFlag = 0
                 content = NotificationPopup(cancel = self.dismiss_popup, text = message[9:])
                 self._popup = Popup(title="Notification: ", content=content,
@@ -263,7 +264,7 @@ class GroundControlApp(App):
         
         '''
         self._popup.dismiss()
-        self.data.uploadFlag = 1
+        self.data.uploadFlag = self.previousUploadStatus #resume cutting if the machine was cutting before
     
     def setPosOnScreen(self, message):
         '''
