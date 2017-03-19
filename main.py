@@ -232,6 +232,14 @@ class GroundControlApp(App):
     
     '''
     
+    def writeToTextConsole(self, message):
+        try:
+            newText = self.frontpage.consoleText[-3000:] + message
+            self.frontpage.consoleText = newText
+            self.frontpage.textconsole.gotToBottom()  
+        except:
+            self.frontpage.consoleText = "text not displayed correctly"
+    
     def runPeriodically(self, *args):
         '''
         this block should be handled within the appropriate widget
@@ -250,12 +258,7 @@ class GroundControlApp(App):
                             auto_dismiss=False, size_hint=(0.25, 0.25))
                 self._popup.open()
             else:
-                try:
-                    newText = self.frontpage.consoleText[-3000:] + message
-                    self.frontpage.consoleText = newText
-                    self.frontpage.textconsole.gotToBottom()  
-                except:
-                    self.frontpage.consoleText = "text not displayed correctly"
+                self.writeToTextConsole(message)
     
     def dismiss_popup(self):
         '''
