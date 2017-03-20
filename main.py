@@ -162,6 +162,11 @@ class GroundControlApp(App):
         
         Clock.schedule_interval(self.runPeriodically, .01)
         
+        '''
+        Push settings to machine
+        '''
+        self.push_settings_to_machine()
+        
         
         return interface
         
@@ -197,6 +202,9 @@ class GroundControlApp(App):
                 self.data.comport = value
             self.push_settings_to_machine()
 
+            if (key == "bedHeight" or key == "bedWidth"):
+                self.frontpage.gcodecanvas.drawWorkspace()
+
     def close_settings(self, settings):
         """
         Close settings panel
@@ -224,6 +232,14 @@ class GroundControlApp(App):
     
     '''
     
+    def writeToTextConsole(self, message):
+        try:
+            newText = self.frontpage.consoleText[-3000:] + message
+            self.frontpage.consoleText = newText
+            self.frontpage.textconsole.gotToBottom()  
+        except:
+            self.frontpage.consoleText = "text not displayed correctly"
+    
     def runPeriodically(self, *args):
         '''
         this block should be handled within the appropriate widget
@@ -235,18 +251,14 @@ class GroundControlApp(App):
             elif message[0:2] == "pt":
                 self.setTargetOnScreen(message)
             elif message[0:8] == "Message:":
+                self.previousUploadStatus = self.data.uploadFlag 
                 self.data.uploadFlag = 0
                 content = NotificationPopup(cancel = self.dismiss_popup, text = message[9:])
                 self._popup = Popup(title="Notification: ", content=content,
                             auto_dismiss=False, size_hint=(0.25, 0.25))
                 self._popup.open()
             else:
-                try:
-                    newText = self.frontpage.consoleText[-3000:] + message
-                    self.frontpage.consoleText = newText
-                    self.frontpage.textconsole.gotToBottom()  
-                except:
-                    self.frontpage.consoleText = "text not displayed correctly"
+                self.writeToTextConsole(message)
     
     def dismiss_popup(self):
         '''
@@ -255,7 +267,7 @@ class GroundControlApp(App):
         
         '''
         self._popup.dismiss()
-        self.data.uploadFlag = 1
+        self.data.uploadFlag = self.previousUploadStatus #resume cutting if the machine was cutting before
     
     def setPosOnScreen(self, message):
         '''
@@ -281,12 +293,16 @@ class GroundControlApp(App):
             error = float(valz[3])
             
             if math.isnan(xval):
+                self.writeToTextConsole("Unable to resolve x Kinematics.")
                 xval = 0
             if math.isnan(yval):
+                self.writeToTextConsole("Unable to resolve y Kinematics.")
                 yval = 0
             if math.isnan(zval):
+                self.writeToTextConsole("Unable to resolve z Kinematics.")
                 zval = 0
             if math.isnan(error):
+                self.writeToTextConsole("Unable to resolve position error.")
                 error = 0
         except:
             print "bad data"
