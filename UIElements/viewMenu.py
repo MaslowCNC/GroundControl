@@ -51,7 +51,7 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         fileExtension = filename[-4:]
         
         self.data.gcodeFile = filename
-        self.data.config.set('Makesmith Settings', 'openFile', str(self.data.gcodeFile))
+        self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
         self.data.config.write()
         
         self.reloadGcode()
@@ -67,7 +67,9 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         try:
             filterfile = open(filename, 'r')
             rawfilters = filterfile.read()
-            filtersparsed = re.split(r'\s(?=G)|\n|\s(?=g)|\s(?=M)', rawfilters) #splits the gcode into elements to be added to the list
+            filtersparsed = re.sub(r'\(([^)]*)\)','',rawfilters) #removes mach3 style gcode comments
+            filtersparsed = re.sub(r';([^\n]*)\n','',filtersparsed) #removes standard ; intiated gcode comments
+            filtersparsed = re.split(r'\s(?=G)|\n|\s(?=g)|\s(?=M)', filtersparsed) #splits the gcode into elements to be added to the list
             filtersparsed = [x + ' ' for x in filtersparsed] #adds a space to the end of each line
             filtersparsed = [x.lstrip() for x in filtersparsed]
             filtersparsed = [x.replace('X ','X') for x in filtersparsed]

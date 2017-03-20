@@ -65,24 +65,25 @@ class SerialPortThread(MakesmithInitFuncs):
             
             while True:
                 
-                #get new information from the machine
+                #get any messages from the machine
                 try:
                     msg = self.serialInstance.readline()
                     msg = msg.decode('utf-8')
                 except:
                     pass
-                
                 if len(msg) > 0:
-                    
                     self.lastMessageTime = time.time()
-                    
                     if msg == "gready\r\n":
                         self.machineIsReadyForData = True
                     else:
                         self.data.message_queue.put(msg)
                     
-                        
-                #send information to machine if necessary
+                #send any emergency instructions to the machine if there are any
+                if self.data.quick_queue.empty() != True:
+                    command = self.data.quick_queue.get_nowait() + " "
+                    self._write(command)
+                    
+                #send gcode to machine if it is ready
                 if self.machineIsReadyForData:
                     if self.data.gcode_queue.empty() != True:
                         gcode = self.data.gcode_queue.get_nowait() + " "

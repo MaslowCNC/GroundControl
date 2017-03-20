@@ -2,6 +2,7 @@ from DataStructures.makesmithInitFuncs     import MakesmithInitFuncs
 from kivy.uix.widget                       import Widget
 from kivy.graphics                         import Color
 from kivy.properties                       import ObjectProperty
+from kivy.properties                       import NumericProperty
 
 
 class PositionIndicator(Widget):
@@ -14,8 +15,9 @@ class PositionIndicator(Widget):
     INCH            = 25.4
     MILLIMETER       = 1 
     color             = ObjectProperty((1, 1, 1))
+    positionErrorRadius = NumericProperty(0)
     
-    def setPos(self, xPos, yPos, units):
+    def setPos(self, xPos, yPos, units, positionError):
         '''
         
         Move cross-hairs on UI
@@ -30,3 +32,5 @@ class PositionIndicator(Widget):
             crossPosY = yPos*self.INCH
         
         self.pos = (crossPosX,crossPosY)
+        
+        self.positionErrorRadius = positionError

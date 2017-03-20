@@ -71,7 +71,7 @@ class Data(EventDispatcher):
     #Holds the current value of the feed rate
     feedRate   = 20
     #holds the address of the g-code file so that the gcode can be refreshed
-    gcodeFile  = ""
+    gcodeFile  = StringProperty("")
     #the current position of the cutting head
     currentpos = [0.0, 0.0, 0.0]
     target     = [0.0, 0.0, 0.0]
