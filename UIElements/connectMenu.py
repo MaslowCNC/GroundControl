@@ -20,7 +20,6 @@ class ConnectMenu(FloatLayout, MakesmithInitFuncs):
         self.data.config.set('Maslow Settings', 'COMport', str(self.data.comport))
         self.data.config.write()
         
-    
     def updatePorts(self, *args):
         
         portsList = ["Available Ports:"]
