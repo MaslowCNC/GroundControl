@@ -27,18 +27,16 @@ class ConnectMenu(FloatLayout, MakesmithInitFuncs):
         portsList = ["Available Ports:"]
         
         if sys.platform.startswith('win'):
-            for ports in self.data.serialPort.listSerialPorts():
-                portsList.append(port)
+        	sysports = ['COM%s' % (i + 1) for i in range(256)]
         elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
             # this excludes your current terminal "/dev/tty"
-            for ports in self.data.serialPort.listSerialPorts():
-                portsList.append(port)
+        	sysports = glob.glob('/dev/tty[A-Za-z]*')
         elif sys.platform.startswith('darwin'):
-            sysports = glob.glob('/dev/tty.*')
-            for port in sysports:
-                portsList.append(port)
+        	sysports = glob.glob('/dev/tty.*')
         else:
-            raise EnvironmentError('Unsupported platform')
+        	raise EnvironmentError('Unsupported platform')
+        for port in sysports:
+        	portsList.append(port)
         
         if len(portsList) == 1:
             portsList.append("None")
