@@ -236,8 +236,9 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.zPosition = 0
 
         prependString = "G00 "
+        validPrefixList = ['G00','G0 ','G1 ','G01','G2 ','G02','G3 ','G03']
         
-        opstring = ""
+        fullString = ""
         
         self.clearGcode()
         
@@ -247,41 +248,42 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             #self.canv.create_text(xnow + 200, ynow - 50, text = errorText, fill = "red")
 
         for i in range(0, min(len(self.data.gcode),8000)): #maximum of 8,000 lines are drawn on the screen at a time
-            opstring = self.data.gcode[i]
-            opstring = opstring + " " #ensures that the is a space at the end of the line
+            fullString = self.data.gcode[i]
+            fullString = fullString + " " #ensures that there is a space at the end of the line
             
-            if opstring[0] == 'X' or opstring[0] == 'Y' or opstring[0] == 'Z': #this adds the gcode operator if it is omitted by the program
-                opstring = prependString + opstring
+            #find 'G' anywhere in string
+            gString = fullString[fullString.find('G'):fullString.find('G') + 3]
             
-            if opstring[0:3] == 'G00' or opstring[0:3] == 'G01' or opstring[0:3] == 'G02' or opstring[0:3] == 'G03':
-                prependString = opstring[0:3] + " "
+            if fullString.find('G') == -1: #this adds the gcode operator if it is omitted by the program
+                fullString = prependString + fullString
             
-            if opstring[0:3] == 'G00' or opstring[0:3] == 'G0 ':
-                self.drawLine(opstring, 'G00')
+            if gString in validPrefixList:
+                prependString = fullString[0:3] + " "
+            
+            if gString == 'G00' or fullString[0:3] == 'G0 ':
+                self.drawLine(fullString, 'G00')
 
-            if opstring[0:3] == 'G01' or opstring[0:3] == 'G1 ':
-                self.drawLine(opstring, 'G01')
+            if gString == 'G01' or fullString[0:3] == 'G1 ':
+                self.drawLine(fullString, 'G01')
                         
-            if opstring[0:3] == 'G02' or opstring[0:3] == 'G2 ':
-                self.drawArc(opstring, 'G02')
+            if gString == 'G02' or fullString[0:3] == 'G2 ':
+                self.drawArc(fullString, 'G02')
                                
-            if opstring[0:3] == 'G03' or opstring[0:3] == 'G3 ':
-                self.drawArc(opstring, 'G03')
+            if gString == 'G03' or fullString[0:3] == 'G3 ':
+                self.drawArc(fullString, 'G03')
             
-            if opstring[0:3] == 'G20':
+            if gString == 'G20':
                 self.canvasScaleFactor = self.INCHES
                 self.data.units = "INCHES"
                 
-            if opstring[0:3] == 'G21':
+            if gString == 'G21':
                 self.canvasScaleFactor = self.MILLIMETERS
                 self.data.units = "MM"
                 
-            if opstring[0:3] == 'G90':
+            if gString == 'G90':
                 self.absoluteFlag = 1
                 
-            if opstring[0:3] == 'G91':
+            if gString == 'G91':
                 self.absoluteFlag = 0
             
-            if opstring[0] == 'D':
-                pass
     

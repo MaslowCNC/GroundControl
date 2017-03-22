@@ -203,26 +203,25 @@
         size_hint: (1, 1)
 
 <ViewMenu>:
-    GridLayout:
-        cols:1
-        size: root.size
-        pos: root.pos
-        Label:
-            text: "View"
-        Button:
-            text: 'Open File'
-            on_press: root.openFile()
-        Button:
-            text: 'Update Gcode'
-            on_release: root.reloadGcode()
-        Button:
-            text: 'View Gcode'
-            disabled: False
-            on_press: root.show_gcode()
-        Button:
-            text: 'Reset View'
-            disabled: False
-            on_press: app.frontpage.gcodecanvas.centerCanvas()
+    cols:1
+    size: root.size
+    pos: root.pos
+    Label:
+        text: "View"
+    Button:
+        text: 'Open File'
+        on_press: root.openFile()
+    Button:
+        text: 'Update Gcode'
+        on_release: root.reloadGcode()
+    Button:
+        text: 'View Gcode'
+        disabled: False
+        on_press: root.show_gcode()
+    Button:
+        text: 'Reset View'
+        disabled: False
+        on_press: app.frontpage.gcodecanvas.centerCanvas()
                 
 <RunMenu>:
     GridLayout:
