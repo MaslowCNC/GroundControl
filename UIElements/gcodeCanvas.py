@@ -245,7 +245,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if len(self.data.gcode) > 8000:
             errorText = "The current file contains " + str(len(self.data.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultanously may crash the\n program, only the first 8000 lines are shown here.\nThe complete program will cut if you choose to do so."
             print errorText
-            #self.canv.create_text(xnow + 200, ynow - 50, text = errorText, fill = "red")
 
         for i in range(0, min(len(self.data.gcode),8000)): #maximum of 8,000 lines are drawn on the screen at a time
             fullString = self.data.gcode[i]
@@ -260,17 +259,21 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             if gString in validPrefixList:
                 prependString = fullString[0:3] + " "
             
-            if gString == 'G00' or fullString[0:3] == 'G0 ':
+            if gString == 'G00' or gString == 'G0 ':
                 self.drawLine(fullString, 'G00')
 
-            if gString == 'G01' or fullString[0:3] == 'G1 ':
+            if gString == 'G01' or gString == 'G1 ':
+                print "this ran"
                 self.drawLine(fullString, 'G01')
                         
-            if gString == 'G02' or fullString[0:3] == 'G2 ':
+            if gString == 'G02' or gString == 'G2 ':
                 self.drawArc(fullString, 'G02')
                                
-            if gString == 'G03' or fullString[0:3] == 'G3 ':
+            if gString == 'G03' or gString == 'G3 ':
                 self.drawArc(fullString, 'G03')
+            
+            if gString == 'G18':
+                print "G18 not supported"
             
             if gString == 'G20':
                 self.canvasScaleFactor = self.INCHES
