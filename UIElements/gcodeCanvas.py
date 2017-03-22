@@ -255,36 +255,38 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             The right way to do this is to not index in from the end, but instead search the line for G
             '''
             
-            if fullString[0] == 'X' or fullString[0] == 'Y' or fullString[0] == 'Z': #this adds the gcode operator if it is omitted by the program
+            gString = fullString[fullString.find('G'):fullString.find('G') + 3]
+            
+            if fullString.find('G') == -1: #this adds the gcode operator if it is omitted by the program
                 fullString = prependString + fullString
             
-            if fullString[0:3] in validPrefixList:
+            if gString in validPrefixList:
                 prependString = fullString[0:3] + " "
             
-            if fullString[0:3] == 'G00' or fullString[0:3] == 'G0 ':
+            if gString == 'G00' or fullString[0:3] == 'G0 ':
                 self.drawLine(fullString, 'G00')
 
-            if fullString[0:3] == 'G01' or fullString[0:3] == 'G1 ':
+            if gString == 'G01' or fullString[0:3] == 'G1 ':
                 self.drawLine(fullString, 'G01')
                         
-            if fullString[0:3] == 'G02' or fullString[0:3] == 'G2 ':
+            if gString == 'G02' or fullString[0:3] == 'G2 ':
                 self.drawArc(fullString, 'G02')
                                
-            if fullString[0:3] == 'G03' or fullString[0:3] == 'G3 ':
+            if gString == 'G03' or fullString[0:3] == 'G3 ':
                 self.drawArc(fullString, 'G03')
             
-            if fullString[0:3] == 'G20':
+            if gString == 'G20':
                 self.canvasScaleFactor = self.INCHES
                 self.data.units = "INCHES"
                 
-            if fullString[0:3] == 'G21':
+            if gString == 'G21':
                 self.canvasScaleFactor = self.MILLIMETERS
                 self.data.units = "MM"
                 
-            if fullString[0:3] == 'G90':
+            if gString == 'G90':
                 self.absoluteFlag = 1
                 
-            if fullString[0:3] == 'G91':
+            if gString == 'G91':
                 self.absoluteFlag = 0
             
     
