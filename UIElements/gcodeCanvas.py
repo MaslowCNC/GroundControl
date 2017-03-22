@@ -236,6 +236,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.zPosition = 0
 
         prependString = "G00 "
+        validPrefixList = ['G00','G0 ','G1 ','G01','G2 ','G02','G3 ','G03']
         
         opstring = ""
         
@@ -253,7 +254,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             if opstring[0] == 'X' or opstring[0] == 'Y' or opstring[0] == 'Z': #this adds the gcode operator if it is omitted by the program
                 opstring = prependString + opstring
             
-            if opstring[0:3] == 'G00' or opstring[0:3] == 'G01' or opstring[0:3] == 'G02' or opstring[0:3] == 'G03':
+            if opstring[0:3] in validPrefixList:
                 prependString = opstring[0:3] + " "
             
             if opstring[0:3] == 'G00' or opstring[0:3] == 'G0 ':
