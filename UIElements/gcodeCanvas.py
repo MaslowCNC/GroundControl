@@ -251,10 +251,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             fullString = self.data.gcode[i]
             fullString = fullString + " " #ensures that there is a space at the end of the line
             
-            '''
-            The right way to do this is to not index in from the end, but instead search the line for G
-            '''
-            
+            #find 'G' anywhere in string
             gString = fullString[fullString.find('G'):fullString.find('G') + 3]
             
             if fullString.find('G') == -1: #this adds the gcode operator if it is omitted by the program
