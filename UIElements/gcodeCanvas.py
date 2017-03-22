@@ -253,17 +253,20 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             #find 'G' anywhere in string
             gString = fullString[fullString.find('G'):fullString.find('G') + 3]
             
-            if fullString.find('G') == -1: #this adds the gcode operator if it is omitted by the program
-                fullString = prependString + fullString
-            
             if gString in validPrefixList:
-                prependString = fullString[0:3] + " "
+                prependString = gString + " "
+            
+            if fullString.find('G') == -1 and fullString.find('M') == -1: #this adds the gcode operator if it is omitted by the program
+                print fullString
+                fullString = prependString + fullString
+                gString = prependString
+                print fullString
+                print gString 
             
             if gString == 'G00' or gString == 'G0 ':
                 self.drawLine(fullString, 'G00')
 
             if gString == 'G01' or gString == 'G1 ':
-                print "this ran"
                 self.drawLine(fullString, 'G01')
                         
             if gString == 'G02' or gString == 'G2 ':
