@@ -221,6 +221,7 @@ class GroundControlApp(App):
             +" F" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
             +" G" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
             +" H" + str(self.data.config.get('Maslow Settings', 'sledCG'))
+            +" I" + str(self.data.config.get('Maslow Settings', 'zAxis'))
             + " "
         )
         
