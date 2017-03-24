@@ -75,10 +75,10 @@ class GroundControlApp(App):
         },
         {
             "type": "string",
-            "title": "Motor Offset Horizontal in MM",
-            "desc": "The horizontal distance from the corner of the work area to the motor.",
+            "title": "Distance Between Motors",
+            "desc": "The horizontal distance between the center of the motor shafts in MM.",
             "section": "Maslow Settings",
-            "key": "motorOffsetX"
+            "key": "motorSpacingX"
         },
         {
             "type": "string",
@@ -180,7 +180,7 @@ class GroundControlApp(App):
                                                'bedWidth':2438.4, 
                                                'bedHeight':1219.2, 
                                                'motorOffsetY':463, 
-                                               'motorOffsetX':270, 
+                                               'motorSpacingX':3035, 
                                                'sledWidth':310, 
                                                'sledHeight':139, 
                                                'sledCG':79, 
@@ -216,7 +216,7 @@ class GroundControlApp(App):
         cmdString = ("B03" 
             +" A" + str(self.data.config.get('Maslow Settings', 'bedWidth'))
             +" C" + str(self.data.config.get('Maslow Settings', 'bedHeight'))
-            +" D" + str(self.data.config.get('Maslow Settings', 'motorOffsetX'))
+            +" D" + str(self.data.config.get('Maslow Settings', 'motorSpacingX'))
             +" E" + str(self.data.config.get('Maslow Settings', 'motorOffsetY'))
             +" F" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
             +" G" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
