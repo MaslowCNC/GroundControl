@@ -54,6 +54,13 @@ class GroundControlApp(App):
         },
         {
             "type": "string",
+            "title": "Distance Between Motors",
+            "desc": "The horizontal distance between the center of the motor shafts in MM.",
+            "section": "Maslow Settings",
+            "key": "motorSpacingX"
+        },
+        {
+            "type": "string",
             "title": "Work Area Width in MM",
             "desc": "The width of the machine working area (normally 8 feet).",
             "section": "Maslow Settings",
@@ -69,16 +76,9 @@ class GroundControlApp(App):
         {
             "type": "string",
             "title": "Motor Offset Height in MM",
-            "desc": "The vertical distance from the corner of the work area to the motor.",
+            "desc": "The vertical distance from the edge of the work area to the level of the motors.",
             "section": "Maslow Settings",
             "key": "motorOffsetY"
-        },
-        {
-            "type": "string",
-            "title": "Distance Between Motors",
-            "desc": "The horizontal distance between the center of the motor shafts in MM.",
-            "section": "Maslow Settings",
-            "key": "motorSpacingX"
         },
         {
             "type": "string",
