@@ -54,6 +54,13 @@ class GroundControlApp(App):
         },
         {
             "type": "string",
+            "title": "Distance Between Motors",
+            "desc": "The horizontal distance between the center of the motor shafts in MM.",
+            "section": "Maslow Settings",
+            "key": "motorSpacingX"
+        },
+        {
+            "type": "string",
             "title": "Work Area Width in MM",
             "desc": "The width of the machine working area (normally 8 feet).",
             "section": "Maslow Settings",
@@ -69,16 +76,9 @@ class GroundControlApp(App):
         {
             "type": "string",
             "title": "Motor Offset Height in MM",
-            "desc": "The vertical distance from the corner of the work area to the motor.",
+            "desc": "The vertical distance from the edge of the work area to the level of the motors.",
             "section": "Maslow Settings",
             "key": "motorOffsetY"
-        },
-        {
-            "type": "string",
-            "title": "Motor Offset Horizontal in MM",
-            "desc": "The horizontal distance from the corner of the work area to the motor.",
-            "section": "Maslow Settings",
-            "key": "motorOffsetX"
         },
         {
             "type": "string",
@@ -205,7 +205,7 @@ class GroundControlApp(App):
                                                'bedWidth':2438.4, 
                                                'bedHeight':1219.2, 
                                                'motorOffsetY':463, 
-                                               'motorOffsetX':270, 
+                                               'motorSpacingX':3035, 
                                                'sledWidth':310, 
                                                'sledHeight':139, 
                                                'sledCG':79, 
@@ -248,7 +248,7 @@ class GroundControlApp(App):
         cmdString = ("B03" 
             +" A" + str(self.data.config.get('Maslow Settings', 'bedWidth'))
             +" C" + str(self.data.config.get('Maslow Settings', 'bedHeight'))
-            +" D" + str(self.data.config.get('Maslow Settings', 'motorOffsetX'))
+            +" Q" + str(self.data.config.get('Maslow Settings', 'motorSpacingX'))
             +" E" + str(self.data.config.get('Maslow Settings', 'motorOffsetY'))
             +" F" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
             +" G" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
