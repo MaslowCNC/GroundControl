@@ -248,7 +248,7 @@ class GroundControlApp(App):
         cmdString = ("B03" 
             +" A" + str(self.data.config.get('Maslow Settings', 'bedWidth'))
             +" C" + str(self.data.config.get('Maslow Settings', 'bedHeight'))
-            +" D" + str(self.data.config.get('Maslow Settings', 'motorSpacingX'))
+            +" Q" + str(self.data.config.get('Maslow Settings', 'motorSpacingX'))
             +" E" + str(self.data.config.get('Maslow Settings', 'motorOffsetY'))
             +" F" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
             +" G" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
