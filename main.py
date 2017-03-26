@@ -54,6 +54,13 @@ class GroundControlApp(App):
         },
         {
             "type": "string",
+            "title": "Distance Between Motors",
+            "desc": "The horizontal distance between the center of the motor shafts in MM.",
+            "section": "Maslow Settings",
+            "key": "motorSpacingX"
+        },
+        {
+            "type": "string",
             "title": "Work Area Width in MM",
             "desc": "The width of the machine working area (normally 8 feet).",
             "section": "Maslow Settings",
@@ -69,16 +76,9 @@ class GroundControlApp(App):
         {
             "type": "string",
             "title": "Motor Offset Height in MM",
-            "desc": "The vertical distance from the corner of the work area to the motor.",
+            "desc": "The vertical distance from the edge of the work area to the level of the motors.",
             "section": "Maslow Settings",
             "key": "motorOffsetY"
-        },
-        {
-            "type": "string",
-            "title": "Motor Offset Horizontal in MM",
-            "desc": "The horizontal distance from the corner of the work area to the motor.",
-            "section": "Maslow Settings",
-            "key": "motorOffsetX"
         },
         {
             "type": "string",
@@ -107,20 +107,46 @@ class GroundControlApp(App):
             "desc": "The path to the open file",
             "section": "Maslow Settings",
             "key": "openFile"
+        }
+    ]
+    '''
+
+    advanced = '''
+    [
+        {
+            "type": "string",
+            "title": "Encoder Steps per Revolution",
+            "desc": "The number of encoder steps per revolution of the left or right motor",
+            "section": "Advanced Settings",
+            "key": "encoderSteps"
         },
         {
-            "type": "bool",
-            "title": "z-axis installed",
-            "desc": "Does the machine have an automatic z-axis?",
-            "section": "Maslow Settings",
-            "key": "zAxis"
+            "type": "string",
+            "title": "Gear Teeth",
+            "desc": "The number of teeth on the gear of the left or right motor",
+            "section": "Advanced Settings",
+            "key": "gearTeeth"
+        },
+        {
+            "type": "string",
+            "title": "Chain Pitch",
+            "desc": "The distance between chain roller centers",
+            "section": "Advanced Settings",
+            "key": "chainPitch"
         },
         {
             "type": "string",
             "title": "Z-Axis Pitch",
             "desc": "The number of mm moved per rotation of the z-axis",
-            "section": "Maslow Settings",
-            "key": "zPitch"
+            "section": "Advanced Settings",
+            "key": "zDistPerRot"
+        },
+        {
+            "type": "string",
+            "title": "Z-Axis Encoder Steps per Revolution",
+            "desc": "The number of encoder steps per revolution of the z-axis",
+            "section": "Advanced Settings",
+            "key": "zEncoderSteps"
         }
     ]
     '''
@@ -175,22 +201,28 @@ class GroundControlApp(App):
         Set the default values for the configs sections.
         """
         config.setdefaults('Maslow Settings', {'COMport': '',
-                                               'zPitch': 20,
                                                'zAxis': False, 
                                                'bedWidth':2438.4, 
                                                'bedHeight':1219.2, 
                                                'motorOffsetY':463, 
-                                               'motorOffsetX':270, 
+                                               'motorSpacingX':3035, 
                                                'sledWidth':310, 
                                                'sledHeight':139, 
                                                'sledCG':79, 
                                                'openFile': " "})
+
+        config.setdefaults('Advanced Settings', {'encoderSteps': 8148.0,
+                                                 'gearTeeth': 10, 
+                                                 'chainPitch':6.35, 
+                                                 'zDistPerRot':20, 
+                                                 'zEncoderSteps':8148.0})
 
     def build_settings(self, settings):
         """
         Add custom section to the default configuration object.
         """
         settings.add_json_panel('Maslow Settings', self.config, data=self.json)
+        settings.add_json_panel('Advanced Settings', self.config, data=self.advanced)
 
     def on_config_change(self, config, section, key, value):
         """
@@ -216,11 +248,17 @@ class GroundControlApp(App):
         cmdString = ("B03" 
             +" A" + str(self.data.config.get('Maslow Settings', 'bedWidth'))
             +" C" + str(self.data.config.get('Maslow Settings', 'bedHeight'))
-            +" D" + str(self.data.config.get('Maslow Settings', 'motorOffsetX'))
+            +" Q" + str(self.data.config.get('Maslow Settings', 'motorSpacingX'))
             +" E" + str(self.data.config.get('Maslow Settings', 'motorOffsetY'))
             +" F" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
             +" G" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
             +" H" + str(self.data.config.get('Maslow Settings', 'sledCG'))
+            +" I" + str(self.data.config.get('Maslow Settings', 'zAxis'))
+            +" J" + str(self.data.config.get('Advanced Settings', 'encoderSteps'))
+            +" K" + str(self.data.config.get('Advanced Settings', 'gearTeeth'))
+            +" M" + str(self.data.config.get('Advanced Settings', 'chainPitch'))
+            +" N" + str(self.data.config.get('Advanced Settings', 'zDistPerRot'))
+            +" P" + str(self.data.config.get('Advanced Settings', 'zEncoderSteps'))
             + " "
         )
         
