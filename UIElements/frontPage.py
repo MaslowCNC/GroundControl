@@ -117,9 +117,13 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.moveGcodeIndex(0)
     
     def moveGcodeIndex(self, dist):
+        '''
+        Move the gcode index by a dist number of lines
+        '''
         maxIndex = len(self.data.gcode)-1
         targetIndex = self.data.gcodeIndex + dist
         
+        #check to see if we are still within the length of the file
         if targetIndex < 0:             #negative index not allowed 
             self.data.gcodeIndex = 0
         elif maxIndex < 0:              #break if there is no data to read
