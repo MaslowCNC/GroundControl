@@ -12,5 +12,6 @@ class NotificationPopup(FloatLayout):
     If the text does not all fit on the display, the user can scroll it
     
     '''
-    cancel = ObjectProperty(None)
+    continueOn = ObjectProperty(None)
+    hold = ObjectProperty(None)
     text = StringProperty("")
