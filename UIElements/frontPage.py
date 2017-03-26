@@ -117,9 +117,13 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.moveGcodeIndex(0)
     
     def moveGcodeIndex(self, dist):
+        '''
+        Move the gcode index by a dist number of lines
+        '''
         maxIndex = len(self.data.gcode)-1
         targetIndex = self.data.gcodeIndex + dist
         
+        #check to see if we are still within the length of the file
         if targetIndex < 0:             #negative index not allowed 
             self.data.gcodeIndex = 0
         elif maxIndex < 0:              #break if there is no data to read
@@ -134,25 +138,28 @@ class FrontPage(Screen, MakesmithInitFuncs):
         xTarget = 0
         yTarget = 0
         
-        x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if x:
-            xTarget = float(x.groups()[0])
-        else:
-            if self.data.units == "INCHES":
-                xTarget = self.gcodecanvas.positionIndicator.pos[0] / 25.4
+        try:
+            x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+            if x:
+                xTarget = float(x.groups()[0])
             else:
-                xTarget = self.gcodecanvas.positionIndicator.pos[0]              
-        
-        y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if y:
-            yTarget = float(y.groups()[0])
-        else:
-            if self.data.units == "INCHES":
-                yTarget = self.gcodecanvas.positionIndicator.pos[1] / 25.4
+                if self.data.units == "INCHES":
+                    xTarget = self.gcodecanvas.positionIndicator.pos[0] / 25.4
+                else:
+                    xTarget = self.gcodecanvas.positionIndicator.pos[0]              
+            
+            y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+            if y:
+                yTarget = float(y.groups()[0])
             else:
-                yTarget = self.gcodecanvas.positionIndicator.pos[1] 
-        
-        self.gcodecanvas.positionIndicator.setPos(xTarget,yTarget,self.data.units, 0)
+                if self.data.units == "INCHES":
+                    yTarget = self.gcodecanvas.positionIndicator.pos[1] / 25.4
+                else:
+                    yTarget = self.gcodecanvas.positionIndicator.pos[1] 
+            
+            self.gcodecanvas.positionIndicator.setPos(xTarget,yTarget,self.data.units, 0)
+        except:
+            print "Unable to update position for new gcode line"
     
     def pause(self):
         self.data.uploadFlag = 0
