@@ -130,14 +130,14 @@
             width: dp(300)
             height: dp(60)
             Button:
-                text: 'STOP'
-                on_press: root.stopRun()
+                text: 'RUN'
+                on_press: root.startRun()
             Button:
                 text: "HOLD"
                 on_press: root.pause()
             Button:
-                text: 'RUN'
-                on_press: root.startRun()
+                text: 'STOP'
+                on_press: root.stopRun()
         GridLayout:
             cols: 4
             size_hint: None, None
