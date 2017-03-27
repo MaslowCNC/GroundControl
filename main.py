@@ -291,21 +291,31 @@ class GroundControlApp(App):
             elif message[0:8] == "Message:":
                 self.previousUploadStatus = self.data.uploadFlag 
                 self.data.uploadFlag = 0
-                content = NotificationPopup(cancel = self.dismiss_popup, text = message[9:])
+                content = NotificationPopup(continueOn = self.dismiss_popup_continue, hold=self.dismiss_popup_hold , text = message[9:])
                 self._popup = Popup(title="Notification: ", content=content,
                             auto_dismiss=False, size_hint=(0.25, 0.25))
                 self._popup.open()
             else:
                 self.writeToTextConsole(message)
     
-    def dismiss_popup(self):
+    def dismiss_popup_continue(self):
         '''
         
-        Close The Pop-up
+        Close The Pop-up and continue cut
         
         '''
         self._popup.dismiss()
         self.data.uploadFlag = self.previousUploadStatus #resume cutting if the machine was cutting before
+    
+        
+    def dismiss_popup_hold(self):
+        '''
+        
+        Close The Pop-up and continue cut
+        
+        '''
+        self._popup.dismiss()
+        self.data.uploadFlag = 0 #stop cutting
     
     def setPosOnScreen(self, message):
         '''
