@@ -102,6 +102,13 @@ class GroundControlApp(App):
             "key": "sledCG"
         },
         {
+            "type": "bool",
+            "title": "z-axis installed",
+            "desc": "Does the machine have an automatic z-axis?",
+            "section": "Maslow Settings",
+            "key": "zAxis"
+        },
+        {
             "type": "string",
             "title": "Open File",
             "desc": "The path to the open file",
