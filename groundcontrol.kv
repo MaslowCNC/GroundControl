@@ -293,7 +293,8 @@
                 on_release: root.returnToCenter()
             Button:
                 text: 'About'
-                disabled: True
+                disabled: False
+                on_release: root.about()
 
 <ManualControl>:
     GridLayout:
@@ -505,8 +506,11 @@
         BoxLayout:
             #size_hint_y: 1
             Button:
+                text: "Hold"
+                on_release: root.hold()
+            Button:
                 text: "Continue"
-                on_release: root.cancel()
+                on_release: root.continueOn()
 
 <ScrollableTextPopup>:
     BoxLayout:
