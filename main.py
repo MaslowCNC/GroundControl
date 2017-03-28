@@ -110,6 +110,13 @@ class GroundControlApp(App):
         },
         {
             "type": "string",
+            "title": "Z-Axis Pitch",
+            "desc": "The number of mm moved per rotation of the z-axis",
+            "section": "Maslow Settings",
+            "key": "zDistPerRot"
+        },
+        {
+            "type": "string",
             "title": "Open File",
             "desc": "The path to the open file",
             "section": "Maslow Settings",
@@ -140,13 +147,6 @@ class GroundControlApp(App):
             "desc": "The distance between chain roller centers",
             "section": "Advanced Settings",
             "key": "chainPitch"
-        },
-        {
-            "type": "string",
-            "title": "Z-Axis Pitch",
-            "desc": "The number of mm moved per rotation of the z-axis",
-            "section": "Advanced Settings",
-            "key": "zDistPerRot"
         },
         {
             "type": "string",
@@ -209,6 +209,7 @@ class GroundControlApp(App):
         """
         config.setdefaults('Maslow Settings', {'COMport': '',
                                                'zAxis': False, 
+                                               'zDistPerRot':3.17, 
                                                'bedWidth':2438.4, 
                                                'bedHeight':1219.2, 
                                                'motorOffsetY':463, 
@@ -220,8 +221,7 @@ class GroundControlApp(App):
 
         config.setdefaults('Advanced Settings', {'encoderSteps': 8148.0,
                                                  'gearTeeth': 10, 
-                                                 'chainPitch':6.35, 
-                                                 'zDistPerRot':20, 
+                                                 'chainPitch':6.35,
                                                  'zEncoderSteps':8148.0})
 
     def build_settings(self, settings):
