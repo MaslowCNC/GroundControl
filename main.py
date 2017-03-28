@@ -264,7 +264,7 @@ class GroundControlApp(App):
             +" J" + str(self.data.config.get('Advanced Settings', 'encoderSteps'))
             +" K" + str(self.data.config.get('Advanced Settings', 'gearTeeth'))
             +" M" + str(self.data.config.get('Advanced Settings', 'chainPitch'))
-            +" N" + str(self.data.config.get('Advanced Settings', 'zDistPerRot'))
+            +" N" + str(self.data.config.get('Maslow Settings'  , 'zDistPerRot'))
             +" P" + str(self.data.config.get('Advanced Settings', 'zEncoderSteps'))
             + " "
         )
