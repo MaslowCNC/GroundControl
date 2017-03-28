@@ -50,7 +50,7 @@
         id: gcodecanvas
     BoxLayout:
         orientation: 'vertical'
-        pos: root.width - dp(300), root.height - dp(600)
+        pos: root.width - dp(300), root.height - dp(630)
         GridLayout:
             cols: 4
             size_hint: None, None
@@ -106,44 +106,40 @@
                     Triangle:
                         points: self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/4,self.x+self.width/2,self.y+self.width/2,
             Button:
-                text: 'Stop'
-                on_press: root.stopRun()
-            Button:
-                text: 'Define\n  Origin'
-                on_release: root.moveOrigin()
-                disabled: False
-            Button:
                 text: 'Zero Z'
                 on_press: root.zeroZ()
-            Button:
-                text: 'Test'
-                on_press: root.test()
-                disabled: True
-            Button:
-                text: 'RUN'
-                on_press: root.startRun()
-        BoxLayout:
-            orentation: 'horizontal'
-            size_hint: None, None
-            width: dp(300)
-            height: dp(30)
             Label:
                 id: moveSpeedInput
-                text: "Dist To Move:"
+                text: "Dist To \nMove:"
                 multiline: False
-                size_hint_x: .4
             Button:
                 id: moveDistInput
                 text: '100'
                 multiline: False
-                size_hint_x: .4
                 on_press: root.textInputPopup(self)
             Button:
                 text: root.units
                 on_press: root.switchUnits()
-                size_hint_x: .2
+            Button:
+                text: 'Define\n  Origin'
+                on_release: root.moveOrigin()
+                disabled: False
         GridLayout:
-            cols: 5
+            cols: 3
+            size_hint: None, None
+            width: dp(300)
+            height: dp(60)
+            Button:
+                text: 'RUN'
+                on_press: root.startRun()
+            Button:
+                text: "HOLD"
+                on_press: root.pause()
+            Button:
+                text: 'STOP'
+                on_press: root.stopRun()
+        GridLayout:
+            cols: 4
             size_hint: None, None
             width: dp(300)
             height: dp(30)
@@ -153,9 +149,7 @@
             Button:
                 text: "<1"
                 on_press: root.moveGcodeIndex(-1)
-            Button:
-                text: "||"
-                on_press: root.pause()
+
             Button:
                 text: "1>"
                 on_press: root.moveGcodeIndex(1)
@@ -299,7 +293,8 @@
                 on_release: root.returnToCenter()
             Button:
                 text: 'About'
-                disabled: True
+                disabled: False
+                on_release: root.about()
 
 <ManualControl>:
     GridLayout:
@@ -511,8 +506,11 @@
         BoxLayout:
             #size_hint_y: 1
             Button:
+                text: "Hold"
+                on_release: root.hold()
+            Button:
                 text: "Continue"
-                on_release: root.cancel()
+                on_release: root.continueOn()
 
 <ScrollableTextPopup>:
     BoxLayout:

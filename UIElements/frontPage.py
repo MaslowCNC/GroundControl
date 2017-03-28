@@ -33,7 +33,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
     numericalPosY  = 0.0
     
     stepsizeval = 0
-    feedRate = 0
     
     shiftX = 0
     shiftY = 0
@@ -118,9 +117,13 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.moveGcodeIndex(0)
     
     def moveGcodeIndex(self, dist):
+        '''
+        Move the gcode index by a dist number of lines
+        '''
         maxIndex = len(self.data.gcode)-1
         targetIndex = self.data.gcodeIndex + dist
         
+        #check to see if we are still within the length of the file
         if targetIndex < 0:             #negative index not allowed 
             self.data.gcodeIndex = 0
         elif maxIndex < 0:              #break if there is no data to read
@@ -135,25 +138,28 @@ class FrontPage(Screen, MakesmithInitFuncs):
         xTarget = 0
         yTarget = 0
         
-        x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if x:
-            xTarget = float(x.groups()[0])
-        else:
-            if self.data.units == "INCHES":
-                xTarget = self.gcodecanvas.positionIndicator.pos[0] / 25.4
+        try:
+            x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+            if x:
+                xTarget = float(x.groups()[0])
             else:
-                xTarget = self.gcodecanvas.positionIndicator.pos[0]              
-        
-        y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if y:
-            yTarget = float(y.groups()[0])
-        else:
-            if self.data.units == "INCHES":
-                yTarget = self.gcodecanvas.positionIndicator.pos[1] / 25.4
+                if self.data.units == "INCHES":
+                    xTarget = self.gcodecanvas.positionIndicator.pos[0] / 25.4
+                else:
+                    xTarget = self.gcodecanvas.positionIndicator.pos[0]              
+            
+            y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+            if y:
+                yTarget = float(y.groups()[0])
             else:
-                yTarget = self.gcodecanvas.positionIndicator.pos[1] 
-        
-        self.gcodecanvas.positionIndicator.setPos(xTarget,yTarget,self.data.units, 0)
+                if self.data.units == "INCHES":
+                    yTarget = self.gcodecanvas.positionIndicator.pos[1] / 25.4
+                else:
+                    yTarget = self.gcodecanvas.positionIndicator.pos[1] 
+            
+            self.gcodecanvas.positionIndicator.setPos(xTarget,yTarget,self.data.units, 0)
+        except:
+            print "Unable to update position for new gcode line"
     
     def pause(self):
         self.data.uploadFlag = 0
@@ -167,10 +173,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
             self.stepsizeval = float(self.moveDistInput.text)
         except:
             pass
-        try:
-            self.feedRate = float(self.moveSpeedInput.text)
-        except:
-            pass
     
     def test(self):
         print "test has no current function"
@@ -179,7 +181,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.jmpsize()
         xtarget = self.target[0] - float(self.stepsizeval)
         ytarget = self.target[1] + float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+        self.data.gcode_queue.put("G00 X" + str(xtarget) + " Y" + str(ytarget) + " ")
         self.target[0] = xtarget
         self.target[1] = ytarget
         
@@ -187,60 +189,60 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.jmpsize()
         xtarget = self.target[0] + float(self.stepsizeval)
         ytarget = self.target[1] + float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+        self.data.gcode_queue.put("G00 X" + str(xtarget) + " Y" + str(ytarget) + " ")
         self.target[0] = xtarget
         self.target[1] = ytarget
 
     def up(self):
         self.jmpsize()
         target = self.target[1] + float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " Y" + str(target) + " ")
+        self.data.gcode_queue.put("G00 Y" + str(target) + " ")
         self.target[1] = target
 
     def left(self):
         self.jmpsize()
         target = self.target[0] - float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X" + str(target) + " ")
+        self.data.gcode_queue.put("G00 X" + str(target) + " ")
         self.target[0] = target
         
     def right(self):
         self.jmpsize()
         target = self.target[0] + float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X" + str(target) + " ")
+        self.data.gcode_queue.put("G00 X" + str(target) + " ")
         self.target[0] = target
         
     def downLeft(self):
         self.jmpsize()
         xtarget = self.target[0] - float(self.stepsizeval)
         ytarget = self.target[1] - float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+        self.data.gcode_queue.put("G00 X" + str(xtarget) + " Y" + str(ytarget) + " ")
         self.target[0] = xtarget
         self.target[1] = ytarget
 
     def down(self):
         self.jmpsize()
         target = self.target[1] - float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " Y" + str(target) + " ")
+        self.data.gcode_queue.put("G00 Y" + str(target) + " ")
         self.target[1] = target
 
     def downRight(self):
         self.jmpsize()
         xtarget = self.target[0] + float(self.stepsizeval)
         ytarget = self.target[1] - float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X" + str(xtarget) + " Y" + str(ytarget) + " ")
+        self.data.gcode_queue.put("G00 X" + str(xtarget) + " Y" + str(ytarget) + " ")
         self.target[0] = xtarget
         self.target[1] = ytarget
 
     def zUp(self):
         self.jmpsize()
         target = self.target[2] + 0.10*float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " Z" + str(target) + " ")
+        self.data.gcode_queue.put("G00 Z" + str(target) + " ")
         self.target[2] = self.target[2] + 0.10*float(self.stepsizeval)
 
     def zDown(self):
         self.jmpsize()
         target = self.target[2] - 0.10*float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " Z" + str(target) + " ")
+        self.data.gcode_queue.put("G00 Z" + str(target) + " ")
         self.target[2] = self.target[2] - 0.10*float(self.stepsizeval)
 
     def zeroZ(self):
@@ -249,11 +251,11 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
     def home(self):
         if self.target[2] < 0:
-            self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " Z0 ")
-            self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
+            self.data.gcode_queue.put("G00 Z0 ")
+            self.data.gcode_queue.put("G00 X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
         if self.target[2] >= 0:
-            self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
-            self.data.gcode_queue.put("G00 F" + str(float(self.feedRate)) + " Z0 ")
+            self.data.gcode_queue.put("G00 X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
+            self.data.gcode_queue.put("G00 Z0 ")
         self.target[0] = self.shiftX
         self.target[1] = self.shiftY
         self.target[2] = 0.0
@@ -331,7 +333,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.targetWidget = target
         
         self.popupContent = TouchNumberInput(done=self.dismiss_popup)
-        self._popup = Popup(title="Load file", content=self.popupContent,
+        self._popup = Popup(title="Change increment size of machine movement", content=self.popupContent,
                             size_hint=(0.9, 0.9))
         self._popup.open()
     
