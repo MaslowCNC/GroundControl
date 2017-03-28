@@ -222,7 +222,7 @@ class GroundControlApp(App):
         config.setdefaults('Advanced Settings', {'encoderSteps': 8148.0,
                                                  'gearTeeth': 10, 
                                                  'chainPitch':6.35,
-                                                 'zEncoderSteps':8148.0})
+                                                 'zEncoderSteps':7550.0})
 
     def build_settings(self, settings):
         """
