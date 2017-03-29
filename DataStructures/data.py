@@ -59,6 +59,7 @@ class Data(EventDispatcher):
     '''
     Data available to all widgets
     '''
+    '''
     #Gcodes contains all of the lines of gcode in the opened file
     gcode      = ObjectProperty([])
     version    = 'v0.63'
@@ -76,6 +77,7 @@ class Data(EventDispatcher):
     currentpos = [0.0, 0.0, 0.0]
     target     = [0.0, 0.0, 0.0]
     units      = OptionProperty("MM", options=["MM", "INCHES"])
+    '''
     
     '''
     Flags
