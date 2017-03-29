@@ -258,6 +258,8 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         self.data.gcode_queue.put("G00 X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
         
+        self.data.gcode_queue.put("G00 Z0 ")
+        
         self.target[0] = self.shiftX
         self.target[1] = self.shiftY
         self.target[2] = 0.0
