@@ -24,6 +24,9 @@ class SerialPortThread(MakesmithInitFuncs):
             self.serialInstance.write(message)
         except:
             print("write issue")
+
+    def _getFirmwareVersion(self):
+        self.data.gcode_queue.put('B05 ')
     
     def _setupMachineUnits(self):
         if self.data.units == "INCHES":
@@ -61,6 +64,7 @@ class SerialPortThread(MakesmithInitFuncs):
             self.lastMessageTime = time.time()
             self.data.connectionStatus = 1
             
+            self._getFirmwareVersion()
             self._setupMachineUnits()
             
             while True:
