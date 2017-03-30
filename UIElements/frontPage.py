@@ -250,12 +250,16 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.target[2] = 0
         
     def home(self):
-        if self.target[2] < 0:
-            self.data.gcode_queue.put("G00 Z0 ")
-            self.data.gcode_queue.put("G00 X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
-        if self.target[2] >= 0:
-            self.data.gcode_queue.put("G00 X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
-            self.data.gcode_queue.put("G00 Z0 ")
+        
+        if self.units == "INCHES":
+            self.data.gcode_queue.put("G00 Z.25 ")
+        else:
+            self.data.gcode_queue.put("G00 Z5.0 ")
+        
+        self.data.gcode_queue.put("G00 X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
+        
+        self.data.gcode_queue.put("G00 Z0 ")
+        
         self.target[0] = self.shiftX
         self.target[1] = self.shiftY
         self.target[2] = 0.0
