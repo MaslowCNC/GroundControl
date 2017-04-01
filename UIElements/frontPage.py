@@ -347,6 +347,9 @@ class FrontPage(Screen, MakesmithInitFuncs):
         Close The Pop-up
         
         '''
-        
-        self.targetWidget.text = self.popupContent.textInput.text
+        try:
+            float(self.popupContent.textInput.text)
+            self.targetWidget.text = self.popupContent.textInput.text
+        except:
+            pass                                                             #If what was entered cannot be converted to a number, leave the value the same
         self._popup.dismiss()
