@@ -175,8 +175,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         xTarget = self.xPosition
         yTarget = self.yPosition
-        iTarget = self.xPosition
-        jTarget = self.yPosition
+        iTarget = 0
+        jTarget = 0
         
         x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if x:

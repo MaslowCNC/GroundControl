@@ -19,7 +19,7 @@ class Data(EventDispatcher):
     
     '''
     Things I would like to delete
-    '''
+    
     #A flag to indicate if logging is enabled
     logflag = 0
     #A flag to indicate if the main window should auto scroll
@@ -54,14 +54,17 @@ class Data(EventDispatcher):
     contrast = 50
     backlight = 65
     heartBeat = time()
+    '''
+    
     
     
     '''
     Data available to all widgets
     '''
+    
     #Gcodes contains all of the lines of gcode in the opened file
     gcode      = ObjectProperty([])
-    version    = 'v0.63'
+    version    = '0.64'
     #all of the available COM ports
     comPorts   = []
     #This defines which COM port is used
@@ -76,6 +79,7 @@ class Data(EventDispatcher):
     currentpos = [0.0, 0.0, 0.0]
     target     = [0.0, 0.0, 0.0]
     units      = OptionProperty("MM", options=["MM", "INCHES"])
+    
     
     '''
     Flags
