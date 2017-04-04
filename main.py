@@ -294,15 +294,15 @@ class GroundControlApp(App):
             if message[0] == "<":
                 self.setPosOnScreen(message)
             elif message[0] == "[":
-                if message[1:9] == "Message:":
-                    self.previousUploadStatus = self.data.uploadFlag 
-                    self.data.uploadFlag = 0
-                    content = NotificationPopup(continueOn = self.dismiss_popup_continue, hold=self.dismiss_popup_hold , text = message[9:])
-                    self._popup = Popup(title="Notification: ", content=content,
-                                auto_dismiss=False, size_hint=(0.25, 0.25))
-                    self._popup.open()
-                elif message[1:10] == "PosError:":
+                if message[1:10] == "PosError:":
                     self.setErrorOnScreen(message)
+            elif message[0:8] == "Message:":
+                self.previousUploadStatus = self.data.uploadFlag 
+                self.data.uploadFlag = 0
+                content = NotificationPopup(continueOn = self.dismiss_popup_continue, hold=self.dismiss_popup_hold , text = message[9:])
+                self._popup = Popup(title="Notification: ", content=content,
+                            auto_dismiss=False, size_hint=(0.25, 0.25))
+                self._popup.open()
             else:
                 self.writeToTextConsole(message)
     
