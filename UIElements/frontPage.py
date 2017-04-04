@@ -109,12 +109,14 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def onGcodeFileChange(self, callback, newGcode):
     
         #reset the shift values to 0 because the new gcode is not loaded with a shift applied
-        self.shiftX = 0
-        self.shiftY = 0
+        #self.shiftX = 0
+        #self.shiftY = 0
         
         #reset the gcode index to the beginning and update the display
-        self.data.gcodeIndex = 0
-        self.moveGcodeIndex(0)
+        #self.data.gcodeIndex = 0
+        #self.moveGcodeIndex(0)
+        
+        pass
     
     def moveGcodeIndex(self, dist):
         '''
