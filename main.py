@@ -291,7 +291,7 @@ class GroundControlApp(App):
         '''
         while not self.data.message_queue.empty(): #if there is new data to be read
             message = self.data.message_queue.get()
-            if message[0:2] == "pz":
+            if message[0] == "<":
                 self.setPosOnScreen(message)
             elif message[0:2] == "pt":
                 self.setTargetOnScreen(message)
@@ -331,37 +331,40 @@ class GroundControlApp(App):
         
         '''
         
-        try:
-            startpt = message.find('(')
-            startpt = startpt + 1
-            
-            endpt = message.find(')')
-            
-            numz  = message[startpt:endpt]
-            units = message[endpt+1:endpt+3]
-            
-            valz = numz.split(",")
-            
-            xval  = float(valz[0])
-            yval  = float(valz[1])
-            zval  = float(valz[2])
-            error = float(valz[3])
-            
-            if math.isnan(xval):
-                self.writeToTextConsole("Unable to resolve x Kinematics.")
-                xval = 0
-            if math.isnan(yval):
-                self.writeToTextConsole("Unable to resolve y Kinematics.")
-                yval = 0
-            if math.isnan(zval):
-                self.writeToTextConsole("Unable to resolve z Kinematics.")
-                zval = 0
-            if math.isnan(error):
-                self.writeToTextConsole("Unable to resolve position error.")
-                error = 0
-        except:
-            print "bad data"
-            return
+        print message;
+        
+        #try:
+        startpt = message.find('MPos:') + 5
+        
+        endpt = message.find('WPos:')
+        
+        numz  = message[startpt:endpt]
+        units = "mm" #message[endpt+1:endpt+3]
+        
+        valz = numz.split(",")
+        
+        print valz
+        
+        xval  = float(valz[0])
+        yval  = float(valz[1])
+        zval  = float(valz[2])
+        error = 0#float(valz[3])
+        
+        if math.isnan(xval):
+            self.writeToTextConsole("Unable to resolve x Kinematics.")
+            xval = 0
+        if math.isnan(yval):
+            self.writeToTextConsole("Unable to resolve y Kinematics.")
+            yval = 0
+        if math.isnan(zval):
+            self.writeToTextConsole("Unable to resolve z Kinematics.")
+            zval = 0
+        if math.isnan(error):
+            self.writeToTextConsole("Unable to resolve position error.")
+            error = 0
+        #except:
+        #    print "bad data"
+        #    return
         
         self.frontpage.setPosReadout(xval,yval,zval,units)
         self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,self.data.units, error)
