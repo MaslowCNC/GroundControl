@@ -17,7 +17,7 @@ class PositionIndicator(Widget):
     color             = ObjectProperty((1, 1, 1))
     positionErrorRadius = NumericProperty(0)
     
-    def setPos(self, xPos, yPos, units, positionError):
+    def setPos(self, xPos, yPos, units):
         '''
         
         Move cross-hairs on UI
@@ -33,4 +33,11 @@ class PositionIndicator(Widget):
         
         self.pos = (crossPosX,crossPosY)
         
+    
+    def setError(self, positionError):
+        '''
+        
+        Set the error circle indicator.
+        
+        '''
         self.positionErrorRadius = positionError
