@@ -302,16 +302,10 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def moveOrigin(self):
         
-        if self.data.units == "INCHES":
-            amtToShiftX = self.numericalPosX - self.shiftX
-            amtToShiftY = self.numericalPosY - self.shiftY
-            self.shiftX = self.shiftX + amtToShiftX
-            self.shiftY = self.shiftY + amtToShiftY
-        else:
-            amtToShiftX = self.numericalPosX - self.shiftX
-            amtToShiftY = self.numericalPosY - self.shiftY
-            self.shiftX = self.shiftX + amtToShiftX
-            self.shiftY = self.shiftY + amtToShiftY
+        amtToShiftX = self.numericalPosX - self.shiftX
+        amtToShiftY = self.numericalPosY - self.shiftY
+        self.shiftX = self.shiftX + amtToShiftX
+        self.shiftY = self.shiftY + amtToShiftY
         
         shiftedGcode = []
         
