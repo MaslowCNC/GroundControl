@@ -274,47 +274,12 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.target[1] = self.shiftY
         self.target[2] = 0.0
     
-    def moveLine(self, gcodeLine, moveXBy, moveYBy):
-        
-        originalLine = gcodeLine
-        
-        try:
-            gcodeLine = gcodeLine.upper() + " "
-            
-            
-            x = gcodeLine.find('X')
-            if x != -1:
-                space = gcodeLine.find(' ', x)
-                number = float(gcodeLine[x+1:space]) + moveXBy
-                gcodeLine = gcodeLine[0:x+1] + str(number) + gcodeLine[space:]
-            
-            y = gcodeLine.find('Y')
-            if y != -1:
-                space = gcodeLine.find(' ', y)
-                number = float(gcodeLine[y+1:space]) + moveYBy
-                gcodeLine = gcodeLine[0:y+1] + str(number) + gcodeLine[space:]
-            
-            return gcodeLine
-        except ValueError:
-            print "line could not be moved:"
-            print originalLine
-            return originalLine
-    
     def moveOrigin(self):
         
-        amtToShiftX = self.numericalPosX - self.shiftX
-        amtToShiftY = self.numericalPosY - self.shiftY
-        self.shiftX = self.shiftX + amtToShiftX
-        self.shiftY = self.shiftY + amtToShiftY
+        self.data.gcodeShift = [self.numericalPosX,self.numericalPosY]
         
-        #shiftedGcode = []
-        
-        #for line in self.data.gcode:
-        #    shiftedGcode.append(self.moveLine(line , amtToShiftX, amtToShiftY))
-        
-        
-        temp = self.data.gcode
-        self.data.gcode = temp
+        print "shifted by" 
+        print self.data.gcodeShift
     
     def startRun(self):
         
