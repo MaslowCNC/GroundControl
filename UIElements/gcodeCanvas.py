@@ -228,7 +228,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.scatterObject.canvas.remove_group('gcode')
     
     def updateOneLine(self):
+        '''
         
+        Draw the next line on the gcode canvas
+        
+        '''
         validPrefixList = ['G00','G0 ','G1 ','G01','G2 ','G02','G3 ','G03']
         
         self.lineNumber = self.lineNumber + 1
@@ -237,6 +241,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             fullString = self.data.gcode[self.lineNumber]
         except:
             return #we have reached the end of the file
+        
         fullString = fullString + " " #ensures that there is a space at the end of the line
         
         #find 'G' anywhere in string
@@ -283,11 +288,13 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         '''
         
+        #Draw numberOfTimesToCall lines on the canvas
         numberOfTimesToCall = 50
         
         for _ in range(numberOfTimesToCall):
             self.updateOneLine()
         
+        #Repeat until end of file
         if self.lineNumber < min(len(self.data.gcode),8000):
             Clock.schedule_once(self.callBackMechanism)
     
@@ -298,21 +305,23 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         specified command. 
     
         '''
+        
+        #reset variables 
         self.xPosition = 0
         self.yPosition = 0
         self.zPosition = 0
 
         self.prependString = "G00 "
-        
-        
-        fullString = ""
+        self.lineNumber = 0
         
         self.clearGcode()
         
+        #Check to see if file is too large to load
         if len(self.data.gcode) > 8000:
             errorText = "The current file contains " + str(len(self.data.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultanously may crash the\n program, only the first 8000 lines are shown here.\nThe complete program will cut if you choose to do so."
             print errorText
             #self.canv.create_text(xnow + 200, ynow - 50, text = errorText, fill = "red")
         
+        #Begin loading the file
         self.callBackMechanism(self.updateGcode)
         
