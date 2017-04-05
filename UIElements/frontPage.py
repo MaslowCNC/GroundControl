@@ -275,11 +275,12 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.target[2] = 0.0
     
     def moveOrigin(self):
+        '''
         
+        Move the gcode origin to the current location
+        
+        '''
         self.data.gcodeShift = [self.numericalPosX,self.numericalPosY]
-        
-        print "shifted by" 
-        print self.data.gcodeShift
     
     def startRun(self):
         
