@@ -69,6 +69,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.data.bind(units            = self.onUnitsSwitch)
         self.data.bind(gcodeIndex       = self.onIndexMove)
         self.data.bind(gcodeFile        = self.onGcodeFileChange)
+        self.data.bind(uploadFlag       = self.onUploadFlagChange)
     
     def updateConnectionStatus(self, callback, connected):
         
@@ -116,6 +117,12 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.data.gcodeIndex = 0
         self.moveGcodeIndex(0)
     
+    def onUploadFlagChange(self, callback, newFlagValue):
+        if self.data.uploadFlag is 0 and self.data.gcodeIndex > 1: #if the machine is stopped partway through a file
+            self.holdBtn.text = "CONTINUE"
+        else:
+            self.holdBtn.text = "HOLD"
+    
     def moveGcodeIndex(self, dist):
         '''
         Move the gcode index by a dist number of lines
@@ -162,11 +169,12 @@ class FrontPage(Screen, MakesmithInitFuncs):
             print "Unable to update position for new gcode line"
     
     def pause(self):
-        self.data.uploadFlag = 0
-        self.data.quick_queue.put("STOP") 
-        with self.data.gcode_queue.mutex:
-            self.data.gcode_queue.queue.clear()
-        print("Run Paused")
+        if  self.holdBtn.text == "HOLD":
+            self.data.uploadFlag = 0
+            print("Run Paused")
+        else:
+            self.data.uploadFlag = 1
+            print("Run Resumed")
     
     def jmpsize(self):
         try:
@@ -250,12 +258,16 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.target[2] = 0
         
     def home(self):
-        if self.target[2] < 0:
-            self.data.gcode_queue.put("G00 Z0 ")
-            self.data.gcode_queue.put("G00 X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
-        if self.target[2] >= 0:
-            self.data.gcode_queue.put("G00 X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
-            self.data.gcode_queue.put("G00 Z0 ")
+        
+        if self.units == "INCHES":
+            self.data.gcode_queue.put("G00 Z.25 ")
+        else:
+            self.data.gcode_queue.put("G00 Z5.0 ")
+        
+        self.data.gcode_queue.put("G00 X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
+        
+        self.data.gcode_queue.put("G00 Z0 ")
+        
         self.target[0] = self.shiftX
         self.target[1] = self.shiftY
         self.target[2] = 0.0
@@ -326,6 +338,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.data.quick_queue.put("STOP") 
         with self.data.gcode_queue.mutex:
             self.data.gcode_queue.queue.clear()
+        self.onUploadFlagChange(self.stopRun, 0)
         print("Gode Stopped")
     
     def textInputPopup(self, target):
@@ -343,6 +356,9 @@ class FrontPage(Screen, MakesmithInitFuncs):
         Close The Pop-up
         
         '''
-        
-        self.targetWidget.text = self.popupContent.textInput.text
+        try:
+            float(self.popupContent.textInput.text)
+            self.targetWidget.text = self.popupContent.textInput.text
+        except:
+            pass                                                             #If what was entered cannot be converted to a number, leave the value the same
         self._popup.dismiss()
