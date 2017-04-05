@@ -8,6 +8,7 @@ and zooming features. It was not originally written as a stand alone module whic
 from kivy.uix.floatlayout                    import FloatLayout
 from kivy.properties                         import NumericProperty, ObjectProperty
 from kivy.graphics                           import Color, Ellipse, Line
+from kivy.clock                              import Clock
 from DataStructures.makesmithInitFuncs       import MakesmithInitFuncs
 from UIElements.positionIndicator            import PositionIndicator
 from UIElements.viewMenu                     import ViewMenu
@@ -33,6 +34,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     xPosition = 0
     yPosition = 0
     zPosition = 0
+    
+    lineNumber = 0  #the line number currently being processed
     
     def initialize(self):
 
@@ -223,7 +226,71 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
         '''
         self.scatterObject.canvas.remove_group('gcode')
+    
+    def updateOneLine(self):
+        
+        validPrefixList = ['G00','G0 ','G1 ','G01','G2 ','G02','G3 ','G03']
+        
+        self.lineNumber = self.lineNumber + 1
+        
+        try:
+            fullString = self.data.gcode[self.lineNumber]
+        except:
+            return #we have reached the end of the file
+        fullString = fullString + " " #ensures that there is a space at the end of the line
+        
+        #find 'G' anywhere in string
+        gString = fullString[fullString.find('G'):fullString.find('G') + 3]
+        
+        if fullString.find('G') == -1: #this adds the gcode operator if it is omitted by the program
+            fullString = self.prependString + fullString
+        
+        if gString in validPrefixList:
+            self.prependString = fullString[0:3] + " "
+        
+        if gString == 'G00' or fullString[0:3] == 'G0 ':
+            self.drawLine(fullString, 'G00')
 
+        if gString == 'G01' or fullString[0:3] == 'G1 ':
+            self.drawLine(fullString, 'G01')
+                    
+        if gString == 'G02' or fullString[0:3] == 'G2 ':
+            self.drawArc(fullString, 'G02')
+                           
+        if gString == 'G03' or fullString[0:3] == 'G3 ':
+            self.drawArc(fullString, 'G03')
+        
+        if gString == 'G20':
+            self.canvasScaleFactor = self.INCHES
+            self.data.units = "INCHES"
+            
+        if gString == 'G21':
+            self.canvasScaleFactor = self.MILLIMETERS
+            self.data.units = "MM"
+            
+        if gString == 'G90':
+            self.absoluteFlag = 1
+            
+        if gString == 'G91':
+            self.absoluteFlag = 0
+        
+    
+    def callBackMechanism(self, callback) :
+        '''
+        
+        Call the updateOneLine function periodically in a non-blocking way to
+        update the gcode.
+        
+        '''
+        
+        numberOfTimesToCall = 50
+        
+        for _ in range(numberOfTimesToCall):
+            self.updateOneLine()
+        
+        if self.lineNumber < min(len(self.data.gcode),8000):
+            Clock.schedule_once(self.callBackMechanism)
+    
     def updateGcode(self, *args):
         '''
         
@@ -235,8 +302,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.yPosition = 0
         self.zPosition = 0
 
-        prependString = "G00 "
-        validPrefixList = ['G00','G0 ','G1 ','G01','G2 ','G02','G3 ','G03']
+        self.prependString = "G00 "
+        
         
         fullString = ""
         
@@ -246,44 +313,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             errorText = "The current file contains " + str(len(self.data.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultanously may crash the\n program, only the first 8000 lines are shown here.\nThe complete program will cut if you choose to do so."
             print errorText
             #self.canv.create_text(xnow + 200, ynow - 50, text = errorText, fill = "red")
-
-        for i in range(0, min(len(self.data.gcode),8000)): #maximum of 8,000 lines are drawn on the screen at a time
-            fullString = self.data.gcode[i]
-            fullString = fullString + " " #ensures that there is a space at the end of the line
-            
-            #find 'G' anywhere in string
-            gString = fullString[fullString.find('G'):fullString.find('G') + 3]
-            
-            if fullString.find('G') == -1: #this adds the gcode operator if it is omitted by the program
-                fullString = prependString + fullString
-            
-            if gString in validPrefixList:
-                prependString = fullString[0:3] + " "
-            
-            if gString == 'G00' or fullString[0:3] == 'G0 ':
-                self.drawLine(fullString, 'G00')
-
-            if gString == 'G01' or fullString[0:3] == 'G1 ':
-                self.drawLine(fullString, 'G01')
-                        
-            if gString == 'G02' or fullString[0:3] == 'G2 ':
-                self.drawArc(fullString, 'G02')
-                               
-            if gString == 'G03' or fullString[0:3] == 'G3 ':
-                self.drawArc(fullString, 'G03')
-            
-            if gString == 'G20':
-                self.canvasScaleFactor = self.INCHES
-                self.data.units = "INCHES"
-                
-            if gString == 'G21':
-                self.canvasScaleFactor = self.MILLIMETERS
-                self.data.units = "MM"
-                
-            if gString == 'G90':
-                self.absoluteFlag = 1
-                
-            if gString == 'G91':
-                self.absoluteFlag = 0
-            
-    
+        
+        self.callBackMechanism(self.updateGcode)
+        
