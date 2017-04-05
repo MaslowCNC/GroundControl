@@ -56,6 +56,9 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         
         self.reloadGcode()
         self.dismiss_popup()
+        
+        #close the parent popup
+        self.parentWidget.close()
     
     def reloadGcode(self):
         '''
@@ -86,7 +89,13 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
             if filename is not "":
                 print "Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use File > Open G-code"
             self.data.gcodeFile = ""
-    
+        
+        try:
+            #close the parent popup
+            self.parentWidget.close()
+        except AttributeError:
+            pass #the parent popup does note exist to close
+        
     def show_gcode(self):
         '''
         
