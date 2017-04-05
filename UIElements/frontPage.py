@@ -307,12 +307,14 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.shiftX = self.shiftX + amtToShiftX
         self.shiftY = self.shiftY + amtToShiftY
         
-        shiftedGcode = []
+        #shiftedGcode = []
         
-        for line in self.data.gcode:
-            shiftedGcode.append(self.moveLine(line , amtToShiftX, amtToShiftY))
+        #for line in self.data.gcode:
+        #    shiftedGcode.append(self.moveLine(line , amtToShiftX, amtToShiftY))
         
-        self.data.gcode = shiftedGcode
+        
+        temp = self.data.gcode
+        self.data.gcode = temp
     
     def startRun(self):
         

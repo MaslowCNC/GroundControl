@@ -96,6 +96,8 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         except AttributeError:
             pass #the parent popup does note exist to close
         
+        print "update gcode ran"
+        
     def show_gcode(self):
         '''
         

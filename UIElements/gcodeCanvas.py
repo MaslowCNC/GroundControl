@@ -279,7 +279,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if gString == 'G91':
             self.absoluteFlag = 0
         
-    
     def callBackMechanism(self, callback) :
         '''
         
@@ -305,6 +304,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         specified command. 
     
         '''
+        
+        print "update gcode called"
         
         #reset variables 
         self.xPosition = 0
