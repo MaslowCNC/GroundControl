@@ -5,14 +5,12 @@ from   kivy.uix.popup                            import   Popup
 import re
 from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
 from os                                          import    path
-from kivy.properties                             import ObjectProperty
 
 
 
 
 
 class ViewMenu(GridLayout, MakesmithInitFuncs):
-    parentWidget   = ObjectProperty(None)
     
     def openFile(self):
         '''
