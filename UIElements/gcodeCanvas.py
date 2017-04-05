@@ -226,7 +226,9 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         clearGcode deletes the lines and arcs corresponding to gcode commands from the canvas. 
     
         '''
-        self.scatterObject.canvas.remove_group('gcode')
+        self.scatterObject.canvas.clear()#remove_group('gcode')
+        
+        self.drawWorkspace()
     
     def updateOneLine(self):
         '''
@@ -287,6 +289,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         update the gcode.
         
         '''
+        
+        print "call back mechanism running" 
         
         #Draw numberOfTimesToCall lines on the canvas
         numberOfTimesToCall = 50
