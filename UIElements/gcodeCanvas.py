@@ -50,19 +50,21 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
 
         self.reloadGcode()
     
-    def reloadGcode(self):
+    def reloadGcode(self, *args):
         '''
         
         This reloads the gcode from the hard drive in case it has been updated. 
         
         '''
         
+        print "begin reload"
+        
         filename = self.data.gcodeFile
         try:
             filterfile = open(filename, 'r')
             rawfilters = filterfile.read()
             filtersparsed = re.sub(r'\(([^)]*)\)','',rawfilters) #removes mach3 style gcode comments
-            filtersparsed = re.sub(r';([^\n]*)\n','',filtersparsed) #removes standard ; intiated gcode comments
+            filtersparsed = re.sub(r';([^\n]*)\n','',filtersparsed) #removes standard ; initiated gcode comments
             filtersparsed = re.split(r'\s(?=G)|\n|\s(?=g)|\s(?=M)', filtersparsed) #splits the gcode into elements to be added to the list
             filtersparsed = [x + ' ' for x in filtersparsed] #adds a space to the end of each line
             filtersparsed = [x.lstrip() for x in filtersparsed]
@@ -72,7 +74,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             filtersparsed = [x.replace('I ','I') for x in filtersparsed]
             filtersparsed = [x.replace('J ','J') for x in filtersparsed]
             filtersparsed = [x.replace('F ','F') for x in filtersparsed]
-
+            
+            self.data.gcode = "[]"
             self.data.gcode = filtersparsed
             
             filterfile.close() #closes the filter save file
@@ -81,13 +84,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 print "Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use File > Open G-code"
             self.data.gcodeFile = ""
         
-        try:
-            #close the parent popup
-            self.parentWidget.close()
-        except AttributeError:
-            pass #the parent popup does note exist to clos
-        
-        print "reload gcode ran"
+        print "reload gcode finsihed"
     
     def centerCanvas(self, *args):
         mat = Matrix().translate(Window.width/2, Window.height/2, 0)
@@ -171,11 +168,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if x:
-            xTarget = float(x.groups()[0])*self.canvasScaleFactor + self.data.gcodeShift[0]*self.canvasScaleFactor
+            xTarget = float(x.groups()[0])*self.canvasScaleFactor
         
         y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if y:
-            yTarget = float(y.groups()[0])*self.canvasScaleFactor + self.data.gcodeShift[1]*self.canvasScaleFactor
+            yTarget = float(y.groups()[0])*self.canvasScaleFactor
         
         z = re.search("Z(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if z:
@@ -222,10 +219,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if x:
-            xTarget = float(x.groups()[0])*self.canvasScaleFactor + self.data.gcodeShift[0]*self.canvasScaleFactor
+            xTarget = float(x.groups()[0])*self.canvasScaleFactor
         y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if y:
-            yTarget = float(y.groups()[0])*self.canvasScaleFactor + self.data.gcodeShift[1]*self.canvasScaleFactor
+            yTarget = float(y.groups()[0])*self.canvasScaleFactor
         i = re.search("I(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if i:
             iTarget = float(i.groups()[0])*self.canvasScaleFactor
@@ -268,6 +265,32 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         self.drawWorkspace()
     
+    def moveLine(self, gcodeLine):
+        
+        originalLine = gcodeLine
+        
+        try:
+            gcodeLine = gcodeLine.upper() + " "
+            
+            
+            x = gcodeLine.find('X')
+            if x != -1:
+                space = gcodeLine.find(' ', x)
+                number = float(gcodeLine[x+1:space]) + self.data.gcodeShift[0]*self.canvasScaleFactor
+                gcodeLine = gcodeLine[0:x+1] + str(number) + gcodeLine[space:]
+            
+            y = gcodeLine.find('Y')
+            if y != -1:
+                space = gcodeLine.find(' ', y)
+                number = float(gcodeLine[y+1:space]) + self.data.gcodeShift[1]*self.canvasScaleFactor
+                gcodeLine = gcodeLine[0:y+1] + str(number) + gcodeLine[space:]
+            
+            return gcodeLine
+        except ValueError:
+            print "line could not be moved:"
+            print originalLine
+            return originalLine
+    
     def updateOneLine(self):
         '''
         
@@ -284,6 +307,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             return #we have reached the end of the file
         
         fullString = fullString + " " #ensures that there is a space at the end of the line
+        
+        fullString = self.moveLine(fullString)    #move the line if the gcode has been moved
         
         #find 'G' anywhere in string
         gString = fullString[fullString.find('G'):fullString.find('G') + 3]
