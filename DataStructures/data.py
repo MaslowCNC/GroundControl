@@ -39,6 +39,7 @@ class Data(EventDispatcher):
     currentpos = [0.0, 0.0, 0.0]
     target     = [0.0, 0.0, 0.0]
     units      = OptionProperty("MM", options=["MM", "INCHES"])
+    gcodeShift = ObjectProperty([0.0,0.0])                          #the amount that the gcode has been shifted
     
     
     '''

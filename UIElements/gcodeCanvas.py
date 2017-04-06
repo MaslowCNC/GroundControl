@@ -45,10 +45,46 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         Window.bind(on_motion = self.zoomCanvas)
 
         self.data.bind(gcode = self.updateGcode)
+        self.data.bind(gcodeShift = self.reloadGcode)
+        self.data.bind(gcodeFile = self.reloadGcode)
 
-        tempViewMenu = ViewMenu()
-        tempViewMenu.setUpData(self.data)
-        tempViewMenu.reloadGcode()
+        self.reloadGcode()
+    
+    def reloadGcode(self, *args):
+        '''
+        
+        This reloads the gcode from the hard drive in case it has been updated. 
+        
+        '''
+        
+        print "begin reload"
+        
+        filename = self.data.gcodeFile
+        try:
+            filterfile = open(filename, 'r')
+            rawfilters = filterfile.read()
+            filtersparsed = re.sub(r'\(([^)]*)\)','',rawfilters) #removes mach3 style gcode comments
+            filtersparsed = re.sub(r';([^\n]*)\n','',filtersparsed) #removes standard ; initiated gcode comments
+            filtersparsed = re.split(r'\s(?=G)|\n|\s(?=g)|\s(?=M)', filtersparsed) #splits the gcode into elements to be added to the list
+            filtersparsed = [x + ' ' for x in filtersparsed] #adds a space to the end of each line
+            filtersparsed = [x.lstrip() for x in filtersparsed]
+            filtersparsed = [x.replace('X ','X') for x in filtersparsed]
+            filtersparsed = [x.replace('Y ','Y') for x in filtersparsed]
+            filtersparsed = [x.replace('Z ','Z') for x in filtersparsed]
+            filtersparsed = [x.replace('I ','I') for x in filtersparsed]
+            filtersparsed = [x.replace('J ','J') for x in filtersparsed]
+            filtersparsed = [x.replace('F ','F') for x in filtersparsed]
+            
+            self.data.gcode = "[]"
+            self.data.gcode = filtersparsed
+            
+            filterfile.close() #closes the filter save file
+        except:
+            if filename is not "":
+                print "Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use File > Open G-code"
+            self.data.gcodeFile = ""
+        
+        print "reload gcode finsihed"
     
     def centerCanvas(self, *args):
         mat = Matrix().translate(Window.width/2, Window.height/2, 0)
@@ -225,7 +261,35 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         clearGcode deletes the lines and arcs corresponding to gcode commands from the canvas. 
     
         '''
-        self.scatterObject.canvas.remove_group('gcode')
+        self.scatterObject.canvas.clear()#remove_group('gcode')
+        
+        self.drawWorkspace()
+    
+    def moveLine(self, gcodeLine):
+        
+        originalLine = gcodeLine
+        
+        try:
+            gcodeLine = gcodeLine.upper() + " "
+            
+            
+            x = gcodeLine.find('X')
+            if x != -1:
+                space = gcodeLine.find(' ', x)
+                number = float(gcodeLine[x+1:space]) + self.data.gcodeShift[0]
+                gcodeLine = gcodeLine[0:x+1] + str(number) + gcodeLine[space:]
+            
+            y = gcodeLine.find('Y')
+            if y != -1:
+                space = gcodeLine.find(' ', y)
+                number = float(gcodeLine[y+1:space]) + self.data.gcodeShift[1]
+                gcodeLine = gcodeLine[0:y+1] + str(number) + gcodeLine[space:]
+            
+            return gcodeLine
+        except ValueError:
+            print "line could not be moved:"
+            print originalLine
+            return originalLine
     
     def updateOneLine(self):
         '''
@@ -238,6 +302,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.lineNumber = self.lineNumber + 1
         
         try:
+            self.data.gcode[self.lineNumber] = self.moveLine(self.data.gcode[self.lineNumber])    #move the line if the gcode has been moved
             fullString = self.data.gcode[self.lineNumber]
         except:
             return #we have reached the end of the file
@@ -279,7 +344,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if gString == 'G91':
             self.absoluteFlag = 0
         
-    
     def callBackMechanism(self, callback) :
         '''
         
@@ -287,6 +351,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         update the gcode.
         
         '''
+        
+        print "call back mechanism running" 
         
         #Draw numberOfTimesToCall lines on the canvas
         numberOfTimesToCall = 50
@@ -305,6 +371,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         specified command. 
     
         '''
+        
+        print "update gcode called"
         
         #reset variables 
         self.xPosition = 0
