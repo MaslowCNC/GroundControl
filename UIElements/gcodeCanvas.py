@@ -45,11 +45,51 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         Window.bind(on_motion = self.zoomCanvas)
 
         self.data.bind(gcode = self.updateGcode)
-        self.data.bind(gcodeShift = self.updateGcode)
+        self.data.bind(gcodeShift = self.reloadGcode)
+        self.data.bind(gcodeFile = self.reloadGcode)
 
-        tempViewMenu = ViewMenu()
-        tempViewMenu.setUpData(self.data)
-        tempViewMenu.reloadGcode()
+        self.reloadGcode()
+    
+    def reloadGcode(self):
+        '''
+        
+        This reloads the gcode from the hard drive in case it has been updated. 
+        
+        '''
+        
+        filename = self.data.gcodeFile
+        try:
+            filterfile = open(filename, 'r')
+            rawfilters = filterfile.read()
+            filtersparsed = re.sub(r'\(([^)]*)\)','',rawfilters) #removes mach3 style gcode comments
+            filtersparsed = re.sub(r';([^\n]*)\n','',filtersparsed) #removes standard ; intiated gcode comments
+            filtersparsed = re.split(r'\s(?=G)|\n|\s(?=g)|\s(?=M)', filtersparsed) #splits the gcode into elements to be added to the list
+            filtersparsed = [x + ' ' for x in filtersparsed] #adds a space to the end of each line
+            filtersparsed = [x.lstrip() for x in filtersparsed]
+            filtersparsed = [x.replace('X ','X') for x in filtersparsed]
+            filtersparsed = [x.replace('Y ','Y') for x in filtersparsed]
+            filtersparsed = [x.replace('Z ','Z') for x in filtersparsed]
+            filtersparsed = [x.replace('I ','I') for x in filtersparsed]
+            filtersparsed = [x.replace('J ','J') for x in filtersparsed]
+            filtersparsed = [x.replace('F ','F') for x in filtersparsed]
+
+            self.data.gcode = filtersparsed
+            
+            filterfile.close() #closes the filter save file
+        except:
+            if filename is not "":
+                print "Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use File > Open G-code"
+            self.data.gcodeFile = ""
+        
+        try:
+            #close the parent popup
+            self.parentWidget.close()
+        except AttributeError:
+            pass #the parent popup does note exist to close
+        
+        print "now here"
+        
+        print "reload gcode ran"
     
     def centerCanvas(self, *args):
         mat = Matrix().translate(Window.width/2, Window.height/2, 0)
