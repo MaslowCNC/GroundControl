@@ -276,13 +276,13 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             x = gcodeLine.find('X')
             if x != -1:
                 space = gcodeLine.find(' ', x)
-                number = float(gcodeLine[x+1:space]) + self.data.gcodeShift[0]*self.canvasScaleFactor
+                number = float(gcodeLine[x+1:space]) + self.data.gcodeShift[0]
                 gcodeLine = gcodeLine[0:x+1] + str(number) + gcodeLine[space:]
             
             y = gcodeLine.find('Y')
             if y != -1:
                 space = gcodeLine.find(' ', y)
-                number = float(gcodeLine[y+1:space]) + self.data.gcodeShift[1]*self.canvasScaleFactor
+                number = float(gcodeLine[y+1:space]) + self.data.gcodeShift[1]
                 gcodeLine = gcodeLine[0:y+1] + str(number) + gcodeLine[space:]
             
             return gcodeLine
@@ -302,13 +302,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.lineNumber = self.lineNumber + 1
         
         try:
+            self.data.gcode[self.lineNumber] = self.moveLine(self.data.gcode[self.lineNumber])    #move the line if the gcode has been moved
             fullString = self.data.gcode[self.lineNumber]
         except:
             return #we have reached the end of the file
         
         fullString = fullString + " " #ensures that there is a space at the end of the line
-        
-        fullString = self.moveLine(fullString)    #move the line if the gcode has been moved
         
         #find 'G' anywhere in string
         gString = fullString[fullString.find('G'):fullString.find('G') + 3]

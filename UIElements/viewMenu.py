@@ -28,6 +28,20 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
                             size_hint=(0.9, 0.9))
         self._popup.open()
     
+    def reloadGcode(self):
+        '''
+        
+        Trigger a reloading of the gcode file
+        
+        '''
+        
+        filePath = self.data.gcodeFile
+        self.data.gcodeFile = ""
+        self.data.gcodeFile = filePath
+        
+        #close the parent popup
+        self.parentWidget.close()
+    
     def load(self, path, filename):
         '''
         
