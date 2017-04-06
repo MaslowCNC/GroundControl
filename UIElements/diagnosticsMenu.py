@@ -4,7 +4,7 @@ from   UIElements.scrollableTextPopup            import   ScrollableTextPopup
 from   kivy.uix.popup                            import   Popup
 
 class Diagnostics(FloatLayout, MakesmithInitFuncs):
-
+    
     def about(self):
         popupText = 'Ground Control v' + str(self.data.version) + ' allows you to control the Maslow machine. ' + \
                     'From within Ground Control, you can move the machine to where you want to begin a cut, calibrate the machine, ' + \
@@ -40,13 +40,17 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
     def returnToCenter(self):
         self.data.gcode_queue.put("G00 Z0 ")
         self.data.gcode_queue.put("G00 X0 Y0 Z0 ")
+        self.parentWidget.close()
     
     def calibrateMotors(self):
         self.data.gcode_queue.put("B01")
+        self.parentWidget.close()
         
     def calibrateChainLengths(self):
         self.data.gcode_queue.put("B02 ")
+        self.parentWidget.close()
     
     def testMotors(self):
         self.data.gcode_queue.put("B04 ")
+        self.parentWidget.close()
     

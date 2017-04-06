@@ -69,6 +69,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.data.bind(units            = self.onUnitsSwitch)
         self.data.bind(gcodeIndex       = self.onIndexMove)
         self.data.bind(gcodeFile        = self.onGcodeFileChange)
+        self.data.bind(uploadFlag       = self.onUploadFlagChange)
     
     def updateConnectionStatus(self, callback, connected):
         
@@ -109,12 +110,20 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def onGcodeFileChange(self, callback, newGcode):
     
         #reset the shift values to 0 because the new gcode is not loaded with a shift applied
-        self.shiftX = 0
-        self.shiftY = 0
+        #self.shiftX = 0
+        #self.shiftY = 0
         
         #reset the gcode index to the beginning and update the display
-        self.data.gcodeIndex = 0
-        self.moveGcodeIndex(0)
+        #self.data.gcodeIndex = 0
+        #self.moveGcodeIndex(0)
+        
+        pass
+    
+    def onUploadFlagChange(self, callback, newFlagValue):
+        if self.data.uploadFlag is 0 and self.data.gcodeIndex > 1: #if the machine is stopped partway through a file
+            self.holdBtn.text = "CONTINUE"
+        else:
+            self.holdBtn.text = "HOLD"
     
     def moveGcodeIndex(self, dist):
         '''
@@ -162,11 +171,12 @@ class FrontPage(Screen, MakesmithInitFuncs):
             print "Unable to update position for new gcode line"
     
     def pause(self):
-        self.data.uploadFlag = 0
-        self.data.quick_queue.put("STOP") 
-        with self.data.gcode_queue.mutex:
-            self.data.gcode_queue.queue.clear()
-        print("Run Paused")
+        if  self.holdBtn.text == "HOLD":
+            self.data.uploadFlag = 0
+            print("Run Paused")
+        else:
+            self.data.uploadFlag = 1
+            print("Run Resumed")
     
     def jmpsize(self):
         try:
@@ -264,51 +274,13 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.target[1] = self.shiftY
         self.target[2] = 0.0
     
-    def moveLine(self, gcodeLine, moveXBy, moveYBy):
-        
-        originalLine = gcodeLine
-        
-        try:
-            gcodeLine = gcodeLine.upper() + " "
-            
-            
-            x = gcodeLine.find('X')
-            if x != -1:
-                space = gcodeLine.find(' ', x)
-                number = float(gcodeLine[x+1:space]) + moveXBy
-                gcodeLine = gcodeLine[0:x+1] + str(number) + gcodeLine[space:]
-            
-            y = gcodeLine.find('Y')
-            if y != -1:
-                space = gcodeLine.find(' ', y)
-                number = float(gcodeLine[y+1:space]) + moveYBy
-                gcodeLine = gcodeLine[0:y+1] + str(number) + gcodeLine[space:]
-            
-            return gcodeLine
-        except ValueError:
-            print "line could not be moved:"
-            print originalLine
-            return originalLine
-    
     def moveOrigin(self):
+        '''
         
-        if self.data.units == "INCHES":
-            amtToShiftX = self.numericalPosX - self.shiftX
-            amtToShiftY = self.numericalPosY - self.shiftY
-            self.shiftX = self.shiftX + amtToShiftX
-            self.shiftY = self.shiftY + amtToShiftY
-        else:
-            amtToShiftX = self.numericalPosX - self.shiftX
-            amtToShiftY = self.numericalPosY - self.shiftY
-            self.shiftX = self.shiftX + amtToShiftX
-            self.shiftY = self.shiftY + amtToShiftY
+        Move the gcode origin to the current location
         
-        shiftedGcode = []
-        
-        for line in self.data.gcode:
-            shiftedGcode.append(self.moveLine(line , amtToShiftX, amtToShiftY))
-        
-        self.data.gcode = shiftedGcode
+        '''
+        self.data.gcodeShift = [self.numericalPosX,self.numericalPosY]
     
     def startRun(self):
         
@@ -330,6 +302,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.data.quick_queue.put("STOP") 
         with self.data.gcode_queue.mutex:
             self.data.gcode_queue.queue.clear()
+        self.onUploadFlagChange(self.stopRun, 0)
         print("Gode Stopped")
     
     def textInputPopup(self, target):
