@@ -85,9 +85,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             #close the parent popup
             self.parentWidget.close()
         except AttributeError:
-            pass #the parent popup does note exist to close
-        
-        print "now here"
+            pass #the parent popup does note exist to clos
         
         print "reload gcode ran"
     
