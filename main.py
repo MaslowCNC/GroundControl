@@ -258,7 +258,7 @@ class GroundControlApp(App):
             +" Q" + str(self.data.config.get('Maslow Settings', 'motorSpacingX'))
             +" E" + str(self.data.config.get('Maslow Settings', 'motorOffsetY'))
             +" F" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
-            +" G" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
+            +" R" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
             +" H" + str(self.data.config.get('Maslow Settings', 'sledCG'))
             +" I" + str(self.data.config.get('Maslow Settings', 'zAxis'))
             +" J" + str(self.data.config.get('Advanced Settings', 'encoderSteps'))
