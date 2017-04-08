@@ -57,8 +57,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         '''
         
-        print "begin reload"
-        
         filename = self.data.gcodeFile
         try:
             filterfile = open(filename, 'r')
@@ -84,8 +82,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 print "Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use File > Open G-code"
             self.data.gcodeFile = ""
         
-        print "reload gcode finsihed"
-    
     def centerCanvas(self, *args):
         mat = Matrix().translate(Window.width/2, Window.height/2, 0)
         self.scatterInstance.transform = mat
@@ -358,8 +354,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         '''
         
-        print "call back mechanism running" 
-        
         #Draw numberOfTimesToCall lines on the canvas
         numberOfTimesToCall = 50
         
@@ -377,8 +371,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         specified command. 
     
         '''
-        
-        print "update gcode called"
         
         #reset variables 
         self.xPosition = 0
