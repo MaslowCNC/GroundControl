@@ -230,8 +230,8 @@
             text: 'Quit Ground Control'
             on_release: root.closeGC()
         Button:
-            text: 'Resume'
-            disabled: True
+            text: 'Return To Center'
+            on_release: root.returnToCenter()
         Button:
             text: 'Zero Z'
             disabled: True
@@ -276,23 +276,23 @@
             cols: 3
             Button:
                 text: 'Test Motors/Encoders'
-                disabled: True
-            Button:
-                text: 'Test Motors'
                 disabled: False
                 on_press: root.testMotors()
             Button:
-                text: 'Calibrate Chain Length'
+                text: 'Calibrate Chain Length - Automatic'
                 disabled: False
                 on_press: root.calibrateChainLengths()
+            Button:
+                text: 'Calibrate Chain Length - Manual'
+                disabled: True
+                on_release: root.returnToCenter()
             Button:
                 text: 'Calibrate Motors'
                 disabled: False
                 on_release: root.calibrateMotors()
             Button:
-                text: 'Return to Center'
-                disabled: False
-                on_release: root.returnToCenter()
+                text: 'Test Feedback System'
+                disabled: True
             Button:
                 text: 'About'
                 disabled: False
@@ -419,6 +419,7 @@
     connectmenu:connectmenu
     viewmenu:viewmenu
     diagnostics:diagnostics
+    runmenu:runmenu
     
     BoxLayout:
         orientation: 'vertical'
