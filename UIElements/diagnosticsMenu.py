@@ -37,11 +37,6 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         '''
         self._popup.dismiss()
     
-    def returnToCenter(self):
-        self.data.gcode_queue.put("G00 Z0 ")
-        self.data.gcode_queue.put("G00 X0 Y0 Z0 ")
-        self.parentWidget.close()
-    
     def calibrateMotors(self):
         self.data.gcode_queue.put("B01")
         self.parentWidget.close()
