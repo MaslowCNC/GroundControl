@@ -63,6 +63,15 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         self.parentWidget.close()
         
 
+    def resetView(self):
+        '''
+        
+        Reset the gcode canvas view. Most of the work is done in the .kv file.
+        
+        '''
+        #close the parent popup
+        self.parentWidget.close()
+    
     def show_gcode(self):
         '''
         
