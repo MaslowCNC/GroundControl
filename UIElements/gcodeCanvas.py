@@ -71,10 +71,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         scaleFactor = .03
         anchor = (0,0)
         
-        if keycode[1] == self.data.config.get('Keyboard Settings', 'zoomIn'):
+        if keycode[1] == self.data.config.get('Ground Control Settings', 'zoomIn'):
             mat = Matrix().scale(1-scaleFactor, 1-scaleFactor, 1)
             self.scatterInstance.apply_transform(mat, anchor)
-        if keycode[1] == self.data.config.get('Keyboard Settings', 'zoomOut'):
+        if keycode[1] == self.data.config.get('Ground Control Settings', 'zoomOut'):
             mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
             self.scatterInstance.apply_transform(mat, anchor)
     

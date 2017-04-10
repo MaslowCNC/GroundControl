@@ -56,18 +56,20 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         
         #locate the file
         filename = filename[0]
+        fileExtension = path.splitext(filename)[1]
         
         print "this ibt:"
-        print filename
-        fileExtension = path.splitext(filename)[1]
         print fileExtension
+        print self.data.config.get('Ground Control Settings', 'validExtensions')
+        validExtensions = self.data.config.get('Ground Control Settings', 'validExtensions').replace(" ", "").split(',')
+        print validExtensions
         
-        if fileExtension == ".nc":
+        if fileExtension in validExtensions:
             self.data.gcodeFile = filename
             self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
             self.data.config.write()
         else:
-            self.data.message_queue.put("Message: Ground control can only open gcode files with extension .nc")
+            self.data.message_queue.put("Message: Ground control can only open gcode files with extensions: " + self.data.config.get('Ground Control Settings', 'validExtensions'))
         
         #close the parent popup
         self.parentWidget.close()
