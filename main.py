@@ -291,6 +291,9 @@ class GroundControlApp(App):
         '''
         while not self.data.message_queue.empty(): #if there is new data to be read
             message = self.data.message_queue.get()
+            
+            self.data.logger.writeToLog(message)
+            
             if message[0] == "<":
                 self.setPosOnScreen(message)
             elif message[0] == "[":
@@ -301,7 +304,7 @@ class GroundControlApp(App):
                 self.data.uploadFlag = 0
                 content = NotificationPopup(continueOn = self.dismiss_popup_continue, hold=self.dismiss_popup_hold , text = message[9:])
                 self._popup = Popup(title="Notification: ", content=content,
-                            auto_dismiss=False, size_hint=(0.25, 0.25))
+                            auto_dismiss=False, size_hint=(0.35, 0.35))
                 self._popup.open()
             else:
                 self.writeToTextConsole(message)
@@ -331,32 +334,32 @@ class GroundControlApp(App):
         
         '''
         
-        #try:
-        startpt = message.find('MPos:') + 5
-        
-        endpt = message.find('WPos:')
-        
-        numz  = message[startpt:endpt]
-        units = "mm" #message[endpt+1:endpt+3]
-        
-        valz = numz.split(",")
-        
-        xval  = float(valz[0])
-        yval  = float(valz[1])
-        zval  = float(valz[2])
-        
-        if math.isnan(xval):
-            self.writeToTextConsole("Unable to resolve x Kinematics.")
-            xval = 0
-        if math.isnan(yval):
-            self.writeToTextConsole("Unable to resolve y Kinematics.")
-            yval = 0
-        if math.isnan(zval):
-            self.writeToTextConsole("Unable to resolve z Kinematics.")
-            zval = 0
-        #except:
-        #    print "bad data"
-        #    return
+        try:
+            startpt = message.find('MPos:') + 5
+            
+            endpt = message.find('WPos:')
+            
+            numz  = message[startpt:endpt]
+            units = "mm" #message[endpt+1:endpt+3]
+            
+            valz = numz.split(",")
+            
+            xval  = float(valz[0])
+            yval  = float(valz[1])
+            zval  = float(valz[2])
+            
+            if math.isnan(xval):
+                self.writeToTextConsole("Unable to resolve x Kinematics.")
+                xval = 0
+            if math.isnan(yval):
+                self.writeToTextConsole("Unable to resolve y Kinematics.")
+                yval = 0
+            if math.isnan(zval):
+                self.writeToTextConsole("Unable to resolve z Kinematics.")
+                zval = 0
+        except:
+            print "bad data"
+            return
         
         self.frontpage.setPosReadout(xval,yval,zval)
         self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,self.data.units)
@@ -368,7 +371,9 @@ class GroundControlApp(App):
         endpt = message.find(']')
         errorValueAsString = message[startpt:endpt]
         errorValueAsFloat  = float(errorValueAsString)
+        
         self.frontpage.gcodecanvas.positionIndicator.setError(errorValueAsFloat)
+        self.data.logger.writeErrorValueToLog(errorValueAsFloat)
         #except:
         #    print "unable to read error value"
         
