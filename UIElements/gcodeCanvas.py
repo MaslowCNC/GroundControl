@@ -83,8 +83,13 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.data.gcodeFile = ""
         
     def centerCanvas(self, *args):
+        print "center canvas"
         mat = Matrix().translate(Window.width/2, Window.height/2, 0)
         self.scatterInstance.transform = mat
+        
+        anchor = (0,0)
+        mat = Matrix().scale(.45, .45, 1)
+        self.scatterInstance.apply_transform(mat, anchor)
     
     def zoomCanvas(self, callback, type, motion, *args):
         if motion.is_mouse_scrolling:
