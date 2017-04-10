@@ -47,8 +47,38 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.data.bind(gcode = self.updateGcode)
         self.data.bind(gcodeShift = self.reloadGcode)
         self.data.bind(gcodeFile = self.reloadGcode)
-
+        
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        
         self.reloadGcode()
+    
+    
+    def _keyboard_closed(self):
+        '''
+        
+        If the window looses focus.
+        
+        '''
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        '''
+        
+        Called when a button is pressed.
+        
+        '''
+        scaleFactor = .03
+        anchor = (0,0)
+        
+        if keycode[1] == self.data.config.get('Keyboard Settings', 'zoomIn'):
+            mat = Matrix().scale(1-scaleFactor, 1-scaleFactor, 1)
+            self.scatterInstance.apply_transform(mat, anchor)
+        if keycode[1] == self.data.config.get('Keyboard Settings', 'zoomOut'):
+            mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
+            self.scatterInstance.apply_transform(mat, anchor)
+            
     
     def reloadGcode(self, *args):
         '''
@@ -89,7 +119,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     def zoomCanvas(self, callback, type, motion, *args):
         if motion.is_mouse_scrolling:
             scaleFactor = .03
-            
             anchor = (0,0)
             
             if motion.button == 'scrollup':
