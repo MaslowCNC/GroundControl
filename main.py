@@ -291,6 +291,9 @@ class GroundControlApp(App):
         '''
         while not self.data.message_queue.empty(): #if there is new data to be read
             message = self.data.message_queue.get()
+            
+            self.data.logger.writeToLog(message)
+            
             if message[0] == "<":
                 self.setPosOnScreen(message)
             elif message[0] == "[":
@@ -301,7 +304,7 @@ class GroundControlApp(App):
                 self.data.uploadFlag = 0
                 content = NotificationPopup(continueOn = self.dismiss_popup_continue, hold=self.dismiss_popup_hold , text = message[9:])
                 self._popup = Popup(title="Notification: ", content=content,
-                            auto_dismiss=False, size_hint=(0.25, 0.25))
+                            auto_dismiss=False, size_hint=(0.35, 0.35))
                 self._popup.open()
             else:
                 self.writeToTextConsole(message)
@@ -368,7 +371,9 @@ class GroundControlApp(App):
         endpt = message.find(']')
         errorValueAsString = message[startpt:endpt]
         errorValueAsFloat  = float(errorValueAsString)
+        
         self.frontpage.gcodecanvas.positionIndicator.setError(errorValueAsFloat)
+        self.data.logger.writeErrorValueToLog(errorValueAsFloat)
         #except:
         #    print "unable to read error value"
         
