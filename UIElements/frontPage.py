@@ -34,9 +34,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     stepsizeval = 0
     
-    shiftX = 0
-    shiftY = 0
-    
     consoleText = StringProperty(" ")
     
     units = StringProperty("MM")
@@ -108,15 +105,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.percentComplete = '%.1f' %(100* (float(newIndex) / (len(self.data.gcode)-1))) + "%"
     
     def onGcodeFileChange(self, callback, newGcode):
-    
-        #reset the shift values to 0 because the new gcode is not loaded with a shift applied
-        #self.shiftX = 0
-        #self.shiftY = 0
-        
-        #reset the gcode index to the beginning and update the display
-        #self.data.gcodeIndex = 0
-        #self.moveGcodeIndex(0)
-        
         pass
     
     def onUploadFlagChange(self, callback, newFlagValue):
@@ -266,12 +254,12 @@ class FrontPage(Screen, MakesmithInitFuncs):
         else:
             self.data.gcode_queue.put("G00 Z5.0 ")
         
-        self.data.gcode_queue.put("G00 X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
+        self.data.gcode_queue.put("G00 X" + str(self.data.gcodeShift[0]) + " Y" + str(self.data.gcodeShift[1]) + " ")
         
         self.data.gcode_queue.put("G00 Z0 ")
         
-        self.target[0] = self.shiftX
-        self.target[1] = self.shiftY
+        self.target[0] = self.data.gcodeShift[0]
+        self.target[1] = self.data.gcodeShift[1]
         self.target[2] = 0.0
     
     def moveOrigin(self):
