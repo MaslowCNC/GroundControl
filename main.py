@@ -334,32 +334,32 @@ class GroundControlApp(App):
         
         '''
         
-        #try:
-        startpt = message.find('MPos:') + 5
-        
-        endpt = message.find('WPos:')
-        
-        numz  = message[startpt:endpt]
-        units = "mm" #message[endpt+1:endpt+3]
-        
-        valz = numz.split(",")
-        
-        xval  = float(valz[0])
-        yval  = float(valz[1])
-        zval  = float(valz[2])
-        
-        if math.isnan(xval):
-            self.writeToTextConsole("Unable to resolve x Kinematics.")
-            xval = 0
-        if math.isnan(yval):
-            self.writeToTextConsole("Unable to resolve y Kinematics.")
-            yval = 0
-        if math.isnan(zval):
-            self.writeToTextConsole("Unable to resolve z Kinematics.")
-            zval = 0
-        #except:
-        #    print "bad data"
-        #    return
+        try:
+            startpt = message.find('MPos:') + 5
+            
+            endpt = message.find('WPos:')
+            
+            numz  = message[startpt:endpt]
+            units = "mm" #message[endpt+1:endpt+3]
+            
+            valz = numz.split(",")
+            
+            xval  = float(valz[0])
+            yval  = float(valz[1])
+            zval  = float(valz[2])
+            
+            if math.isnan(xval):
+                self.writeToTextConsole("Unable to resolve x Kinematics.")
+                xval = 0
+            if math.isnan(yval):
+                self.writeToTextConsole("Unable to resolve y Kinematics.")
+                yval = 0
+            if math.isnan(zval):
+                self.writeToTextConsole("Unable to resolve z Kinematics.")
+                zval = 0
+        except:
+            print "bad data"
+            return
         
         self.frontpage.setPosReadout(xval,yval,zval)
         self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,self.data.units)
