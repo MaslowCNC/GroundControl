@@ -49,10 +49,10 @@ class FrontPage(Screen, MakesmithInitFuncs):
         super(FrontPage, self).__init__(**kwargs)
         self.data = data
     
-    def setPosReadout(self, xPos, yPos, zPos, units):
-        self.xReadoutPos    = str(xPos) + " " + units
-        self.yReadoutPos    = str(yPos) + " " + units
-        self.zReadoutPos    = str(zPos) + " " + units
+    def setPosReadout(self, xPos, yPos, zPos):
+        self.xReadoutPos    = "X: " + str(xPos)
+        self.yReadoutPos    = "Y: " + str(yPos)
+        self.zReadoutPos    = "Z: " + str(zPos)
         self.numericalPosX  = xPos
         self.numericalPosY  = yPos
         

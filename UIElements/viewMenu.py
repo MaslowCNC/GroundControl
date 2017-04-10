@@ -50,9 +50,8 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         Takes in a file path (from pop-up) and handles the file appropriately for the given file-type.
         
         '''
-        #locate the file extension
+        #locate the file
         filename = filename[0]
-        fileExtension = filename[-4:]
         
         self.data.gcodeFile = filename
         self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
@@ -63,6 +62,7 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         #close the parent popup
         self.parentWidget.close()
         
+
     def show_gcode(self):
         '''
         

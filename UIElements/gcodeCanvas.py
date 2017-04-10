@@ -57,8 +57,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         '''
         
-        print "begin reload"
-        
         filename = self.data.gcodeFile
         try:
             filterfile = open(filename, 'r')
@@ -84,8 +82,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 print "Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use File > Open G-code"
             self.data.gcodeFile = ""
         
-        print "reload gcode finsihed"
-    
     def centerCanvas(self, *args):
         mat = Matrix().translate(Window.width/2, Window.height/2, 0)
         self.scatterInstance.transform = mat
@@ -312,23 +308,29 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         #find 'G' anywhere in string
         gString = fullString[fullString.find('G'):fullString.find('G') + 3]
         
+        if gString in validPrefixList:
+            prependString = gString
+        
         if fullString.find('G') == -1: #this adds the gcode operator if it is omitted by the program
             fullString = self.prependString + fullString
         
         if gString in validPrefixList:
             self.prependString = fullString[0:3] + " "
         
-        if gString == 'G00' or fullString[0:3] == 'G0 ':
+        if gString == 'G00' or gString == 'G0 ':
             self.drawLine(fullString, 'G00')
 
-        if gString == 'G01' or fullString[0:3] == 'G1 ':
+        if gString == 'G01' or gString == 'G1 ':
             self.drawLine(fullString, 'G01')
                     
-        if gString == 'G02' or fullString[0:3] == 'G2 ':
+        if gString == 'G02' or gString == 'G2 ':
             self.drawArc(fullString, 'G02')
                            
-        if gString == 'G03' or fullString[0:3] == 'G3 ':
+        if gString == 'G03' or gString == 'G3 ':
             self.drawArc(fullString, 'G03')
+        
+        if gString == 'G18':
+            print "G18 not supported"
         
         if gString == 'G20':
             self.canvasScaleFactor = self.INCHES
@@ -352,8 +354,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         '''
         
-        print "call back mechanism running" 
-        
         #Draw numberOfTimesToCall lines on the canvas
         numberOfTimesToCall = 50
         
@@ -372,8 +372,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
         '''
         
-        print "update gcode called"
-        
         #reset variables 
         self.xPosition = 0
         self.yPosition = 0
@@ -388,8 +386,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if len(self.data.gcode) > 20000:
             errorText = "The current file contains " + str(len(self.data.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first 20000 lines are shown here.\nThe complete program will cut if you choose to do so."
             print errorText
-            #self.canv.create_text(xnow + 200, ynow - 50, text = errorText, fill = "red")
-        
-        #Begin loading the file
-        self.callBackMechanism(self.updateGcode)
+        else:
+            self.callBackMechanism(self.updateGcode)
         
