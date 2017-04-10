@@ -42,7 +42,7 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         #close the parent popup
         self.parentWidget.close()
     
-    def load(self, path, filename):
+    def load(self, filePath, filename):
         '''
         
         Load A File (Any Type)
@@ -50,19 +50,28 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         Takes in a file path (from pop-up) and handles the file appropriately for the given file-type.
         
         '''
+        
+        #close the open file popup
+        self.dismiss_popup()
+        
         #locate the file
         filename = filename[0]
         
-        self.data.gcodeFile = filename
-        self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
-        self.data.config.write()
+        print "this ibt:"
+        print filename
+        fileExtension = path.splitext(filename)[1]
+        print fileExtension
         
-        self.dismiss_popup()
+        if fileExtension == ".nc":
+            self.data.gcodeFile = filename
+            self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
+            self.data.config.write()
+        else:
+            self.data.message_queue.put("Message: Ground control can only open gcode files with extension .nc")
         
         #close the parent popup
         self.parentWidget.close()
-        
-
+    
     def resetView(self):
         '''
         

@@ -53,7 +53,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         self.reloadGcode()
     
-    
     def _keyboard_closed(self):
         '''
         
@@ -78,7 +77,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if keycode[1] == self.data.config.get('Keyboard Settings', 'zoomOut'):
             mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
             self.scatterInstance.apply_transform(mat, anchor)
-            
     
     def reloadGcode(self, *args):
         '''
