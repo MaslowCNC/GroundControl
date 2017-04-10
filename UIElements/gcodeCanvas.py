@@ -83,7 +83,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.data.gcodeFile = ""
         
     def centerCanvas(self, *args):
-        print "center canvas"
+        '''
+        
+        Return the canvas to the center of the screen.
+        
+        '''
         mat = Matrix().translate(Window.width/2, Window.height/2, 0)
         self.scatterInstance.transform = mat
         
