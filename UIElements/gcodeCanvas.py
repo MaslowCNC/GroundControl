@@ -53,20 +53,29 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         self.reloadGcode()
     
+    
     def _keyboard_closed(self):
+        '''
+        
+        If the window looses focus.
+        
+        '''
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
         self._keyboard = None
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        print "read: "
-        print keycode[1]
+        '''
+        
+        Called when a button is pressed.
+        
+        '''
         scaleFactor = .03
         anchor = (0,0)
         
-        if keycode[1] == "up":
+        if keycode[1] == self.data.config.get('Keyboard Settings', 'zoomIn'):
             mat = Matrix().scale(1-scaleFactor, 1-scaleFactor, 1)
             self.scatterInstance.apply_transform(mat, anchor)
-        if keycode[1] == "down":
+        if keycode[1] == self.data.config.get('Keyboard Settings', 'zoomOut'):
             mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
             self.scatterInstance.apply_transform(mat, anchor)
             

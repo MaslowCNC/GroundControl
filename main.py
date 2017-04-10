@@ -158,6 +158,25 @@ class GroundControlApp(App):
     ]
     '''
     
+    keyboard = '''
+    [
+        {
+            "type": "string",
+            "title": "Zoom In",
+            "desc": "Pressing this key will zoom in. Note combinations of keys like \'shift\' + \'=\' may not work as expected. Program must be restarted to take effect.",
+            "section": "Keyboard Settings",
+            "key": "zoomIn"
+        },
+        {
+            "type": "string",
+            "title": "Zoom Out",
+            "desc": "Pressing this key will zoom in. Note combinations of keys like \'shift\' + \'=\' may not work as expected. Program must be restarted to take effect.",
+            "section": "Keyboard Settings",
+            "key": "zoomOut"
+        }
+    ]
+    '''
+    
     def build(self):
         Window.maximize()
         
@@ -205,7 +224,7 @@ class GroundControlApp(App):
         
     def build_config(self, config):
         """
-        Set the default values for the configs sections.
+        Set the default values for the config sections.
         """
         config.setdefaults('Maslow Settings', {'COMport': '',
                                                'zAxis': False, 
@@ -223,6 +242,9 @@ class GroundControlApp(App):
                                                  'gearTeeth': 10, 
                                                  'chainPitch':6.35,
                                                  'zEncoderSteps':7550.0})
+        
+        config.setdefaults('Keyboard Settings', {'zoomIn': "pageup",
+                                                 'zoomOut': "pagedown"})
 
     def build_settings(self, settings):
         """
@@ -230,6 +252,7 @@ class GroundControlApp(App):
         """
         settings.add_json_panel('Maslow Settings', self.config, data=self.json)
         settings.add_json_panel('Advanced Settings', self.config, data=self.advanced)
+        settings.add_json_panel('Keyboard Settings', self.config, data=self.keyboard)
 
     def on_config_change(self, config, section, key, value):
         """
@@ -366,16 +389,16 @@ class GroundControlApp(App):
     
     def setErrorOnScreen(self, message):
         
-        #try:
-        startpt = message.find(':')+1 
-        endpt = message.find(']')
-        errorValueAsString = message[startpt:endpt]
-        errorValueAsFloat  = float(errorValueAsString)
-        
-        self.frontpage.gcodecanvas.positionIndicator.setError(errorValueAsFloat)
-        self.data.logger.writeErrorValueToLog(errorValueAsFloat)
-        #except:
-        #    print "unable to read error value"
+        try:
+            startpt = message.find(':')+1 
+            endpt = message.find(']')
+            errorValueAsString = message[startpt:endpt]
+            errorValueAsFloat  = float(errorValueAsString)
+            
+            self.frontpage.gcodecanvas.positionIndicator.setError(errorValueAsFloat)
+            self.data.logger.writeErrorValueToLog(errorValueAsFloat)
+        except:
+            print "unable to read error value"
         
         
     
