@@ -1,7 +1,7 @@
 from kivy.uix.floatlayout                        import    FloatLayout
-from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
-from   UIElements.scrollableTextPopup            import   ScrollableTextPopup
-from   kivy.uix.popup                            import   Popup
+from DataStructures.makesmithInitFuncs           import    MakesmithInitFuncs
+from UIElements.scrollableTextPopup              import    ScrollableTextPopup
+from kivy.uix.popup                              import    Popup
 
 class Diagnostics(FloatLayout, MakesmithInitFuncs):
     
@@ -66,3 +66,12 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
     def wipeEEPROM(self):
         self.data.gcode_queue.put("B07 ")
         self.parentWidget.close()
+    
+    def advancedOptionsFunctions(self, text):
+        
+        if   text == "Test Feedback System":
+            self.testFeedbackSystem()
+        elif text == "Calibrate Chain Length - Manual":
+            self.manualCalibrateChainLengths()
+        elif text == "Wipe EEPROM":
+            self.wipeEEPROM()

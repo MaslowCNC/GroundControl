@@ -42,6 +42,7 @@ class Logger(MakesmithInitFuncs):
         
         '''
         self.recordingPositionalErrors = True
+        self.errorValues = []
     
     def endRecordingAvgError(self):
         '''
