@@ -58,11 +58,7 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         filename = filename[0]
         fileExtension = path.splitext(filename)[1]
         
-        print "this ibt:"
-        print fileExtension
-        print self.data.config.get('Ground Control Settings', 'validExtensions')
         validExtensions = self.data.config.get('Ground Control Settings', 'validExtensions').replace(" ", "").split(',')
-        print validExtensions
         
         if fileExtension in validExtensions:
             self.data.gcodeFile = filename
