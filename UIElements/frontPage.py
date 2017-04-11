@@ -298,7 +298,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def stopRun(self):
         self.data.uploadFlag = 0
         self.data.gcodeIndex = 0
-        self.data.quick_queue.put("STOP") 
+        self.data.quick_queue.put("!") 
         with self.data.gcode_queue.mutex:
             self.data.gcode_queue.queue.clear()
         self.onUploadFlagChange(self.stopRun, 0)
