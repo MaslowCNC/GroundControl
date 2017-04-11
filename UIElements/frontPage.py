@@ -249,14 +249,23 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
     def home(self):
         
-        if self.units == "INCHES":
-            self.data.gcode_queue.put("G00 Z.25 ")
+        print "This!"
+        print self.data.config.get('Maslow Settings', 'zAxis')
+        print int(self.data.config.get('Maslow Settings', 'zAxis'))
+        
+        #if the machine has a z-axis lift it then go home
+        if int(self.data.config.get('Maslow Settings', 'zAxis')):
+            if self.units == "INCHES":
+                self.data.gcode_queue.put("G00 Z.25 ")
+            else:
+                self.data.gcode_queue.put("G00 Z5.0 ")
+            
+            self.data.gcode_queue.put("G00 X" + str(self.data.gcodeShift[0]) + " Y" + str(self.data.gcodeShift[1]) + " ")
+            
+            self.data.gcode_queue.put("G00 Z0 ")
+        #if the machine does not have a z-axis, just go home
         else:
-            self.data.gcode_queue.put("G00 Z5.0 ")
-        
-        self.data.gcode_queue.put("G00 X" + str(self.data.gcodeShift[0]) + " Y" + str(self.data.gcodeShift[1]) + " ")
-        
-        self.data.gcode_queue.put("G00 Z0 ")
+            self.data.gcode_queue.put("G00 X" + str(self.data.gcodeShift[0]) + " Y" + str(self.data.gcodeShift[1]) + " ")
         
         self.target[0] = self.data.gcodeShift[0]
         self.target[1] = self.data.gcodeShift[1]
