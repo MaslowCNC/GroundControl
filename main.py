@@ -399,7 +399,7 @@ class GroundControlApp(App):
         
         try:
             startpt = message.find(':')+1 
-            endpt = message.find(']')
+            endpt = message.find(',', startpt)
             errorValueAsString = message[startpt:endpt]
             errorValueAsFloat  = float(errorValueAsString)
             
