@@ -158,21 +158,28 @@ class GroundControlApp(App):
     ]
     '''
     
-    keyboard = '''
+    gcsettings = '''
     [
         {
             "type": "string",
             "title": "Zoom In",
             "desc": "Pressing this key will zoom in. Note combinations of keys like \'shift\' + \'=\' may not work as expected. Program must be restarted to take effect.",
-            "section": "Keyboard Settings",
+            "section": "Ground Control Settings",
             "key": "zoomIn"
         },
         {
             "type": "string",
             "title": "Zoom Out",
             "desc": "Pressing this key will zoom in. Note combinations of keys like \'shift\' + \'=\' may not work as expected. Program must be restarted to take effect.",
-            "section": "Keyboard Settings",
+            "section": "Ground Control Settings",
             "key": "zoomOut"
+        },
+        {
+            "type": "string",
+            "title": "Valid File Extensions",
+            "desc": "Valid file extensions for Ground Control to open. Comma separated list.",
+            "section": "Ground Control Settings",
+            "key": "validExtensions"
         }
     ]
     '''
@@ -243,7 +250,8 @@ class GroundControlApp(App):
                                                  'chainPitch':6.35,
                                                  'zEncoderSteps':7550.0})
         
-        config.setdefaults('Keyboard Settings', {'zoomIn': "pageup",
+        config.setdefaults('Ground Control Settings', {'zoomIn': "pageup",
+                                                 'validExtensions':".nc, .ngc, .text, .gcode",
                                                  'zoomOut': "pagedown"})
 
     def build_settings(self, settings):
@@ -252,7 +260,7 @@ class GroundControlApp(App):
         """
         settings.add_json_panel('Maslow Settings', self.config, data=self.json)
         settings.add_json_panel('Advanced Settings', self.config, data=self.advanced)
-        settings.add_json_panel('Keyboard Settings', self.config, data=self.keyboard)
+        settings.add_json_panel('Ground Control Settings', self.config, data=self.gcsettings)
 
     def on_config_change(self, config, section, key, value):
         """
