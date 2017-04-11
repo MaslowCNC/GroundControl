@@ -37,6 +37,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     lineNumber = 0  #the line number currently being processed
     
+    prependString = "G01 "
+    
     def initialize(self):
 
         self.drawWorkspace()
@@ -91,7 +93,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             rawfilters = filterfile.read()
             filtersparsed = re.sub(r'\(([^)]*)\)','',rawfilters) #removes mach3 style gcode comments
             filtersparsed = re.sub(r';([^\n]*)\n','',filtersparsed) #removes standard ; initiated gcode comments
-            filtersparsed = re.split(r'\s(?=G)|\n|\s(?=g)|\s(?=M)', filtersparsed) #splits the gcode into elements to be added to the list
+            filtersparsed = re.split('\n', filtersparsed) #splits the gcode into elements to be added to the list
             filtersparsed = [x + ' ' for x in filtersparsed] #adds a space to the end of each line
             filtersparsed = [x.lstrip() for x in filtersparsed]
             filtersparsed = [x.replace('X ','X') for x in filtersparsed]
@@ -107,7 +109,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             filterfile.close() #closes the filter save file
         except:
             if filename is not "":
-                print "Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use File > Open G-code"
+                self.data.message_queue.put("Message: Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use Actions > Open G-code")
             self.data.gcodeFile = ""
         
     def centerCanvas(self, *args):
@@ -341,17 +343,16 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         fullString = fullString + " " #ensures that there is a space at the end of the line
         
+        
         #find 'G' anywhere in string
         gString = fullString[fullString.find('G'):fullString.find('G') + 3]
         
         if gString in validPrefixList:
-            prependString = gString
+            self.prependString = gString
         
         if fullString.find('G') == -1: #this adds the gcode operator if it is omitted by the program
             fullString = self.prependString + fullString
-        
-        if gString in validPrefixList:
-            self.prependString = fullString[0:3] + " "
+            gString = self.prependString
         
         if gString == 'G00' or gString == 'G0 ':
             self.drawLine(fullString, 'G00')
