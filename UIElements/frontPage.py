@@ -248,10 +248,12 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.target[2] = 0
         
     def home(self):
+        '''
         
-        print "This!"
-        print self.data.config.get('Maslow Settings', 'zAxis')
-        print int(self.data.config.get('Maslow Settings', 'zAxis'))
+        Return the machine to it's home position. (0,0) is the default unless the 
+        origin has been moved by the user.
+        
+        '''
         
         #if the machine has a z-axis lift it then go home
         if int(self.data.config.get('Maslow Settings', 'zAxis')):
