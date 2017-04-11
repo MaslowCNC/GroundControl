@@ -227,10 +227,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             with self.scatterObject.canvas:
                 if zTarget - self.zPosition > 0:
                     Color(0, 1, 0)
-                    radius = 2
+                    radius = 1
                 else:
                     Color(1, 0, 0)
-                    radius = 4
+                    radius = 2
                 Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, radius), width = 2, group = 'gcode')
         
         self.xPosition = xTarget
