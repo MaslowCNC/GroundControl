@@ -280,24 +280,25 @@
                 disabled: False
                 on_press: root.testMotors()
             Button:
+                text: 'Calibrate Machine Dimensions'
+                disabled: True
+            Button:
                 text: 'Calibrate Chain Length - Automatic'
                 disabled: False
                 on_press: root.calibrateChainLengths()
-            Button:
-                text: 'Calibrate Chain Length - Manual'
-                disabled: False
-                on_release: root.manualCalibrateChainLengths()
             Button:
                 text: 'Calibrate Motors'
                 disabled: False
                 on_release: root.calibrateMotors()
             Button:
-                text: 'Test Feedback System'
-                on_release: root.testFeedbackSystem()
-            Button:
                 text: 'About'
                 disabled: False
                 on_release: root.about()
+            Spinner:
+                id: advancedOptions
+                text: "Advanced"
+                values: ["Calibrate Chain Length - Manual", "Test Feedback System", "Wipe EEPROM"]
+                on_text: root.advancedOptionsFunctions(advancedOptions.text)
 
 <ManualControl>:
     GridLayout:
