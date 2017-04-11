@@ -274,11 +274,14 @@
         Label:
             text: "Diagnostic features"
         GridLayout:
-            cols: 3
+            cols: 4
             Button:
                 text: 'Test Motors/Encoders'
                 disabled: False
                 on_press: root.testMotors()
+            Button:
+                text: 'Calibrate Machine Dimensions'
+                disabled: True
             Button:
                 text: 'Calibrate Chain Length - Automatic'
                 disabled: False
@@ -294,6 +297,9 @@
             Button:
                 text: 'Test Feedback System'
                 on_release: root.testFeedbackSystem()
+            Button:
+                text: "Wipe EEPROM"
+                on_release: root.wipeEEPROM()
             Button:
                 text: 'About'
                 disabled: False

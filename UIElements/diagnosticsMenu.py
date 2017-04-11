@@ -62,3 +62,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self.data.logger.beginRecordingAvgError()
         self.data.message_queue.put("Message: If you press \"Continue\" Maslow will run a small test shape and report the average positional error when finished. The z-axis will not move during this test.")
         self.parentWidget.close()
+    
+    def wipeEEPROM(self):
+        self.data.gcode_queue.put("B07 ")
+        self.parentWidget.close()
