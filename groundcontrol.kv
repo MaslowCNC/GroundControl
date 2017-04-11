@@ -285,8 +285,8 @@
                 on_press: root.calibrateChainLengths()
             Button:
                 text: 'Calibrate Chain Length - Manual'
-                disabled: True
-                on_release: root.returnToCenter()
+                disabled: False
+                on_release: root.manualCalibrateChainLengths()
             Button:
                 text: 'Calibrate Motors'
                 disabled: False
