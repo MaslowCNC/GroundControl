@@ -15,16 +15,6 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
     def openFile(self):
         '''
         
-        Open A File
-        
-        Why does this function exist if its just a nicer name for show_load() ?
-        
-        '''
-        self.show_load()
-    
-    def show_load(self):
-        '''
-        
         Open The Pop-up To Load A File
         
         Creates a new pop-up which can be used to open a file.
@@ -38,7 +28,21 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
                             size_hint=(0.9, 0.9))
         self._popup.open()
     
-    def load(self, path, filename):
+    def reloadGcode(self):
+        '''
+        
+        Trigger a reloading of the gcode file
+        
+        '''
+        
+        filePath = self.data.gcodeFile
+        self.data.gcodeFile = ""
+        self.data.gcodeFile = filePath
+        
+        #close the parent popup
+        self.parentWidget.close()
+    
+    def load(self, filePath, filename):
         '''
         
         Load A File (Any Type)
@@ -46,56 +50,35 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         Takes in a file path (from pop-up) and handles the file appropriately for the given file-type.
         
         '''
-        #locate the file extension
-        filename = filename[0]
-        fileExtension = filename[-4:]
         
-        self.data.gcodeFile = filename
-        self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
-        self.data.config.write()
-        
-        self.reloadGcode()
+        #close the open file popup
         self.dismiss_popup()
+        
+        #locate the file
+        filename = filename[0]
+        fileExtension = path.splitext(filename)[1]
+        
+        validExtensions = self.data.config.get('Ground Control Settings', 'validExtensions').replace(" ", "").split(',')
+        
+        if fileExtension in validExtensions:
+            self.data.gcodeFile = filename
+            self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
+            self.data.config.write()
+        else:
+            self.data.message_queue.put("Message: Ground control can only open gcode files with extensions: " + self.data.config.get('Ground Control Settings', 'validExtensions'))
         
         #close the parent popup
         self.parentWidget.close()
     
-    def reloadGcode(self):
+    def resetView(self):
         '''
         
-        This reloads the gcode from the hard drive in case it has been updated. 
+        Reset the gcode canvas view. Most of the work is done in the .kv file.
         
         '''
-        filename = self.data.gcodeFile
-        try:
-            filterfile = open(filename, 'r')
-            rawfilters = filterfile.read()
-            filtersparsed = re.sub(r'\(([^)]*)\)','',rawfilters) #removes mach3 style gcode comments
-            filtersparsed = re.sub(r';([^\n]*)\n','',filtersparsed) #removes standard ; intiated gcode comments
-            filtersparsed = re.split(r'\s(?=G)|\n|\s(?=g)|\s(?=M)', filtersparsed) #splits the gcode into elements to be added to the list
-            filtersparsed = [x + ' ' for x in filtersparsed] #adds a space to the end of each line
-            filtersparsed = [x.lstrip() for x in filtersparsed]
-            filtersparsed = [x.replace('X ','X') for x in filtersparsed]
-            filtersparsed = [x.replace('Y ','Y') for x in filtersparsed]
-            filtersparsed = [x.replace('Z ','Z') for x in filtersparsed]
-            filtersparsed = [x.replace('I ','I') for x in filtersparsed]
-            filtersparsed = [x.replace('J ','J') for x in filtersparsed]
-            filtersparsed = [x.replace('F ','F') for x in filtersparsed]
-
-            self.data.gcode = filtersparsed
-            
-            filterfile.close() #closes the filter save file
-        except:
-            if filename is not "":
-                print "Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use File > Open G-code"
-            self.data.gcodeFile = ""
-        
-        try:
-            #close the parent popup
-            self.parentWidget.close()
-        except AttributeError:
-            pass #the parent popup does note exist to close
-        
+        #close the parent popup
+        self.parentWidget.close()
+    
     def show_gcode(self):
         '''
         

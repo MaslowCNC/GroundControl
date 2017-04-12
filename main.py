@@ -158,6 +158,32 @@ class GroundControlApp(App):
     ]
     '''
     
+    gcsettings = '''
+    [
+        {
+            "type": "string",
+            "title": "Zoom In",
+            "desc": "Pressing this key will zoom in. Note combinations of keys like \'shift\' + \'=\' may not work as expected. Program must be restarted to take effect.",
+            "section": "Ground Control Settings",
+            "key": "zoomIn"
+        },
+        {
+            "type": "string",
+            "title": "Zoom Out",
+            "desc": "Pressing this key will zoom in. Note combinations of keys like \'shift\' + \'=\' may not work as expected. Program must be restarted to take effect.",
+            "section": "Ground Control Settings",
+            "key": "zoomOut"
+        },
+        {
+            "type": "string",
+            "title": "Valid File Extensions",
+            "desc": "Valid file extensions for Ground Control to open. Comma separated list.",
+            "section": "Ground Control Settings",
+            "key": "validExtensions"
+        }
+    ]
+    '''
+    
     def build(self):
         Window.maximize()
         
@@ -205,7 +231,7 @@ class GroundControlApp(App):
         
     def build_config(self, config):
         """
-        Set the default values for the configs sections.
+        Set the default values for the config sections.
         """
         config.setdefaults('Maslow Settings', {'COMport': '',
                                                'zAxis': False, 
@@ -223,6 +249,10 @@ class GroundControlApp(App):
                                                  'gearTeeth': 10, 
                                                  'chainPitch':6.35,
                                                  'zEncoderSteps':7550.0})
+        
+        config.setdefaults('Ground Control Settings', {'zoomIn': "pageup",
+                                                 'validExtensions':".nc, .ngc, .text, .gcode",
+                                                 'zoomOut': "pagedown"})
 
     def build_settings(self, settings):
         """
@@ -230,6 +260,7 @@ class GroundControlApp(App):
         """
         settings.add_json_panel('Maslow Settings', self.config, data=self.json)
         settings.add_json_panel('Advanced Settings', self.config, data=self.advanced)
+        settings.add_json_panel('Ground Control Settings', self.config, data=self.gcsettings)
 
     def on_config_change(self, config, section, key, value):
         """
@@ -258,7 +289,7 @@ class GroundControlApp(App):
             +" Q" + str(self.data.config.get('Maslow Settings', 'motorSpacingX'))
             +" E" + str(self.data.config.get('Maslow Settings', 'motorOffsetY'))
             +" F" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
-            +" G" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
+            +" R" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
             +" H" + str(self.data.config.get('Maslow Settings', 'sledCG'))
             +" I" + str(self.data.config.get('Maslow Settings', 'zAxis'))
             +" J" + str(self.data.config.get('Advanced Settings', 'encoderSteps'))
@@ -291,16 +322,20 @@ class GroundControlApp(App):
         '''
         while not self.data.message_queue.empty(): #if there is new data to be read
             message = self.data.message_queue.get()
-            if message[0:2] == "pz":
+            
+            self.data.logger.writeToLog(message)
+            
+            if message[0] == "<":
                 self.setPosOnScreen(message)
-            elif message[0:2] == "pt":
-                self.setTargetOnScreen(message)
+            elif message[0] == "[":
+                if message[1:10] == "PosError:":
+                    self.setErrorOnScreen(message)
             elif message[0:8] == "Message:":
                 self.previousUploadStatus = self.data.uploadFlag 
                 self.data.uploadFlag = 0
                 content = NotificationPopup(continueOn = self.dismiss_popup_continue, hold=self.dismiss_popup_hold , text = message[9:])
                 self._popup = Popup(title="Notification: ", content=content,
-                            auto_dismiss=False, size_hint=(0.25, 0.25))
+                            auto_dismiss=False, size_hint=(0.35, 0.35))
                 self._popup.open()
             else:
                 self.writeToTextConsole(message)
@@ -314,7 +349,6 @@ class GroundControlApp(App):
         self._popup.dismiss()
         self.data.uploadFlag = self.previousUploadStatus #resume cutting if the machine was cutting before
     
-        
     def dismiss_popup_hold(self):
         '''
         
@@ -332,20 +366,18 @@ class GroundControlApp(App):
         '''
         
         try:
-            startpt = message.find('(')
-            startpt = startpt + 1
+            startpt = message.find('MPos:') + 5
             
-            endpt = message.find(')')
+            endpt = message.find('WPos:')
             
             numz  = message[startpt:endpt]
-            units = message[endpt+1:endpt+3]
+            units = "mm" #message[endpt+1:endpt+3]
             
             valz = numz.split(",")
             
             xval  = float(valz[0])
             yval  = float(valz[1])
             zval  = float(valz[2])
-            error = float(valz[3])
             
             if math.isnan(xval):
                 self.writeToTextConsole("Unable to resolve x Kinematics.")
@@ -356,40 +388,26 @@ class GroundControlApp(App):
             if math.isnan(zval):
                 self.writeToTextConsole("Unable to resolve z Kinematics.")
                 zval = 0
-            if math.isnan(error):
-                self.writeToTextConsole("Unable to resolve position error.")
-                error = 0
         except:
             print "bad data"
             return
         
-        self.frontpage.setPosReadout(xval,yval,zval,units)
-        self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,self.data.units, error)
+        self.frontpage.setPosReadout(xval,yval,zval)
+        self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,self.data.units)
     
-    def setTargetOnScreen(self, message):
-        '''
+    def setErrorOnScreen(self, message):
         
-        This should be moved into the appropriate widget
-        
-        '''
         try:
-            startpt = message.find('(')
-            startpt = startpt + 1
+            startpt = message.find(':')+1 
+            endpt = message.find(',', startpt)
+            errorValueAsString = message[startpt:endpt]
+            errorValueAsFloat  = float(errorValueAsString)
             
-            endpt = message.find(')')
-            
-            numz  = message[startpt:endpt]
-            units = message[endpt+1:endpt+3]
-            
-            valz = numz.split(",")
-            
-            xval = float(valz[0])
-            yval = float(valz[1])
-            zval = float(valz[2])
-            
-            #self.frontpage.gcodecanvas.targetIndicator.setPos(xval,yval,self.data.units)
+            self.frontpage.gcodecanvas.positionIndicator.setError(errorValueAsFloat)
+            self.data.logger.writeErrorValueToLog(errorValueAsFloat)
         except:
-            print "unable to convert to number"
+            print "unable to read error value"
+        
         
     
 if __name__ == '__main__':

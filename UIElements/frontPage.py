@@ -34,9 +34,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     stepsizeval = 0
     
-    shiftX = 0
-    shiftY = 0
-    
     consoleText = StringProperty(" ")
     
     units = StringProperty("MM")
@@ -49,10 +46,10 @@ class FrontPage(Screen, MakesmithInitFuncs):
         super(FrontPage, self).__init__(**kwargs)
         self.data = data
     
-    def setPosReadout(self, xPos, yPos, zPos, units):
-        self.xReadoutPos    = str(xPos) + " " + units
-        self.yReadoutPos    = str(yPos) + " " + units
-        self.zReadoutPos    = str(zPos) + " " + units
+    def setPosReadout(self, xPos, yPos, zPos):
+        self.xReadoutPos    = "X: " + str(xPos)
+        self.yReadoutPos    = "Y: " + str(yPos)
+        self.zReadoutPos    = "Z: " + str(zPos)
         self.numericalPosX  = xPos
         self.numericalPosY  = yPos
         
@@ -108,14 +105,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.percentComplete = '%.1f' %(100* (float(newIndex) / (len(self.data.gcode)-1))) + "%"
     
     def onGcodeFileChange(self, callback, newGcode):
-    
-        #reset the shift values to 0 because the new gcode is not loaded with a shift applied
-        self.shiftX = 0
-        self.shiftY = 0
-        
-        #reset the gcode index to the beginning and update the display
-        self.data.gcodeIndex = 0
-        self.moveGcodeIndex(0)
+        pass
     
     def onUploadFlagChange(self, callback, newFlagValue):
         if self.data.uploadFlag is 0 and self.data.gcodeIndex > 1: #if the machine is stopped partway through a file
@@ -258,65 +248,38 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.target[2] = 0
         
     def home(self):
+        '''
         
-        if self.units == "INCHES":
-            self.data.gcode_queue.put("G00 Z.25 ")
+        Return the machine to it's home position. (0,0) is the default unless the 
+        origin has been moved by the user.
+        
+        '''
+        
+        #if the machine has a z-axis lift it then go home
+        if int(self.data.config.get('Maslow Settings', 'zAxis')):
+            if self.units == "INCHES":
+                self.data.gcode_queue.put("G00 Z.25 ")
+            else:
+                self.data.gcode_queue.put("G00 Z5.0 ")
+            
+            self.data.gcode_queue.put("G00 X" + str(self.data.gcodeShift[0]) + " Y" + str(self.data.gcodeShift[1]) + " ")
+            
+            self.data.gcode_queue.put("G00 Z0 ")
+        #if the machine does not have a z-axis, just go home
         else:
-            self.data.gcode_queue.put("G00 Z5.0 ")
+            self.data.gcode_queue.put("G00 X" + str(self.data.gcodeShift[0]) + " Y" + str(self.data.gcodeShift[1]) + " ")
         
-        self.data.gcode_queue.put("G00 X" + str(self.shiftX) + " Y" + str(self.shiftY) + " ")
-        
-        self.data.gcode_queue.put("G00 Z0 ")
-        
-        self.target[0] = self.shiftX
-        self.target[1] = self.shiftY
+        self.target[0] = self.data.gcodeShift[0]
+        self.target[1] = self.data.gcodeShift[1]
         self.target[2] = 0.0
     
-    def moveLine(self, gcodeLine, moveXBy, moveYBy):
-        
-        originalLine = gcodeLine
-        
-        try:
-            gcodeLine = gcodeLine.upper() + " "
-            
-            
-            x = gcodeLine.find('X')
-            if x != -1:
-                space = gcodeLine.find(' ', x)
-                number = float(gcodeLine[x+1:space]) + moveXBy
-                gcodeLine = gcodeLine[0:x+1] + str(number) + gcodeLine[space:]
-            
-            y = gcodeLine.find('Y')
-            if y != -1:
-                space = gcodeLine.find(' ', y)
-                number = float(gcodeLine[y+1:space]) + moveYBy
-                gcodeLine = gcodeLine[0:y+1] + str(number) + gcodeLine[space:]
-            
-            return gcodeLine
-        except ValueError:
-            print "line could not be moved:"
-            print originalLine
-            return originalLine
-    
     def moveOrigin(self):
+        '''
         
-        if self.data.units == "INCHES":
-            amtToShiftX = self.numericalPosX - self.shiftX
-            amtToShiftY = self.numericalPosY - self.shiftY
-            self.shiftX = self.shiftX + amtToShiftX
-            self.shiftY = self.shiftY + amtToShiftY
-        else:
-            amtToShiftX = self.numericalPosX - self.shiftX
-            amtToShiftY = self.numericalPosY - self.shiftY
-            self.shiftX = self.shiftX + amtToShiftX
-            self.shiftY = self.shiftY + amtToShiftY
+        Move the gcode origin to the current location
         
-        shiftedGcode = []
-        
-        for line in self.data.gcode:
-            shiftedGcode.append(self.moveLine(line , amtToShiftX, amtToShiftY))
-        
-        self.data.gcode = shiftedGcode
+        '''
+        self.data.gcodeShift = [self.numericalPosX,self.numericalPosY]
     
     def startRun(self):
         
@@ -335,7 +298,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def stopRun(self):
         self.data.uploadFlag = 0
         self.data.gcodeIndex = 0
-        self.data.quick_queue.put("STOP") 
+        self.data.quick_queue.put("!") 
         with self.data.gcode_queue.mutex:
             self.data.gcode_queue.queue.clear()
         self.onUploadFlagChange(self.stopRun, 0)

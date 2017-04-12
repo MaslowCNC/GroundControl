@@ -5,6 +5,7 @@ from kivy.properties                                  import BooleanProperty
 from kivy.properties                                  import OptionProperty
 from kivy.properties                                  import NumericProperty
 from kivy.event                                       import EventDispatcher
+from DataStructures.logger                            import   Logger
 import Queue
 
 class Data(EventDispatcher):
@@ -39,7 +40,8 @@ class Data(EventDispatcher):
     currentpos = [0.0, 0.0, 0.0]
     target     = [0.0, 0.0, 0.0]
     units      = OptionProperty("MM", options=["MM", "INCHES"])
-    
+    gcodeShift = ObjectProperty([0.0,0.0])                          #the amount that the gcode has been shifted
+    logger     =  Logger()                                          #the module which records the machines behavior to review later
     
     '''
     Flags
@@ -63,3 +65,11 @@ class Data(EventDispatcher):
     message_queue   =  Queue.Queue()
     gcode_queue     =  Queue.Queue()
     quick_queue     =  Queue.Queue()
+    
+    def __init__(self):
+        '''
+        
+        Initializations.
+        
+        '''
+        self.logger.data = self
