@@ -420,9 +420,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.clearGcode()
         
         #Check to see if file is too large to load
-        if len(self.data.gcode) > 100000:
-            errorText = "The current file contains " + str(len(self.data.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first 100000 lines are shown here.\nThe complete program will cut if you choose to do so."
+        if len(self.data.gcode) > 20000:
+            errorText = "The current file contains " + str(len(self.data.gcode)) + " lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first 20000 lines are shown here.\nThe complete program will cut if you choose to do so."
             print errorText
-        else:
-            self.callBackMechanism(self.updateGcode)
+            self.data.message_queue.put("Message: " + errorText)
+        
+        self.callBackMechanism(self.updateGcode)
         
