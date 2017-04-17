@@ -612,23 +612,29 @@
 
 <ZAxisPopupContent>:
     distBtn:distBtn
+    unitsBtn:unitsBtn
     cols: 1
     size: root.size
     pos: root.pos
     GridLayout:
         cols: 3
         Button:
-            text: "5.0"
+            text: ".1"
             id: distBtn
         Button:
             text: "MM"
+            on_release: root.units()
+            id: unitsBtn
         Button:
             text: "In"
+            on_release: root.zIn()
         Button:
             text: "Done"
             on_release: root.done()
         Button:
             text: "Define Zero"
+            on_release: root.zero()
         Button:
             text: "Out"
+            on_release: root.zOut()
         

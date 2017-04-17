@@ -76,8 +76,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.units = newUnits
         INCHESTOMM  =    1/25.4
         MMTOINCHES  =    25.4
-        #the behavior of notifying the machine doesn't really belong here
-        #but I'm not really sure where else it does belong
+        
         if newUnits == "INCHES":
             self.data.gcode_queue.put('G20 ')
             self.moveDistInput.text = str(float(self.moveDistInput.text)/25)
@@ -204,7 +203,9 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.data.gcode_queue.put("G10 Z0 ")'''
     
     def zAxisPopup(self):
-        self.popupContent = ZAxisPopupContent(done=self.dismiss_popup)
+        self.popupContent      = ZAxisPopupContent(done=self.dismiss_popup)
+        self.popupContent.data = self.data
+        self.popupContent.initialize()
         self._popup = Popup(title="Z-Axis", content=self.popupContent,
                             size_hint=(0.5, 0.5))
         self._popup.open()
