@@ -19,8 +19,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
     gcodecanvas    = ObjectProperty(None) 
     screenControls = ObjectProperty(None) 
     
-    target = [0,0,0]
-    
     connectionStatus = StringProperty("Not Connected")
     
     xReadoutPos = StringProperty("0 mm")
@@ -39,8 +37,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
     units = StringProperty("MM")
     gcodeLineNumber = StringProperty('0')
     
-    firstPosFlag = 1
-    
     
     def __init__(self, data, **kwargs):
         super(FrontPage, self).__init__(**kwargs)
@@ -52,12 +48,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.zReadoutPos    = "Z: " + str(zPos)
         self.numericalPosX  = xPos
         self.numericalPosY  = yPos
-        
-        if self.firstPosFlag == True:
-            self.target[0] = xPos
-            self.target[1] = yPos
-            self.target[2] = zPos
-            self.firstPosFlag = False
     
     def setUpData(self, data):
         self.gcodecanvas.setUpData(data)
@@ -90,15 +80,9 @@ class FrontPage(Screen, MakesmithInitFuncs):
         if newUnits == "INCHES":
             self.data.gcode_queue.put('G20 ')
             self.moveDistInput.text = str(float(self.moveDistInput.text)/25)
-            self.target[0] = self.target[0]*INCHESTOMM
-            self.target[1] = self.target[1]*INCHESTOMM
-            self.target[2] = self.target[2]*INCHESTOMM
         else:
             self.data.gcode_queue.put('G21 ')
             self.moveDistInput.text = str(float(self.moveDistInput.text)*25)
-            self.target[0] = self.target[0]*MMTOINCHES
-            self.target[1] = self.target[1]*MMTOINCHES
-            self.target[2] = self.target[2]*MMTOINCHES
     
     def onIndexMove(self, callback, newIndex):
         self.gcodeLineNumber = str(newIndex)
@@ -240,10 +224,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         else:
             self.data.gcode_queue.put("G00 X" + str(self.data.gcodeShift[0]) + " Y" + str(self.data.gcodeShift[1]) + " ")
         
-        self.target[0] = self.data.gcodeShift[0]
-        self.target[1] = self.data.gcodeShift[1]
-        self.target[2] = 0.0
-    
     def moveOrigin(self):
         '''
         
