@@ -234,7 +234,7 @@ class GroundControlApp(App):
         Set the default values for the config sections.
         """
         config.setdefaults('Maslow Settings', {'COMport': '',
-                                               'zAxis': False, 
+                                               'zAxis': 0, 
                                                'zDistPerRot':3.17, 
                                                'bedWidth':2438.4, 
                                                'bedHeight':1219.2, 
