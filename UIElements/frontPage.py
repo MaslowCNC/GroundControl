@@ -177,19 +177,15 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def upLeft(self):
         self.jmpsize()
-        self.data.gcode_queue.put("G91 G00 X" + str(self.stepsizeval) + " Y" + str(self.stepsizeval) + " G90 ")
+        self.data.gcode_queue.put("G91 G00 X" + str(-1*self.stepsizeval) + " Y" + str(self.stepsizeval) + " G90 ")
         
     def upRight(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G00 X" + str(self.stepsizeval) + " Y" + str(self.stepsizeval) + " G90 ")
-        self.target[0] = xtarget
-        self.target[1] = ytarget
 
     def up(self):
         self.jmpsize()
-        target = self.target[1] + float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 Y" + str(target) + " ")
-        self.target[1] = target
+        self.data.gcode_queue.put("G91 G00 Y" + str(self.stepsizeval) + " G90 ")
 
     def left(self):
         self.jmpsize()
@@ -201,41 +197,26 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
     def downLeft(self):
         self.jmpsize()
-        xtarget = self.target[0] - float(self.stepsizeval)
-        ytarget = self.target[1] - float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 X" + str(xtarget) + " Y" + str(ytarget) + " ")
-        self.target[0] = xtarget
-        self.target[1] = ytarget
+        self.data.gcode_queue.put("G91 G00 X" + str(-1*self.stepsizeval) + " Y" + str(-1*self.stepsizeval) + " G90 ")
 
     def down(self):
         self.jmpsize()
-        target = self.target[1] - float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 Y" + str(target) + " ")
-        self.target[1] = target
+        self.data.gcode_queue.put("G91 G00 Y" + str(-1*self.stepsizeval) + " G90 ") 
 
     def downRight(self):
         self.jmpsize()
-        xtarget = self.target[0] + float(self.stepsizeval)
-        ytarget = self.target[1] - float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 X" + str(xtarget) + " Y" + str(ytarget) + " ")
-        self.target[0] = xtarget
-        self.target[1] = ytarget
+        self.data.gcode_queue.put("G91 G00 X" + str(self.stepsizeval) + " Y" + str(-1*self.stepsizeval) + " G90 ")
 
     def zUp(self):
         self.jmpsize()
-        target = self.target[2] + 0.10*float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 Z" + str(target) + " ")
-        self.target[2] = self.target[2] + 0.10*float(self.stepsizeval)
+        self.data.gcode_queue.put("G91 G00 Z" + str(self.stepsizeval) + " G90 ")
 
     def zDown(self):
         self.jmpsize()
-        target = self.target[2] - 0.10*float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 Z" + str(target) + " ")
-        self.target[2] = self.target[2] - 0.10*float(self.stepsizeval)
+        self.data.gcode_queue.put("G91 G00 Z" + str(-1*self.stepsizeval) + " G90 ")
 
     def zeroZ(self):
         self.data.gcode_queue.put("G10 Z0 ")
-        self.target[2] = 0
         
     def home(self):
         '''
