@@ -391,6 +391,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         '''
         
+        print "callback ran"
+        print self.lineNumber
+        print len(self.data.gcode)
+        
         #Draw numberOfTimesToCall lines on the canvas
         numberOfTimesToCall = 50
         
