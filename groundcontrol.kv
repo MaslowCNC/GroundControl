@@ -75,6 +75,7 @@
             Button:
                 text: 'Z-OUT'
                 on_press: root.zUp()
+                disabled: True
             Button:
                 on_press: root.left()
                 canvas.after:
@@ -91,6 +92,7 @@
             Button:
                 text: 'Z-IN'
                 on_press: root.zDown()
+                disabled: True
             Button:
                 on_press: root.downLeft()
                 canvas.after:
@@ -107,8 +109,8 @@
                     Triangle:
                         points: self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/4,self.x+self.width/2,self.y+self.width/2,
             Button:
-                text: 'Zero Z'
-                on_press: root.zeroZ()
+                text: 'Z-Axis'
+                on_press: root.zAxisPopup()
             Label:
                 id: moveSpeedInput
                 text: "Dist To \nMove:"
@@ -607,3 +609,26 @@
         Button:
             text: "Done"
             on_release: root.done()
+
+<ZAxisPopupContent>:
+    distBtn:distBtn
+    cols: 1
+    size: root.size
+    pos: root.pos
+    GridLayout:
+        cols: 3
+        Button:
+            text: "5.0"
+            id: distBtn
+        Button:
+            text: "MM"
+        Button:
+            text: "In"
+        Button:
+            text: "Done"
+            on_release: root.done()
+        Button:
+            text: "Define Zero"
+        Button:
+            text: "Out"
+        
