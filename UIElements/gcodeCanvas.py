@@ -333,8 +333,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         '''
         validPrefixList = ['G00','G0 ','G1 ','G01','G2 ','G02','G3 ','G03']
         
-        self.lineNumber = self.lineNumber + 1
-        
         try:
             self.data.gcode[self.lineNumber] = self.moveLine(self.data.gcode[self.lineNumber])    #move the line if the gcode has been moved
             fullString = self.data.gcode[self.lineNumber]
@@ -383,6 +381,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if gString == 'G91':
             self.absoluteFlag = 0
         
+        self.lineNumber = self.lineNumber + 1
+        
     def callBackMechanism(self, callback) :
         '''
         
@@ -390,10 +390,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         update the gcode.
         
         '''
-        
-        print "callback ran"
-        print self.lineNumber
-        print len(self.data.gcode)
         
         #Draw numberOfTimesToCall lines on the canvas
         numberOfTimesToCall = 50
@@ -424,8 +420,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.clearGcode()
         
         #Check to see if file is too large to load
-        if len(self.data.gcode) > 20000:
-            errorText = "The current file contains " + str(len(self.data.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first 20000 lines are shown here.\nThe complete program will cut if you choose to do so."
+        if len(self.data.gcode) > 100000:
+            errorText = "The current file contains " + str(len(self.data.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first 100000 lines are shown here.\nThe complete program will cut if you choose to do so."
             print errorText
         else:
             self.callBackMechanism(self.updateGcode)
