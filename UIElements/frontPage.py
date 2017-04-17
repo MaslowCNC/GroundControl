@@ -177,17 +177,11 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def upLeft(self):
         self.jmpsize()
-        xtarget = self.target[0] - float(self.stepsizeval)
-        ytarget = self.target[1] + float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 X" + str(xtarget) + " Y" + str(ytarget) + " ")
-        self.target[0] = xtarget
-        self.target[1] = ytarget
+        self.data.gcode_queue.put("G91 G00 X" + str(self.stepsizeval) + " Y" + str(self.stepsizeval) + " G90 ")
         
     def upRight(self):
         self.jmpsize()
-        xtarget = self.target[0] + float(self.stepsizeval)
-        ytarget = self.target[1] + float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 X" + str(xtarget) + " Y" + str(ytarget) + " ")
+        self.data.gcode_queue.put("G91 G00 X" + str(self.stepsizeval) + " Y" + str(self.stepsizeval) + " G90 ")
         self.target[0] = xtarget
         self.target[1] = ytarget
 
@@ -199,15 +193,11 @@ class FrontPage(Screen, MakesmithInitFuncs):
 
     def left(self):
         self.jmpsize()
-        target = self.target[0] - float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 X" + str(target) + " ")
-        self.target[0] = target
+        self.data.gcode_queue.put("G91 G0 X" + str(-1*self.stepsizeval) + " G90 ")
         
     def right(self):
         self.jmpsize()
-        target = self.target[0] + float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 X" + str(target) + " ")
-        self.target[0] = target
+        self.data.gcode_queue.put("G91 G0 X" + str(self.stepsizeval) + " G90 ")
         
     def downLeft(self):
         self.jmpsize()
