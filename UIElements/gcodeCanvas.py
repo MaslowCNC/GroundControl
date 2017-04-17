@@ -410,8 +410,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         '''
         
         #reset variables 
-        self.xPosition = 0
-        self.yPosition = 0
+        self.xPosition = self.data.gcodeShift[0]*self.canvasScaleFactor
+        self.yPosition = self.data.gcodeShift[1]*self.canvasScaleFactor
         self.zPosition = 0
 
         self.prependString = "G00 "
