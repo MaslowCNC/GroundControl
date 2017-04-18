@@ -73,7 +73,7 @@
                     Triangle:
                         points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/2,
             Button:
-                text: 'Z-OUT'
+                text: ''
                 on_press: root.zUp()
                 disabled: True
             Button:
@@ -90,7 +90,7 @@
                     Triangle:
                         points: self.x+2*self.width/3,self.y+self.height/2,self.x+self.width/3,self.y+self.height/3,self.x+self.width/3,self.y+2*self.height/3,
             Button:
-                text: 'Z-IN'
+                text: ''
                 on_press: root.zDown()
                 disabled: True
             Button:
@@ -621,6 +621,7 @@
         Button:
             text: ".1"
             id: distBtn
+            on_release: root.setDist()
         Button:
             text: "MM"
             on_release: root.units()

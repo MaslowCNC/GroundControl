@@ -6,6 +6,8 @@ This allows the user interact with the z-axis when it is the content of a popup
 from   kivy.uix.gridlayout                       import   GridLayout
 from   kivy.properties                           import   ObjectProperty
 from   kivy.properties                           import   StringProperty
+from   UIElements.touchNumberInput               import   TouchNumberInput
+from kivy.uix.popup                              import Popup
 
 class ZAxisPopupContent(GridLayout):
     done   = ObjectProperty(None)
@@ -17,6 +19,12 @@ class ZAxisPopupContent(GridLayout):
         
         '''
         self.unitsBtn.text = self.data.units
+    
+    def setDist(self):
+        self.popupContent = TouchNumberInput(done=self.dismiss_popup)
+        self._popup = Popup(title="Change increment size of machine movement", content=self.popupContent,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
     
     def units(self):
         '''
@@ -56,3 +64,15 @@ class ZAxisPopupContent(GridLayout):
         '''
         self.data.gcode_queue.put("G10 Z0 ")
     
+    def dismiss_popup(self):
+        '''
+        
+        Close The Pop-up to enter distance information
+        
+        '''
+        try:
+            float(self.popupContent.textInput.text)
+            self.distBtn.text = self.popupContent.textInput.text
+        except:
+            pass                                                             #If what was entered cannot be converted to a number, leave the value the same
+        self._popup.dismiss()
