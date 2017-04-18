@@ -190,17 +190,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def downRight(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G00 X" + str(self.stepsizeval) + " Y" + str(-1*self.stepsizeval) + " G90 ")
-
-    '''def zUp(self):
-        self.jmpsize()
-        self.data.gcode_queue.put("G91 G00 Z" + str(0.1*self.stepsizeval) + " G90 ")
-
-    def zDown(self):
-        self.jmpsize()
-        self.data.gcode_queue.put("G91 G00 Z" + str(-0.1*self.stepsizeval) + " G90 ")
-
-    def zeroZ(self):
-        self.data.gcode_queue.put("G10 Z0 ")'''
     
     def zAxisPopup(self):
         self.popupContent      = ZAxisPopupContent(done=self.dismiss_popup)
