@@ -45,7 +45,6 @@ class ZAxisPopupContent(GridLayout):
         Move the z-axis in
         
         '''
-        print self.distBtn.text
         self.data.gcode_queue.put("G91 G00 Z" + str(-1*float(self.distBtn.text)) + " G90 ")
     
     def zOut(self):
