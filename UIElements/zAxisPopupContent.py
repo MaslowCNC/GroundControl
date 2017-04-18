@@ -7,18 +7,19 @@ from   kivy.uix.gridlayout                       import   GridLayout
 from   kivy.properties                           import   ObjectProperty
 from   kivy.properties                           import   StringProperty
 from   UIElements.touchNumberInput               import   TouchNumberInput
-from kivy.uix.popup                              import Popup
+from   kivy.uix.popup                            import Popup
 
 class ZAxisPopupContent(GridLayout):
     done   = ObjectProperty(None)
     
-    def initialize(self):
+    def initialize(self, zStepSizeVal):
         '''
         
         Initialize the z-axis popup
         
         '''
         self.unitsBtn.text = self.data.units
+        self.distBtn.text  = str(zStepSizeVal)
     
     def setDist(self):
         self.popupContent = TouchNumberInput(done=self.dismiss_popup)
@@ -34,8 +35,11 @@ class ZAxisPopupContent(GridLayout):
         '''
         if self.data.units == "INCHES":
             self.data.units = "MM"
+            self.distBtn.text = str(25*float(self.distBtn.text))
         else:
             self.data.units = "INCHES"
+            
+            self.distBtn.text = str(float(self.distBtn.text)/25)
         
         self.unitsBtn.text = self.data.units
     
