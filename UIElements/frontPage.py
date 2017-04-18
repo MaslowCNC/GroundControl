@@ -31,7 +31,8 @@ class FrontPage(Screen, MakesmithInitFuncs):
     numericalPosX  = 0.0
     numericalPosY  = 0.0
     
-    stepsizeval = 0
+    stepsizeval  = 0
+    zStepSizeVal = .1
     
     consoleText = StringProperty(" ")
     
@@ -192,13 +193,25 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.data.gcode_queue.put("G91 G00 X" + str(self.stepsizeval) + " Y" + str(-1*self.stepsizeval) + " G90 ")
     
     def zAxisPopup(self):
-        self.popupContent      = ZAxisPopupContent(done=self.dismiss_popup)
+        self.popupContent      = ZAxisPopupContent(done=self.dismissZAxisPopup)
         self.popupContent.data = self.data
-        self.popupContent.initialize()
+        self.popupContent.initialize(self.zStepSizeVal)
         self._popup = Popup(title="Z-Axis", content=self.popupContent,
                             size_hint=(0.5, 0.5))
         self._popup.open()
+    
+    def dismissZAxisPopup(self):
+        '''
         
+        Close The Z-Axis Pop-up
+        
+        '''
+        try:
+            self.zStepSizeVal = float(self.popupContent.distBtn.text)
+        except:
+            pass
+        self._popup.dismiss()
+    
     def home(self):
         '''
         
