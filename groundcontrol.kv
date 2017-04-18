@@ -283,7 +283,8 @@
                 on_press: root.testMotors()
             Button:
                 text: 'Calibrate Machine Dimensions'
-                disabled: True
+                disabled: False
+                on_press: root.measureMachine()
             Button:
                 text: 'Calibrate Chain Length - Automatic'
                 disabled: False
@@ -638,4 +639,13 @@
         Button:
             text: "Z-Out"
             on_release: root.zOut()
+        
+<MeasureMachinePopup>:
+    cols: 1
+    size: root.size
+    pos: root.pos
+    Button:
+        text: "Crash"
+        on_press: root.crash()
+        
         
