@@ -73,8 +73,9 @@
                     Triangle:
                         points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/2,
             Button:
-                text: 'Z-OUT'
+                text: ''
                 on_press: root.zUp()
+                disabled: True
             Button:
                 on_press: root.left()
                 canvas.after:
@@ -89,8 +90,9 @@
                     Triangle:
                         points: self.x+2*self.width/3,self.y+self.height/2,self.x+self.width/3,self.y+self.height/3,self.x+self.width/3,self.y+2*self.height/3,
             Button:
-                text: 'Z-IN'
+                text: ''
                 on_press: root.zDown()
+                disabled: True
             Button:
                 on_press: root.downLeft()
                 canvas.after:
@@ -107,8 +109,8 @@
                     Triangle:
                         points: self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/4,self.x+self.width/2,self.y+self.width/2,
             Button:
-                text: 'Zero Z'
-                on_press: root.zeroZ()
+                text: 'Z-Axis'
+                on_press: root.zAxisPopup()
             Label:
                 id: moveSpeedInput
                 text: "Dist To \nMove:"
@@ -607,3 +609,33 @@
         Button:
             text: "Done"
             on_release: root.done()
+
+<ZAxisPopupContent>:
+    distBtn:distBtn
+    unitsBtn:unitsBtn
+    cols: 1
+    size: root.size
+    pos: root.pos
+    GridLayout:
+        cols: 3
+        Button:
+            text: ".1"
+            id: distBtn
+            on_release: root.setDist()
+        Button:
+            text: "MM"
+            on_release: root.units()
+            id: unitsBtn
+        Button:
+            text: "In"
+            on_release: root.zIn()
+        Button:
+            text: "Done"
+            on_release: root.done()
+        Button:
+            text: "Define Zero"
+            on_release: root.zero()
+        Button:
+            text: "Out"
+            on_release: root.zOut()
+        

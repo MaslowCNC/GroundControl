@@ -11,6 +11,7 @@ from kivy.properties                           import ObjectProperty, StringProp
 from DataStructures.makesmithInitFuncs         import MakesmithInitFuncs
 from kivy.uix.popup                            import Popup
 from UIElements.touchNumberInput               import TouchNumberInput
+from UIElements.zAxisPopupContent              import ZAxisPopupContent
 import re
 
 class FrontPage(Screen, MakesmithInitFuncs):
@@ -75,8 +76,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.units = newUnits
         INCHESTOMM  =    1/25.4
         MMTOINCHES  =    25.4
-        #the behavior of notifying the machine doesn't really belong here
-        #but I'm not really sure where else it does belong
+        
         if newUnits == "INCHES":
             self.data.gcode_queue.put('G20 ')
             self.moveDistInput.text = str(float(self.moveDistInput.text)/25)
@@ -190,17 +190,14 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def downRight(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G00 X" + str(self.stepsizeval) + " Y" + str(-1*self.stepsizeval) + " G90 ")
-
-    def zUp(self):
-        self.jmpsize()
-        self.data.gcode_queue.put("G91 G00 Z" + str(0.1*self.stepsizeval) + " G90 ")
-
-    def zDown(self):
-        self.jmpsize()
-        self.data.gcode_queue.put("G91 G00 Z" + str(-0.1*self.stepsizeval) + " G90 ")
-
-    def zeroZ(self):
-        self.data.gcode_queue.put("G10 Z0 ")
+    
+    def zAxisPopup(self):
+        self.popupContent      = ZAxisPopupContent(done=self.dismiss_popup)
+        self.popupContent.data = self.data
+        self.popupContent.initialize()
+        self._popup = Popup(title="Z-Axis", content=self.popupContent,
+                            size_hint=(0.5, 0.5))
+        self._popup.open()
         
     def home(self):
         '''
