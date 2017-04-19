@@ -42,7 +42,11 @@ Main UI Program
 '''
 
 class GroundControlApp(App):
-    
+
+    def get_application_config(self):
+        return super(GroundControlApp, self).get_application_config(
+            '~/%(appname)s.ini')
+
     json = '''
     [
         {
@@ -234,7 +238,7 @@ class GroundControlApp(App):
         Set the default values for the config sections.
         """
         config.setdefaults('Maslow Settings', {'COMport': '',
-                                               'zAxis': False, 
+                                               'zAxis': 0, 
                                                'zDistPerRot':3.17, 
                                                'bedWidth':2438.4, 
                                                'bedHeight':1219.2, 
@@ -248,7 +252,7 @@ class GroundControlApp(App):
         config.setdefaults('Advanced Settings', {'encoderSteps': 8148.0,
                                                  'gearTeeth': 10, 
                                                  'chainPitch':6.35,
-                                                 'zEncoderSteps':7550.0})
+                                                 'zEncoderSteps':7560.0})
         
         config.setdefaults('Ground Control Settings', {'zoomIn': "pageup",
                                                  'validExtensions':".nc, .ngc, .text, .gcode",
