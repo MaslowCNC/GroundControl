@@ -660,37 +660,63 @@
         id: carousel
         direction: "right"
         size_hint_y: .9
-        
+        #:set leftCol .8
+        #:set rightCol .2
         GridLayout:
             cols: 2
             Label:
                 text: 'This walk-through will guide you through the process of calibrating your Maslow Machine. \n\nClick Next to proceed. \n\nYou can move forward and backwards through the walk-through at any time using the "Prevous" and "Next" buttons'
-                size_hint_x: .8
-            Button:
-                text: 'Next'
-                on_release: carousel.load_next()
-                size_hint_x: .2
-        Label:
-            text: 'Slide 1'
-
-        Label:
-            text: 'Slide 2'
-            
-        Label:
-            text: 'Slide 3'
-            
-        Label:
-            text: 'Slide 4'
-        
+                size_hint_x: leftCol
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Label:
+                    text: 'The controls you will need\nfor each step will be on here\non the right'
+                Label:
         GridLayout:
             cols: 2
             Label:
-                text: 'Slide 5'
-                size_hint_x: .8
+                text: 'Point Sprocket Tooth To 12:00'
+                size_hint_x: leftCol
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Turn Sprocket 1 degree CCW'
+                Button:
+                    text: 'Turn Sprocket 1 degree CW'
+                Label:
+        GridLayout:
+            cols: 2
+            Label:
+                text: 'Measure Distance Between Motors'
+                size_hint_x: leftCol
+        GridLayout:
+            cols: 2
+            Label:
+                text: 'Measure Distance To Wood Top'
+                size_hint_x: leftCol
+        GridLayout:
+            cols: 2
+            Label:
+                text: 'Measure Distance Between Sled Mounting Points'
+                size_hint_x: leftCol
+        GridLayout:
+            cols: 2
+            Label:
+                text: 'Note that CG and Router Mounting Distance Are Not Measured Here'
+                size_hint_x: leftCol
+        GridLayout:
+            cols: 2
+            Label:
+                text: 'Cut A Test Shape'
+                size_hint_x: leftCol
             Button:
                 text: 'Finish'
                 on_release: root.done()
-                size_hint_x: .2
+                size_hint_x: rightCol
     
         
         
