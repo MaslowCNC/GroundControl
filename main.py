@@ -42,7 +42,11 @@ Main UI Program
 '''
 
 class GroundControlApp(App):
-    
+
+    def get_application_config(self):
+        return super(GroundControlApp, self).get_application_config(
+            '~/%(appname)s.ini')
+
     json = '''
     [
         {
