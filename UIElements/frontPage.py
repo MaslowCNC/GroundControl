@@ -11,6 +11,7 @@ from kivy.properties                           import ObjectProperty, StringProp
 from DataStructures.makesmithInitFuncs         import MakesmithInitFuncs
 from kivy.uix.popup                            import Popup
 from UIElements.touchNumberInput               import TouchNumberInput
+from UIElements.zAxisPopupContent              import ZAxisPopupContent
 import re
 
 class FrontPage(Screen, MakesmithInitFuncs):
@@ -18,8 +19,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
     connectmenu    = ObjectProperty(None) #make ConnectMenu object accessible at this scope
     gcodecanvas    = ObjectProperty(None) 
     screenControls = ObjectProperty(None) 
-    
-    target = [0,0,0]
     
     connectionStatus = StringProperty("Not Connected")
     
@@ -32,14 +31,13 @@ class FrontPage(Screen, MakesmithInitFuncs):
     numericalPosX  = 0.0
     numericalPosY  = 0.0
     
-    stepsizeval = 0
+    stepsizeval  = 0
+    zStepSizeVal = .1
     
     consoleText = StringProperty(" ")
     
     units = StringProperty("MM")
     gcodeLineNumber = StringProperty('0')
-    
-    firstPosFlag = 1
     
     
     def __init__(self, data, **kwargs):
@@ -52,12 +50,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.zReadoutPos    = "Z: " + str(zPos)
         self.numericalPosX  = xPos
         self.numericalPosY  = yPos
-        
-        if self.firstPosFlag == True:
-            self.target[0] = xPos
-            self.target[1] = yPos
-            self.target[2] = zPos
-            self.firstPosFlag = False
     
     def setUpData(self, data):
         self.gcodecanvas.setUpData(data)
@@ -85,20 +77,13 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.units = newUnits
         INCHESTOMM  =    1/25.4
         MMTOINCHES  =    25.4
-        #the behavior of notifying the machine doesn't really belong here
-        #but I'm not really sure where else it does belong
+        
         if newUnits == "INCHES":
             self.data.gcode_queue.put('G20 ')
             self.moveDistInput.text = str(float(self.moveDistInput.text)/25)
-            self.target[0] = self.target[0]*INCHESTOMM
-            self.target[1] = self.target[1]*INCHESTOMM
-            self.target[2] = self.target[2]*INCHESTOMM
         else:
             self.data.gcode_queue.put('G21 ')
             self.moveDistInput.text = str(float(self.moveDistInput.text)*25)
-            self.target[0] = self.target[0]*MMTOINCHES
-            self.target[1] = self.target[1]*MMTOINCHES
-            self.target[2] = self.target[2]*MMTOINCHES
     
     def onIndexMove(self, callback, newIndex):
         self.gcodeLineNumber = str(newIndex)
@@ -177,76 +162,56 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def upLeft(self):
         self.jmpsize()
-        xtarget = self.target[0] - float(self.stepsizeval)
-        ytarget = self.target[1] + float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 X" + str(xtarget) + " Y" + str(ytarget) + " ")
-        self.target[0] = xtarget
-        self.target[1] = ytarget
+        self.data.gcode_queue.put("G91 G00 X" + str(-1*self.stepsizeval) + " Y" + str(self.stepsizeval) + " G90 ")
         
     def upRight(self):
         self.jmpsize()
-        xtarget = self.target[0] + float(self.stepsizeval)
-        ytarget = self.target[1] + float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 X" + str(xtarget) + " Y" + str(ytarget) + " ")
-        self.target[0] = xtarget
-        self.target[1] = ytarget
+        self.data.gcode_queue.put("G91 G00 X" + str(self.stepsizeval) + " Y" + str(self.stepsizeval) + " G90 ")
 
     def up(self):
         self.jmpsize()
-        target = self.target[1] + float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 Y" + str(target) + " ")
-        self.target[1] = target
+        self.data.gcode_queue.put("G91 G00 Y" + str(self.stepsizeval) + " G90 ")
 
     def left(self):
         self.jmpsize()
-        target = self.target[0] - float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 X" + str(target) + " ")
-        self.target[0] = target
+        self.data.gcode_queue.put("G91 G0 X" + str(-1*self.stepsizeval) + " G90 ")
         
     def right(self):
         self.jmpsize()
-        target = self.target[0] + float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 X" + str(target) + " ")
-        self.target[0] = target
+        self.data.gcode_queue.put("G91 G0 X" + str(self.stepsizeval) + " G90 ")
         
     def downLeft(self):
         self.jmpsize()
-        xtarget = self.target[0] - float(self.stepsizeval)
-        ytarget = self.target[1] - float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 X" + str(xtarget) + " Y" + str(ytarget) + " ")
-        self.target[0] = xtarget
-        self.target[1] = ytarget
+        self.data.gcode_queue.put("G91 G00 X" + str(-1*self.stepsizeval) + " Y" + str(-1*self.stepsizeval) + " G90 ")
 
     def down(self):
         self.jmpsize()
-        target = self.target[1] - float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 Y" + str(target) + " ")
-        self.target[1] = target
+        self.data.gcode_queue.put("G91 G00 Y" + str(-1*self.stepsizeval) + " G90 ") 
 
     def downRight(self):
         self.jmpsize()
-        xtarget = self.target[0] + float(self.stepsizeval)
-        ytarget = self.target[1] - float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 X" + str(xtarget) + " Y" + str(ytarget) + " ")
-        self.target[0] = xtarget
-        self.target[1] = ytarget
-
-    def zUp(self):
-        self.jmpsize()
-        target = self.target[2] + 0.10*float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 Z" + str(target) + " ")
-        self.target[2] = self.target[2] + 0.10*float(self.stepsizeval)
-
-    def zDown(self):
-        self.jmpsize()
-        target = self.target[2] - 0.10*float(self.stepsizeval)
-        self.data.gcode_queue.put("G00 Z" + str(target) + " ")
-        self.target[2] = self.target[2] - 0.10*float(self.stepsizeval)
-
-    def zeroZ(self):
-        self.data.gcode_queue.put("G10 Z0 ")
-        self.target[2] = 0
+        self.data.gcode_queue.put("G91 G00 X" + str(self.stepsizeval) + " Y" + str(-1*self.stepsizeval) + " G90 ")
+    
+    def zAxisPopup(self):
+        self.popupContent      = ZAxisPopupContent(done=self.dismissZAxisPopup)
+        self.popupContent.data = self.data
+        self.popupContent.initialize(self.zStepSizeVal)
+        self._popup = Popup(title="Z-Axis", content=self.popupContent,
+                            size_hint=(0.5, 0.5))
+        self._popup.open()
+    
+    def dismissZAxisPopup(self):
+        '''
         
+        Close The Z-Axis Pop-up
+        
+        '''
+        try:
+            self.zStepSizeVal = float(self.popupContent.distBtn.text)
+        except:
+            pass
+        self._popup.dismiss()
+    
     def home(self):
         '''
         
@@ -269,10 +234,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         else:
             self.data.gcode_queue.put("G00 X" + str(self.data.gcodeShift[0]) + " Y" + str(self.data.gcodeShift[1]) + " ")
         
-        self.target[0] = self.data.gcodeShift[0]
-        self.target[1] = self.data.gcodeShift[1]
-        self.target[2] = 0.0
-    
     def moveOrigin(self):
         '''
         
