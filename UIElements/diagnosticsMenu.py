@@ -77,7 +77,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self.popupContent      = MeasureMachinePopup(done=self.dismissMeasureMachinePopup)
         self.popupContent.data = self.data
         self._popup = Popup(title="Setup Machine Dimensions", content=self.popupContent,
-                            size_hint=(0.5, 0.5))
+                            size_hint=(0.8, 0.8))
         self._popup.open()
     
     def dismissMeasureMachinePopup(self):

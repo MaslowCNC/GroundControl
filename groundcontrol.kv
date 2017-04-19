@@ -644,8 +644,53 @@
     cols: 1
     size: root.size
     pos: root.pos
-    Button:
-        text: "Crash"
-        on_press: root.crash()
+    #top bar
+    GridLayout:
+        cols: 3
+        size_hint_y: .1
+        Button:
+            text: "<Previous"
+            on_release: carousel.load_previous()
+        Label:
+            text: 'Step {} of 5'.format(carousel.index)
+        Button:
+            text: "Next>"
+            on_release: carousel.load_next()
+    Carousel:
+        id: carousel
+        direction: "right"
+        size_hint_y: .9
+        
+        GridLayout:
+            cols: 2
+            Label:
+                text: 'This walk-through will guide you through the process of calibrating your Maslow Machine. \n\nClick Next to proceed. \n\nYou can move forward and backwards through the walk-through at any time using the "Prevous" and "Next" buttons'
+                size_hint_x: .8
+            Button:
+                text: 'Next'
+                on_release: carousel.load_next()
+                size_hint_x: .2
+        Label:
+            text: 'Slide 1'
+
+        Label:
+            text: 'Slide 2'
+            
+        Label:
+            text: 'Slide 3'
+            
+        Label:
+            text: 'Slide 4'
+        
+        GridLayout:
+            cols: 2
+            Label:
+                text: 'Slide 5'
+                size_hint_x: .8
+            Button:
+                text: 'Finish'
+                on_release: root.done()
+                size_hint_x: .2
+    
         
         
