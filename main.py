@@ -61,49 +61,57 @@ class GroundControlApp(App):
             "title": "Distance Between Motors",
             "desc": "The horizontal distance between the center of the motor shafts in MM.",
             "section": "Maslow Settings",
-            "key": "motorSpacingX"
+            "key": "motorSpacingX",
+            "disabled" : "True"
+            
         },
         {
             "type": "string",
             "title": "Work Area Width in MM",
             "desc": "The width of the machine working area (normally 8 feet).",
             "section": "Maslow Settings",
-            "key": "bedWidth"
+            "key": "bedWidth",
+            "disabled" : "True"
         },
         {
             "type": "string",
             "title": "Work Area Height in MM",
             "desc": "The Height of the machine working area (normally 4 feet).",
             "section": "Maslow Settings",
-            "key": "bedHeight"
+            "key": "bedHeight",
+            "disabled" : "True"
         },
         {
             "type": "string",
             "title": "Motor Offset Height in MM",
             "desc": "The vertical distance from the edge of the work area to the level of the motors.",
             "section": "Maslow Settings",
-            "key": "motorOffsetY"
+            "key": "motorOffsetY",
+            "disabled" : "True"
         },
         {
             "type": "string",
             "title": "Distance Between Sled Mounting Points",
             "desc": "The horizontal distance between the points where the chains mount to the sled.",
             "section": "Maslow Settings",
-            "key": "sledWidth"
+            "key": "sledWidth",
+            "disabled" : "True"
         },
         {
             "type": "string",
             "title": "Vertical Distance Sled Mounts to Cutter",
             "desc": "The vertical distance between where the chains mount on the sled to the cutting tool.",
             "section": "Maslow Settings",
-            "key": "sledHeight"
+            "key": "sledHeight",
+            "disabled" : "True"
         },
         {
             "type": "string",
             "title": "Center Of Gravity",
             "desc": "How far below the cutting bit is the center of gravity. This can be found by resting the sled on a round object and observing where it balances.",
             "section": "Maslow Settings",
-            "key": "sledCG"
+            "key": "sledCG",
+            "disabled" : "True"
         },
         {
             "type": "bool",
