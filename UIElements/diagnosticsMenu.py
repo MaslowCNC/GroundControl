@@ -46,7 +46,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self.parentWidget.close()
     
     def manualCalibrateChainLengths(self):
-        self.data.gcode_queue.put("B06 L1900 R1900")
+        self.data.gcode_queue.put("B08 ")
         self.parentWidget.close()
     
     def testMotors(self):
