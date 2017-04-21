@@ -47,7 +47,6 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
     
     def manualCalibrateChainLengths(self):
         self.data.gcode_queue.put("B06 L1900 R1900")
-        self.data.message_queue.put("Message: The machine chains have been recalibrate to length 1,900mm")
         self.parentWidget.close()
     
     def testMotors(self):
