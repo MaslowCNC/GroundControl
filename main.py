@@ -230,6 +230,7 @@ class GroundControlApp(App):
         Push settings to machine
         '''
         self.push_settings_to_machine()
+        self.data.bind(connectionStatus = self.push_settings_to_machine)
         
         
         return interface
@@ -286,7 +287,7 @@ class GroundControlApp(App):
         """
         super(GroundControlApp, self).close_settings(settings)
     
-    def push_settings_to_machine(self):
+    def push_settings_to_machine(self, *args):
         
         cmdString = ("B03" 
             +" A" + str(self.data.config.get('Maslow Settings', 'bedWidth'))
