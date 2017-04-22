@@ -665,7 +665,7 @@
         GridLayout:
             cols: 2
             Label:
-                text: 'This walk-through will guide you through the process of calibrating your Maslow Machine. \n\nClick Next to proceed. \n\nYou can move forward and backwards through the walk-through at any time using the "Prevous" and "Next" buttons'
+                text: 'This walk-through will guide you through the process of calibrating your Maslow Machine. \n\nClick Next to proceed. \n\nYou can move forward and backwards through the walk-through at any time using the "Prevous" and "Next" buttons\n\nYou can also skip this process entirly and enter your machine dimensions in the Settings window'
                 size_hint_x: leftCol
             GridLayout:
                 cols: 1
@@ -676,23 +676,66 @@
                 Label:
         GridLayout:
             cols: 2
-            Label:
-                text: 'Point Sprocket Tooth To 12:00'
-                size_hint_x: leftCol
+            GridLayout:
+                cols: 1
+                Image:
+                    source: "./Documentation/Launch Windows.JPG"
+                Label:
+                    text: "Step 1: Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up."
+                    size_hint_x: leftCol
             GridLayout:
                 cols: 1
                 size_hint_x: rightCol
                 Label:
                 Button:
-                    text: 'Turn Sprocket 1 degree CCW'
+                    text: 'Turn Left Sprocket\n1 degree CCW'
                 Button:
-                    text: 'Turn Sprocket 1 degree CW'
+                    text: 'Turn Left Sprocket\n1 degree CW'
+                Button:
+                    text: 'Turn Right Sprocket\n1 degree CCW'
+                Button:
+                    text: 'Turn Right Sprocket\n1 degree CW'
                 Label:
         GridLayout:
             cols: 2
-            Label:
-                text: 'Measure Distance Between Motors'
-                size_hint_x: leftCol
+            GridLayout:
+                cols: 1
+                GridLayout:
+                    cols: 2
+                    Image:
+                        source: "./Documentation/Launch Windows.JPG"
+                    Image:
+                        source: "./Documentation/Launch Windows.JPG"
+                Label:
+                    text: "Step 2: Measure the distance between the motors using the chain\n\nRather than using a tape measure to measure the spacing between the motors, we're going to use the chain.\n\nFirst, hook one link from the left chain over the top tooth on the left motor\n\nThen, use the buttons to the right to extend the chain until it can be hooked on the right motor"
+                    size_hint_x: leftCol
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Extend Left Chain'
+                Button:
+                    text: 'Retract Left Chain'
+                Label:
+        GridLayout:
+            cols: 2
+            GridLayout:
+                cols: 1
+                Image:
+                    source: "./Documentation/Launch Windows.JPG"
+                Label:
+                    text: "Step 3: Pull chain taught\n\nPull the chain taught using the Extend and Retract chain buttons to the right\n\nThe goal is to remove the droop from the chain. Be careful not to pull it too tight, these motors are powerful"
+                    size_hint_x: leftCol
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Extend Left Chain'
+                Button:
+                    text: 'Retract Left Chain'
+                Label:
         GridLayout:
             cols: 2
             Label:
