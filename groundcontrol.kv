@@ -678,11 +678,11 @@
             cols: 2
             GridLayout:
                 cols: 1
-                Image:
-                    source: "./Documentation/Launch Windows.JPG"
                 Label:
                     text: "Step 1: Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up."
                     size_hint_x: leftCol
+                Image:
+                    source: "./Documentation/Launch Windows.JPG"
             GridLayout:
                 cols: 1
                 size_hint_x: rightCol
@@ -700,15 +700,15 @@
             cols: 2
             GridLayout:
                 cols: 1
+                Label:
+                    text: "Step 2: Measure the distance between the motors using the chain\n\nRather than using a tape measure to measure the spacing between the motors, we're going to use the chain.\n\nFirst, hook one link from the left chain over the top tooth on the left motor\n\nThen, use the buttons to the right to extend the chain until it can be hooked on the right motor"
+                    size_hint_x: leftCol
                 GridLayout:
                     cols: 2
                     Image:
                         source: "./Documentation/Launch Windows.JPG"
                     Image:
                         source: "./Documentation/Launch Windows.JPG"
-                Label:
-                    text: "Step 2: Measure the distance between the motors using the chain\n\nRather than using a tape measure to measure the spacing between the motors, we're going to use the chain.\n\nFirst, hook one link from the left chain over the top tooth on the left motor\n\nThen, use the buttons to the right to extend the chain until it can be hooked on the right motor"
-                    size_hint_x: leftCol
             GridLayout:
                 cols: 1
                 size_hint_x: rightCol
@@ -722,11 +722,11 @@
             cols: 2
             GridLayout:
                 cols: 1
+                Label:
+                    text: "Step 3: Pull chain taught\n\nPull the chain taught using the Extend and Retract chain buttons to the right, then click Measure\n\nThe goal is to remove the droop from the chain. Be careful not to pull it too tight, these motors are powerful\n\nThis step will be automated soon"
+                    size_hint_x: leftCol
                 Image:
                     source: "./Documentation/Launch Windows.JPG"
-                Label:
-                    text: "Step 3: Pull chain taught\n\nPull the chain taught using the Extend and Retract chain buttons to the right\n\nThe goal is to remove the droop from the chain. Be careful not to pull it too tight, these motors are powerful"
-                    size_hint_x: leftCol
             GridLayout:
                 cols: 1
                 size_hint_x: rightCol
@@ -735,26 +735,76 @@
                     text: 'Extend Left Chain'
                 Button:
                     text: 'Retract Left Chain'
+                Button:
+                    text: 'Measure'
+                Label:
+        GridLayout:
+            cols: 2
+            GridLayout:
+                cols: 1
+                Label:
+                    text: "Step 4: Measure the distance between the sled mounting points\n\nDetatch the chain from the right sprocket using the buttons to the right\n\nFeed one end through the sled mounting brackets and hold it in place with a cotter pin\n\nCount the number of links between the two sides and enter the number in the box to the right, then press Enter\nYou can enter a fractions of a link"
+                    size_hint_x: leftCol
+                Image:
+                    source: "./Documentation/Launch Windows.JPG"
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Extend Left Chain'
+                Button:
+                    text: 'Retract Left Chain'
+                TextInput:
+                    text: "0.0"
+                Button:
+                    text: "Enter # of\nLinks"
+                Label:
+        GridLayout:
+            cols: 2
+            GridLayout:
+                cols: 1
+                Label:
+                    text: "Step 5: Measure vertical distance from motor to work area\n\nUnhook the cotter pin from the sled\n\nRetract the chain until it hangs down from the motor to touch the top of the work area, then click Measure"
+                    size_hint_x: leftCol
+                Image:
+                    source: "./Documentation/Launch Windows.JPG"
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Extend Left Chain'
+                Button:
+                    text: 'Retract Left Chain'
+                Button:
+                    text: 'Measure'
                 Label:
         GridLayout:
             cols: 2
             Label:
-                text: 'Measure Distance To Wood Top'
+                text: 'Step 6: Note\n\nTwo important factors are not measured in this process:\n\n1) The distance from the chain mounting points to the router bit\n2) The center of gravity of the sled\n\nIf you are using the standard sled design and router the default values will be close\n\nIf you are using a custom design, it is a good idea to measure these values manually and enter them in the settings'
                 size_hint_x: leftCol
         GridLayout:
             cols: 2
             Label:
-                text: 'Measure Distance Between Sled Mounting Points'
+                text: "Step 7: Cut a test shape\n\nCut test shape\n\nType in shape measurements\n\nClick Enter Measurements\n\nThe machine will then tweak your calibration and repeat the process slightly below and to the right of the original test"
                 size_hint_x: leftCol
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                TextInput:
+                    text: "Horizontal\nMeasurement"
+                TextInput:
+                    text: "Vertical\nMeasurement"
+                Button:
+                    text: "Calibrate Again"
+                Label:
         GridLayout:
             cols: 2
             Label:
-                text: 'Note that CG and Router Mounting Distance Are Not Measured Here'
-                size_hint_x: leftCol
-        GridLayout:
-            cols: 2
-            Label:
-                text: 'Cut A Test Shape'
+                text: "Step 8: Finish\n\nYour machine is now calibrated!\n\nCongratulations! "
                 size_hint_x: leftCol
             Button:
                 text: 'Finish'
