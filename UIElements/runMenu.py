@@ -12,6 +12,7 @@ class RunMenu(FloatLayout):
         App.get_running_app().stop()
     
     def returnToCenter(self):
+        self.data.gcode_queue.put("G00 Z0.25 ")
+        self.data.gcode_queue.put("G00 X0 Y0 ")
         self.data.gcode_queue.put("G00 Z0 ")
-        self.data.gcode_queue.put("G00 X0 Y0 Z0 ")
         self.parentWidget.close()
