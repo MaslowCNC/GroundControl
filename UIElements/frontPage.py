@@ -139,7 +139,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
                 else:
                     yTarget = self.gcodecanvas.positionIndicator.pos[1] 
             
-            self.gcodecanvas.positionIndicator.setPos(xTarget,yTarget,self.data.units, 0)
+            self.gcodecanvas.positionIndicator.setPos(xTarget,yTarget,self.data.units)
         except:
             print "Unable to update position for new gcode line"
     
