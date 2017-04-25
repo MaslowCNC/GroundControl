@@ -8,6 +8,7 @@ and zooming features. It was not originally written as a stand alone module whic
 from kivy.uix.floatlayout                    import FloatLayout
 from kivy.properties                         import NumericProperty, ObjectProperty
 from kivy.graphics                           import Color, Ellipse, Line
+from kivy.clock                              import Clock
 from DataStructures.makesmithInitFuncs       import MakesmithInitFuncs
 from UIElements.positionIndicator            import PositionIndicator
 from UIElements.viewMenu                     import ViewMenu
@@ -34,6 +35,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     yPosition = 0
     zPosition = 0
     
+    lineNumber = 0  #the line number currently being processed
+    
+    prependString = "G01 "
+    
     def initialize(self):
 
         self.drawWorkspace()
@@ -42,19 +47,87 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         Window.bind(on_motion = self.zoomCanvas)
 
         self.data.bind(gcode = self.updateGcode)
-
-        tempViewMenu = ViewMenu()
-        tempViewMenu.setUpData(self.data)
-        tempViewMenu.reloadGcode()
+        self.data.bind(gcodeShift = self.reloadGcode)
+        self.data.bind(gcodeFile = self.reloadGcode)
+        
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        
+        self.reloadGcode()
     
+    def _keyboard_closed(self):
+        '''
+        
+        If the window looses focus.
+        
+        '''
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        '''
+        
+        Called when a button is pressed.
+        
+        '''
+        scaleFactor = .03
+        anchor = (0,0)
+        
+        if keycode[1] == self.data.config.get('Ground Control Settings', 'zoomIn'):
+            mat = Matrix().scale(1-scaleFactor, 1-scaleFactor, 1)
+            self.scatterInstance.apply_transform(mat, anchor)
+        if keycode[1] == self.data.config.get('Ground Control Settings', 'zoomOut'):
+            mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
+            self.scatterInstance.apply_transform(mat, anchor)
+    
+    def reloadGcode(self, *args):
+        '''
+        
+        This reloads the gcode from the hard drive in case it has been updated. 
+        
+        '''
+        
+        filename = self.data.gcodeFile
+        try:
+            filterfile = open(filename, 'r')
+            rawfilters = filterfile.read()
+            filtersparsed = re.sub(r'\(([^)]*)\)','',rawfilters) #removes mach3 style gcode comments
+            filtersparsed = re.sub(r';([^\n]*)\n','',filtersparsed) #removes standard ; initiated gcode comments
+            filtersparsed = re.split('\n', filtersparsed) #splits the gcode into elements to be added to the list
+            filtersparsed = [x + ' ' for x in filtersparsed] #adds a space to the end of each line
+            filtersparsed = [x.lstrip() for x in filtersparsed]
+            filtersparsed = [x.replace('X ','X') for x in filtersparsed]
+            filtersparsed = [x.replace('Y ','Y') for x in filtersparsed]
+            filtersparsed = [x.replace('Z ','Z') for x in filtersparsed]
+            filtersparsed = [x.replace('I ','I') for x in filtersparsed]
+            filtersparsed = [x.replace('J ','J') for x in filtersparsed]
+            filtersparsed = [x.replace('F ','F') for x in filtersparsed]
+            
+            self.data.gcode = "[]"
+            self.data.gcode = filtersparsed
+            
+            filterfile.close() #closes the filter save file
+        except:
+            if filename is not "":
+                self.data.message_queue.put("Message: Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use Actions > Open G-code")
+            self.data.gcodeFile = ""
+        
     def centerCanvas(self, *args):
+        '''
+        
+        Return the canvas to the center of the screen.
+        
+        '''
         mat = Matrix().translate(Window.width/2, Window.height/2, 0)
         self.scatterInstance.transform = mat
+        
+        anchor = (0,0)
+        mat = Matrix().scale(.45, .45, 1)
+        self.scatterInstance.apply_transform(mat, anchor)
     
     def zoomCanvas(self, callback, type, motion, *args):
         if motion.is_mouse_scrolling:
             scaleFactor = .03
-            
             anchor = (0,0)
             
             if motion.button == 'scrollup':
@@ -154,10 +227,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             with self.scatterObject.canvas:
                 if zTarget - self.zPosition > 0:
                     Color(0, 1, 0)
-                    radius = 2
+                    radius = 1
                 else:
                     Color(1, 0, 0)
-                    radius = 4
+                    radius = 2
                 Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, radius), width = 2, group = 'gcode')
         
         self.xPosition = xTarget
@@ -175,8 +248,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         xTarget = self.xPosition
         yTarget = self.yPosition
-        iTarget = self.xPosition
-        jTarget = self.yPosition
+        iTarget = 0
+        jTarget = 0
         
         x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if x:
@@ -222,8 +295,112 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         clearGcode deletes the lines and arcs corresponding to gcode commands from the canvas. 
     
         '''
-        self.scatterObject.canvas.remove_group('gcode')
+        self.scatterObject.canvas.clear()#remove_group('gcode')
+        
+        self.drawWorkspace()
+    
+    def moveLine(self, gcodeLine):
+        
+        originalLine = gcodeLine
+        
+        try:
+            gcodeLine = gcodeLine.upper() + " "
+            
+            
+            x = gcodeLine.find('X')
+            if x != -1:
+                space = gcodeLine.find(' ', x)
+                number = float(gcodeLine[x+1:space]) + self.data.gcodeShift[0]
+                gcodeLine = gcodeLine[0:x+1] + str(number) + gcodeLine[space:]
+            
+            y = gcodeLine.find('Y')
+            if y != -1:
+                space = gcodeLine.find(' ', y)
+                number = float(gcodeLine[y+1:space]) + self.data.gcodeShift[1]
+                gcodeLine = gcodeLine[0:y+1] + str(number) + gcodeLine[space:]
+            
+            return gcodeLine
+        except ValueError:
+            print "line could not be moved:"
+            print originalLine
+            return originalLine
+    
+    def updateOneLine(self):
+        '''
+        
+        Draw the next line on the gcode canvas
+        
+        '''
+        validPrefixList = ['G00','G0 ','G1 ','G01','G2 ','G02','G3 ','G03']
+        
+        try:
+            self.data.gcode[self.lineNumber] = self.moveLine(self.data.gcode[self.lineNumber])    #move the line if the gcode has been moved
+            fullString = self.data.gcode[self.lineNumber]
+        except:
+            return #we have reached the end of the file
+        
+        fullString = fullString + " " #ensures that there is a space at the end of the line
+        
+        
+        #find 'G' anywhere in string
+        gString = fullString[fullString.find('G'):fullString.find('G') + 3]
+        
+        if gString in validPrefixList:
+            self.prependString = gString
+        
+        if fullString.find('G') == -1: #this adds the gcode operator if it is omitted by the program
+            fullString = self.prependString + fullString
+            gString = self.prependString
+        
+        if gString == 'G00' or gString == 'G0 ':
+            self.drawLine(fullString, 'G00')
 
+        if gString == 'G01' or gString == 'G1 ':
+            self.drawLine(fullString, 'G01')
+                    
+        if gString == 'G02' or gString == 'G2 ':
+            self.drawArc(fullString, 'G02')
+                           
+        if gString == 'G03' or gString == 'G3 ':
+            self.drawArc(fullString, 'G03')
+        
+        if gString == 'G18':
+            print "G18 not supported"
+        
+        if gString == 'G20':
+            self.canvasScaleFactor = self.INCHES
+            self.data.units = "INCHES"
+            
+        if gString == 'G21':
+            self.canvasScaleFactor = self.MILLIMETERS
+            self.data.units = "MM"
+            
+        if gString == 'G90':
+            self.absoluteFlag = 1
+            
+        if gString == 'G91':
+            self.absoluteFlag = 0
+        
+        self.lineNumber = self.lineNumber + 1
+        
+    def callBackMechanism(self, callback) :
+        '''
+        
+        Call the updateOneLine function periodically in a non-blocking way to
+        update the gcode.
+        
+        '''
+        
+        #Draw numberOfTimesToCall lines on the canvas
+        numberOfTimesToCall = 50
+        
+        for _ in range(numberOfTimesToCall):
+            self.updateOneLine()
+        
+        #Repeat until end of file
+        if self.lineNumber < min(len(self.data.gcode),20000):
+            Clock.schedule_once(self.callBackMechanism)
+    
     def updateGcode(self, *args):
         '''
         
@@ -231,57 +408,22 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         specified command. 
     
         '''
-        self.xPosition = 0
-        self.yPosition = 0
+        
+        #reset variables 
+        self.xPosition = self.data.gcodeShift[0]*self.canvasScaleFactor
+        self.yPosition = self.data.gcodeShift[1]*self.canvasScaleFactor
         self.zPosition = 0
 
-        prependString = "G00 "
-        
-        opstring = ""
+        self.prependString = "G00 "
+        self.lineNumber = 0
         
         self.clearGcode()
         
-        if len(self.data.gcode) > 8000:
-            errorText = "The current file contains " + str(len(self.data.gcode)) + "lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultanously may crash the\n program, only the first 8000 lines are shown here.\nThe complete program will cut if you choose to do so."
+        #Check to see if file is too large to load
+        if len(self.data.gcode) > 20000:
+            errorText = "The current file contains " + str(len(self.data.gcode)) + " lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first 20000 lines are shown here.\nThe complete program will cut if you choose to do so."
             print errorText
-            #self.canv.create_text(xnow + 200, ynow - 50, text = errorText, fill = "red")
-
-        for i in range(0, min(len(self.data.gcode),8000)): #maximum of 8,000 lines are drawn on the screen at a time
-            opstring = self.data.gcode[i]
-            opstring = opstring + " " #ensures that the is a space at the end of the line
-            
-            if opstring[0] == 'X' or opstring[0] == 'Y' or opstring[0] == 'Z': #this adds the gcode operator if it is omitted by the program
-                opstring = prependString + opstring
-            
-            if opstring[0:3] == 'G00' or opstring[0:3] == 'G01' or opstring[0:3] == 'G02' or opstring[0:3] == 'G03':
-                prependString = opstring[0:3] + " "
-            
-            if opstring[0:3] == 'G00' or opstring[0:3] == 'G0 ':
-                self.drawLine(opstring, 'G00')
-
-            if opstring[0:3] == 'G01' or opstring[0:3] == 'G1 ':
-                self.drawLine(opstring, 'G01')
-                        
-            if opstring[0:3] == 'G02' or opstring[0:3] == 'G2 ':
-                self.drawArc(opstring, 'G02')
-                               
-            if opstring[0:3] == 'G03' or opstring[0:3] == 'G3 ':
-                self.drawArc(opstring, 'G03')
-            
-            if opstring[0:3] == 'G20':
-                self.canvasScaleFactor = self.INCHES
-                self.data.units = "INCHES"
-                
-            if opstring[0:3] == 'G21':
-                self.canvasScaleFactor = self.MILLIMETERS
-                self.data.units = "MM"
-                
-            if opstring[0:3] == 'G90':
-                self.absoluteFlag = 1
-                
-            if opstring[0:3] == 'G91':
-                self.absoluteFlag = 0
-            
-            if opstring[0] == 'D':
-                pass
-    
+            self.data.message_queue.put("Message: " + errorText)
+        
+        self.callBackMechanism(self.updateGcode)
+        

@@ -11,4 +11,9 @@ class TouchNumberInput(GridLayout):
     done   = ObjectProperty(None)
     
     def addText(self, text):
+        '''
+        
+        Add a new number to what is being typed.
+        
+        '''
         self.textInput.text = self.textInput.text + text
