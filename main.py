@@ -245,7 +245,7 @@ class GroundControlApp(App):
                                                'bedWidth':2438.4, 
                                                'bedHeight':1219.2, 
                                                'motorOffsetY':463, 
-                                               'motorSpacingX':3035, 
+                                               'motorSpacingX':2978.4, 
                                                'sledWidth':310, 
                                                'sledHeight':139, 
                                                'sledCG':79, 
