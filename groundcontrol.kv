@@ -679,7 +679,7 @@
             GridLayout:
                 cols: 1
                 Label:
-                    text: "Step 1: Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up."
+                    text: "Step 1: Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up.\nWhen you are ready, press Set Zero"
                     size_hint_x: leftCol
                 Image:
                     source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.JPG"
@@ -699,16 +699,21 @@
                 Button:
                     text: 'Turn Right Sprocket\n1 degree CW'
                     on_release: root.RightCW()
+                Button:
+                    text: 'Set Zero'
+                    on_release: root.setZero()
                 Label:
         GridLayout:
             cols: 2
             GridLayout:
                 cols: 1
                 Label:
-                    text: "Step 2: Measure the distance between the motors using the chain\n\nRather than using a tape measure to measure the spacing between the motors, we're going to use the chain.\n\nFirst, hook one link from the left chain over the top tooth on the left motor\n\nThen, use the buttons to the right to extend the chain until it can be hooked on the right motor"
+                    text: "Step 2: Measure the distance between the motors using the chain\n\nRather than using a tape measure to measure the spacing between the motors, we're going to use the chain.\n\nFirst, hook one link from the left chain over the top tooth on the left motor\n\nThen, use the buttons to the right to extend the chain until it can be hooked on the right motor.\nThen gently pull it tight. Press Measure when the chain is taught"
                     size_hint_x: leftCol
                 GridLayout:
-                    cols: 2
+                    cols: 3
+                    Image:
+                        source: "./Documentation/Launch Windows.JPG"
                     Image:
                         source: "./Documentation/Launch Windows.JPG"
                     Image:
@@ -718,13 +723,26 @@
                 size_hint_x: rightCol
                 Label:
                 Button:
+                    text: 'Extend Left Chain 1mm'
+                    on_release: root.extendLeft(1)
+                Button:
                     text: 'Extend Left Chain 10mm'
+                    on_release: root.extendLeft(10)
                 Button:
                     text: 'Extend Left Chain 100mm'
+                    on_release: root.extendLeft(100)
+                Button:
+                    text: 'Retract Left Chain 1mm'
+                    on_release: root.retractLeft(1)
                 Button:
                     text: 'Retract Left Chain 10mm'
+                    on_release: root.retractLeft(10)
                 Button:
-                    text: 'Extend Left Chain 100mm'
+                    text: 'Retract Left Chain 100mm'
+                    on_release: root.retractLeft(100)
+                Button:
+                    text: 'Measure'
+                    on_release: root.measureLeft()
                 Label:
         GridLayout:
             cols: 2
