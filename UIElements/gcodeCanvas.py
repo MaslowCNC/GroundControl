@@ -197,7 +197,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         circle is placed at the location of the depth change to alert the user. 
     
         '''
-        print gCodeLine
+        
         try:
             xTarget = self.xPosition
             yTarget = self.yPosition
@@ -206,8 +206,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             x = re.search("X(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if x:
                 xTarget = float(x.groups()[0])*self.canvasScaleFactor
-                if self.absoluteFlag == 1:                                           #if the gcode is running in absolute mode
-                    print "Absolute mode recognized"
+                if self.absoluteFlag == 1:
                     xTarget = self.xPosition + xTarget
             
             y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
@@ -387,7 +386,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         if gString == 'G90':
             self.absoluteFlag = 0
-            print "ABSOLUTE MODE SET"
             
         if gString == 'G91':
             self.absoluteFlag = 1
