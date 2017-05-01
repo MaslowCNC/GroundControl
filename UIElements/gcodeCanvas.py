@@ -37,6 +37,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     lineNumber = 0  #the line number currently being processed
     
+    absoluteFlag = 0
+    
     prependString = "G01 "
     
     def initialize(self):
@@ -212,6 +214,9 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if z:
             zTarget = float(z.groups()[0])*self.canvasScaleFactor
         
+        if self.absoluteFlag == 1:                                           #if the gcode is running in absolute mode
+            xTarget = self.xPosition + xTarget
+            yTarget = self.yPosition + yTarget
         
         #Draw lines for G1 and G0
         with self.scatterObject.canvas:
@@ -375,6 +380,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             
         if gString == 'G90':
             self.absoluteFlag = 1
+            print "ABSOLUTE MODE SET"
             
         if gString == 'G91':
             self.absoluteFlag = 0
