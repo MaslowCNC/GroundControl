@@ -12,34 +12,60 @@ from   kivy.uix.popup                            import   Popup
 class MeasureMachinePopup(GridLayout):
     done   = ObjectProperty(None)
     
+    def slideJustChanged(self):
+        if self.carousel.index == 1:
+            #pointing one sprocket up
+            self.data.gcode_queue.put("B06 L0 R0 ")
+            
+        if self.carousel.index == 2:
+            #measuring distance between motors
+            self.data.measureRequest = self.readMotorSpacing
+    
     def LeftCW(self):
         print "left CW"
-        self.data.gcode_queue.put("G91 \nB09 L.5 \nG90 ")
+        self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B09 L.5 ")
+        self.data.gcode_queue.put("G90 ")
     
     def LeftCCW(self):
         print "left CCW"
-        self.data.gcode_queue.put("G91 \nB09 L-.5 \nG90 ")
+        self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B09 L-.5 ")
+        self.data.gcode_queue.put("G90 ")
         
     def RightCW(self):
         print "right CW"
-        self.data.gcode_queue.put("G91 \nB09 R-.5 \nG90 ")
+        self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B09 R-.5 ")
+        self.data.gcode_queue.put("G90 ")
     
     def RightCCW(self):
         print "right CCW"
-        self.data.gcode_queue.put("G91 \nB09 R.5 \nG90 ")
+        self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B09 R.5 ")
+        self.data.gcode_queue.put("G90 ")
     
     def extendLeft(self, dist):
         print "Extend left by " + str(dist) + "mm"
-        self.data.gcode_queue.put("G91 \nB09 L" + str(dist) + " \nG90 ")
+        self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B09 L" + str(dist) + " ")
+        self.data.gcode_queue.put("G90 ")
     
     def retractLeft(self, dist):
         print "Retract left by " + str(dist) + "mm"
-        self.data.gcode_queue.put("G91 \nB09 L-" + str(dist) + " \nG90 ")
+        self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B09 L-" + str(dist) + " ")
+        self.data.gcode_queue.put("G90 ")
     
     def setZero(self):
         #mark that the sprockets are straight up
         self.data.gcode_queue.put("B06 L0 R0 ");
+        self.carousel.load_next()
     
     def measureLeft(self):
-        print "would measure"
+        self.data.gcode_queue.put("B10 L")
     
+    def readMotorSpacing(self, dist):
+        print "read motor spacing"
+        print dist
+        self.carousel.load_next()

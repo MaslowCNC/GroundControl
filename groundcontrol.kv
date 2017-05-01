@@ -641,6 +641,7 @@
             on_release: root.zOut()
         
 <MeasureMachinePopup>:
+    carousel:carousel
     cols: 1
     size: root.size
     pos: root.pos
@@ -660,6 +661,7 @@
         id: carousel
         direction: "right"
         size_hint_y: .9
+        on_index: root.slideJustChanged()
         #:set leftCol .8
         #:set rightCol .2
         GridLayout:
@@ -679,7 +681,7 @@
             GridLayout:
                 cols: 1
                 Label:
-                    text: "Step 1: Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up.\nWhen you are ready, press Set Zero"
+                    text: "Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up.\nWhen you are ready, press Set Zero"
                     size_hint_x: leftCol
                 Image:
                     source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.JPG"
@@ -708,7 +710,7 @@
             GridLayout:
                 cols: 1
                 Label:
-                    text: "Step 2: Measure the distance between the motors using the chain\n\nRather than using a tape measure to measure the spacing between the motors, we're going to use the chain.\n\nFirst, hook one link from the left chain over the top tooth on the left motor\n\nThen, use the buttons to the right to extend the chain until it can be hooked on the right motor.\nThen gently pull it tight. Press Measure when the chain is taught"
+                    text: "Rather than using a tape measure to measure the spacing between the motors, we're going to use the chain.\n\nHook the first link from the left chain over the top tooth on the left motor\n\nThen, use the buttons to the right to extend the chain until it can be hooked on the top tooth of the the right motor.\nThen gently pull it tight using the buttons to the right. Press Measure when the chain is taught"
                     size_hint_x: leftCol
                 GridLayout:
                     cols: 3
@@ -749,27 +751,7 @@
             GridLayout:
                 cols: 1
                 Label:
-                    text: "Step 3: Pull chain taught\n\nPull the chain taught using the Extend and Retract chain buttons to the right, then click Measure\n\nThe goal is to remove the droop from the chain. Be careful not to pull it too tight, these motors are powerful\n\nThis step will be automated soon"
-                    size_hint_x: leftCol
-                Image:
-                    source: "./Documentation/Launch Windows.JPG"
-            GridLayout:
-                cols: 1
-                size_hint_x: rightCol
-                Label:
-                Button:
-                    text: 'Extend Left Chain'
-                Button:
-                    text: 'Retract Left Chain'
-                Button:
-                    text: 'Measure'
-                Label:
-        GridLayout:
-            cols: 2
-            GridLayout:
-                cols: 1
-                Label:
-                    text: "Step 4: Measure the distance between the sled mounting points\n\nDetatch the chain from the right sprocket using the buttons to the right\n\nFeed one end through the sled mounting brackets and hold it in place with a cotter pin\n\nCount the number of links between the two sides and enter the number in the box to the right, then press Enter\nYou can enter a fractions of a link"
+                    text: "Detach the chain from the right sprocket using the buttons to the right\n\nFeed one end through the sled mounting brackets and hold it in place with a cotter pin\n\nCount the number of links between the two sides and enter the number in the box to the right, then press Enter\nYou can enter a fractions of a link\n\nWe will refine this measurement later"
                     size_hint_x: leftCol
                 Image:
                     source: "./Documentation/Launch Windows.JPG"

@@ -336,6 +336,11 @@ class GroundControlApp(App):
             elif message[0] == "[":
                 if message[1:10] == "PosError:":
                     self.setErrorOnScreen(message)
+                elif message[1:8] == "Measure":
+                    print "measure seen"
+                    print message
+                    measuredDist = float(message[9:len(message)-3])
+                    self.data.measureRequest(measuredDist)
             elif message[0:8] == "Message:":
                 self.previousUploadStatus = self.data.uploadFlag 
                 self.data.uploadFlag = 0
