@@ -37,6 +37,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     lineNumber = 0  #the line number currently being processed
     
+    absoluteFlag = 0
+    
     prependString = "G01 "
     
     def initialize(self):
@@ -195,6 +197,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         circle is placed at the location of the depth change to alert the user. 
     
         '''
+        
         try:
             xTarget = self.xPosition
             yTarget = self.yPosition
@@ -203,11 +206,14 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             x = re.search("X(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if x:
                 xTarget = float(x.groups()[0])*self.canvasScaleFactor
+                if self.absoluteFlag == 1:
+                    xTarget = self.xPosition + xTarget
             
             y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if y:
                 yTarget = float(y.groups()[0])*self.canvasScaleFactor
-            
+                if self.absoluteFlag == 1:
+                    yTarget = self.yPosition + yTarget
             z = re.search("Z(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if z:
                 zTarget = float(z.groups()[0])*self.canvasScaleFactor
@@ -377,12 +383,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if gString == 'G21':
             self.canvasScaleFactor = self.MILLIMETERS
             self.data.units = "MM"
-            
+        
         if gString == 'G90':
-            self.absoluteFlag = 1
+            self.absoluteFlag = 0
             
         if gString == 'G91':
-            self.absoluteFlag = 0
+            self.absoluteFlag = 1
         
         self.lineNumber = self.lineNumber + 1
         
