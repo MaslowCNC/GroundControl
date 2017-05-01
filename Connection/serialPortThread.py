@@ -108,7 +108,7 @@ class SerialPortThread(MakesmithInitFuncs):
                     print "connection lost"
                     self.data.message_queue.put("Connection Lost")
                     if self.data.uploadFlag:
-                        self.data.message_queue.put("Message: USB connection lost. Proceed?")
+                        self.data.message_queue.put("Message: USB connection lost. This has likely caused the machine to loose it's calibration, which can cause erratic behavior. It is recommended to stop the program, remove the sled, and perform the chain calibration process. Press Continue to override and proceed with the cut.")
                     self.data.connectionStatus = 0
                     self.serialInstance.close()
                     return

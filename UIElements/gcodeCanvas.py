@@ -200,15 +200,15 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         yTarget = self.yPosition
         zTarget = self.zPosition
         
-        x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        x = re.search("X(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if x:
             xTarget = float(x.groups()[0])*self.canvasScaleFactor
         
-        y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if y:
             yTarget = float(y.groups()[0])*self.canvasScaleFactor
         
-        z = re.search("Z(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        z = re.search("Z(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if z:
             zTarget = float(z.groups()[0])*self.canvasScaleFactor
         
@@ -251,16 +251,16 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         iTarget = 0
         jTarget = 0
         
-        x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        x = re.search("X(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if x:
             xTarget = float(x.groups()[0])*self.canvasScaleFactor
-        y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if y:
             yTarget = float(y.groups()[0])*self.canvasScaleFactor
-        i = re.search("I(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        i = re.search("I(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if i:
             iTarget = float(i.groups()[0])*self.canvasScaleFactor
-        j = re.search("J(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        j = re.search("J(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if j:
             jTarget = float(j.groups()[0])*self.canvasScaleFactor
         
@@ -299,27 +299,25 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         self.drawWorkspace()
     
-    def moveLine(self, gcodeLine):
+    def moveLine(self, gCodeLine):
         
-        originalLine = gcodeLine
+        originalLine = gCodeLine
         
         try:
-            gcodeLine = gcodeLine.upper() + " "
+            gCodeLine = gCodeLine.upper() + " "
+            
+            x = re.search("X(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+            if x:
+                xTarget = float(x.groups()[0]) + self.data.gcodeShift[0]
+                gCodeLine = gCodeLine[0:x.start()+1] + str(xTarget) + gCodeLine[x.end():]
             
             
-            x = gcodeLine.find('X')
-            if x != -1:
-                space = gcodeLine.find(' ', x)
-                number = float(gcodeLine[x+1:space]) + self.data.gcodeShift[0]
-                gcodeLine = gcodeLine[0:x+1] + str(number) + gcodeLine[space:]
+            y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+            if y:
+                yTarget = float(y.groups()[0]) + self.data.gcodeShift[1]
+                gCodeLine = gCodeLine[0:y.start()+1] + str(yTarget) + gCodeLine[y.end():]
             
-            y = gcodeLine.find('Y')
-            if y != -1:
-                space = gcodeLine.find(' ', y)
-                number = float(gcodeLine[y+1:space]) + self.data.gcodeShift[1]
-                gcodeLine = gcodeLine[0:y+1] + str(number) + gcodeLine[space:]
-            
-            return gcodeLine
+            return gCodeLine
         except ValueError:
             print "line could not be moved:"
             print originalLine
