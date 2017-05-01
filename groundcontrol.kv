@@ -682,19 +682,23 @@
                     text: "Step 1: Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up."
                     size_hint_x: leftCol
                 Image:
-                    source: "./Documentation/Launch Windows.JPG"
+                    source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.JPG"
             GridLayout:
                 cols: 1
                 size_hint_x: rightCol
                 Label:
                 Button:
                     text: 'Turn Left Sprocket\n1 degree CCW'
+                    on_release: root.LeftCCW()
                 Button:
                     text: 'Turn Left Sprocket\n1 degree CW'
+                    on_release: root.LeftCW()
                 Button:
                     text: 'Turn Right Sprocket\n1 degree CCW'
+                    on_release: root.RightCCW()
                 Button:
                     text: 'Turn Right Sprocket\n1 degree CW'
+                    on_release: root.RightCW()
                 Label:
         GridLayout:
             cols: 2
@@ -714,9 +718,13 @@
                 size_hint_x: rightCol
                 Label:
                 Button:
-                    text: 'Extend Left Chain'
+                    text: 'Extend Left Chain 10mm'
                 Button:
-                    text: 'Retract Left Chain'
+                    text: 'Extend Left Chain 100mm'
+                Button:
+                    text: 'Retract Left Chain 10mm'
+                Button:
+                    text: 'Extend Left Chain 100mm'
                 Label:
         GridLayout:
             cols: 2
