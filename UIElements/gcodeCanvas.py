@@ -200,15 +200,15 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         yTarget = self.yPosition
         zTarget = self.zPosition
         
-        x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        x = re.search("X(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if x:
             xTarget = float(x.groups()[0])*self.canvasScaleFactor
         
-        y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if y:
             yTarget = float(y.groups()[0])*self.canvasScaleFactor
         
-        z = re.search("Z(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        z = re.search("Z(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if z:
             zTarget = float(z.groups()[0])*self.canvasScaleFactor
         
@@ -251,16 +251,16 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         iTarget = 0
         jTarget = 0
         
-        x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        x = re.search("X(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if x:
             xTarget = float(x.groups()[0])*self.canvasScaleFactor
-        y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if y:
             yTarget = float(y.groups()[0])*self.canvasScaleFactor
-        i = re.search("I(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        i = re.search("I(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if i:
             iTarget = float(i.groups()[0])*self.canvasScaleFactor
-        j = re.search("J(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        j = re.search("J(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if j:
             jTarget = float(j.groups()[0])*self.canvasScaleFactor
         
