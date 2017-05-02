@@ -20,6 +20,14 @@ class MeasureMachinePopup(GridLayout):
         if self.carousel.index == 2:
             #measuring distance between motors
             self.data.measureRequest = self.readMotorSpacing
+        
+        if self.carousel.index == 3:
+            #measure sled spacing
+            pass
+        
+        if self.carousel.index == 4:
+            #measure vertical distance to wood
+            self.data.measureRequest = self.readVerticalOffset
     
     def LeftCW(self):
         print "left CW"
@@ -68,6 +76,12 @@ class MeasureMachinePopup(GridLayout):
     def readMotorSpacing(self, dist):
         print "Read motor spacing: " + str(dist)
         self.data.config.set('Maslow Settings', 'motorSpacingX', str(dist))
+        self.data.config.write()
+        self.carousel.load_next()
+    
+    def readVerticalOffset(self, dist):
+        print "vertical offset measured at: " + str(dist)
+        self.data.config.set('Maslow Settings', 'motorOffsetY', str(dist))
         self.data.config.write()
         self.carousel.load_next()
     

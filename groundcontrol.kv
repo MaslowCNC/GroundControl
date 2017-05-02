@@ -654,7 +654,7 @@
             text: "<Previous"
             on_release: carousel.load_previous()
         Label:
-            text: 'Step {} of 5'.format(carousel.index)
+            text: 'Step {} of 8'.format(carousel.index)
         Button:
             text: "Next>"
             on_release: carousel.load_next()
@@ -781,25 +781,34 @@
             GridLayout:
                 cols: 1
                 Label:
-                    text: "Step 5: Measure vertical distance from motor to work area\n\nUnhook the cotter pin from the sled\n\nRetract the chain until it hangs down from the motor to touch the top of the work area, then click Measure"
+                    text: "Unhook the cotter pin from the sled\n\nRetract the chain until it hangs down from the motor to the height of the top of the 4x8 sheet, then click Measure"
                     size_hint_x: leftCol
                 Image:
-                    source: "./Documentation/Launch Windows.JPG"
+                    source: "./Documentation/Calibrate Machine Dimensions/Measure Motor Height.JPG"
             GridLayout:
                 cols: 1
                 size_hint_x: rightCol
                 Label:
                 Button:
-                    text: 'Extend Left Chain'
+                    text: 'Extend Left Chain 10mm'
+                    on_release: root.extendLeft(100)
                 Button:
-                    text: 'Retract Left Chain'
+                    text: 'Retract Left Chain 1mm'
+                    on_release: root.retractLeft(1)
+                Button:
+                    text: 'Retract Left Chain 10mm'
+                    on_release: root.retractLeft(10)
+                Button:
+                    text: 'Retract Left Chain 100mm'
+                    on_release: root.retractLeft(100)
                 Button:
                     text: 'Measure'
+                    on_release: root.measureLeft()
                 Label:
         GridLayout:
             cols: 2
             Label:
-                text: 'Step 6: Note\n\nTwo important factors are not measured in this process:\n\n1) The distance from the chain mounting points to the router bit\n2) The center of gravity of the sled\n\nIf you are using the standard sled design and router the default values will be close\n\nIf you are using a custom design, it is a good idea to measure these values manually and enter them in the settings'
+                text: 'Note: Two important factors are not measured in this process:\n\n1) The distance from the chain mounting points to the router bit\n2) The center of gravity of the sled\n\nIf you are using the standard sled design and router the default values will be close\n\nIf you are using a custom design, it is a good idea to measure these values manually and enter them in the settings. \n\nIf you have a recomendation for a way to automate these measurements, let us know in the forums'
                 size_hint_x: leftCol
         GridLayout:
             cols: 2
