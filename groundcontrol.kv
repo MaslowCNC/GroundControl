@@ -284,11 +284,11 @@
             Button:
                 text: 'Calibrate Machine Dimensions'
                 disabled: False
-                on_press: root.measureMachine()
+                on_release: root.measureMachine()
             Button:
                 text: 'Calibrate Chain Length - Automatic'
                 disabled: False
-                on_press: root.calibrateChainLengths()
+                on_release: root.calibrateChainLengths()
             Button:
                 text: 'Calibrate Motors'
                 disabled: False
@@ -643,6 +643,7 @@
 <MeasureMachinePopup>:
     carousel:carousel
     linksTextInput:linksTextInput
+    reviewNumbers:reviewNumbers
     cols: 1
     size: root.size
     pos: root.pos
@@ -651,12 +652,12 @@
         cols: 3
         size_hint_y: .1
         Button:
-            text: "<Previous"
+            text: "<Go Back"
             on_release: carousel.load_previous()
         Label:
-            text: 'Step {} of 8'.format(carousel.index)
+            text: 'Step {} of 7'.format(carousel.index)
         Button:
-            text: "Next>"
+            text: "Skip>"
             on_release: carousel.load_next()
     Carousel:
         id: carousel
@@ -807,13 +808,26 @@
                 Label:
         GridLayout:
             cols: 2
-            Label:
-                text: 'Note: Two important factors are not measured in this process:\n\n1) The distance from the chain mounting points to the router bit\n2) The center of gravity of the sled\n\nIf you are using the standard sled design and router the default values will be close\n\nIf you are using a custom design, it is a good idea to measure these values manually and enter them in the settings. \n\nIf you have a recomendation for a way to automate these measurements, let us know in the forums'
+            GridLayout:
+                cols: 1
                 size_hint_x: leftCol
+                Label:
+                    id: reviewNumbers
+                    text: "Let's review the measurements we've made so far to make sure they look correct\n\nMotor Spacing: 300mm\nSled Mount Spacing: 300mm\nVertical Offset: 400mm\n\nYou can go back and re-do any of these numbers if you would like"
+                Label:
+                    text: 'Note: Two important factors are not measured in this process:\n\n1) The distance from the chain mounting points to the router bit\n2) The center of gravity of the sled\n\nIf you are using the standard sled design and router the default values will be close\n\nIf you are using a custom design, it is a good idea to measure these values manually and enter them in the settings. \n\nIf you have a recomendation for a way to automate these measurements, let us know in the forums'
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Continue'
+                    on_release: carousel.load_next()
+                Label:
         GridLayout:
             cols: 2
             Label:
-                text: "Step 7: Cut a test shape\n\nCut test shape\n\nType in shape measurements\n\nClick Enter Measurements\n\nThe machine will then tweak your calibration and repeat the process slightly below and to the right of the original test"
+                text: "Cut test shape\n\nType in shape measurements\n\nClick Enter Measurements\n\nThe machine will then tweak your calibration and repeat the process slightly below and to the right of the original test"
                 size_hint_x: leftCol
             GridLayout:
                 cols: 1

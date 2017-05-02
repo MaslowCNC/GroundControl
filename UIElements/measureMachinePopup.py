@@ -16,18 +16,18 @@ class MeasureMachinePopup(GridLayout):
         if self.carousel.index == 1:
             #pointing one sprocket up
             self.data.gcode_queue.put("B06 L0 R0 ");
-            
         if self.carousel.index == 2:
             #measuring distance between motors
             self.data.measureRequest = self.readMotorSpacing
-        
         if self.carousel.index == 3:
             #measure sled spacing
             pass
-        
         if self.carousel.index == 4:
             #measure vertical distance to wood
             self.data.measureRequest = self.readVerticalOffset
+        if self.carousel.index == 4:
+            #review calculations
+            self.reviewNumbers.text = "Let's review the measurements we've made so far to make sure they look correct\n\nMotor Spacing: " + str(self.data.config.get('Maslow Settings', 'motorSpacingX')) + "mm\nSled Mount Spacing: " + str(self.data.config.get('Maslow Settings', 'sledWidth')) + "mm\nVertical Offset: " + str(self.data.config.get('Maslow Settings', 'motorOffsetY')) + "mm\n\nYou can go back and re-do any of these numbers if you would like"
     
     def LeftCW(self):
         print "left CW"
