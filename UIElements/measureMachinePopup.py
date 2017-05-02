@@ -98,6 +98,5 @@ class MeasureMachinePopup(GridLayout):
     
     def calibrateChainLengths(self):
         print "calibrating"
-        self.data.gcode_queue.put("G90 ")
-        self.data.gcode_queue.put("B09 L1900 R1900 ")
+        self.data.gcode_queue.put("B02 ")
         

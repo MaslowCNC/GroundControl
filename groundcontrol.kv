@@ -833,8 +833,12 @@
                 Label:
                     text: "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of the right chain on the vertical tooth of the right sprocket, then press Calibrate Chain Lengths\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished, press Next"
                     size_hint_x: leftCol
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Measure Motor Height.JPG"
+                GridLayout:
+                    cols: 2
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Ready To Calibrate Right Sprocket.JPG"
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Sled Attached.JPG"
             GridLayout:
                 cols: 1
                 size_hint_x: rightCol
@@ -852,7 +856,7 @@
                 cols: 1
                 size_hint_x: leftCol
                 Label:
-                    text: "To refine these measurements we're going to cut a test shape.\n\nBased on the measurements of the test shape we can dial in the measurements.\n\nThe process will repeat automatically until the machine is calibrated to within tolerances"
+                    text: "This part doesn't work yet, press Skip\n\nTo refine these measurements we're going to cut a test shape.\n\nBased on the measurements of the test shape we can dial in the measurements.\n\nThe process will repeat automatically until the machine is calibrated to within tolerances"
                 Image:
                     source: "./Documentation/Calibrate Machine Dimensions/Measure Motor Height.JPG"
             GridLayout:

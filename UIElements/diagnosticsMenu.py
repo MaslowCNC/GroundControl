@@ -43,6 +43,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self.parentWidget.close()
         
     def calibrateChainLengths(self):
+        self.data.gcode_queue.put("B06 L0.0 R0.0")
         self.data.gcode_queue.put("B02 ")
         self.parentWidget.close()
     
