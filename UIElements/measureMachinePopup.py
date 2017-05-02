@@ -15,8 +15,7 @@ class MeasureMachinePopup(GridLayout):
     def slideJustChanged(self):
         if self.carousel.index == 1:
             #pointing one sprocket up
-            #self.data.gcode_queue.put("B06 L1900.1 R1900.1 ")
-            pass
+            self.data.gcode_queue.put("B06 L0 R0 ");
             
         if self.carousel.index == 2:
             #measuring distance between motors
