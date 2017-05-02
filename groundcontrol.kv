@@ -283,11 +283,12 @@
                 on_press: root.testMotors()
             Button:
                 text: 'Calibrate Machine Dimensions'
-                disabled: True
+                disabled: False
+                on_release: root.measureMachine()
             Button:
                 text: 'Calibrate Chain Length - Automatic'
                 disabled: False
-                on_press: root.calibrateChainLengths()
+                on_release: root.calibrateChainLengths()
             Button:
                 text: 'Calibrate Motors'
                 disabled: False
@@ -638,4 +639,246 @@
         Button:
             text: "Z-Out"
             on_release: root.zOut()
+        
+<MeasureMachinePopup>:
+    carousel:carousel
+    linksTextInput:linksTextInput
+    reviewNumbers:reviewNumbers
+    cols: 1
+    size: root.size
+    pos: root.pos
+    #top bar
+    GridLayout:
+        cols: 3
+        size_hint_y: .1
+        Button:
+            text: "<Go Back"
+            on_release: carousel.load_previous()
+        Label:
+            text: 'Step {} of 7'.format(carousel.index)
+        Button:
+            text: "Skip>"
+            on_release: carousel.load_next()
+    Carousel:
+        id: carousel
+        direction: "right"
+        size_hint_y: .9
+        on_index: root.slideJustChanged()
+        #:set leftCol .8
+        #:set rightCol .2
+        GridLayout:
+            cols: 2
+            Label:
+                text: 'This walk-through will guide you through the process of calibrating your Maslow Machine. \n\nClick Begin to start. \n\nYou can move forward and backwards through the walk-through at any time using the "Prevous" and "Next" buttons\n\nYou can also skip this process entirly and enter your machine dimensions in the Settings window'
+                size_hint_x: leftCol
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Label:
+                    text: 'The controls you will need\nfor each step will be on here\non the right'
+                Button:
+                    text: "Begin"
+                    on_release: carousel.load_next()
+                Label:
+        GridLayout:
+            cols: 2
+            GridLayout:
+                cols: 1
+                Label:
+                    text: "Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up.\nWhen you are ready, press Set Zero"
+                    size_hint_x: leftCol
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.JPG"
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Turn Left Sprocket\n1 degree CCW'
+                    on_release: root.LeftCCW()
+                Button:
+                    text: 'Turn Left Sprocket\n1 degree CW'
+                    on_release: root.LeftCW()
+                Button:
+                    text: 'Turn Right Sprocket\n1 degree CCW'
+                    on_release: root.RightCCW()
+                Button:
+                    text: 'Turn Right Sprocket\n1 degree CW'
+                    on_release: root.RightCW()
+                Button:
+                    text: 'Set Zero'
+                    on_release: root.setZero()
+                Label:
+        GridLayout:
+            cols: 2
+            GridLayout:
+                cols: 1
+                Label:
+                    text: "Rather than using a tape measure to measure the spacing between the motors, we're going to use the chain.\n\nHook the first link from the left chain over the top tooth on the left motor\n\nThen, use the buttons to the right to extend the chain until it can be hooked on the top tooth of the the right motor.\nThen gently pull it tight using the buttons to the right. Press Measure when the chain is taught"
+                    size_hint_x: leftCol
+                GridLayout:
+                    cols: 3
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Chain On Left Sprocket.JPG"
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Chain Between Sprockets.JPG"
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Chain On Right Sprocket.JPG"
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Extend Left Chain 1mm'
+                    on_release: root.extendLeft(1)
+                Button:
+                    text: 'Extend Left Chain 10mm'
+                    on_release: root.extendLeft(10)
+                Button:
+                    text: 'Extend Left Chain 100mm'
+                    on_release: root.extendLeft(100)
+                Button:
+                    text: 'Retract Left Chain 1mm'
+                    on_release: root.retractLeft(1)
+                Button:
+                    text: 'Retract Left Chain 10mm'
+                    on_release: root.retractLeft(10)
+                Button:
+                    text: 'Retract Left Chain 100mm'
+                    on_release: root.retractLeft(100)
+                Button:
+                    text: 'Measure'
+                    on_release: root.measureLeft()
+                Label:
+        GridLayout:
+            cols: 2
+            GridLayout:
+                cols: 1
+                Label:
+                    text: "Detach the chain from the right sprocket\n\nFeed the free end through the sled mounting brackets and hold it in place with cotter pins\n\nCount the number of links between the two pins and enter the number in the box to the right, then press Enter\nWe will refine this measurement later, it is only an initial guess."
+                    size_hint_x: leftCol
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Chain Between Sled Mounts.JPG"
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Extend Left Chain 10mm'
+                    on_release: root.extendLeft(10)
+                Button:
+                    text: 'Retract Left Chain 10mm'
+                    on_release: root.retractLeft(10)
+                TextInput:
+                    text: "0"
+                    id: linksTextInput
+                Button:
+                    text: "Enter # of\nLinks"
+                    on_release: root.countLinks()
+                Label:
+        GridLayout:
+            cols: 2
+            GridLayout:
+                cols: 1
+                size_hint_x: leftCol
+                Label:
+                    text: "Unhook the cotter pin from the sled\n\nRetract the chain until it hangs down from the motor to the height of the top of the 4x8 sheet, then click Measure"
+                    size_hint_x: leftCol
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Measure Motor Height.JPG"
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Extend Left Chain 10mm'
+                    on_release: root.extendLeft(100)
+                Button:
+                    text: 'Retract Left Chain 1mm'
+                    on_release: root.retractLeft(1)
+                Button:
+                    text: 'Retract Left Chain 10mm'
+                    on_release: root.retractLeft(10)
+                Button:
+                    text: 'Retract Left Chain 100mm'
+                    on_release: root.retractLeft(100)
+                Button:
+                    text: 'Measure'
+                    on_release: root.measureLeft()
+                Label:
+        GridLayout:
+            cols: 2
+            GridLayout:
+                cols: 1
+                size_hint_x: leftCol
+                Label:
+                    id: reviewNumbers
+                    text: "Let's review the measurements we've made so far to make sure they look correct\n\nMotor Spacing: 300mm\nSled Mount Spacing: 300mm\nVertical Offset: 400mm\n\nYou can go back and re-do any of these numbers if you would like"
+                Label:
+                    text: 'Note: Two important factors are not measured in this process:\n\n1) The distance from the chain mounting points to the router bit\n2) The center of gravity of the sled\n\nIf you are using the standard sled design and router the default values will be close\n\nIf you are using a custom design, it is a good idea to measure these values manually and enter them in the settings. \n\nIf you have a recomendation for a way to automate these measurements, let us know in the forums'
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Continue'
+                    on_release: carousel.load_next()
+                Label:
+        GridLayout:
+            cols: 2
+            GridLayout:
+                cols: 1
+                size_hint_x: leftCol
+                Label:
+                    text: "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of the right chain on the vertical tooth of the right sprocket, then press Calibrate Chain Lengths\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished, press Next"
+                    size_hint_x: leftCol
+                GridLayout:
+                    cols: 2
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Ready To Calibrate Right Sprocket.JPG"
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Sled Attached.JPG"
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Calibrate\nChain Lengths'
+                    on_release: root.calibrateChainLengths()
+                Button:
+                    text: 'Next'
+                    on_release: carousel.load_next()
+                Label:
+        GridLayout:
+            cols: 2
+            GridLayout:
+                cols: 1
+                size_hint_x: leftCol
+                Label:
+                    text: "This part doesn't work yet, press Skip\n\nTo refine these measurements we're going to cut a test shape.\n\nBased on the measurements of the test shape we can dial in the measurements.\n\nThe process will repeat automatically until the machine is calibrated to within tolerances"
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Measure Motor Height.JPG"
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                TextInput:
+                    text: "Horizontal\nMeasurement"
+                TextInput:
+                    text: "Vertical\nMeasurement"
+                Button:
+                    text: "Calibrate Again"
+                Label:
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Your machine is now calibrated!\n\nCongratulations! "
+                size_hint_x: leftCol
+            Button:
+                text: 'Finish'
+                on_release: root.done()
+                size_hint_x: rightCol
+    
+        
         
