@@ -781,6 +781,7 @@
             cols: 2
             GridLayout:
                 cols: 1
+                size_hint_x: leftCol
                 Label:
                     text: "Unhook the cotter pin from the sled\n\nRetract the chain until it hangs down from the motor to the height of the top of the 4x8 sheet, then click Measure"
                     size_hint_x: leftCol
@@ -826,9 +827,34 @@
                 Label:
         GridLayout:
             cols: 2
-            Label:
-                text: "Cut test shape\n\nType in shape measurements\n\nClick Enter Measurements\n\nThe machine will then tweak your calibration and repeat the process slightly below and to the right of the original test"
+            GridLayout:
+                cols: 1
                 size_hint_x: leftCol
+                Label:
+                    text: "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of the right chain on the vertical tooth of the right sprocket, then press Calibrate Chain Lengths\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished, press Next"
+                    size_hint_x: leftCol
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Measure Motor Height.JPG"
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Calibrate\nChain Lengths'
+                    on_release: root.calibrateChainLengths()
+                Button:
+                    text: 'Next'
+                    on_release: carousel.load_next()
+                Label:
+        GridLayout:
+            cols: 2
+            GridLayout:
+                cols: 1
+                size_hint_x: leftCol
+                Label:
+                    text: "To refine these measurements we're going to cut a test shape.\n\nBased on the measurements of the test shape we can dial in the measurements.\n\nThe process will repeat automatically until the machine is calibrated to within tolerances"
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Measure Motor Height.JPG"
             GridLayout:
                 cols: 1
                 size_hint_x: rightCol
@@ -843,7 +869,7 @@
         GridLayout:
             cols: 2
             Label:
-                text: "Step 8: Finish\n\nYour machine is now calibrated!\n\nCongratulations! "
+                text: "Your machine is now calibrated!\n\nCongratulations! "
                 size_hint_x: leftCol
             Button:
                 text: 'Finish'

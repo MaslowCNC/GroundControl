@@ -95,3 +95,9 @@ class MeasureMachinePopup(GridLayout):
         self.data.config.set('Maslow Settings', 'sledWidth', str(dist))
         self.data.config.write()
         self.carousel.load_next()
+    
+    def calibrateChainLengths(self):
+        print "calibrating"
+        self.data.gcode_queue.put("G90 ")
+        self.data.gcode_queue.put("B09 L1900 R1900 ")
+        
