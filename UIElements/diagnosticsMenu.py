@@ -2,6 +2,7 @@ from kivy.uix.floatlayout                        import    FloatLayout
 from DataStructures.makesmithInitFuncs           import    MakesmithInitFuncs
 from UIElements.scrollableTextPopup              import    ScrollableTextPopup
 from kivy.uix.popup                              import    Popup
+from UIElements.measureMachinePopup              import    MeasureMachinePopup
 
 class Diagnostics(FloatLayout, MakesmithInitFuncs):
     
@@ -42,6 +43,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self.parentWidget.close()
         
     def calibrateChainLengths(self):
+        self.data.gcode_queue.put("B06 L0.0 R0.0")
         self.data.gcode_queue.put("B02 ")
         self.parentWidget.close()
     
@@ -65,6 +67,26 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
     def wipeEEPROM(self):
         self.data.gcode_queue.put("B07 ")
         self.parentWidget.close()
+    
+    def measureMachine(self):
+        '''
+        
+        Spawns a walk through that helps the user measure the machine's dimensions
+        
+        '''
+        self.popupContent      = MeasureMachinePopup(done=self.dismissMeasureMachinePopup)
+        self.popupContent.data = self.data
+        self._popup = Popup(title="Setup Machine Dimensions", content=self.popupContent,
+                            size_hint=(0.85, 0.95))
+        self._popup.open()
+    
+    def dismissMeasureMachinePopup(self):
+        '''
+        
+        Close The measure machine Pop-up
+        
+        '''
+        self._popup.dismiss()
     
     def advancedOptionsFunctions(self, text):
         
