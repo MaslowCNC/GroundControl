@@ -642,6 +642,7 @@
         
 <MeasureMachinePopup>:
     carousel:carousel
+    linksTextInput:linksTextInput
     cols: 1
     size: root.size
     pos: root.pos
@@ -667,7 +668,7 @@
         GridLayout:
             cols: 2
             Label:
-                text: 'This walk-through will guide you through the process of calibrating your Maslow Machine. \n\nClick Next to proceed. \n\nYou can move forward and backwards through the walk-through at any time using the "Prevous" and "Next" buttons\n\nYou can also skip this process entirly and enter your machine dimensions in the Settings window'
+                text: 'This walk-through will guide you through the process of calibrating your Maslow Machine. \n\nClick Begin to start. \n\nYou can move forward and backwards through the walk-through at any time using the "Prevous" and "Next" buttons\n\nYou can also skip this process entirly and enter your machine dimensions in the Settings window'
                 size_hint_x: leftCol
             GridLayout:
                 cols: 1
@@ -675,6 +676,9 @@
                 Label:
                 Label:
                     text: 'The controls you will need\nfor each step will be on here\non the right'
+                Button:
+                    text: "Begin"
+                    on_release: carousel.load_next()
                 Label:
         GridLayout:
             cols: 2
@@ -751,7 +755,7 @@
             GridLayout:
                 cols: 1
                 Label:
-                    text: "Detach the chain from the right sprocket using the buttons to the right\n\nFeed one end through the sled mounting brackets and hold it in place with a cotter pin\n\nCount the number of links between the two sides and enter the number in the box to the right, then press Enter\nYou can enter a fractions of a link\n\nWe will refine this measurement later"
+                    text: "Detach the chain from the right sprocket\n\nFeed the free end through the sled mounting brackets and hold it in place with cotter pins\n\nCount the number of links between the two pins and enter the number in the box to the right, then press Enter\nWe will refine this measurement later, it is only an initial guess."
                     size_hint_x: leftCol
                 Image:
                     source: "./Documentation/Launch Windows.JPG"
@@ -760,13 +764,17 @@
                 size_hint_x: rightCol
                 Label:
                 Button:
-                    text: 'Extend Left Chain'
+                    text: 'Extend Left Chain 10mm'
+                    on_release: root.extendLeft(10)
                 Button:
-                    text: 'Retract Left Chain'
+                    text: 'Retract Left Chain 10mm'
+                    on_release: root.retractLeft(10)
                 TextInput:
-                    text: "0.0"
+                    text: "0"
+                    id: linksTextInput
                 Button:
                     text: "Enter # of\nLinks"
+                    on_release: root.countLinks()
                 Label:
         GridLayout:
             cols: 2

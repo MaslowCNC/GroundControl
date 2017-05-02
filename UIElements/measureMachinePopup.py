@@ -15,7 +15,8 @@ class MeasureMachinePopup(GridLayout):
     def slideJustChanged(self):
         if self.carousel.index == 1:
             #pointing one sprocket up
-            self.data.gcode_queue.put("B06 L0 R0 ")
+            #self.data.gcode_queue.put("B06 L1900.1 R1900.1 ")
+            pass
             
         if self.carousel.index == 2:
             #measuring distance between motors
@@ -66,6 +67,18 @@ class MeasureMachinePopup(GridLayout):
         self.data.gcode_queue.put("B10 L")
     
     def readMotorSpacing(self, dist):
-        print "read motor spacing"
+        print "Read motor spacing: " + str(dist)
+        self.data.config.set('Maslow Settings', 'motorSpacingX', str(dist))
+        self.data.config.write()
+        self.carousel.load_next()
+    
+    def countLinks(self):
+        print "counting links, dist: "
+        
+        dist =  float(self.linksTextInput.text)*6.35
+        
         print dist
+        
+        self.data.config.set('Maslow Settings', 'sledWidth', str(dist))
+        self.data.config.write()
         self.carousel.load_next()
