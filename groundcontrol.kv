@@ -647,6 +647,10 @@
     cutBtn:cutBtn
     goBackBtn:goBackBtn
     goFwdBtn:goFwdBtn
+    horizMeasure:horizMeasure
+    vertMeasure:vertMeasure
+    unitsBtn:unitsBtn
+    enterValues:enterValues
     
     cols: 1
     size: root.size
@@ -676,7 +680,7 @@
         GridLayout:
             cols: 2
             Label:
-                text: 'This walk-through will guide you through the process of calibrating your Maslow Machine. \n\nClick Begin to start. \n\nYou can move forward and backwards through the walk-through at any time using the Previous and Next buttons\n\nYou can also skip this process entirely and enter your machine dimensions in the Settings window'
+                text: 'Note: This is incomplete and experimental at this point. Use with caution.\n\nYour feedback is more than welcome\n\nThis walk-through will guide you through the process of calibrating your Maslow Machine. \n\nClick Begin to start. \n\nYou can move forward and backwards through the walk-through at any time using the Previous and Next buttons\n\nYou can also skip this process entirely and enter your machine dimensions in the Settings window'
                 size_hint_x: leftCol
             GridLayout:
                 cols: 1
@@ -869,7 +873,7 @@
                 cols: 1
                 size_hint_x: leftCol
                 Label:
-                    text: "NOTE: entering values doesn't do anything right now\n\nTo refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short horizontal cuts and two short vertical cuts\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe size of bit used is not critical\n\nThe process will repeat until the machine is calibrated to within tolerances\n\nPress Cut Test Pattern to begin"
+                    text: "To refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short horizontal cuts and two short vertical cuts\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe size of bit used is not critical\n\nThe process will repeat until the machine is calibrated to within tolerances\n\nPress Cut Test Pattern to begin"
                 GridLayout:
                     cols: 3
                     Image:
@@ -882,13 +886,26 @@
                 cols: 1
                 size_hint_x: rightCol
                 Label:
+                Label:
+                    text: "Horizontal\nMeasurement:"
                 TextInput:
-                    text: "Horizontal\nMeasurement"
+                    id:horizMeasure
+                    disabled: True
+                Label:
+                    text: "Vertical\nMeasurement:"
                 TextInput:
-                    text: "Vertical\nMeasurement"
+                    id: vertMeasure
+                    disabled: True
+                Button:
+                    text: "MM"
+                    on_release: root.switchUnits()
+                    id: unitsBtn
+                    disabled: True
                 Button:
                     text: "Enter Values"
                     on_release: root.enterTestPaternValues()
+                    id: enterValues
+                    disabled: True
                 Button:
                     text: "Cut Test\nPattern"
                     id: cutBtn

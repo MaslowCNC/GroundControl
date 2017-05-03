@@ -115,10 +115,33 @@ class MeasureMachinePopup(GridLayout):
         self.data.gcode_queue.put("B02 ")
         
     def enterTestPaternValues(self):
-        print "values entered"
+        
+        dif = 0
+        
+        try:
+            dif = float(self.horizMeasure.text) - float(self.vertMeasure.text)
+        except:
+            self.data.message_queue.put("Message: Couldn't figure make that into a number")
+            return
+        
+        if self.unitsBtn.text == 'Inches':
+            print "inches seen"
+            dif = dif*25.4
+        
+        acceptableTolerance = .5
+        
+        if abs(dif) < acceptableTolerance:               #if we're fully calibrated
+            self.carousel.load_next()
+        else:
+            amtToChange = .5*dif
+            newSledSpacing = float(self.data.config.get('Maslow Settings', 'sledWidth'))
+            print "Now trying spacing: " + str(newSledSpacing)
+            self.data.config.set('Maslow Settings', 'sledWidth', str(newSledSpacing))
+            self.data.config.write()
+            self.cutBtn.disabled = False
+        
         
     def cutTestPatern(self):
-        print "would cut test pattern"
         
         #Credit for this test pattern to DavidLang
         #self.data.gcode_queue.put("G21 ")
@@ -151,10 +174,20 @@ class MeasureMachinePopup(GridLayout):
         
         self.numberOfTimesTestCutRun = self.numberOfTimesTestCutRun + 1
         self.cutBtn.text = "Re-Cut Test\nPattern"
+        self.cutBtn.disabled         = True
+        self.horizMeasure.disabled   = False
+        self.vertMeasure.disabled    = False
+        self.unitsBtn.disabled       = False
+        self.enterValues.disabled    = False
     
     def stopCut(self):
-        print "would stop cut"
         self.data.quick_queue.put("!") 
         with self.data.gcode_queue.mutex:
             self.data.gcode_queue.queue.clear()
+    
+    def switchUnits(self):
+        if self.unitsBtn.text == 'MM':
+            self.unitsBtn.text = 'Inches'
+        else:
+            self.unitsBtn.text = 'MM'
         
