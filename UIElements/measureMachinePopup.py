@@ -104,3 +104,23 @@ class MeasureMachinePopup(GridLayout):
         print "calibrating"
         self.data.gcode_queue.put("B02 ")
         
+    def enterTestPaternValues(self):
+        print "values entered"
+        
+    def cutTestPatern(self):
+        print "would cut test pattern"
+        self.data.gcode_queue.put("G21 ")
+        self.data.gcode_queue.put("G90 ")
+        self.data.gcode_queue.put("G0 X0 Y0 ")
+        self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("G1 X50 Y50 F1000")
+        self.data.gcode_queue.put("G1 X-50 ")
+        self.data.gcode_queue.put("G1 Y-50 ")
+        self.data.gcode_queue.put("G90 ")
+    
+    def stopCut(self):
+        print "would stop cut"
+        self.data.quick_queue.put("!") 
+        with self.data.gcode_queue.mutex:
+            self.data.gcode_queue.queue.clear()
+        
