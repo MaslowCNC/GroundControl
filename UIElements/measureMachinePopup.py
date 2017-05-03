@@ -11,6 +11,7 @@ from   kivy.uix.popup                            import   Popup
 
 class MeasureMachinePopup(GridLayout):
     done   = ObjectProperty(None)
+    numberOfTimesTestCutRun = 0
     
     def slideJustChanged(self):
         if self.carousel.index == 1:
@@ -109,14 +110,38 @@ class MeasureMachinePopup(GridLayout):
         
     def cutTestPatern(self):
         print "would cut test pattern"
+        
+        #Credit for this test pattern to DavidLang
+        #self.data.gcode_queue.put("G21 ")
         self.data.gcode_queue.put("G21 ")
-        self.data.gcode_queue.put("G90 ")
-        self.data.gcode_queue.put("G0 X0 Y0 ")
+        self.data.gcode_queue.put("G90  ")
+        self.data.gcode_queue.put("G40 ")
+
+        self.data.gcode_queue.put("G0 Z5 ")
+        self.data.gcode_queue.put("G0 X0 Y0  ")
+        self.data.gcode_queue.put("G17 ")
+
+        #(defines the center)
+        self.data.gcode_queue.put("G0 X" + str(18*self.numberOfTimesTestCutRun) + " Y" + str(18*self.numberOfTimesTestCutRun) + "  ")
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("G1 X50 Y50 F1000")
-        self.data.gcode_queue.put("G1 X-50 ")
-        self.data.gcode_queue.put("G1 Y-50 ")
-        self.data.gcode_queue.put("G90 ")
+
+        self.data.gcode_queue.put("G0 X-300 Y300  ")
+        self.data.gcode_queue.put("G1 Z-7 F500  ")
+        self.data.gcode_queue.put("G1 Y18  ")
+        self.data.gcode_queue.put("G1 Z7  ")
+        self.data.gcode_queue.put("G0 X600 Y-18 ")
+        self.data.gcode_queue.put("G1 Z-7  ")
+        self.data.gcode_queue.put("G1 Y18  ")
+        self.data.gcode_queue.put("G1 X-18 ")
+        self.data.gcode_queue.put("G1 Z7 ")
+        self.data.gcode_queue.put("G0 X18 Y-600 ")
+        self.data.gcode_queue.put("G1 Z-7  ")
+        self.data.gcode_queue.put("G1 X-18  ")
+        self.data.gcode_queue.put("G1 Z7  ")
+        self.data.gcode_queue.put("G0 X-600 ")
+        
+        self.numberOfTimesTestCutRun = self.numberOfTimesTestCutRun + 1
+        self.cutBtn.text = "Re-Cut Test\nPattern"
     
     def stopCut(self):
         print "would stop cut"
