@@ -15,7 +15,7 @@ class MeasureMachinePopup(GridLayout):
     def slideJustChanged(self):
         if self.carousel.index == 1:
             #pointing one sprocket up
-            self.data.gcode_queue.put("B06 L0 R0 ");
+            pass
         if self.carousel.index == 2:
             #measuring distance between motors
             self.data.measureRequest = self.readMotorSpacing
@@ -32,36 +32,40 @@ class MeasureMachinePopup(GridLayout):
     def LeftCW(self):
         print "left CW"
         self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B06 L0 R0 ")
         self.data.gcode_queue.put("B09 L.5 ")
         self.data.gcode_queue.put("G90 ")
     
     def LeftCCW(self):
         print "left CCW"
         self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B06 L0 R0 ")
         self.data.gcode_queue.put("B09 L-.5 ")
         self.data.gcode_queue.put("G90 ")
         
     def RightCW(self):
         print "right CW"
         self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B06 L0 R0 ")
         self.data.gcode_queue.put("B09 R-.5 ")
         self.data.gcode_queue.put("G90 ")
     
     def RightCCW(self):
         print "right CCW"
         self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B06 L0 R0 ")
         self.data.gcode_queue.put("B09 R.5 ")
         self.data.gcode_queue.put("G90 ")
     
     def extendLeft(self, dist):
-        print "Extend left by " + str(dist) + "mm"
         self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B06 L0 R0 ")
         self.data.gcode_queue.put("B09 L" + str(dist) + " ")
         self.data.gcode_queue.put("G90 ")
     
     def retractLeft(self, dist):
-        print "Retract left by " + str(dist) + "mm"
         self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B06 L0 R0 ")
         self.data.gcode_queue.put("B09 L-" + str(dist) + " ")
         self.data.gcode_queue.put("G90 ")
     
@@ -99,4 +103,24 @@ class MeasureMachinePopup(GridLayout):
     def calibrateChainLengths(self):
         print "calibrating"
         self.data.gcode_queue.put("B02 ")
+        
+    def enterTestPaternValues(self):
+        print "values entered"
+        
+    def cutTestPatern(self):
+        print "would cut test pattern"
+        self.data.gcode_queue.put("G21 ")
+        self.data.gcode_queue.put("G90 ")
+        self.data.gcode_queue.put("G0 X0 Y0 ")
+        self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("G1 X50 Y50 F1000")
+        self.data.gcode_queue.put("G1 X-50 ")
+        self.data.gcode_queue.put("G1 Y-50 ")
+        self.data.gcode_queue.put("G90 ")
+    
+    def stopCut(self):
+        print "would stop cut"
+        self.data.quick_queue.put("!") 
+        with self.data.gcode_queue.mutex:
+            self.data.gcode_queue.queue.clear()
         
