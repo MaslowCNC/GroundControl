@@ -14,9 +14,12 @@ class MeasureMachinePopup(GridLayout):
     numberOfTimesTestCutRun = 0
     
     def slideJustChanged(self):
+        if self.carousel.index == 0:
+            #begin notes
+            self.goBackBtn.disabled = True
         if self.carousel.index == 1:
             #pointing one sprocket up
-            pass
+            self.goBackBtn.disabled = False
         if self.carousel.index == 2:
             #measuring distance between motors
             self.data.measureRequest = self.readMotorSpacing
@@ -29,7 +32,13 @@ class MeasureMachinePopup(GridLayout):
         if self.carousel.index == 4:
             #review calculations
             self.reviewNumbers.text = "Let's review the measurements we've made so far to make sure they look correct\n\nMotor Spacing: " + str(self.data.config.get('Maslow Settings', 'motorSpacingX')) + "mm\nSled Mount Spacing: " + str(self.data.config.get('Maslow Settings', 'sledWidth')) + "mm\nVertical Offset: " + str(self.data.config.get('Maslow Settings', 'motorOffsetY')) + "mm\n\nYou can go back and re-do any of these numbers if you would like"
-    
+        if self.carousel.index == 7:
+            #Final finish step
+            self.goFwdBtn.disabled = False
+        if self.carousel.index == 8:
+            #Final finish step
+            self.goFwdBtn.disabled = True
+        
     def LeftCW(self):
         print "left CW"
         self.data.gcode_queue.put("G91 ")
@@ -122,7 +131,7 @@ class MeasureMachinePopup(GridLayout):
         self.data.gcode_queue.put("G17 ")
 
         #(defines the center)
-        self.data.gcode_queue.put("G0 X" + str(18*self.numberOfTimesTestCutRun) + " Y" + str(18*self.numberOfTimesTestCutRun) + "  ")
+        self.data.gcode_queue.put("G0 X" + str(18*self.numberOfTimesTestCutRun) + " Y" + str(-18*self.numberOfTimesTestCutRun) + "  ")
         self.data.gcode_queue.put("G91 ")
 
         self.data.gcode_queue.put("G0 X-300 Y300  ")
