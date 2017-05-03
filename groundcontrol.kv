@@ -644,6 +644,10 @@
     carousel:carousel
     linksTextInput:linksTextInput
     reviewNumbers:reviewNumbers
+    cutBtn:cutBtn
+    goBackBtn:goBackBtn
+    goFwdBtn:goFwdBtn
+    
     cols: 1
     size: root.size
     pos: root.pos
@@ -654,10 +658,13 @@
         Button:
             text: "<Go Back"
             on_release: carousel.load_previous()
+            id: goBackBtn
+            disabled: True
         Label:
-            text: 'Step {} of 7'.format(carousel.index)
+            text: 'Step {} of 8'.format(carousel.index)
         Button:
             text: "Skip>"
+            id: goFwdBtn
             on_release: carousel.load_next()
     Carousel:
         id: carousel
@@ -862,9 +869,15 @@
                 cols: 1
                 size_hint_x: leftCol
                 Label:
-                    text: "To refine these measurements we're going to cut a test shape.\n\nBased on the measurements of the test shape we can dial in the measurements.\n\nThe process will repeat until the machine is calibrated to within tolerances\n\nPress Cut Test Patern to begin"
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Measure Motor Height.JPG"
+                    text: "NOTE: entering values doesn't do anything right now\n\nTo refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short horizontal cuts and two short vertical cuts\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe size of bit used is not critical\n\nThe process will repeat until the machine is calibrated to within tolerances\n\nPress Cut Test Pattern to begin"
+                GridLayout:
+                    cols: 3
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Test Shape.JPG"
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Measure Test Shape Horizontal.JPG"
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Measure Test Shape Vertical.JPG"
             GridLayout:
                 cols: 1
                 size_hint_x: rightCol
@@ -878,6 +891,7 @@
                     on_release: root.enterTestPaternValues()
                 Button:
                     text: "Cut Test\nPattern"
+                    id: cutBtn
                     on_release: root.cutTestPatern()
                 Button:
                     text: "Stop\nCut"

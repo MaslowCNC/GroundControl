@@ -11,11 +11,15 @@ from   kivy.uix.popup                            import   Popup
 
 class MeasureMachinePopup(GridLayout):
     done   = ObjectProperty(None)
+    numberOfTimesTestCutRun = 0
     
     def slideJustChanged(self):
+        if self.carousel.index == 0:
+            #begin notes
+            self.goBackBtn.disabled = True
         if self.carousel.index == 1:
             #pointing one sprocket up
-            pass
+            self.goBackBtn.disabled = False
         if self.carousel.index == 2:
             #measuring distance between motors
             self.data.measureRequest = self.readMotorSpacing
@@ -28,7 +32,13 @@ class MeasureMachinePopup(GridLayout):
         if self.carousel.index == 4:
             #review calculations
             self.reviewNumbers.text = "Let's review the measurements we've made so far to make sure they look correct\n\nMotor Spacing: " + str(self.data.config.get('Maslow Settings', 'motorSpacingX')) + "mm\nSled Mount Spacing: " + str(self.data.config.get('Maslow Settings', 'sledWidth')) + "mm\nVertical Offset: " + str(self.data.config.get('Maslow Settings', 'motorOffsetY')) + "mm\n\nYou can go back and re-do any of these numbers if you would like"
-    
+        if self.carousel.index == 7:
+            #Final finish step
+            self.goFwdBtn.disabled = False
+        if self.carousel.index == 8:
+            #Final finish step
+            self.goFwdBtn.disabled = True
+        
     def LeftCW(self):
         print "left CW"
         self.data.gcode_queue.put("G91 ")
@@ -109,14 +119,38 @@ class MeasureMachinePopup(GridLayout):
         
     def cutTestPatern(self):
         print "would cut test pattern"
+        
+        #Credit for this test pattern to DavidLang
+        #self.data.gcode_queue.put("G21 ")
         self.data.gcode_queue.put("G21 ")
-        self.data.gcode_queue.put("G90 ")
-        self.data.gcode_queue.put("G0 X0 Y0 ")
+        self.data.gcode_queue.put("G90  ")
+        self.data.gcode_queue.put("G40 ")
+
+        self.data.gcode_queue.put("G0 Z5 ")
+        self.data.gcode_queue.put("G0 X0 Y0  ")
+        self.data.gcode_queue.put("G17 ")
+
+        #(defines the center)
+        self.data.gcode_queue.put("G0 X" + str(18*self.numberOfTimesTestCutRun) + " Y" + str(-18*self.numberOfTimesTestCutRun) + "  ")
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("G1 X50 Y50 F1000")
-        self.data.gcode_queue.put("G1 X-50 ")
-        self.data.gcode_queue.put("G1 Y-50 ")
-        self.data.gcode_queue.put("G90 ")
+
+        self.data.gcode_queue.put("G0 X-300 Y300  ")
+        self.data.gcode_queue.put("G1 Z-7 F500  ")
+        self.data.gcode_queue.put("G1 Y18  ")
+        self.data.gcode_queue.put("G1 Z7  ")
+        self.data.gcode_queue.put("G0 X600 Y-18 ")
+        self.data.gcode_queue.put("G1 Z-7  ")
+        self.data.gcode_queue.put("G1 Y18  ")
+        self.data.gcode_queue.put("G1 X-18 ")
+        self.data.gcode_queue.put("G1 Z7 ")
+        self.data.gcode_queue.put("G0 X18 Y-600 ")
+        self.data.gcode_queue.put("G1 Z-7  ")
+        self.data.gcode_queue.put("G1 X-18  ")
+        self.data.gcode_queue.put("G1 Z7  ")
+        self.data.gcode_queue.put("G0 X-600 ")
+        
+        self.numberOfTimesTestCutRun = self.numberOfTimesTestCutRun + 1
+        self.cutBtn.text = "Re-Cut Test\nPattern"
     
     def stopCut(self):
         print "would stop cut"
