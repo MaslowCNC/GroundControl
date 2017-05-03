@@ -739,6 +739,9 @@
                     text: 'Extend Left Chain 100mm'
                     on_release: root.extendLeft(100)
                 Button:
+                    text: 'Extend Left Chain 1000mm'
+                    on_release: root.extendLeft(1000)
+                Button:
                     text: 'Retract Left Chain 1mm'
                     on_release: root.retractLeft(1)
                 Button:
@@ -750,6 +753,9 @@
                 Button:
                     text: 'Measure'
                     on_release: root.measureLeft()
+                Button:
+                    text: "Stop\nCut"
+                    on_release: root.stopCut()
                 Label:
         GridLayout:
             cols: 2
@@ -856,7 +862,7 @@
                 cols: 1
                 size_hint_x: leftCol
                 Label:
-                    text: "This part doesn't work yet, press Skip\n\nTo refine these measurements we're going to cut a test shape.\n\nBased on the measurements of the test shape we can dial in the measurements.\n\nThe process will repeat automatically until the machine is calibrated to within tolerances"
+                    text: "To refine these measurements we're going to cut a test shape.\n\nBased on the measurements of the test shape we can dial in the measurements.\n\nThe process will repeat until the machine is calibrated to within tolerances\n\nPress Cut Test Patern to begin"
                 Image:
                     source: "./Documentation/Calibrate Machine Dimensions/Measure Motor Height.JPG"
             GridLayout:
@@ -868,7 +874,14 @@
                 TextInput:
                     text: "Vertical\nMeasurement"
                 Button:
-                    text: "Calibrate Again"
+                    text: "Enter Values"
+                    on_release: root.enterTestPaternValues()
+                Button:
+                    text: "Cut Test\nPattern"
+                    on_release: root.cutTestPatern()
+                Button:
+                    text: "Stop\nCut"
+                    on_release: root.stopCut()
                 Label:
         GridLayout:
             cols: 2
