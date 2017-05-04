@@ -144,6 +144,7 @@ class MeasureMachinePopup(GridLayout):
         
         #Credit for this test pattern to DavidLang
         #self.data.gcode_queue.put("G21 ")
+        self.data.units = "MM"
         self.data.gcode_queue.put("G21 ")
         self.data.gcode_queue.put("G90  ")
         self.data.gcode_queue.put("G40 ")
