@@ -106,7 +106,8 @@ class MeasureMachinePopup(GridLayout):
         
         self.data.config.set('Maslow Settings', 'sledWidth', str(dist))
         self.data.config.write()
-        self.carousel.load_next()
+        from kivy.clock import Clock
+        Clock.schedule_once(self.carousel.load_next, .1)            #give the settings a chance to finish writing
     
     def calibrateChainLengths(self):
         print "calibrating"
@@ -119,7 +120,7 @@ class MeasureMachinePopup(GridLayout):
         try:
             dif = float(self.horizMeasure.text) - float(self.vertMeasure.text)
         except:
-            self.data.message_queue.put("Message: Couldn't figure make that into a number")
+            self.data.message_queue.put("Message: Couldn't make that into a number")
             return
         
         if self.unitsBtn.text == 'Inches':
