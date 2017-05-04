@@ -69,13 +69,11 @@ class MeasureMachinePopup(GridLayout):
     
     def extendLeft(self, dist):
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B06 L0 R0 ")
         self.data.gcode_queue.put("B09 L" + str(dist) + " ")
         self.data.gcode_queue.put("G90 ")
     
     def retractLeft(self, dist):
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B06 L0 R0 ")
         self.data.gcode_queue.put("B09 L-" + str(dist) + " ")
         self.data.gcode_queue.put("G90 ")
     
