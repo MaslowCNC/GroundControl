@@ -37,6 +37,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     lineNumber = 0  #the line number currently being processed
     
+    absoluteFlag = 0
+    
     prependString = "G01 "
     
     def initialize(self):
@@ -196,46 +198,52 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
         '''
         
-        xTarget = self.xPosition
-        yTarget = self.yPosition
-        zTarget = self.zPosition
-        
-        x = re.search("X(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if x:
-            xTarget = float(x.groups()[0])*self.canvasScaleFactor
-        
-        y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if y:
-            yTarget = float(y.groups()[0])*self.canvasScaleFactor
-        
-        z = re.search("Z(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if z:
-            zTarget = float(z.groups()[0])*self.canvasScaleFactor
-        
-        
-        #Draw lines for G1 and G0
-        with self.scatterObject.canvas:
-            Color(1, 1, 1)
-            if command == 'G00':
-                Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode', dash_length = 4, dash_offset = 2)
-            elif command == 'G01':
-                Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode')
-       
-        #If the zposition has changed, add indicators
-        tol = 0.05 #Acceptable error in mm
-        if abs(zTarget - self.zPosition) >= tol:
+        try:
+            xTarget = self.xPosition
+            yTarget = self.yPosition
+            zTarget = self.zPosition
+            
+            x = re.search("X(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+            if x:
+                xTarget = float(x.groups()[0])*self.canvasScaleFactor
+                if self.absoluteFlag == 1:
+                    xTarget = self.xPosition + xTarget
+            
+            y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+            if y:
+                yTarget = float(y.groups()[0])*self.canvasScaleFactor
+                if self.absoluteFlag == 1:
+                    yTarget = self.yPosition + yTarget
+            z = re.search("Z(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+            if z:
+                zTarget = float(z.groups()[0])*self.canvasScaleFactor
+            
+            
+            #Draw lines for G1 and G0
             with self.scatterObject.canvas:
-                if zTarget - self.zPosition > 0:
-                    Color(0, 1, 0)
-                    radius = 1
-                else:
-                    Color(1, 0, 0)
-                    radius = 2
-                Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, radius), width = 2, group = 'gcode')
-        
-        self.xPosition = xTarget
-        self.yPosition = yTarget
-        self.zPosition = zTarget
+                Color(1, 1, 1)
+                if command == 'G00':
+                    Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode', dash_length = 4, dash_offset = 2)
+                elif command == 'G01':
+                    Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode')
+           
+            #If the zposition has changed, add indicators
+            tol = 0.05 #Acceptable error in mm
+            if abs(zTarget - self.zPosition) >= tol:
+                with self.scatterObject.canvas:
+                    if zTarget - self.zPosition > 0:
+                        Color(0, 1, 0)
+                        radius = 1
+                    else:
+                        Color(1, 0, 0)
+                        radius = 2
+                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, radius), width = 2, group = 'gcode')
+            
+            self.xPosition = xTarget
+            self.yPosition = yTarget
+            self.zPosition = zTarget
+        except:
+            print "Unable to draw line on screen: " + gCodeLine
     
     def drawArc(self,gCodeLine,command):
         '''
@@ -246,48 +254,51 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
         '''
         
-        xTarget = self.xPosition
-        yTarget = self.yPosition
-        iTarget = 0
-        jTarget = 0
-        
-        x = re.search("X(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if x:
-            xTarget = float(x.groups()[0])*self.canvasScaleFactor
-        y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if y:
-            yTarget = float(y.groups()[0])*self.canvasScaleFactor
-        i = re.search("I(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if i:
-            iTarget = float(i.groups()[0])*self.canvasScaleFactor
-        j = re.search("J(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if j:
-            jTarget = float(j.groups()[0])*self.canvasScaleFactor
-        
-        radius = math.sqrt(iTarget**2 + jTarget**2)
-        centerX = self.xPosition + iTarget
-        centerY = self.yPosition + jTarget
-        
-        angle1 = self.calcAngle(self.xPosition, self.yPosition, centerX, centerY)
-        angle2 = self.calcAngle(xTarget, yTarget, centerX, centerY)
-        
-        if command == 'G02':
-            angleStart = angle2
-            angleEnd = angle1
-        elif command == 'G03':
-            angleStart = angle1
-            angleEnd = angle2
-        
-        if angleStart < angleEnd:
-            angleEnd = angleEnd - 360
-        
-        #Draw arc for G02 and G03
-        with self.scatterObject.canvas:
-            Color(1, 1, 1)
-            Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, angleStart, angleEnd), group = 'gcode')
+        try:
+            xTarget = self.xPosition
+            yTarget = self.yPosition
+            iTarget = 0
+            jTarget = 0
+            
+            x = re.search("X(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+            if x:
+                xTarget = float(x.groups()[0])*self.canvasScaleFactor
+            y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+            if y:
+                yTarget = float(y.groups()[0])*self.canvasScaleFactor
+            i = re.search("I(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+            if i:
+                iTarget = float(i.groups()[0])*self.canvasScaleFactor
+            j = re.search("J(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+            if j:
+                jTarget = float(j.groups()[0])*self.canvasScaleFactor
+            
+            radius = math.sqrt(iTarget**2 + jTarget**2)
+            centerX = self.xPosition + iTarget
+            centerY = self.yPosition + jTarget
+            
+            angle1 = self.calcAngle(self.xPosition, self.yPosition, centerX, centerY)
+            angle2 = self.calcAngle(xTarget, yTarget, centerX, centerY)
+            
+            if command == 'G02':
+                angleStart = angle2
+                angleEnd = angle1
+            elif command == 'G03':
+                angleStart = angle1
+                angleEnd = angle2
+            
+            if angleStart < angleEnd:
+                angleEnd = angleEnd - 360
+            
+            #Draw arc for G02 and G03
+            with self.scatterObject.canvas:
+                Color(1, 1, 1)
+                Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, angleStart, angleEnd), group = 'gcode')
 
-        self.xPosition = xTarget
-        self.yPosition = yTarget
+            self.xPosition = xTarget
+            self.yPosition = yTarget
+        except:
+            print "Unable to draw arc on screen: " + gCodeLine
 
     def clearGcode(self):
         '''
@@ -372,12 +383,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if gString == 'G21':
             self.canvasScaleFactor = self.MILLIMETERS
             self.data.units = "MM"
-            
+        
         if gString == 'G90':
-            self.absoluteFlag = 1
+            self.absoluteFlag = 0
             
         if gString == 'G91':
-            self.absoluteFlag = 0
+            self.absoluteFlag = 1
         
         self.lineNumber = self.lineNumber + 1
         
