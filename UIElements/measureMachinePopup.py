@@ -138,6 +138,7 @@ class MeasureMachinePopup(GridLayout):
             self.data.config.set('Maslow Settings', 'sledWidth', str(newSledSpacing))
             self.data.config.write()
             self.cutBtn.disabled = False
+            self.data.pushSettings()
         
         
     def cutTestPatern(self):

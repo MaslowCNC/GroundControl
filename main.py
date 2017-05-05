@@ -230,6 +230,7 @@ class GroundControlApp(App):
         Push settings to machine
         '''
         self.data.bind(connectionStatus = self.push_settings_to_machine)
+        self.data.pushSettings = self.push_settings_to_machine
         
         
         return interface
