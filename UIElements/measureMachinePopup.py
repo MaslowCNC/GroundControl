@@ -132,8 +132,8 @@ class MeasureMachinePopup(GridLayout):
         if abs(dif) < acceptableTolerance:               #if we're fully calibrated
             self.carousel.load_next()
         else:
-            amtToChange = .5*dif
-            newSledSpacing = float(self.data.config.get('Maslow Settings', 'sledWidth'))
+            amtToChange = .9*dif
+            newSledSpacing = float(self.data.config.get('Maslow Settings', 'sledWidth')) + amtToChange
             print "Now trying spacing: " + str(newSledSpacing)
             self.data.config.set('Maslow Settings', 'sledWidth', str(newSledSpacing))
             self.data.config.write()
