@@ -33,8 +33,9 @@ class MeasureMachinePopup(GridLayout):
             #review calculations
             self.reviewNumbers.text = "Let's review the measurements we've made so far to make sure they look correct\n\nMotor Spacing: " + str(self.data.config.get('Maslow Settings', 'motorSpacingX')) + "mm\nSled Mount Spacing: " + str(self.data.config.get('Maslow Settings', 'sledWidth')) + "mm\nVertical Offset: " + str(self.data.config.get('Maslow Settings', 'motorOffsetY')) + "mm\n\nYou can go back and re-do any of these numbers if you would like"
         if self.carousel.index == 7:
-            #Final finish step
+            #Cut test shape
             self.goFwdBtn.disabled = False
+            self.data.pushSettings()
         if self.carousel.index == 8:
             #Final finish step
             self.goFwdBtn.disabled = True
