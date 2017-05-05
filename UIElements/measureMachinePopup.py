@@ -173,6 +173,7 @@ class MeasureMachinePopup(GridLayout):
         self.data.gcode_queue.put("G1 X-18  ")
         self.data.gcode_queue.put("G1 Z7  ")
         self.data.gcode_queue.put("G0 X-600 ")
+        self.data.gcode_queue.put("G90  ")
         
         self.numberOfTimesTestCutRun = self.numberOfTimesTestCutRun + 1
         self.cutBtn.text = "Re-Cut Test\nPattern"
