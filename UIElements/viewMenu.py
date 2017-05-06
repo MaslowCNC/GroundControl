@@ -94,7 +94,7 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         else:
             for lineNum, gcodeLine in enumerate(self.data.gcode):
                 if lineNum<447:
-                    popupText = popupText + gcodeLine + "\n"
+                    popupText = popupText + str(lineNum+1) + ': ' + gcodeLine + "\n"
                 else:
                     popupText = popupText + "...\n...\n...\n"
                     break
