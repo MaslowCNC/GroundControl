@@ -194,9 +194,6 @@ class GroundControlApp(App):
         
         interface       =  FloatLayout()
         self.data       =  Data()
-
-        print 'status:' + str(self.data.connectionStatus)
-        
         
         self.frontpage = FrontPage(self.data, name='FrontPage')
         interface.add_widget(self.frontpage)
