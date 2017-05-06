@@ -87,6 +87,9 @@ class MeasureMachinePopup(GridLayout):
         self.data.gcode_queue.put("B10 L")
     
     def readMotorSpacing(self, dist):
+        
+        dist = dist - 2*6.35                                #subtract off the extra two links
+        
         print "Read motor spacing: " + str(dist)
         self.data.config.set('Maslow Settings', 'motorSpacingX', str(dist))
         self.data.config.write()
@@ -141,6 +144,9 @@ class MeasureMachinePopup(GridLayout):
             self.cutBtn.disabled = False
             self.data.pushSettings()
         
+    def pullChainTight(self):
+        #pull the left chain tight
+        self.data.gcode_queue.put("B11 S50 T3 ")
         
     def cutTestPatern(self):
         
