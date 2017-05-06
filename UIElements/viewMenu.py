@@ -2,7 +2,6 @@ from   kivy.uix.gridlayout                       import   GridLayout
 from   UIElements.loadDialog                     import   LoadDialog
 from   UIElements.scrollableTextPopup            import   ScrollableTextPopup
 from   kivy.uix.popup                            import   Popup
-from kivy.uix.button                  import    Button
 import re
 from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
 from os                                          import    path
