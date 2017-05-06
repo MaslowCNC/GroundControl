@@ -57,6 +57,7 @@
             size_hint: None, None
             width:dp(300)
             height: dp(60*4)
+            disabled: not app.data.connectionStatus
             Button:
                 on_press: root.upLeft()
                 canvas.after:
@@ -126,12 +127,12 @@
             Button:
                 text: 'Define\nHome'
                 on_release: root.moveOrigin()
-                disabled: False
         GridLayout:
             cols: 3
             size_hint: None, None
             width: dp(300)
             height: dp(60)
+            disabled: not app.data.connectionStatus
             Button:
                 text: 'RUN'
                 on_press: root.startRun()
@@ -147,6 +148,7 @@
             size_hint: None, None
             width: dp(300)
             height: dp(30)
+            disabled: not app.data.connectionStatus
             Button:
                 text: "<<10"
                 on_press: root.moveGcodeIndex(-10)
@@ -165,6 +167,7 @@
             size_hint: None, None
             width: dp(300)
             height: dp(70)
+            disabled: not app.data.connectionStatus
             GridLayout:
                 cols: 1
                 Label:
@@ -178,10 +181,8 @@
                 Label:
                     text: "Percent Complete/Line:"
                     font_size: '11sp'
-                    disabled: False
                 Label:
                     text: root.percentComplete
-                    disabled: False
                 Label:
                     text: root.gcodeLineNumber
         Label:
@@ -235,6 +236,7 @@
         Button:
             text: 'Return To Center'
             on_release: root.returnToCenter()
+            disabled: not app.data.connectionStatus
         Button:
             text: 'Zero Z'
             disabled: True
@@ -277,21 +279,18 @@
             text: "Diagnostic features"
         GridLayout:
             cols: 3
+            disabled: not app.data.connectionStatus
             Button:
                 text: 'Test Motors/Encoders'
-                disabled: False
                 on_press: root.testMotors()
             Button:
                 text: 'Calibrate Machine Dimensions'
-                disabled: False
                 on_release: root.measureMachine()
             Button:
                 text: 'Calibrate Chain Length - Automatic'
-                disabled: False
                 on_release: root.calibrateChainLengths()
             Button:
                 text: 'Calibrate Motors'
-                disabled: False
                 on_release: root.calibrateMotors()
             Button:
                 text: 'About'
@@ -312,6 +311,7 @@
             text: "Manual Control"
         GridLayout:
             cols: 12
+            disabled: not app.data.connectionStatus
             Label:
                 text: "X:"
             Button:
@@ -480,6 +480,7 @@
         FileChooser:
             id: filechooser
             path: root.path
+            filters: ['*.nc','*.ngc','*.text,','*.gcode']
             FileChooserIconLayout
             FileChooserListLayout
 
