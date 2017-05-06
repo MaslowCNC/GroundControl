@@ -534,6 +534,12 @@
             size_hint_y: None
             height: dp(30)
             Button:
+                text: "Prev"
+                on_release: root.prev()
+            Button:
+                text: "Next"
+                on_release: root.next()
+            Button:
                 text: "Close"
                 on_release: root.cancel()
 

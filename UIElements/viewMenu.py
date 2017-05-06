@@ -11,6 +11,8 @@ from os                                          import    path
 
 
 class ViewMenu(GridLayout, MakesmithInitFuncs):
+
+    page = 1
     
     def openFile(self):
         '''
@@ -92,17 +94,45 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         if len(self.data.gcode) is 0:
             popupText =  "No gcode to display"
         else:
+            if self.page<=1:
+                line = 0
+            else:
+                line = (self.page-1)*447
+                popupText = "...\n...\n...\n"
+
+            if line>len(self.data.gcode):
+                line = len(self.data.gcode)-447
+
             for lineNum, gcodeLine in enumerate(self.data.gcode):
-                if lineNum<447:
+                if lineNum>=line and lineNum<line+447:
                     popupText = popupText + str(lineNum+1) + ': ' + gcodeLine + "\n"
-                else:
+                elif lineNum>=line+447:
                     popupText = popupText + "...\n...\n...\n"
                     break
                 
-        content = ScrollableTextPopup(cancel = self.dismiss_popup, text = popupText)
-        self._popup = Popup(title="Gcode", content=content,
+        content = ScrollableTextPopup(cancel = self.dismiss_popup,
+                                      prev = self.show_gcode_prev,
+                                      next = self.show_gcode_next,
+                                      text = popupText)
+
+        titleString = 'Gcode File: ' + self.data.gcodeFile +'\nLines: '+str(line+1)+' - '+str(lineNum)+' of '+str(len(self.data.gcode))
+        self._popup = Popup(title=titleString, content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
+
+    def show_gcode_next(self,*args):
+
+        if (self.page)*447<len(self.data.gcode):
+            self.page += 1
+            self._popup.dismiss()
+            self.show_gcode()
+
+    def show_gcode_prev(self,*args):
+
+        if self.page > 1:
+            self.page -= 1
+            self._popup.dismiss()
+            self.show_gcode()
     
     def dismiss_popup(self):
         '''
@@ -110,4 +140,5 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         Close The Pop-up
         
         '''
+        self.page = 1
         self._popup.dismiss()
