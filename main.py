@@ -195,7 +195,6 @@ class GroundControlApp(App):
         interface       =  FloatLayout()
         self.data       =  Data()
         
-        
         self.frontpage = FrontPage(self.data, name='FrontPage')
         interface.add_widget(self.frontpage)
         
