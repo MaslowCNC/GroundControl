@@ -75,8 +75,7 @@
                         points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/2,
             Button:
                 text: ''
-                on_press: root.zUp()
-                disabled: True
+                on_press:
             Button:
                 on_press: root.left()
                 canvas.after:
@@ -92,8 +91,7 @@
                         points: self.x+2*self.width/3,self.y+self.height/2,self.x+self.width/3,self.y+self.height/3,self.x+self.width/3,self.y+2*self.height/3,
             Button:
                 text: ''
-                on_press: root.zDown()
-                disabled: True
+                on_press:
             Button:
                 on_press: root.downLeft()
                 canvas.after:
