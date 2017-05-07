@@ -926,9 +926,13 @@
                 on_release: root.done()
                 size_hint_x: rightCol
     
-        
 <CalibrateLengthsPopup>:
     carousel:carousel
+    
+    cols: 1
+    size: root.size
+    pos: root.pos
+    
     Carousel:
         id: carousel
         direction: "right"
@@ -969,10 +973,12 @@
                 cols: 1
                 size_hint_x: leftCol
                 Label:
-                    text: "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of the right chain on the vertical tooth of the right sprocket\n as shown in the picture below\n\nThe left chain does not need to be moved, it can be left partly extended\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Next"
+                    text: "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of each chain on the vertical tooth of each sprocket\n as shown in the picture below\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Finish"
                     size_hint_x: leftCol
                 GridLayout:
-                    cols: 2
+                    cols: 3
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Chain On Left Sprocket.jpg"
                     Image:
                         source: "./Documentation/Calibrate Machine Dimensions/Ready To Calibrate Right Sprocket.jpg"
                     Image:
@@ -985,7 +991,7 @@
                     text: 'Calibrate\nChain Lengths'
                     on_release: root.calibrateChainLengths()
                 Button:
-                    text: 'Next'
-                    on_release: carousel.load_next()
+                    text: 'Finish'
+                    on_release: root.done()
                 Label:
         
