@@ -3,6 +3,7 @@ from DataStructures.makesmithInitFuncs           import    MakesmithInitFuncs
 from UIElements.scrollableTextPopup              import    ScrollableTextPopup
 from kivy.uix.popup                              import    Popup
 from UIElements.measureMachinePopup              import    MeasureMachinePopup
+from UIElements.calibrateLengthsPopup            import    CalibrateLengthsPopup
 
 class Diagnostics(FloatLayout, MakesmithInitFuncs):
     
@@ -43,9 +44,11 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self.parentWidget.close()
         
     def calibrateChainLengths(self):
-        self.data.gcode_queue.put("B06 L0.0 R0.0")
-        self.data.gcode_queue.put("B02 ")
-        self.parentWidget.close()
+        self.popupContent      = CalibrateLengthsPopup(done=self.dismissMeasureMachinePopup)
+        self.popupContent.data = self.data
+        self._popup = Popup(title="Calibrate Chain Lengths", content=self.popupContent,
+                            size_hint=(0.85, 0.95))
+        self._popup.open()
     
     def manualCalibrateChainLengths(self):
         self.data.gcode_queue.put("B08 ")
