@@ -57,7 +57,7 @@
             size_hint: None, None
             width:dp(300)
             height: dp(60*4)
-            disabled: not app.data.connectionStatus
+            #disabled: not app.data.connectionStatus
             Button:
                 on_press: root.upLeft()
                 canvas.after:
@@ -130,7 +130,7 @@
             size_hint: None, None
             width: dp(300)
             height: dp(60)
-            disabled: not app.data.connectionStatus
+            #disabled: not app.data.connectionStatus
             Button:
                 text: 'RUN'
                 on_press: root.startRun()
@@ -146,7 +146,7 @@
             size_hint: None, None
             width: dp(300)
             height: dp(30)
-            disabled: not app.data.connectionStatus
+            #disabled: not app.data.connectionStatus
             Button:
                 text: "<<10"
                 on_press: root.moveGcodeIndex(-10)
@@ -165,7 +165,7 @@
             size_hint: None, None
             width: dp(300)
             height: dp(70)
-            disabled: not app.data.connectionStatus
+            #disabled: not app.data.connectionStatus
             GridLayout:
                 cols: 1
                 Label:
@@ -234,7 +234,7 @@
         Button:
             text: 'Return To Center'
             on_release: root.returnToCenter()
-            disabled: not app.data.connectionStatus
+            #disabled: not app.data.connectionStatus
         Button:
             text: 'Zero Z'
             disabled: True
@@ -277,7 +277,7 @@
             text: "Diagnostic features"
         GridLayout:
             cols: 3
-            disabled: not app.data.connectionStatus
+            #disabled: not app.data.connectionStatus
             Button:
                 text: 'Test Motors/Encoders'
                 on_press: root.testMotors()
@@ -309,7 +309,7 @@
             text: "Manual Control"
         GridLayout:
             cols: 12
-            disabled: not app.data.connectionStatus
+            #disabled: not app.data.connectionStatus
             Label:
                 text: "X:"
             Button:
