@@ -28,7 +28,7 @@ class Logger(MakesmithInitFuncs):
         
         '''
         if self.recordingPositionalErrors:
-            self.errorValues.append(error)
+            self.errorValues.append(abs(error))
         
         #if we've gotten to the end of the file
         if self.data.gcodeIndex == len(self.data.gcode) and self.recordingPositionalErrors:

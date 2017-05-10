@@ -195,7 +195,6 @@ class GroundControlApp(App):
         interface       =  FloatLayout()
         self.data       =  Data()
         
-        
         self.frontpage = FrontPage(self.data, name='FrontPage')
         interface.add_widget(self.frontpage)
         
@@ -230,6 +229,7 @@ class GroundControlApp(App):
         Push settings to machine
         '''
         self.data.bind(connectionStatus = self.push_settings_to_machine)
+        self.data.pushSettings = self.push_settings_to_machine
         
         
         return interface
@@ -343,6 +343,10 @@ class GroundControlApp(App):
             elif message[0:8] == "Message:":
                 self.previousUploadStatus = self.data.uploadFlag 
                 self.data.uploadFlag = 0
+                try:
+                    self._popup.dismiss()                                           #close any open popup
+                except:
+                    pass                                                            #there wasn't a popup to close
                 content = NotificationPopup(continueOn = self.dismiss_popup_continue, hold=self.dismiss_popup_hold , text = message[9:])
                 self._popup = Popup(title="Notification: ", content=content,
                             auto_dismiss=False, size_hint=(0.35, 0.35))

@@ -13,4 +13,6 @@ class ScrollableTextPopup(FloatLayout):
     
     '''
     cancel = ObjectProperty(None)
+    next = ObjectProperty(None)
+    prev = ObjectProperty(None)
     text = StringProperty("")
