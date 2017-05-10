@@ -31,10 +31,11 @@ class MeasureMachinePopup(GridLayout):
             self.data.measureRequest = self.readVerticalOffset
         if self.carousel.index == 4:
             #review calculations
-            self.reviewNumbers.text = "Let's review the measurements we've made so far to make sure they look correct\n\nMotor Spacing: " + str(self.data.config.get('Maslow Settings', 'motorSpacingX')) + "mm\nSled Mount Spacing: " + str(self.data.config.get('Maslow Settings', 'sledWidth')) + "mm\nVertical Offset: " + str(self.data.config.get('Maslow Settings', 'motorOffsetY')) + "mm\n\nYou can go back and re-do any of these numbers if you would like"
+            self.updateReviewValuesText()
         if self.carousel.index == 7:
-            #Final finish step
+            #Cut test shape
             self.goFwdBtn.disabled = False
+            self.data.pushSettings()
         if self.carousel.index == 8:
             #Final finish step
             self.goFwdBtn.disabled = True
@@ -69,13 +70,11 @@ class MeasureMachinePopup(GridLayout):
     
     def extendLeft(self, dist):
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B06 L0 R0 ")
         self.data.gcode_queue.put("B09 L" + str(dist) + " ")
         self.data.gcode_queue.put("G90 ")
     
     def retractLeft(self, dist):
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B06 L0 R0 ")
         self.data.gcode_queue.put("B09 L-" + str(dist) + " ")
         self.data.gcode_queue.put("G90 ")
     
@@ -88,6 +87,9 @@ class MeasureMachinePopup(GridLayout):
         self.data.gcode_queue.put("B10 L")
     
     def readMotorSpacing(self, dist):
+        
+        dist = dist - 2*6.35                                #subtract off the extra two links
+        
         print "Read motor spacing: " + str(dist)
         self.data.config.set('Maslow Settings', 'motorSpacingX', str(dist))
         self.data.config.write()
@@ -97,6 +99,15 @@ class MeasureMachinePopup(GridLayout):
         print "vertical offset measured at: " + str(dist)
         self.data.config.set('Maslow Settings', 'motorOffsetY', str(dist))
         self.data.config.write()
+        
+        
+        #keep updating the values shown because sometimes it takes a while for the settings to write
+        from kivy.clock import Clock
+        Clock.schedule_once(self.updateReviewValuesText, .1)
+        Clock.schedule_once(self.updateReviewValuesText, .2)
+        Clock.schedule_once(self.updateReviewValuesText, .3)
+        Clock.schedule_once(self.updateReviewValuesText, .4)
+        
         self.carousel.load_next()
     
     def countLinks(self):
@@ -108,6 +119,7 @@ class MeasureMachinePopup(GridLayout):
         
         self.data.config.set('Maslow Settings', 'sledWidth', str(dist))
         self.data.config.write()
+        
         self.carousel.load_next()
     
     def calibrateChainLengths(self):
@@ -121,7 +133,7 @@ class MeasureMachinePopup(GridLayout):
         try:
             dif = float(self.horizMeasure.text) - float(self.vertMeasure.text)
         except:
-            self.data.message_queue.put("Message: Couldn't figure make that into a number")
+            self.data.message_queue.put("Message: Couldn't make that into a number")
             return
         
         if self.unitsBtn.text == 'Inches':
@@ -133,18 +145,32 @@ class MeasureMachinePopup(GridLayout):
         if abs(dif) < acceptableTolerance:               #if we're fully calibrated
             self.carousel.load_next()
         else:
-            amtToChange = .5*dif
-            newSledSpacing = float(self.data.config.get('Maslow Settings', 'sledWidth'))
+            amtToChange = .9*dif
+            newSledSpacing = float(self.data.config.get('Maslow Settings', 'sledWidth')) + amtToChange
             print "Now trying spacing: " + str(newSledSpacing)
             self.data.config.set('Maslow Settings', 'sledWidth', str(newSledSpacing))
             self.data.config.write()
             self.cutBtn.disabled = False
+            self.data.pushSettings()
         
+    def pullChainTight(self):
+        #pull the left chain tight
+        self.data.gcode_queue.put("B11 S50 T3 ")
+    
+    def updateReviewValuesText(self, *args):
+        '''
         
+        Update the text which displays the measured values
+        
+        '''
+        self.reviewNumbers.text = "Let's review the measurements we've made so far to make sure they look correct\n\nMotor Spacing: " + str(self.data.config.get('Maslow Settings', 'motorSpacingX')) + "mm\nSled Mount Spacing: " + str(self.data.config.get('Maslow Settings', 'sledWidth')) + "mm\nVertical Offset: " + str(self.data.config.get('Maslow Settings', 'motorOffsetY')) + "mm\n\nYou can go back and re-do any of these numbers if you would like"
+        print "updating text"
+    
     def cutTestPatern(self):
         
         #Credit for this test pattern to DavidLang
         #self.data.gcode_queue.put("G21 ")
+        self.data.units = "MM"
         self.data.gcode_queue.put("G21 ")
         self.data.gcode_queue.put("G90  ")
         self.data.gcode_queue.put("G40 ")
@@ -171,6 +197,7 @@ class MeasureMachinePopup(GridLayout):
         self.data.gcode_queue.put("G1 X-18  ")
         self.data.gcode_queue.put("G1 Z7  ")
         self.data.gcode_queue.put("G0 X-600 ")
+        self.data.gcode_queue.put("G90  ")
         
         self.numberOfTimesTestCutRun = self.numberOfTimesTestCutRun + 1
         self.cutBtn.text = "Re-Cut Test\nPattern"

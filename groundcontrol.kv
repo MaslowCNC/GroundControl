@@ -57,6 +57,7 @@
             size_hint: None, None
             width:dp(300)
             height: dp(60*4)
+            #disabled: not app.data.connectionStatus
             Button:
                 on_press: root.upLeft()
                 canvas.after:
@@ -74,8 +75,7 @@
                         points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/2,
             Button:
                 text: ''
-                on_press: root.zUp()
-                disabled: True
+                on_press:
             Button:
                 on_press: root.left()
                 canvas.after:
@@ -91,8 +91,7 @@
                         points: self.x+2*self.width/3,self.y+self.height/2,self.x+self.width/3,self.y+self.height/3,self.x+self.width/3,self.y+2*self.height/3,
             Button:
                 text: ''
-                on_press: root.zDown()
-                disabled: True
+                on_press:
             Button:
                 on_press: root.downLeft()
                 canvas.after:
@@ -126,12 +125,12 @@
             Button:
                 text: 'Define\nHome'
                 on_release: root.moveOrigin()
-                disabled: False
         GridLayout:
             cols: 3
             size_hint: None, None
             width: dp(300)
             height: dp(60)
+            #disabled: not app.data.connectionStatus
             Button:
                 text: 'RUN'
                 on_press: root.startRun()
@@ -147,6 +146,7 @@
             size_hint: None, None
             width: dp(300)
             height: dp(30)
+            #disabled: not app.data.connectionStatus
             Button:
                 text: "<<10"
                 on_press: root.moveGcodeIndex(-10)
@@ -165,6 +165,7 @@
             size_hint: None, None
             width: dp(300)
             height: dp(70)
+            #disabled: not app.data.connectionStatus
             GridLayout:
                 cols: 1
                 Label:
@@ -178,10 +179,8 @@
                 Label:
                     text: "Percent Complete/Line:"
                     font_size: '11sp'
-                    disabled: False
                 Label:
                     text: root.percentComplete
-                    disabled: False
                 Label:
                     text: root.gcodeLineNumber
         Label:
@@ -235,6 +234,7 @@
         Button:
             text: 'Return To Center'
             on_release: root.returnToCenter()
+            #disabled: not app.data.connectionStatus
         Button:
             text: 'Zero Z'
             disabled: True
@@ -277,21 +277,18 @@
             text: "Diagnostic features"
         GridLayout:
             cols: 3
+            #disabled: not app.data.connectionStatus
             Button:
                 text: 'Test Motors/Encoders'
-                disabled: False
                 on_press: root.testMotors()
             Button:
                 text: 'Calibrate Machine Dimensions'
-                disabled: True
                 on_release: root.measureMachine()
             Button:
                 text: 'Calibrate Chain Length - Automatic'
-                disabled: False
                 on_release: root.calibrateChainLengths()
             Button:
                 text: 'Calibrate Motors'
-                disabled: False
                 on_release: root.calibrateMotors()
             Button:
                 text: 'About'
@@ -312,6 +309,7 @@
             text: "Manual Control"
         GridLayout:
             cols: 12
+            #disabled: not app.data.connectionStatus
             Label:
                 text: "X:"
             Button:
@@ -480,6 +478,7 @@
         FileChooser:
             id: filechooser
             path: root.path
+            filters: ['*.nc','*.ngc','*.text,','*.gcode']
             FileChooserIconLayout
             FileChooserListLayout
 
@@ -532,6 +531,12 @@
         BoxLayout:
             size_hint_y: None
             height: dp(30)
+            Button:
+                text: "Prev"
+                on_release: root.prev()
+            Button:
+                text: "Next"
+                on_release: root.next()
             Button:
                 text: "Close"
                 on_release: root.cancel()
@@ -726,7 +731,7 @@
             GridLayout:
                 cols: 1
                 Label:
-                    text: "Rather than using a tape measure to measure the spacing between the motors, we're going to use the chain.\n\nHook the first link from the left chain over the top tooth on the left motor\n\nThen, use the buttons to the right to extend the chain until it can be hooked on the top tooth of the the right motor.\nThen gently pull it tight using the buttons to the right.\n\nThe chain has a natural tendency to pop off the right sprocket which protects the machine. If it pops off, the chain is taught enough. \nPress Measure when the chain is taught"
+                    text: "Rather than using a tape measure to measure the spacing between the motors, we're going to use the chain.\n\nHook the first link from the left chain over the top tooth on the left motor\n\nThen, use the buttons to the right to extend the chain until it can reach the right motor.\nHook the third link on the right motor's 12:00 tooth as shown in the picture below\n\nPull the chain right by pressing Pull Chain Tight. You can use this button repeatedly if needed\n\nPress Measure when the chain is taught"
                     size_hint_x: leftCol
                 GridLayout:
                     cols: 3
@@ -753,14 +758,8 @@
                     text: 'Extend Left Chain 1000mm'
                     on_release: root.extendLeft(1000)
                 Button:
-                    text: 'Retract Left Chain 1mm'
-                    on_release: root.retractLeft(1)
-                Button:
-                    text: 'Retract Left Chain 10mm'
-                    on_release: root.retractLeft(10)
-                Button:
-                    text: 'Retract Left Chain 100mm'
-                    on_release: root.retractLeft(100)
+                    text: 'Pull Chain Tight'
+                    on_release: root.pullChainTight()
                 Button:
                     text: 'Measure'
                     on_release: root.measureLeft()
@@ -800,7 +799,7 @@
                 cols: 1
                 size_hint_x: leftCol
                 Label:
-                    text: "Unhook the cotter pin from the sled\n\nRetract the chain until it hangs down from the motor to the height of the top of the 4x8 sheet, then click Measure"
+                    text: "Unhook the cotter pin from the sled\n\nRetract the chain until it hangs down from the motor to the height of the top of the 4x8 sheet, then click Measure\n\nThis measurement is not critical for the internal mathematics\nit simply moves the center point of the plywood up and down"
                     size_hint_x: leftCol
                 Image:
                     source: "./Documentation/Calibrate Machine Dimensions/Measure Motor Height.jpg"
@@ -820,6 +819,12 @@
                 Button:
                     text: 'Retract Left Chain 100mm'
                     on_release: root.retractLeft(100)
+                Button:
+                    text: 'Retract Left Chain 1000mm'
+                    on_release: root.retractLeft(1000)
+                Button:
+                    text: "Stop\nMotors"
+                    on_release: root.stopCut()
                 Button:
                     text: 'Measure'
                     on_release: root.measureLeft()
@@ -848,7 +853,7 @@
                 cols: 1
                 size_hint_x: leftCol
                 Label:
-                    text: "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of the right chain on the vertical tooth of the right sprocket, then press Calibrate Chain Lengths\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished, press Next"
+                    text: "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of the right chain on the vertical tooth of the right sprocket\n as shown in the picture below\n\nThe left chain does not need to be moved, it can be left partly extended\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Next"
                     size_hint_x: leftCol
                 GridLayout:
                     cols: 2
@@ -873,7 +878,7 @@
                 cols: 1
                 size_hint_x: leftCol
                 Label:
-                    text: "To refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short horizontal cuts and two short vertical cuts\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe size of bit used is not critical\n\nThe process will repeat until the machine is calibrated to within tolerances\n\nPress Cut Test Pattern to begin"
+                    text: "To refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short horizontal cuts and two short vertical cuts\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe size of bit used is not critical\n\nThe process will repeat until both measurements are within .5mm\n\nPress Cut Test Pattern to begin"
                 GridLayout:
                     cols: 3
                     Image:
@@ -924,5 +929,72 @@
                 on_release: root.done()
                 size_hint_x: rightCol
     
-        
+<CalibrateLengthsPopup>:
+    carousel:carousel
+    
+    cols: 1
+    size: root.size
+    pos: root.pos
+    
+    Carousel:
+        id: carousel
+        direction: "right"
+        #:set leftCol .8
+        #:set rightCol .2
+        GridLayout:
+            cols: 2
+            GridLayout:
+                cols: 1
+                Label:
+                    text: "Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up.\nWhen you are ready, press Set Zero"
+                    size_hint_x: leftCol
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.jpg"
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Turn Left Sprocket\n1 degree CCW'
+                    on_release: root.LeftCCW()
+                Button:
+                    text: 'Turn Left Sprocket\n1 degree CW'
+                    on_release: root.LeftCW()
+                Button:
+                    text: 'Turn Right Sprocket\n1 degree CCW'
+                    on_release: root.RightCCW()
+                Button:
+                    text: 'Turn Right Sprocket\n1 degree CW'
+                    on_release: root.RightCW()
+                Button:
+                    text: 'Set Zero'
+                    on_release: root.setZero()
+                Label:
+        GridLayout:
+            cols: 2
+            GridLayout:
+                cols: 1
+                size_hint_x: leftCol
+                Label:
+                    text: "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of each chain on the vertical tooth of each sprocket\n as shown in the picture below\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Finish"
+                    size_hint_x: leftCol
+                GridLayout:
+                    cols: 3
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Chain On Left Sprocket.jpg"
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Ready To Calibrate Right Sprocket.jpg"
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Sled Attached.jpg"
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Calibrate\nChain Lengths'
+                    on_release: root.calibrateChainLengths()
+                Button:
+                    text: 'Finish'
+                    on_release: root.done()
+                Label:
         
