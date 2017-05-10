@@ -823,6 +823,9 @@
                     text: 'Retract Left Chain 1000mm'
                     on_release: root.retractLeft(1000)
                 Button:
+                    text: "Stop\nMotors"
+                    on_release: root.stopCut()
+                Button:
                     text: 'Measure'
                     on_release: root.measureLeft()
                 Label:
