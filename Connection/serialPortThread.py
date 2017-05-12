@@ -40,7 +40,16 @@ class SerialPortThread(MakesmithInitFuncs):
         Check if the machine has enough room in it's buffer for more gcode
         
         '''
-        print msg
+        
+        valz = msg.split(",")
+        
+        try:
+            print int(valz[2][0:-3])
+            if int(valz[2][0:-3]) == 127:             #if the arduino buffer is empty
+                self.machineIsReadyForData = True
+        except:
+            print "unable to read buffer size"
+        
     
     def getmessage (self):
         #print("Waiting for new message")
@@ -85,12 +94,13 @@ class SerialPortThread(MakesmithInitFuncs):
                     pass
                 if len(msg) > 0:
                     self.lastMessageTime = time.time()
-                    #if msg == "ok\r\n":
-                    #    self.machineIsReadyForData = True
-                    #else:
-                    if msg[0] == "[":
-                        print msg
-                    self.data.message_queue.put(msg)
+                    if msg == "ok\r\n":
+                        pass
+                        #self.machineIsReadyForData = True
+                    else:
+                        if msg[0] == "[":
+                            self._checkBufferSize(msg)
+                        self.data.message_queue.put(msg)
                     
                 #send any emergency instructions to the machine if there are any
                 if self.data.quick_queue.empty() != True:
