@@ -403,7 +403,7 @@ class GroundControlApp(App):
                 self.writeToTextConsole("Unable to resolve z Kinematics.")
                 zval = 0
         except:
-            print "bad data"
+            print "Unable to plot position on screen"
             return
         
         self.frontpage.setPosReadout(xval,yval,zval)
