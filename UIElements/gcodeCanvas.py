@@ -20,9 +20,9 @@ import math
 
 class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
-    scatterObject     = ObjectProperty(None)
-    scatterInstance   = ObjectProperty(None)
-    positionIndicator = ObjectProperty(None)
+    #scatterObject     = ObjectProperty(None)
+    #scatterInstance   = ObjectProperty(None)
+    #positionIndicator = ObjectProperty(None)
     
     canvasScaleFactor = 1 #scale from mm to pixels
     INCHES            = 25.4
@@ -38,6 +38,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     prependString = "G01 "
     
+    
+    
     def initialize(self):
 
         self.drawWorkspace()
@@ -52,19 +54,13 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         
-        
-        with self.scatterObject.canvas:
-            self.line = Line(points = (0,0,100,100), width = 1, group = 'gcode')
-        
-        self.addPoint(200, 100)
-        
         self.reloadGcode()
     
     def addPoint(self, x, y):
-        print self.lineNumber
-        if len(self.line.points) > 250:
-            with self.scatterObject.canvas:
-                self.line = Line(points = (), width = 1, group = 'gcode')
+        
+        #if len(self.line.points) > 250:
+        #    with self.scatterObject.canvas:
+        #        self.line = Line(points = (), width = 1, group = 'gcode')
 
         self.line.points.extend((x,y))
     
@@ -413,9 +409,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         '''
         
-        #Draw numberOfTimesToCall lines on the canvas
-        numberOfTimesToCall = 50
+        with self.scatterObject.canvas:
+            self.line = Line(points = (), width = 1, group = 'gcode')
         
+        #Draw numberOfTimesToCall lines on the canvas
+        numberOfTimesToCall = 500
         for _ in range(numberOfTimesToCall):
             self.updateOneLine()
         
@@ -440,9 +438,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.lineNumber = 0
         
         self.clearGcode()
-        
-        with self.scatterObject.canvas:
-            self.line = Line(points = (), width = 1, group = 'gcode')
         
         #Check to see if file is too large to load
         if len(self.data.gcode) > 20000:
