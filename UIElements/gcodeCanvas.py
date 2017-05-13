@@ -61,9 +61,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.reloadGcode()
     
     def addPoint(self, x, y):
-        print "would add point"
-        self.line.points.append(x)
-        self.line.points.append(y)
+        print self.lineNumber
+        if len(self.line.points) > 250:
+            with self.scatterObject.canvas:
+                self.line = Line(points = (), width = 1, group = 'gcode')
+
+        self.line.points.extend((x,y))
     
     def _keyboard_closed(self):
         '''
@@ -246,7 +249,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                     else:
                         Color(1, 0, 0)
                         radius = 2
-                    #Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, radius), width = 2, group = 'gcode')
+                    Line(circle=(self.xPosition , self.yPosition, radius), width = 2, group = 'gcode')
             
             self.xPosition = xTarget
             self.yPosition = yTarget
@@ -361,7 +364,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         fullString = fullString + " " #ensures that there is a space at the end of the line
         
-        
         #find 'G' anywhere in string
         gString = fullString[fullString.find('G'):fullString.find('G') + 3]
         
@@ -440,7 +442,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.clearGcode()
         
         with self.scatterObject.canvas:
-            self.line = Line(points = (0,0,100,100), width = 1, group = 'gcode')
+            self.line = Line(points = (), width = 1, group = 'gcode')
         
         #Check to see if file is too large to load
         if len(self.data.gcode) > 20000:
