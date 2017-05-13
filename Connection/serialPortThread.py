@@ -49,7 +49,6 @@ class SerialPortThread(MakesmithInitFuncs):
                 self.machineIsReadyForData = True
         except:
             print "unable to read buffer size"
-        
     
     def getmessage (self):
         #print("Waiting for new message")
@@ -57,7 +56,7 @@ class SerialPortThread(MakesmithInitFuncs):
         
         try:
             #print("connecting")
-            self.serialInstance = serial.Serial(self.data.comport, 19200, timeout = .25) #self.data.comport is the com port which is opened
+            self.serialInstance = serial.Serial(self.data.comport, 57600, timeout = .25) #self.data.comport is the com port which is opened
         except:
             #print(self.data.comport + " is unavailable or in use")
             #self.data.message_queue.put("\n" + self.data.comport + " is unavailable or in use")
