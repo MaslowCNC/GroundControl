@@ -57,10 +57,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.reloadGcode()
     
     def addPoint(self, x, y):
+        '''
         
-        #if len(self.line.points) > 250:
-        #    with self.scatterObject.canvas:
-        #        self.line = Line(points = (), width = 1, group = 'gcode')
+        Add a point to the line currently being plotted
+        
+        '''
 
         self.line.points.extend((x,y))
     
@@ -418,7 +419,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.updateOneLine()
         
         #Repeat until end of file
-        if self.lineNumber < min(len(self.data.gcode),20000):
+        if self.lineNumber < min(len(self.data.gcode),60000):
             Clock.schedule_once(self.callBackMechanism)
     
     def updateGcode(self, *args):
@@ -440,8 +441,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.clearGcode()
         
         #Check to see if file is too large to load
-        if len(self.data.gcode) > 20000:
-            errorText = "The current file contains " + str(len(self.data.gcode)) + " lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first 20000 lines are shown here.\nThe complete program will cut if you choose to do so."
+        if len(self.data.gcode) > 60000:
+            errorText = "The current file contains " + str(len(self.data.gcode)) + " lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first 60000 lines are shown here.\nThe complete program will cut if you choose to do so."
             print errorText
             self.data.message_queue.put("Message: " + errorText)
         
