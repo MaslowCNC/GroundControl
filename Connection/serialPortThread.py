@@ -45,7 +45,7 @@ class SerialPortThread(MakesmithInitFuncs):
         
         try:
             print int(valz[2][0:-3])
-            if int(valz[2][0:-3]) == 127:             #if the arduino buffer is empty
+            if int(valz[2][0:-3]) > 127 - len(self.data.gcode[self.data.gcodeIndex]):             #if there is space in the arduino buffer
                 self.machineIsReadyForData = True
         except:
             print "unable to read buffer size"
