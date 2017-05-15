@@ -48,7 +48,9 @@ class SerialPortThread(MakesmithInitFuncs):
             if int(valz[2][0:-3]) > 127 - len(self.data.gcode[self.data.gcodeIndex]):             #if there is space in the arduino buffer
                 self.machineIsReadyForData = True
         except:
-            print "unable to read buffer size"
+            self.data.uploadFlag = 0
+            self.data.gcodeIndex = 0
+            print "Gcode Ended"
     
     def getmessage (self):
         #print("Waiting for new message")
