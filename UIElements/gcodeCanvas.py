@@ -7,7 +7,7 @@ and zooming features. It was not originally written as a stand alone module whic
 
 from kivy.uix.floatlayout                    import FloatLayout
 from kivy.properties                         import NumericProperty, ObjectProperty
-from kivy.graphics                           import Color, Ellipse, Line
+from kivy.graphics                           import Color, Ellipse, Line, Point
 from kivy.clock                              import Clock
 from DataStructures.makesmithInitFuncs       import MakesmithInitFuncs
 from UIElements.positionIndicator            import PositionIndicator
@@ -20,12 +20,9 @@ import math
 
 class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
-    scatterObject     = ObjectProperty(None)
-    scatterInstance   = ObjectProperty(None)
-    positionIndicator = ObjectProperty(None)
-    
-    offsetX = NumericProperty(0)
-    offsetY = NumericProperty(0)
+    #scatterObject     = ObjectProperty(None)
+    #scatterInstance   = ObjectProperty(None)
+    #positionIndicator = ObjectProperty(None)
     
     canvasScaleFactor = 1 #scale from mm to pixels
     INCHES            = 25.4
@@ -41,12 +38,13 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     prependString = "G01 "
     
+    
+    
     def initialize(self):
 
         self.drawWorkspace()
             
         Window.bind(on_resize = self.centerCanvas)
-        Window.bind(on_motion = self.zoomCanvas)
 
         self.data.bind(gcode = self.updateGcode)
         self.data.bind(gcodeShift = self.reloadGcode)
@@ -56,6 +54,15 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         
         self.reloadGcode()
+    
+    def addPoint(self, x, y):
+        '''
+        
+        Add a point to the line currently being plotted
+        
+        '''
+
+        self.line.points.extend((x,y))
     
     def _keyboard_closed(self):
         '''
@@ -126,16 +133,20 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         anchor = (0,0)
         mat = Matrix().scale(.45, .45, 1)
         self.scatterInstance.apply_transform(mat, anchor)
+
+    def on_touch_up(self, touch):
+        if touch.is_mouse_scrolling:
+            self.zoomCanvas(touch)
     
-    def zoomCanvas(self, callback, type, motion, *args):
-        if motion.is_mouse_scrolling:
+    def zoomCanvas(self, touch):
+        if touch.is_mouse_scrolling:
             scaleFactor = .03
             anchor = (0,0)
             
-            if motion.button == 'scrollup':
+            if touch.button == 'scrollup':
                 mat = Matrix().scale(1-scaleFactor, 1-scaleFactor, 1)
                 self.scatterInstance.apply_transform(mat, anchor)
-            elif motion.button == 'scrolldown':
+            elif touch.button == 'scrolldown':
                 mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
                 self.scatterInstance.apply_transform(mat, anchor)
 
@@ -222,11 +233,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             #Draw lines for G1 and G0
             with self.scatterObject.canvas:
                 Color(1, 1, 1)
-                if command == 'G00':
-                    Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode', dash_length = 4, dash_offset = 2)
+                self.addPoint(self.xPosition , self.yPosition)
+                '''if command == 'G00':
+                    Line(points = (self.xPosition , self.yPosition , xTarget, yTarget), width = 1, group = 'gcode', dash_length = 4, dash_offset = 2)
                 elif command == 'G01':
-                    Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode')
-           
+                    Line(points = (self.xPosition , self.yPosition , xTarget, yTarget), width = 1, group = 'gcode')
+                '''
             #If the zposition has changed, add indicators
             tol = 0.05 #Acceptable error in mm
             if abs(zTarget - self.zPosition) >= tol:
@@ -237,7 +249,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                     else:
                         Color(1, 0, 0)
                         radius = 2
-                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, radius), width = 2, group = 'gcode')
+                    Line(circle=(self.xPosition , self.yPosition, radius), width = 2, group = 'gcode')
             
             self.xPosition = xTarget
             self.yPosition = yTarget
@@ -290,10 +302,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             if angleStart < angleEnd:
                 angleEnd = angleEnd - 360
             
+            
+            self.addPoint(self.xPosition , self.yPosition)
             #Draw arc for G02 and G03
             with self.scatterObject.canvas:
                 Color(1, 1, 1)
-                Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, angleStart, angleEnd), group = 'gcode')
+                #Line(circle=(centerX , centerY, radius, angleStart, angleEnd), group = 'gcode')
 
             self.xPosition = xTarget
             self.yPosition = yTarget
@@ -350,7 +364,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         fullString = fullString + " " #ensures that there is a space at the end of the line
         
-        
         #find 'G' anywhere in string
         gString = fullString[fullString.find('G'):fullString.find('G') + 3]
         
@@ -400,14 +413,16 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         '''
         
-        #Draw numberOfTimesToCall lines on the canvas
-        numberOfTimesToCall = 50
+        with self.scatterObject.canvas:
+            self.line = Line(points = (), width = 1, group = 'gcode')
         
+        #Draw numberOfTimesToCall lines on the canvas
+        numberOfTimesToCall = 500
         for _ in range(numberOfTimesToCall):
             self.updateOneLine()
         
         #Repeat until end of file
-        if self.lineNumber < min(len(self.data.gcode),20000):
+        if self.lineNumber < min(len(self.data.gcode),60000):
             Clock.schedule_once(self.callBackMechanism)
     
     def updateGcode(self, *args):
@@ -429,8 +444,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.clearGcode()
         
         #Check to see if file is too large to load
-        if len(self.data.gcode) > 20000:
-            errorText = "The current file contains " + str(len(self.data.gcode)) + " lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first 20000 lines are shown here.\nThe complete program will cut if you choose to do so."
+        if len(self.data.gcode) > 60000:
+            errorText = "The current file contains " + str(len(self.data.gcode)) + " lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first 60000 lines are shown here.\nThe complete program will cut if you choose to do so."
             print errorText
             self.data.message_queue.put("Message: " + errorText)
         
