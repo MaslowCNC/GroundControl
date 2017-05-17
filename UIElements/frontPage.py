@@ -286,3 +286,22 @@ class FrontPage(Screen, MakesmithInitFuncs):
         except:
             pass                                                             #If what was entered cannot be converted to a number, leave the value the same
         self._popup.dismiss()
+
+    def gotoLinePopup(self):
+        
+        self.popupContent = TouchNumberInput(done=self.dismiss_gotoLinePopup)
+        self._popup = Popup(title="Go to gcode line", content=self.popupContent,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
+
+    def dismiss_gotoLinePopup(self):
+        '''
+        
+        Close The Pop-up
+        
+        '''
+        try:
+            self.data.gcodeIndex = int(self.popupContent.textInput.text)
+        except:
+            pass                                                             #If what was entered cannot be converted to a number, leave the value the same
+        self._popup.dismiss()
