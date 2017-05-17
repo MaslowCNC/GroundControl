@@ -301,7 +301,14 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         '''
         try:
-            self.data.gcodeIndex = int(self.popupContent.textInput.text)
+            line = int(self.popupContent.textInput.text)
+            if line < 0:
+                self.data.gcodeIndex = 0
+            elif line > len(self.data.gcode):
+                self.data.gcodeIndex = len(self.data.gcode)
+            else:
+                self.data.gcodeIndex = line
+           
         except:
             pass                                                             #If what was entered cannot be converted to a number, leave the value the same
         self._popup.dismiss()
