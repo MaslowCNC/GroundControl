@@ -129,9 +129,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                     zList.append(z)
                     if len(zList) > 1:
                         if not self.isClose(float(zList[-1].groups()[0]),float(zList[-2].groups()[0])):
-                            self.data.zMoves.append(index)
+                            self.data.zMoves.append(index-1)
                     else:
                         self.data.zMoves.append(index)
+
+            print(self.data.zMoves)
 
         except:
             if filename is not "":
