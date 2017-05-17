@@ -105,8 +105,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         Move the gcode index by z moves
         '''
 
-        print(self.data.zMoves)
-
         dist = 0
 
         for index,zMove in enumerate(self.data.zMoves):
@@ -115,8 +113,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
                 break
             if moves < 0 and zMove < self.data.gcodeIndex:
                 dist = self.data.zMoves[index+moves+1]-self.data.gcodeIndex
-
-        print(dist)
 
         self.moveGcodeIndex(dist)
     

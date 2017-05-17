@@ -121,6 +121,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             filterfile.close() #closes the filter save file
 
             #Find gcode indicies of z moves
+            self.data.zMoves = [0]
             zList = []
             for index, line in enumerate(self.data.gcode):
                 z = re.search("Z(?=.)([+-]?([0-9]*)(\.([0-9]+))?)",line)
