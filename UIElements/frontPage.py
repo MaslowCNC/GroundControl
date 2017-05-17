@@ -81,9 +81,11 @@ class FrontPage(Screen, MakesmithInitFuncs):
         if newUnits == "INCHES":
             self.data.gcode_queue.put('G20 ')
             self.moveDistInput.text = str(float(self.moveDistInput.text)/25)
+            self.data.tolerance = 0.020
         else:
             self.data.gcode_queue.put('G21 ')
             self.moveDistInput.text = str(float(self.moveDistInput.text)*25)
+            self.data.tolerance = 0.5
     
     def onIndexMove(self, callback, newIndex):
         self.gcodeLineNumber = str(newIndex)
@@ -97,6 +99,26 @@ class FrontPage(Screen, MakesmithInitFuncs):
             self.holdBtn.text = "CONTINUE"
         else:
             self.holdBtn.text = "HOLD"
+
+    def moveGcodeZ(self,moves):
+        '''
+        Move the gcode index by z moves
+        '''
+
+        print(self.data.zMoves)
+
+        dist = 0
+
+        for index,zMove in enumerate(self.data.zMoves):
+            if moves > 0 and zMove > self.data.gcodeIndex:
+                dist = self.data.zMoves[index+moves-1]-self.data.gcodeIndex
+                break
+            if moves < 0 and zMove < self.data.gcodeIndex:
+                dist = self.data.zMoves[index+moves+1]-self.data.gcodeIndex
+
+        print(dist)
+
+        self.moveGcodeIndex(dist)
     
     def moveGcodeIndex(self, dist):
         '''

@@ -88,6 +88,9 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if keycode[1] == self.data.config.get('Ground Control Settings', 'zoomOut'):
             mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
             self.scatterInstance.apply_transform(mat, anchor)
+
+    def isClose(self, a, b):
+        return abs(a-b) <= self.data.tolerance
     
     def reloadGcode(self, *args):
         '''
@@ -116,7 +119,21 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.data.gcode = filtersparsed
             
             filterfile.close() #closes the filter save file
-        except:
+
+            #Find gcode indicies of z moves
+            zList = []
+            for index, line in enumerate(self.data.gcode):
+                z = re.search("Z(?=.)([+-]?([0-9]*)(\.([0-9]+))?)",line)
+                if z:
+                    zList.append(z)
+                    if len(zList) > 1:
+                        if not self.isClose(float(zList[-1].groups()[0]),float(zList[-2].groups()[0])):
+                            self.data.zMoves.append(index)
+                    else:
+                        self.data.zMoves.append(index)
+
+        except Exception, e:
+            print(e)
             if filename is not "":
                 self.data.message_queue.put("Message: Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use Actions > Open G-code")
             self.data.gcodeFile = ""
@@ -335,7 +352,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             if x:
                 xTarget = float(x.groups()[0]) + self.data.gcodeShift[0]
                 gCodeLine = gCodeLine[0:x.start()+1] + str(xTarget) + gCodeLine[x.end():]
-            
             
             y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if y:

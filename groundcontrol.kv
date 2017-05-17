@@ -148,18 +148,17 @@
             height: dp(30)
             #disabled: not app.data.connectionStatus
             Button:
-                text: "<<10"
-                on_press: root.moveGcodeIndex(-10)
+                text: "<Z"
+                on_press: root.moveGcodeZ(-1)
             Button:
                 text: "<1"
                 on_press: root.moveGcodeIndex(-1)
-
             Button:
                 text: "1>"
                 on_press: root.moveGcodeIndex(1)
             Button:
-                text: "10>>"
-                on_press: root.moveGcodeIndex(10)
+                text: "Z>"
+                on_press: root.moveGcodeZ(1)
         BoxLayout:
             orentation: 'horizontal'
             size_hint: None, None
