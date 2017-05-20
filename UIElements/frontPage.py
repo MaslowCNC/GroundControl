@@ -291,5 +291,4 @@ class FrontPage(Screen, MakesmithInitFuncs):
         '''
         Execute user defined macro
         '''
-        print(self.data.config.get('Maslow Settings', 'macro' + str(index)))
         self.data.gcode_queue.put(self.data.config.get('Maslow Settings', 'macro' + str(index))) 
