@@ -142,7 +142,7 @@
                 text: 'STOP'
                 on_press: root.stopRun()
         GridLayout:
-            cols: 4
+            cols: 5
             size_hint: None, None
             width: dp(300)
             height: dp(30)
@@ -153,7 +153,9 @@
             Button:
                 text: "<1"
                 on_press: root.moveGcodeIndex(-1)
-
+            Button:
+                text: "Goto"
+                on_press: root.gotoLinePopup()
             Button:
                 text: "1>"
                 on_press: root.moveGcodeIndex(1)
