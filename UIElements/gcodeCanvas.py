@@ -132,9 +132,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                             self.data.zMoves.append(index-1)
                     else:
                         self.data.zMoves.append(index)
-
-            #print(self.data.zMoves)
-
         except:
             if filename is not "":
                 self.data.message_queue.put("Message: Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use Actions > Open G-code")
