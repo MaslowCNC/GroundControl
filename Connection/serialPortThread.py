@@ -44,15 +44,19 @@ class SerialPortThread(MakesmithInitFuncs):
         valz = msg.split(",")
         
         try:
-            if int(valz[2][0:-3]) > 127 - len(self.data.gcode[self.data.gcodeIndex]):             #if there is space in the arduino buffer
-                self.machineIsReadyForData = True
+            if self.data.uploadFlag:                                                                  #if we are uploading a file
+                if int(valz[2][0:-3]) > 127 - len(self.data.gcode[self.data.gcodeIndex]):             #if there is space in the arduino buffer for the next line
+                    self.machineIsReadyForData = True                                                 #send the line
+            else:
+                if int(valz[2][0:-3]) > 127:
+                    self.machineIsReadyForData = True
+                
         except:
             self.data.uploadFlag = 0
             self.data.gcodeIndex = 0
-            print "Gcode Ended"
+            print "Unable to check buffer"
     
     def getmessage (self):
-        #print("Waiting for new message")
         #opens a serial connection called self.serialInstance
         
         try:
