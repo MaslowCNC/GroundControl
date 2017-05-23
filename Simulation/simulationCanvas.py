@@ -38,18 +38,12 @@ class SimulationCanvas(FloatLayout):
         self.xPosSlider.bind(value=self.xPosSliderValueChange)
         self.yPosSlider.bind(value=self.yPosSliderValueChange)
         
-        self.setupAngles()
-        
         self.setupSled()
         
-        self.lengthToXY.initialize(self.chainA, self.chainB, self.bedWidth+2*self.motorTranslate, self.bedHeight+self.motorLift, self.motorTranslate, self.motorLift)
-        self.posToLength.initialize(self.sled, self.bedWidth+2*self.motorTranslate, self.bedHeight+self.motorLift, self.motorTranslate, self.motorLift)
         
     def setSpindleLocation(self,x,y):
         
         self.sled.setXY(x,y)
-        #self.chainA.setEnd(x,y)
-        #self.chainB.setEnd(x,y)
     
     def xPosSliderValueChange(self,callback,value):
         self.setSpindleLocation(value,self.yPosSlider.value)
@@ -80,13 +74,8 @@ class SimulationCanvas(FloatLayout):
         self.frameBottom.setEnd(self.bedWidth,0)
         self.frameBottom.color = (1,0,0)
     
-    def setupAngles(self):
-        self.angleA.initialize(self.chainA, self.lineT, 0)
-        self.angleB.initialize(self.chainB, self.lineT, 0)
-        self.angleP.initialize(self.chainA, self.chainB, 1)
-    
     def setupSled(self):
-        self.sled.initialize(self.chainA, self.chainB, 1, self.angleP)
+        self.sled.initialize(self.chainA, self.chainB, 1)
     
     def setInitialZoom(self):
         mat = Matrix().scale(.4, .4, 1)
