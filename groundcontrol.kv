@@ -74,8 +74,8 @@
                     Triangle:
                         points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/2,
             Button:
-                text: ''
-                on_press:
+                text: 'Macro 1'
+                on_press: root.macro(1)
             Button:
                 on_press: root.left()
                 canvas.after:
@@ -90,8 +90,8 @@
                     Triangle:
                         points: self.x+2*self.width/3,self.y+self.height/2,self.x+self.width/3,self.y+self.height/3,self.x+self.width/3,self.y+2*self.height/3,
             Button:
-                text: ''
-                on_press:
+                text: 'Macro 2'
+                on_press: root.macro(2)
             Button:
                 on_press: root.downLeft()
                 canvas.after:
@@ -142,7 +142,7 @@
                 text: 'STOP'
                 on_press: root.stopRun()
         GridLayout:
-            cols: 4
+            cols: 5
             size_hint: None, None
             width: dp(300)
             height: dp(30)
@@ -153,6 +153,9 @@
             Button:
                 text: "<1"
                 on_press: root.moveGcodeIndex(-1)
+            Button:
+                text: "Goto"
+                on_press: root.gotoLinePopup()
             Button:
                 text: "1>"
                 on_press: root.moveGcodeIndex(1)
