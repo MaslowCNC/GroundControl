@@ -4,6 +4,8 @@ from kivy.graphics                           import Color, Ellipse, Line
 from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
 
+from kinematics                              import Kinematics
+
 import re
 import math
 
