@@ -312,3 +312,10 @@ class FrontPage(Screen, MakesmithInitFuncs):
         except:
             pass                                                             #If what was entered cannot be converted to a number, leave the value the same
         self._popup.dismiss()
+    
+    def macro(self,index):
+        '''
+        Execute user defined macro
+        '''
+        self.data.gcode_queue.put(self.data.config.get('Maslow Settings', 'macro' + str(index))) 
+
