@@ -126,6 +126,20 @@ class GroundControlApp(App):
             "desc": "The path to the open file",
             "section": "Maslow Settings",
             "key": "openFile"
+        },
+        {
+            "type": "string",
+            "title": "Macro 1",
+            "desc": "User defined gcode bound to the Macro 1 button",
+            "section": "Maslow Settings",
+            "key": "macro1"
+        },
+        {
+            "type": "string",
+            "title": "Macro 2",
+            "desc": "User defined gcode bound to the Macro 2 button",
+            "section": "Maslow Settings",
+            "key": "macro2"
         }
     ]
     '''
@@ -248,7 +262,9 @@ class GroundControlApp(App):
                                                'sledWidth':310, 
                                                'sledHeight':139, 
                                                'sledCG':79, 
-                                               'openFile': " "})
+                                               'openFile': " ",
+                                               'macro1': "",
+                                               'macro2': ""})
 
         config.setdefaults('Advanced Settings', {'encoderSteps': 8148.0,
                                                  'gearTeeth': 10, 
