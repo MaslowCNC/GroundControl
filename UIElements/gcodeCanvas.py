@@ -133,7 +133,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                     else:
                         self.data.zMoves.append(index)
 
-            print(self.data.zMoves)
+            #print(self.data.zMoves)
 
         except:
             if filename is not "":
@@ -269,6 +269,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                         Color(1, 0, 0)
                         radius = 2
                     Line(circle=(self.xPosition , self.yPosition, radius), width = 2, group = 'gcode')
+                    Color(1, 1, 1)
             
             self.xPosition = xTarget
             self.yPosition = yTarget
