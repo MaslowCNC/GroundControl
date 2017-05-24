@@ -20,7 +20,6 @@ class RunMenu(FloatLayout):
             
             self.data.gcode_queue.put("G00 X0.0 Y0.0 ")
             
-            self.data.gcode_queue.put("G00 Z0 ")
         #if the machine does not have a z-axis, just go home
         else:
             self.data.gcode_queue.put("G00 X0.0 Y0.0 ")
