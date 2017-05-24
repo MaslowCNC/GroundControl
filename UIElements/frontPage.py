@@ -81,9 +81,11 @@ class FrontPage(Screen, MakesmithInitFuncs):
         if newUnits == "INCHES":
             self.data.gcode_queue.put('G20 ')
             self.moveDistInput.text = str(float(self.moveDistInput.text)/25)
+            self.data.tolerance = 0.020
         else:
             self.data.gcode_queue.put('G21 ')
             self.moveDistInput.text = str(float(self.moveDistInput.text)*25)
+            self.data.tolerance = 0.5
     
     def onIndexMove(self, callback, newIndex):
         self.gcodeLineNumber = str(newIndex)
@@ -97,6 +99,22 @@ class FrontPage(Screen, MakesmithInitFuncs):
             self.holdBtn.text = "CONTINUE"
         else:
             self.holdBtn.text = "HOLD"
+
+    def moveGcodeZ(self,moves):
+        '''
+        Move the gcode index by z moves
+        '''
+
+        dist = 0
+
+        for index,zMove in enumerate(self.data.zMoves):
+            if moves > 0 and zMove > self.data.gcodeIndex:
+                dist = self.data.zMoves[index+moves-1]-self.data.gcodeIndex
+                break
+            if moves < 0 and zMove < self.data.gcodeIndex:
+                dist = self.data.zMoves[index+moves+1]-self.data.gcodeIndex
+
+        self.moveGcodeIndex(dist)
     
     def moveGcodeIndex(self, dist):
         '''
@@ -286,3 +304,36 @@ class FrontPage(Screen, MakesmithInitFuncs):
         except:
             pass                                                             #If what was entered cannot be converted to a number, leave the value the same
         self._popup.dismiss()
+
+    def gotoLinePopup(self):
+        
+        self.popupContent = TouchNumberInput(done=self.dismiss_gotoLinePopup)
+        self._popup = Popup(title="Go to gcode line", content=self.popupContent,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
+
+    def dismiss_gotoLinePopup(self):
+        '''
+        
+        Close The Pop-up
+        
+        '''
+        try:
+            line = int(self.popupContent.textInput.text)
+            if line < 0:
+                self.data.gcodeIndex = 0
+            elif line > len(self.data.gcode):
+                self.data.gcodeIndex = len(self.data.gcode)
+            else:
+                self.data.gcodeIndex = line
+           
+        except:
+            pass                                                             #If what was entered cannot be converted to a number, leave the value the same
+        self._popup.dismiss()
+    
+    def macro(self,index):
+        '''
+        Execute user defined macro
+        '''
+        self.data.gcode_queue.put(self.data.config.get('Maslow Settings', 'macro' + str(index))) 
+
