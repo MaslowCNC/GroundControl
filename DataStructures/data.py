@@ -25,13 +25,15 @@ class Data(EventDispatcher):
     
     #Gcodes contains all of the lines of gcode in the opened file
     gcode      = ObjectProperty([])
-    version    = '0.72'
+    version    = '0.73'
     #all of the available COM ports
     comPorts   = []
     #This defines which COM port is used
     comport    = StringProperty("")
     #The index of the next unread line of Gcode
     gcodeIndex = NumericProperty(0)
+    #Index of changes in z
+    zMoves     = ObjectProperty([])
     #Holds the current value of the feed rate
     feedRate   = 20
     #holds the address of the g-code file so that the gcode can be refreshed
@@ -40,6 +42,7 @@ class Data(EventDispatcher):
     currentpos = [0.0, 0.0, 0.0]
     target     = [0.0, 0.0, 0.0]
     units      = OptionProperty("MM", options=["MM", "INCHES"])
+    tolerance  = NumericProperty(0.5)
     gcodeShift = ObjectProperty([0.0,0.0])                          #the amount that the gcode has been shifted
     logger     =  Logger()                                          #the module which records the machines behavior to review later
     

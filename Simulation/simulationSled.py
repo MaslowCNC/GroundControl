@@ -12,8 +12,8 @@ class SimulationSled(FloatLayout):
     #scatterObject     = ObjectProperty(None)
     
     angleObject   = None
-    lineOne = None
-    lineTwo = None
+    leftChain = None
+    rightChain = None
     
     sledPointOne    = ObjectProperty([0,0]) #top right corner
     sledPointTwo    = ObjectProperty([0,0]) #top left corner
@@ -25,6 +25,9 @@ class SimulationSled(FloatLayout):
     sledHeight = 130
     sledWidth  = 300
     
+    toolX           = 0
+    toolY           = 0
+    
     slant = 0
     slantAsString       = StringProperty("Slant: ")
     toolPosAsString     = StringProperty("Pos: ")
@@ -35,90 +38,42 @@ class SimulationSled(FloatLayout):
     errorDist           = 0
     errorDistString     = StringProperty("Error: " + str(errorDist))
     
+    initialized         = False
     
-    def initialize(self, lineOne, lineTwo, end, angle):
-        self.lineOne = lineOne
-        self.lineTwo = lineTwo
+    
+    def initialize(self, leftChain, rightChain, end, angle):
+        self.leftChain = leftChain
+        self.rightChain = rightChain
         self.angleObject = angle
         self.end = end
         
-        self.lineOne.bind(fromPos = self.updateSled)
-        self.lineOne.bind(toPos   = self.updateSled)
-        self.lineTwo.bind(fromPos = self.updateSled)
-        self.lineTwo.bind(toPos   = self.updateSled)
+        self.leftChain.bind(fromPos = self.updateSled)
+        self.leftChain.bind(toPos   = self.updateSled)
+        self.rightChain.bind(fromPos = self.updateSled)
+        self.rightChain.bind(toPos   = self.updateSled)
+        
+        self.initialized = True
         
         self.updateSled()
     
     
     def updateSled(self, *args):
         
-        
-        #here we are going to try to find values for distUpLine which will preserve the correct width
-        a = self.sledWidth/(math.sqrt(2)*math.sqrt(1-math.cos(math.radians(self.angleObject.angle))))
-        
-        distUpLine = a
-        x = distUpLine/math.sqrt(math.pow(self.lineTwo.slope,2) + 1)
-        y = self.lineTwo.slope*x
-        
-        xDist = self.lineTwo.toPos[0] + x
-        yDist = self.lineTwo.toPos[1] + y
-        
-        self.sledPointOne = (xDist,yDist)
-        
-        
-        x = distUpLine/math.sqrt(math.pow(self.lineOne.slope,2) + 1)
-        y = self.lineOne.slope*x
-        
-        xDist = self.lineTwo.toPos[0] - x
-        yDist = self.lineTwo.toPos[1] - y
-        
-        self.sledPointTwo = (xDist,yDist)
-        
-        self.lengthOfTopBar = math.sqrt(math.pow((self.sledPointOne[1] - self.sledPointTwo[1]), 2) + math.pow((self.sledPointOne[0] - self.sledPointTwo[0]), 2))
-        self.topLengthAsString = "Length: " + str(self.lengthOfTopBar)
-        
-        try:
-            slopeBetweenPoints = ( self.sledPointOne[1]-self.sledPointTwo[1] ) / (self.sledPointOne[0] - self.sledPointTwo[0])
-        except:
-            pass
-        
-        
-        
-        self.slant = math.degrees(math.atan(slopeBetweenPoints))
-        self.slantAsString = "Slant: " + str(self.slant)
-        
-        self.sledMidpointTop[0] = (self.sledPointOne[0]+self.sledPointTwo[0])/2
-        self.sledMidpointTop[1] = (self.sledPointOne[1]+self.sledPointTwo[1])/2
-        
-        
-        perpindicularSlope = -10000
-        try:
-            perpindicularSlope = -1/slopeBetweenPoints
-        
-        except:
-            pass
-        
-        x = self.sledHeight/math.sqrt(math.pow(perpindicularSlope,2) + 1)
-        y = perpindicularSlope*x
-        
-        slopeSign = math.copysign(1, perpindicularSlope)
-        self.sledToolPos     = (self.sledMidpointTop[0] - slopeSign*x, self.sledMidpointTop[1] - slopeSign*y)
-        self.toolPosAsString = "Pos: " + str(self.sledToolPos)
-        
-        self.bottomRight[0]  = self.sledPointOne[0] - 2*slopeSign*x
-        self.bottomRight[1]  = self.sledPointOne[1] - 2*slopeSign*y
-        self.bottomLeft[0]   = self.sledPointTwo[0] - 2*slopeSign*x
-        self.bottomLeft[1]   = self.sledPointTwo[1] - 2*slopeSign*y
-        
-        self.correctionFactor[0] = self.sledToolPos[0] - self.lineOne.toPos[0]
-        self.correctionFactor[1] = self.sledToolPos[1] - self.lineOne.toPos[1]
-        self.correctionFactorString = "Correction: " + str(self.correctionFactor)
-        
-        self.errorDist = math.sqrt(math.pow(self.correctionFactor[0],2) + math.pow(self.correctionFactor[1],2))
-        self.errorDistString     = "Error: " + str(self.errorDist)
-        
-        
-        
-        
+        if self.initialized:
+            
+            leftChainAttachment  = (self.toolX - self.sledWidth/2, self.toolY + self.sledHeight)
+            rightChainAttahcment = (self.toolX + self.sledWidth/2, self.toolY + self.sledHeight)
+            
+            print self.toolX
+            print self.sledWidth/2
+            
+            self.leftChain.toPos  = leftChainAttachment
+            self.rightChain.toPos = rightChainAttahcment
+            
     
     
+    def setXY(self, x, y):
+        
+        self.toolX = x
+        self.toolY = y
+        self.updateSled()
