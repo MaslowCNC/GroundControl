@@ -42,9 +42,9 @@ class Kinematics():
     Psi1 = Theta - Phi
     Psi2 = Theta + Phi
     Tries = 0
-    Jac=[]
+    Jac=[0,0,0,0,0,0,0,0,0,0]
     Solution=[]
-    Crit=[]
+    Crit=[0,0,0]
     Offsetx1 = 0
     Offsetx2 = 0
     Offsety1 = 0
@@ -137,15 +137,15 @@ class Kinematics():
                                                  #These criteria will be zero when the correct values are reached 
                                                  #They are negated here as a numerical efficiency expedient
                                                  
-        self.Crit[0]=  - self._moment(self.Y1Plus, self.Y2Plus, self.Phi, self.MySinPhi, self.SinPsi1, self.CosPsi1, self.SinPsi2, self.CosPsi2)
+        self.Crit[0] = - self._moment(self.Y1Plus, self.Y2Plus, self.Phi, self.MySinPhi, self.SinPsi1, self.CosPsi1, self.SinPsi2, self.CosPsi2)
         self.Crit[1] = - self._YOffsetEqn(self.Y1Plus, x - self.h * self.CosPsi1, self.SinPsi1)
         self.Crit[2] = - self._YOffsetEqn(self.Y2Plus, self.D - (x + self.h * self.CosPsi2), self.SinPsi2)
 
       
-        while (Tries <= MaxTries):
-            if (abs(Crit[0]) < MaxError):
-                if (abs(Crit[1]) < MaxError):
-                    if (abs(Crit[2]) < MaxError):
+        while (Tries <= self.MaxTries):
+            if (abs(self.Crit[0]) < self.MaxError):
+                if (abs(self.Crit[1]) < self.MaxError):
+                    if (abs(self.Crit[2]) < self.MaxError):
                         break
                       
                        #estimate the tilt angle that results in zero net _moment about the pen
@@ -153,34 +153,34 @@ class Kinematics():
         
                               #Estimate the Jacobian components 
                                                            
-            Jac[0] = (_moment( Y1Plus, Y2Plus,Phi + DeltaPhi, MySinPhiDelta, SinPsi1D, CosPsi1D, SinPsi2D, CosPsi2D) + Crit[0])/DeltaPhi
-            Jac[1] = (_moment( Y1Plus + DeltaY, Y2Plus, Phi, MySinPhi, SinPsi1, CosPsi1, SinPsi2, CosPsi2) + Crit[0])/DeltaY  
-            Jac[2] = (_moment(Y1Plus, Y2Plus + DeltaY,  Phi, MySinPhi, SinPsi1, CosPsi1, SinPsi2, CosPsi2) + Crit[0])/DeltaY
-            Jac[3] = (_YOffsetEqn(Y1Plus, x - h * CosPsi1D, SinPsi1D) + Crit[1])/DeltaPhi
-            Jac[4] = (_YOffsetEqn(Y1Plus + DeltaY, x - h * CosPsi1,SinPsi1) + Crit[1])/DeltaY
-            Jac[5] = 0.0
-            Jac[6] = (_YOffsetEqn(Y2Plus, D - (x + h * CosPsi2D), SinPsi2D) + Crit[2])/DeltaPhi
-            Jac[7] = 0.0
-            Jac[8] = (_YOffsetEqn(Y2Plus + DeltaY, D - (x + h * CosPsi2D), SinPsi2) + Crit[2])/DeltaY
+            self.Jac[0] = (self._moment( self.Y1Plus, self.Y2Plus,self.Phi + self.DeltaPhi, self.MySinPhiDelta, self.SinPsi1D, self.CosPsi1D, self.SinPsi2D, self.CosPsi2D) + self.Crit[0])/self.DeltaPhi
+            self.Jac[1] = (self._moment( self.Y1Plus + self.DeltaY, self.Y2Plus, self.Phi, self.MySinPhi, self.SinPsi1, self.CosPsi1, self.SinPsi2, self.CosPsi2) + self.Crit[0])/self.DeltaY  
+            self.Jac[2] = (self._moment(self.Y1Plus, self.Y2Plus + self.DeltaY,  self.Phi, self.MySinPhi, self.SinPsi1, self.CosPsi1, self.SinPsi2, self.CosPsi2) + self.Crit[0])/self.DeltaY
+            self.Jac[3] = (self._YOffsetEqn(self.Y1Plus, self.x - self.h * self.CosPsi1D, self.SinPsi1D) + self.Crit[1])/self.DeltaPhi
+            self.Jac[4] = (self._YOffsetEqn(self.Y1Plus + self.DeltaY, self.x - self.h * self.CosPsi1,self.SinPsi1) + self.Crit[1])/self.DeltaY
+            self.Jac[5] = 0.0
+            self.Jac[6] = (self._YOffsetEqn(self.Y2Plus, self.D - (self.x + self.h * self.CosPsi2D), self.SinPsi2D) + self.Crit[2])/self.DeltaPhi
+            self.Jac[7] = 0.0
+            self.Jac[8] = (self._YOffsetEqn(self.Y2Plus + self.DeltaY, self.D - (self.x + self.h * self.CosPsi2D), self.SinPsi2) + self.Crit[2])/self.DeltaY
 
 
             #solve for the next guess
-            _MatSolv()     # solves the matrix equation Jx=-Criterion                                                     
+            self._MatSolv()     # solves the matrix equation Jx=-Criterion                                                     
                        
             # update the variables with the new estimate
 
-            Phi = Phi + Solution[0]
-            Y1Plus = Y1Plus + Solution[1]                         #don't allow the anchor points to be inside a sprocket
-            if (Y1Plus < R):
-                Y1Plus = R                               
+            self.Phi = self.Phi + self.Solution[0]
+            self.Y1Plus = self.Y1Plus + self.Solution[1]                         #don't allow the anchor points to be inside a sprocket
+            if (self.Y1Plus < self.R):
+                self.Y1Plus = self.R                               
             
-            Y2Plus = Y2Plus + Solution[2]                         #don't allow the anchor points to be inside a sprocke
-            if (Y2Plus < R):
-                Y2Plus = R
+            self.Y2Plus = self.Y2Plus + self.Solution[2]                         #don't allow the anchor points to be inside a sprocke
+            if (self.Y2Plus < self.R):
+                self.Y2Plus = self.R
             
 
-            Psi1 = Theta - Phi
-            Psi2 = Theta + Phi   
+            self.Psi1 = self.Theta - self.Phi
+            self.Psi2 = self.Theta + self.Phi   
                                                                  #evaluate the
                                                                  #three criterion equations
         self._MyTrig()
@@ -271,7 +271,7 @@ class Kinematics():
         M = 0
         N = 0
 
-        fact
+        fact = 0
 
         # gaus elimination, no pivot
 
@@ -285,19 +285,19 @@ class Kinematics():
             KK = -1
             K=0
             while (K<L):
-                fact = Jac[KK+J]/Jac[JJ+J]
+                fact = self.Jac[KK+J]/self.Jac[JJ+J]
                 M = 1
                 while (M<=J):
-                    Jac[KK + M]= Jac[KK + M] -fact * Jac[JJ+M]
+                    self.Jac[KK + M]= self.Jac[KK + M] -fact * self.Jac[JJ+M]
                     M = M + 1
                 K = K + 1
             KK = KK + N      
-            Crit[K] = Crit[K] - fact * Crit[J-1]
+            self.Crit[K] = self.Crit[K] - fact * self.Crit[J-1]
             i = i + 1
 
     #Lower triangular matrix solver
 
-        Solution[0] =  Crit[0]/Jac[0]
+        Solution[0] =  self.Crit[0]/self.Jac[0]
         ii = N-1
         i=2
         while (i<=N):
@@ -308,7 +308,7 @@ class Kinematics():
                 Sum = Sum-Jac[ii+J]*Solution[J-1]
                 J = J + 1
             i = i + 1
-        Solution[i-1] = Sum/Jac[ii+i]
+        Solution[i-1] = Sum/self.Jac[ii+i]
         ii = ii + N
     
     def _moment(self, Y1Plus, Y2Plus, Phi, MSinPhi, MSinPsi1, MCosPsi1, MSinPsi2, MCosPsi2):   #computes net moment about center of mass
@@ -375,8 +375,8 @@ class Kinematics():
         CosPsi2D = 0.0792*Psi2delcu - 0.5559*Psi2delsq + 0.0171*Psi2del +0.9981#cosPsi2
 
     def _YOffsetEqn(self, YPlus, Denominator, Psi):
-        Temp
-        Temp = ((sqrt(YPlus * YPlus - R * R)/R) - (y + YPlus - h * sin(Psi))/Denominator)
+        
+        Temp = ((math.sqrt(YPlus * YPlus - self.R * self.R)/self.R) - (self.y + YPlus - self.h * math.sin(Psi))/Denominator)
         return Temp
 
     
