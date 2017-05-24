@@ -42,9 +42,9 @@ class Kinematics():
     Psi1 = Theta - Phi
     Psi2 = Theta + Phi
     Tries = 0
-    #Jac[9]
-    #Solution[3]
-    #Crit[3]
+    Jac=[]
+    Solution=[]
+    Crit=[]
     Offsetx1 = 0
     Offsetx2 = 0
     Offsety1 = 0
@@ -70,22 +70,22 @@ class Kinematics():
 
     i = 0
     
-    def _verifyValidTarget(xTarget, yTarget):
+    def _verifyValidTarget(self, xTarget, yTarget):
         #If the target point is beyond one of the edges of the board, the machine stops at the edge
         
-        if (xTarget < -machineWidth/2):
-            xTarget = -machineWidth/2
+        if (xTarget < -self.machineWidth/2):
+            xTarget = -self.machineWidth/2
         
-        elif (xTarget >  machineWidth/2):
-            xTarget =  machineWidth/2
+        elif (xTarget >  self.machineWidth/2):
+            xTarget =  self.machineWidth/2
         
-        elif (yTarget >  machineHeight/2):
-            yTarget =  machineHeight/2
+        elif (yTarget >  self.machineHeight/2):
+            yTarget =  self.machineHeight/2
         
-        elif (yTarget <  -machineHeight/2):
-            yTarget =  -machineHeight/2
+        elif (yTarget <  -self.machineHeight/2):
+            yTarget =  -self.machineHeight/2
     
-    def recomputeGeometry():
+    def recomputeGeometry(self):
         '''
         Some variables are computed on class creation for the geometry of the machine to reduce overhead,
         calling this function regenerates those values.
@@ -95,14 +95,20 @@ class Kinematics():
         Psi1 = Theta - Phi
         Psi2 = Theta + Phi
     
-    def inverse(xTarget, yTarget, aChainLength, bChainLength):
+    def inverse(self, xTarget, yTarget):
+        
+        '''
+        
+        Take the XY position and return chain lengths.
+        
+        '''
         
         #Confirm that the coordinates are on the wood
-        _verifyValidTarget(xTarget, yTarget)
+        self._verifyValidTarget(xTarget, yTarget)
         
         #coordinate shift to put (0,0) in the center of the plywood from the left sprocket
-        x = (D/2.0) + xTarget
-        y = (machineHeight/2.0) + motorOffsetY  - yTarget
+        x = (self.D/2.0) + xTarget
+        y = (self.machineHeight/2.0) + self.motorOffsetY  - yTarget
         
         #Coordinates definition:
         #         x -->, y |
@@ -111,29 +117,29 @@ class Kinematics():
         # upper left corner of plywood (270, 270)
         
         Tries = 0                                  #initialize                   
-        if(x > D/2.0):                              #the right half of the board mirrors the left half so all computations are done  using left half coordinates.
-          x = D-x                                  #Chain lengths are swapped at exit if the x,y is on the right half
-          Mirror = true
+        if(x > self.D/2.0):                              #the right half of the board mirrors the left half so all computations are done  using left half coordinates.
+          x = self.D-x                                  #Chain lengths are swapped at exit if the x,y is on the right half
+          self.Mirror = True
         
         else:
-            Mirror = false
+            self.Mirror = False
         
         
-        TanGamma = y/x
-        TanLambda = y/(D-x)
-        Y1Plus = R * sqrt(1 + TanGamma * TanGamma)
-        Y2Plus = R * sqrt(1 + TanLambda * TanLambda)
-        Phi = -0.2 * (-8.202e-4 * x + 1.22) - 0.03
+        self.TanGamma = y/x
+        self.TanLambda = y/(self.D-x)
+        self.Y1Plus = self.R * math.sqrt(1 + self.TanGamma * self.TanGamma)
+        self.Y2Plus = self.R * math.sqrt(1 + self.TanLambda * self.TanLambda)
+        self.Phi = -0.2 * (-8.202e-4 * x + 1.22) - 0.03
       
-        _MyTrig()
-        Psi1 = Theta - Phi
-        Psi2 = Theta + Phi
+        self._MyTrig()
+        self.Psi1 = self.Theta - self.Phi
+        self.Psi2 = self.Theta + self.Phi
                                                  #These criteria will be zero when the correct values are reached 
                                                  #They are negated here as a numerical efficiency expedient
                                                  
-        Crit[0]=  - _moment(Y1Plus, Y2Plus, Phi, MySinPhi, SinPsi1, CosPsi1, SinPsi2, CosPsi2)
-        Crit[1] = - _YOffsetEqn(Y1Plus, x - h * CosPsi1, SinPsi1)
-        Crit[2] = - _YOffsetEqn(Y2Plus, D - (x + h * CosPsi2), SinPsi2)
+        self.Crit[0]=  - self._moment(self.Y1Plus, self.Y2Plus, self.Phi, self.MySinPhi, self.SinPsi1, self.CosPsi1, self.SinPsi2, self.CosPsi2)
+        self.Crit[1] = - self._YOffsetEqn(self.Y1Plus, x - self.h * self.CosPsi1, self.SinPsi1)
+        self.Crit[2] = - self._YOffsetEqn(self.Y2Plus, self.D - (x + self.h * self.CosPsi2), self.SinPsi2)
 
       
         while (Tries <= MaxTries):
@@ -177,7 +183,7 @@ class Kinematics():
             Psi2 = Theta + Phi   
                                                                  #evaluate the
                                                                  #three criterion equations
-        _MyTrig()
+        self._MyTrig()
         
         Crit[0] = - _moment(Y1Plus, Y2Plus, Phi, MySinPhi, SinPsi1, CosPsi1, SinPsi2, CosPsi2)
         Crit[1] = - _YOffsetEqn(Y1Plus, x - h * CosPsi1, SinPsi1)
@@ -188,14 +194,14 @@ class Kinematics():
         #Variables are within accuracy limits
         #  perform output computation
 
-        Offsetx1 = h * CosPsi1
-        Offsetx2 = h * CosPsi2
-        Offsety1 = h *  SinPsi1
-        Offsety2 = h * SinPsi2
-        TanGamma = (y - Offsety1 + Y1Plus)/(x - Offsetx1)
-        TanLambda = (y - Offsety2 + Y2Plus)/(D -(x + Offsetx2))
-        Gamma = atan(TanGamma)
-        Lambda =atan(TanLambda)
+        self.Offsetx1 = self.h * self.CosPsi1
+        self.Offsetx2 = self.h * self.CosPsi2
+        self.Offsety1 = self.h *  self.SinPsi1
+        self.Offsety2 = self.h * self.SinPsi2
+        self.TanGamma = (y - Offsety1 + Y1Plus)/(x - Offsetx1)
+        self.TanLambda = (y - Offsety2 + Y2Plus)/(D -(x + Offsetx2))
+        self.Gamma = atan(TanGamma)
+        self.Lambda =atan(TanLambda)
 
         #compute the chain lengths
 
@@ -210,8 +216,12 @@ class Kinematics():
         aChainLength = Chain1
         bChainLength = Chain2
 
-    def forward(chainALength, chainBLength, xPos, yPos):
+    def forward(self, chainALength, chainBLength):
+        '''
         
+        Take the chain lengths and return an XY position
+        
+        '''
         xGuess = 0
         yGuess = 0
         
@@ -248,7 +258,7 @@ class Kinematics():
                     yPos = yGuess
                 break
 
-    def _MatSolv():
+    def _MatSolv(self):
         Sum = 0
         NN = 0
         i = 0
@@ -301,7 +311,7 @@ class Kinematics():
         Solution[i-1] = Sum/Jac[ii+i]
         ii = ii + N
     
-    def _moment(Y1Plus, Y2Plus, Phi, MSinPhi, MSinPsi1, MCosPsi1, MSinPsi2, MCosPsi2):   #computes net moment about center of mass
+    def _moment(self, Y1Plus, Y2Plus, Phi, MSinPhi, MSinPsi1, MCosPsi1, MSinPsi2, MCosPsi2):   #computes net moment about center of mass
         '''Temp
         Offsetx1
         Offsetx2
@@ -312,32 +322,32 @@ class Kinematics():
         TanGamma
         TanLambda'''
 
-        Psi1 = Theta - Phi
-        Psi2 = Theta + Phi
+        self.Psi1 = self.Theta - self.Phi
+        self.Psi2 = self.Theta + self.Phi
         
-        Offsetx1 = h * MCosPsi1
-        Offsetx2 = h * MCosPsi2
-        Offsety1 = h * MSinPsi1
-        Offsety2 = h * MSinPsi2
-        TanGamma = (y - Offsety1 + Y1Plus)/(x - Offsetx1)
-        TanLambda = (y - Offsety2 + Y2Plus)/(D -(x + Offsetx2))
+        self.Offsetx1 = self.h * MCosPsi1
+        self.Offsetx2 = self.h * MCosPsi2
+        self.Offsety1 = self.h * MSinPsi1
+        self.Offsety2 = self.h * MSinPsi2
+        TanGamma = (self.y - self.Offsety1 + self.Y1Plus)/(self.x - self.Offsetx1)
+        TanLambda = (self.y - self.Offsety2 + self.Y2Plus)/(self.D -(self.x + self.Offsetx2))
         
-        return h3*MSinPhi + (h/(TanLambda+TanGamma))*(MSinPsi2 - MSinPsi1 + (TanGamma*MCosPsi1 - TanLambda * MCosPsi2))   
+        return self.h3*MSinPhi + (self.h/(self.TanLambda+self.TanGamma))*(MSinPsi2 - MSinPsi1 + (self.TanGamma*MCosPsi1 - self.TanLambda * MCosPsi2))   
 
-    def _MyTrig():
-        Phisq = Phi * Phi
-        Phicu = Phi * Phisq
-        Phidel = Phi + DeltaPhi
+    def _MyTrig(self):
+        Phisq = self.Phi * self.Phi
+        Phicu = self.Phi * Phisq
+        Phidel = self.Phi + self.DeltaPhi
         Phidelsq = Phidel * Phidel
         Phidelcu = Phidel * Phidelsq
-        Psi1sq = Psi1 * Psi1
-        Psi1cu = Psi1sq * Psi1
-        Psi2sq = Psi2 * Psi2
-        Psi2cu = Psi2 * Psi2sq
-        Psi1del = Psi1 - DeltaPhi
+        Psi1sq = self.Psi1 * self.Psi1
+        Psi1cu = Psi1sq * self.Psi1
+        Psi2sq = self.Psi2 * self.Psi2
+        Psi2cu = self.Psi2 * Psi2sq
+        Psi1del = self.Psi1 - self.DeltaPhi
         Psi1delsq = Psi1del * Psi1del
         Psi1delcu = Psi1del * Psi1delsq
-        Psi2del = Psi2 + DeltaPhi
+        Psi2del = self.Psi2 + self.DeltaPhi
         Psi2delsq = Psi2del * Psi2del
         Psi2delcu = Psi2del * Psi2delsq
       
@@ -351,20 +361,20 @@ class Kinematics():
         # sin(Psi2): -0.1460   -0.0197    1.0068   -0.0008 (error < 1.5e-5)
         # cos(Psi2):  0.0792   -0.5559    0.0171    0.9981 (error < 2.5e-5)
 
-        MySinPhi = -0.1616*Phicu - 0.0021*Phisq + 1.0002*Phi
+        MySinPhi = -0.1616*Phicu - 0.0021*Phisq + 1.0002*self.Phi
         MySinPhiDelta = -0.1616*Phidelcu - 0.0021*Phidelsq + 1.0002*Phidel
 
-        SinPsi1 = -0.0942*Psi1cu - 0.1368*Psi1sq + 1.0965*Psi1 - 0.0241#sinPsi1
-        CosPsi1 = 0.1369*Psi1cu - 0.6799*Psi1sq + 0.1077*Psi1 + 0.9756#cosPsi1
-        SinPsi2 = -0.1460*Psi2cu - 0.0197*Psi2sq + 1.0068*Psi2 - 0.0008#sinPsi2
-        CosPsi2 = 0.0792*Psi2cu - 0.5559*Psi2sq + 0.0171*Psi2 + 0.9981#cosPsi2
+        SinPsi1 = -0.0942*Psi1cu - 0.1368*Psi1sq + 1.0965*self.Psi1 - 0.0241#sinPsi1
+        CosPsi1 = 0.1369*Psi1cu - 0.6799*Psi1sq + 0.1077*self.Psi1 + 0.9756#cosPsi1
+        SinPsi2 = -0.1460*Psi2cu - 0.0197*Psi2sq + 1.0068*self.Psi2 - 0.0008#sinPsi2
+        CosPsi2 = 0.0792*Psi2cu - 0.5559*Psi2sq + 0.0171*self.Psi2 + 0.9981#cosPsi2
 
         SinPsi1D = -0.0942*Psi1delcu - 0.1368*Psi1delsq + 1.0965*Psi1del - 0.0241#sinPsi1
         CosPsi1D = 0.1369*Psi1delcu - 0.6799*Psi1delsq + 0.1077*Psi1del + 0.9756#cosPsi1
         SinPsi2D = -0.1460*Psi2delcu - 0.0197*Psi2delsq + 1.0068*Psi2del - 0.0008#sinPsi2
         CosPsi2D = 0.0792*Psi2delcu - 0.5559*Psi2delsq + 0.0171*Psi2del +0.9981#cosPsi2
 
-    def _YOffsetEqn(YPlus, Denominator, Psi):
+    def _YOffsetEqn(self, YPlus, Denominator, Psi):
         Temp
         Temp = ((sqrt(YPlus * YPlus - R * R)/R) - (y + YPlus - h * sin(Psi))/Denominator)
         return Temp

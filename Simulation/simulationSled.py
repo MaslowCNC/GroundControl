@@ -40,6 +40,8 @@ class SimulationSled(FloatLayout):
         self.rightChain.bind(fromPos = self.updateSled)
         self.rightChain.bind(toPos   = self.updateSled)
         
+        self.kinematics = Kinematics()
+        
         self.initialized = True
         
         self.updateSled()
@@ -48,6 +50,8 @@ class SimulationSled(FloatLayout):
     def updateSled(self, *args):
         
         if self.initialized:
+            
+            self.kinematics.inverse(0,0)
             
             leftChainAttachment  = (self.toolX - self.sledWidth/2, self.toolY + self.sledHeight)
             rightChainAttahcment = (self.toolX + self.sledWidth/2, self.toolY + self.sledHeight)
