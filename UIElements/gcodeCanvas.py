@@ -156,15 +156,23 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     def zoomCanvas(self, touch):
         if touch.is_mouse_scrolling:
-            scaleFactor = .03
+            scaleFactor = .05
             anchor = (0,0)
+            
+            print "This stuff:"
+            print self.scatterInstance.scale
+            print self.scatterInstance.x
+            print self.scatterInstance.y
+            
+            #I want to translate the canvas so that the point at (500,500 stays in the same spot)
+            
             
             if touch.button == 'scrollup':
                 mat = Matrix().scale(1-scaleFactor, 1-scaleFactor, 1)
-                self.scatterInstance.apply_transform(mat, anchor)
+                self.scatterInstance.apply_transform(mat, anchor = (Window.width/2,Window.height/2))
             elif touch.button == 'scrolldown':
                 mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
-                self.scatterInstance.apply_transform(mat, anchor)
+                self.scatterInstance.apply_transform(mat, anchor = (Window.width/2,Window.height/2))
 
     def drawWorkspace(self, *args):
 
