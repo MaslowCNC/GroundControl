@@ -151,20 +151,21 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.scatterInstance.apply_transform(mat, anchor)
 
     def on_touch_up(self, touch):
+        
         if touch.is_mouse_scrolling:
             self.zoomCanvas(touch)
+        
     
     def zoomCanvas(self, touch):
         if touch.is_mouse_scrolling:
-            scaleFactor = .03
-            anchor = (0,0)
+            scaleFactor = .1
             
             if touch.button == 'scrollup':
                 mat = Matrix().scale(1-scaleFactor, 1-scaleFactor, 1)
-                self.scatterInstance.apply_transform(mat, anchor)
+                self.scatterInstance.apply_transform(mat, anchor = touch.pos)
             elif touch.button == 'scrolldown':
                 mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
-                self.scatterInstance.apply_transform(mat, anchor)
+                self.scatterInstance.apply_transform(mat, anchor = touch.pos)
 
     def drawWorkspace(self, *args):
 
