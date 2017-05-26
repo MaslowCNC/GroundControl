@@ -289,11 +289,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             
             #take into account command G1 or G2
             if int(command[1:]) == 2:
+                if angle1 < angle2:
+                    angle1 = angle1 + 2*math.pi
                 direction = 1
             else:
                 if angle2 < angle1:
                     angle2 = angle2 + 2*math.pi
-                
                 direction = -1
             
             arcLen = abs(angle1 - angle2)
