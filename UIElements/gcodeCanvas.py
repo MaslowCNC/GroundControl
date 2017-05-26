@@ -276,12 +276,16 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             centerX = self.xPosition + iTarget
             centerY = self.yPosition + jTarget
             
-            angle1 = math.atan2(self.yPosition - centerY, self.xPosition - centerX)
-            angle2 = math.atan2(yTarget - centerY, xTarget - centerX)
+            angle1 = 2*math.pi + math.atan2(self.yPosition - centerY, self.xPosition - centerX)
+            angle2 = 2*math.pi + math.atan2(yTarget - centerY, xTarget - centerX)
             
             arcLen = abs(angle1 - angle2)
             
+            
             print "ArcLen " + str(arcLen)
+            
+            print "point1: " + str(self.yPosition - centerY) + " " + str(self.xPosition - centerX)
+            print "point2: " + str(yTarget - centerY) + " " + str(xTarget - centerX)
             
             print "starting angle " + str(angle1)
             print "ending angle "  + str(angle2)
