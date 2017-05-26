@@ -235,7 +235,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                     else:
                         Color(1, 0, 0)
                         radius = 2
-                    Line(circle=(self.xPosition , self.yPosition, radius), width = 2, group = 'gcode')
+                    Line(circle=(self.xPosition , self.yPosition, radius), group = 'gcode')
                     Color(1, 1, 1)
             
             self.xPosition = xTarget
@@ -276,19 +276,37 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             centerX = self.xPosition + iTarget
             centerY = self.yPosition + jTarget
             
-            angle1 = 2*math.pi + math.atan2(self.yPosition - centerY, self.xPosition - centerX)
-            angle2 = 2*math.pi + math.atan2(yTarget - centerY, xTarget - centerX)
+            angle1 = math.atan2(self.yPosition - centerY, self.xPosition - centerX)
+            angle2 = math.atan2(yTarget - centerY, xTarget - centerX)
+            
+            
+            #atan2 returns results from -pi to +pi and we want results from 0 - 2pi
+            if angle1 < 0:
+                angle1 = angle1 + 2*math.pi
+                
+            if angle2 < 0:
+                angle2 = angle2 + 2*math.pi
+            
             
             arcLen = abs(angle1 - angle2)
             
-            
-            print "ArcLen " + str(arcLen)
-            
-            print "point1: " + str(self.yPosition - centerY) + " " + str(self.xPosition - centerX)
-            print "point2: " + str(yTarget - centerY) + " " + str(xTarget - centerX)
-            
-            print "starting angle " + str(angle1)
-            print "ending angle "  + str(angle2)
+            if arcLen > math.pi:
+                
+                print "\n"
+                
+                print gCodeLine
+                print int(command[1:])
+                
+                print "ArcLen " + str(arcLen)
+                
+                print "starting angle " + str(math.degrees(angle1))
+                print "ending angle "   + str(math.degrees(angle2))
+                
+                '''with self.scatterObject.canvas:
+                    Color(0, 0, 1)
+                    radius = 1
+                    Line(circle=(self.xPosition , self.yPosition, radius))
+                    Color(1, 1, 1)'''
             
             i = 0
             while i < arcLen:
