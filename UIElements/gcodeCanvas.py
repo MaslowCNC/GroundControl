@@ -136,7 +136,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             if filename is not "":
                 self.data.message_queue.put("Message: Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use Actions > Open G-code")
             self.data.gcodeFile = ""
-        
+    
     def centerCanvas(self, *args):
         '''
         
@@ -154,7 +154,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         if touch.is_mouse_scrolling:
             self.zoomCanvas(touch)
-        
     
     def zoomCanvas(self, touch):
         if touch.is_mouse_scrolling:
@@ -185,36 +184,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             #create the axis lines
             Line(points = (-width/2,0,width/2,0), dash_offset = 5, group='workspace')
             Line(points = (0, -height/2,0,height/2), dash_offset = 5, group='workspace')
-
-    def calcAngle(self, X, Y, centerX, centerY):
-        '''
-        
-        calcAngle returns the angle from the positive x axis to a point given the center of the circle 
-        and the point. Angle returned in degrees.
-    
-        '''
-
-        #Special cases at quadrant boundaries (resolves /div0 errors)
-        if X == centerX:
-            if Y >= centerY: theta = -0.5*math.pi
-            if Y < centerY:  theta = 0.5*math.pi
-        elif Y == centerY:
-            if X > centerX: theta = 0.0*math.pi
-            if X < centerX: theta = 1.0*math.pi
-
-        #Normal cases
-        if X > centerX and Y > centerY: #quadrant one
-            theta = math.atan((centerY - Y)/(X - centerX))
-        if X < centerX and Y > centerY: #quadrant two
-            theta = math.atan((Y - centerY)/(X - centerX))
-            theta = 1.0*math.pi - theta
-        if X < centerX and Y < centerY: #quadrant three
-            theta = math.atan((Y - centerY)/(X - centerX))
-            theta = 1.0*math.pi - theta
-        if X > centerX and Y < centerY: #quadrant four
-            theta = math.atan((centerY - Y)/(X - centerX))
-        
-        return(math.degrees(theta + 0.5*math.pi))   
     
     def drawLine(self,gCodeLine,command):
         '''
@@ -250,7 +219,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             #Draw lines for G1 and G0
             with self.scatterObject.canvas:
                 Color(1, 1, 1)
-                self.addPoint(self.xPosition , self.yPosition)
+                self.addPoint(xTarget , yTarget)
                 '''if command == 'G00':
                     Line(points = (self.xPosition , self.yPosition , xTarget, yTarget), width = 1, group = 'gcode', dash_length = 4, dash_offset = 2)
                 elif command == 'G01':
@@ -307,26 +276,25 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             centerX = self.xPosition + iTarget
             centerY = self.yPosition + jTarget
             
-            angle1 = self.calcAngle(self.xPosition, self.yPosition, centerX, centerY)
-            angle2 = self.calcAngle(xTarget, yTarget, centerX, centerY)
+            angle1 = math.atan2(self.yPosition - centerY, self.xPosition - centerX)
+            angle2 = math.atan2(yTarget - centerY, xTarget - centerX)
             
-            if command == 'G02':
-                angleStart = angle2
-                angleEnd = angle1
-            elif command == 'G03':
-                angleStart = angle1
-                angleEnd = angle2
+            arcLen = abs(angle1 - angle2)
             
-            if angleStart < angleEnd:
-                angleEnd = angleEnd - 360
+            print "ArcLen " + str(arcLen)
             
+            print "starting angle " + str(angle1)
+            print "ending angle "  + str(angle2)
             
-            self.addPoint(self.xPosition , self.yPosition)
-            #Draw arc for G02 and G03
-            with self.scatterObject.canvas:
-                Color(1, 1, 1)
-                #Line(circle=(centerX , centerY, radius, angleStart, angleEnd), group = 'gcode')
-
+            i = 0
+            while i < arcLen:
+                xPosOnLine = centerX + radius*math.cos(angle1 + i)
+                yPosOnLine = centerY + radius*math.sin(angle1 + i)
+                self.addPoint(xPosOnLine , yPosOnLine)
+                i = i+.1
+            
+            self.addPoint(xTarget , yTarget)
+            
             self.xPosition = xTarget
             self.yPosition = yTarget
         except:
