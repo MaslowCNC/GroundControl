@@ -325,7 +325,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             #Draw arc for G02 and G03
             with self.scatterObject.canvas:
                 Color(1, 1, 1)
-                #Line(circle=(centerX , centerY, radius, angleStart, angleEnd), group = 'gcode')
+                Line(circle=(centerX , centerY, radius, angleStart, angleEnd), group = 'gcode')
 
             self.xPosition = xTarget
             self.yPosition = yTarget
