@@ -299,24 +299,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             
             arcLen = abs(angle1 - angle2)
             
-            if arcLen > math.pi:
-                
-                print "\n"
-                
-                print gCodeLine
-                print int(command[1:])
-                
-                print "ArcLen " + str(math.degrees(arcLen))
-                
-                print "angle1 " + str(math.degrees(angle1))
-                print "angle2 "   + str(math.degrees(angle2))
-                
-                '''with self.scatterObject.canvas:
-                    Color(0, 0, 1)
-                    radius = 1
-                    Line(circle=(self.xPosition , self.yPosition, radius))
-                    Color(1, 1, 1)'''
-            
             i = 0
             while abs(i) < arcLen:
                 xPosOnLine = centerX + radius*math.cos(angle1 + i)
