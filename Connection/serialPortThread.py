@@ -55,6 +55,7 @@ class SerialPortThread(MakesmithInitFuncs):
             self.data.uploadFlag = 0
             self.data.gcodeIndex = 0
             print "Unable to check buffer"
+            
     
     def getmessage (self):
         #opens a serial connection called self.serialInstance
