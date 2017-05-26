@@ -283,10 +283,18 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             #atan2 returns results from -pi to +pi and we want results from 0 - 2pi
             if angle1 < 0:
                 angle1 = angle1 + 2*math.pi
-                
             if angle2 < 0:
                 angle2 = angle2 + 2*math.pi
             
+            
+            #take into account command G1 or G2
+            if int(command[1:]) == 2:
+                direction = 1
+            else:
+                if angle2 < angle1:
+                    angle2 = angle2 + 2*math.pi
+                
+                direction = -1
             
             arcLen = abs(angle1 - angle2)
             
@@ -297,10 +305,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 print gCodeLine
                 print int(command[1:])
                 
-                print "ArcLen " + str(arcLen)
+                print "ArcLen " + str(math.degrees(arcLen))
                 
-                print "starting angle " + str(math.degrees(angle1))
-                print "ending angle "   + str(math.degrees(angle2))
+                print "angle1 " + str(math.degrees(angle1))
+                print "angle2 "   + str(math.degrees(angle2))
                 
                 '''with self.scatterObject.canvas:
                     Color(0, 0, 1)
@@ -313,7 +321,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 xPosOnLine = centerX + radius*math.cos(angle1 + i)
                 yPosOnLine = centerY + radius*math.sin(angle1 + i)
                 self.addPoint(xPosOnLine , yPosOnLine)
-                i = i+.1
+                i = i+.1 #this is going to need to be a direction 
             
             self.addPoint(xTarget , yTarget)
             
