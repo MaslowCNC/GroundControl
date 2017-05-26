@@ -291,11 +291,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             if int(command[1:]) == 2:
                 if angle1 < angle2:
                     angle1 = angle1 + 2*math.pi
-                direction = 1
+                direction = -1
             else:
                 if angle2 < angle1:
                     angle2 = angle2 + 2*math.pi
-                direction = -1
+                direction = 1
             
             arcLen = abs(angle1 - angle2)
             
@@ -318,11 +318,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                     Color(1, 1, 1)'''
             
             i = 0
-            while i < arcLen:
+            while abs(i) < arcLen:
                 xPosOnLine = centerX + radius*math.cos(angle1 + i)
                 yPosOnLine = centerY + radius*math.sin(angle1 + i)
                 self.addPoint(xPosOnLine , yPosOnLine)
-                i = i+.1 #this is going to need to be a direction 
+                i = i+.1*direction #this is going to need to be a direction 
             
             self.addPoint(xTarget , yTarget)
             
