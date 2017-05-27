@@ -20,6 +20,7 @@ class SerialPortThread(MakesmithInitFuncs):
         message = message + " \n"
         message = message.encode()
         print("Sending: " + str(message))
+        
         try:
             self.serialInstance.write(message)
         except:
@@ -45,12 +46,11 @@ class SerialPortThread(MakesmithInitFuncs):
         
         try:
             if self.data.uploadFlag:                                                                  #if we are uploading a file
-                if int(valz[2][0:-3]) > 127 - len(self.data.gcode[self.data.gcodeIndex]):             #if there is space in the arduino buffer for the next line
+                if int(valz[2][0:-3]) > 127 + len(self.data.gcode[self.data.gcodeIndex]):             #if there is space in the arduino buffer for the next line
                     self.machineIsReadyForData = True                                                 #send the line
             else:
                 if int(valz[2][0:-3]) > 127:
                     self.machineIsReadyForData = True
-                
         except:
             print "Unable to check buffer"
             print msg
