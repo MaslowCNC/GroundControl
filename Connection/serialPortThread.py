@@ -20,7 +20,7 @@ class SerialPortThread(MakesmithInitFuncs):
         message = message + " \n"
         message = message.encode()
         print("Sending: " + str(message))
-        print "Len: " + str(len(message))
+        
         try:
             self.serialInstance.write(message)
         except:
