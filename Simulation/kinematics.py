@@ -43,22 +43,22 @@ class Kinematics():
     Psi2 = Theta + Phi
     Tries = 0
     Jac=[0,0,0,0,0,0,0,0,0,0]
-    Solution=[]
+    Solution=[0,0,0]
     Crit=[0,0,0]
-    Offsetx1 = 0
-    Offsetx2 = 0
-    Offsety1 = 0
-    Offsety2 = 0
-    SinPsi1 = 0
-    CosPsi1 = 0
-    SinPsi2 = 0
-    CosPsi2 = 0
-    SinPsi1D = 0
-    CosPsi1D = 0
-    SinPsi2D = 0
-    CosPsi2D = 0
-    MySinPhi = 0
-    MySinPhiDelta = 0
+    #Offsetx1 = 0
+    #Offsetx2 = 0
+    #Offsety1 = 0
+    #Offsety2 = 0
+    #SinPsi1 = 0
+    #CosPsi1 = 0
+    #SinPsi2 = 0
+    #CosPsi2 = 0
+    #SinPsi1D = 0
+    #CosPsi1D = 0
+    #SinPsi2D = 0
+    #CosPsi2D = 0
+    #MySinPhi = 0
+    #MySinPhiDelta = 0
 
     #intermediate output
     Lambda = 0
@@ -90,10 +90,10 @@ class Kinematics():
         Some variables are computed on class creation for the geometry of the machine to reduce overhead,
         calling this function regenerates those values.
         '''
-        h = sqrt((l/2)*(l/2) + s * s)
-        Theta = atan(2*s/l)
-        Psi1 = Theta - Phi
-        Psi2 = Theta + Phi
+        self.h = math.sqrt((self.l/2)*(self.l/2) + self.s * self.s)
+        self.Theta = math.atan(2*self.s/self.l)
+        self.Psi1 = self.Theta - self.Phi
+        self.Psi2 = self.Theta + self.Phi
     
     def inverse(self, xTarget, yTarget):
         
@@ -165,6 +165,8 @@ class Kinematics():
 
 
             #solve for the next guess
+            print "original jac"
+            print self.Jac[0]
             self._MatSolv()     # solves the matrix equation Jx=-Criterion                                                     
                        
             # update the variables with the new estimate
@@ -274,6 +276,9 @@ class Kinematics():
         fact = 0
 
         # gaus elimination, no pivot
+        
+        print "Jac: "
+        print self.Jac[0]
 
         N = 3
         NN = N-1
@@ -296,19 +301,19 @@ class Kinematics():
             i = i + 1
 
     #Lower triangular matrix solver
-
-        Solution[0] =  self.Crit[0]/self.Jac[0]
+        
+        self.Solution[0] =  self.Crit[0]/self.Jac[0]
         ii = N-1
         i=2
         while (i<=N):
             M = i -1
-            Sum = Crit[i-1]
+            Sum = self.Crit[i-1]
             J=1
             while (J<=M):
-                Sum = Sum-Jac[ii+J]*Solution[J-1]
+                Sum = Sum-self.Jac[ii+J]*self.Solution[J-1]
                 J = J + 1
             i = i + 1
-        Solution[i-1] = Sum/self.Jac[ii+i]
+        self.Solution[i-1] = Sum/self.Jac[ii+i]
         ii = ii + N
     
     def _moment(self, Y1Plus, Y2Plus, Phi, MSinPhi, MSinPsi1, MCosPsi1, MSinPsi2, MCosPsi2):   #computes net moment about center of mass
@@ -331,6 +336,9 @@ class Kinematics():
         self.Offsety2 = self.h * MSinPsi2
         TanGamma = (self.y - self.Offsety1 + self.Y1Plus)/(self.x - self.Offsetx1)
         TanLambda = (self.y - self.Offsety2 + self.Y2Plus)/(self.D -(self.x + self.Offsetx2))
+        
+        print "Moment returns: "
+        print self.h3*MSinPhi + (self.h/(self.TanLambda+self.TanGamma))*(MSinPsi2 - MSinPsi1 + (self.TanGamma*MCosPsi1 - self.TanLambda * MCosPsi2))
         
         return self.h3*MSinPhi + (self.h/(self.TanLambda+self.TanGamma))*(MSinPsi2 - MSinPsi1 + (self.TanGamma*MCosPsi1 - self.TanLambda * MCosPsi2))   
 
@@ -361,18 +369,18 @@ class Kinematics():
         # sin(Psi2): -0.1460   -0.0197    1.0068   -0.0008 (error < 1.5e-5)
         # cos(Psi2):  0.0792   -0.5559    0.0171    0.9981 (error < 2.5e-5)
 
-        MySinPhi = -0.1616*Phicu - 0.0021*Phisq + 1.0002*self.Phi
-        MySinPhiDelta = -0.1616*Phidelcu - 0.0021*Phidelsq + 1.0002*Phidel
+        self.MySinPhi = -0.1616*Phicu - 0.0021*Phisq + 1.0002*self.Phi
+        self.MySinPhiDelta = -0.1616*Phidelcu - 0.0021*Phidelsq + 1.0002*Phidel
 
-        SinPsi1 = -0.0942*Psi1cu - 0.1368*Psi1sq + 1.0965*self.Psi1 - 0.0241#sinPsi1
-        CosPsi1 = 0.1369*Psi1cu - 0.6799*Psi1sq + 0.1077*self.Psi1 + 0.9756#cosPsi1
-        SinPsi2 = -0.1460*Psi2cu - 0.0197*Psi2sq + 1.0068*self.Psi2 - 0.0008#sinPsi2
-        CosPsi2 = 0.0792*Psi2cu - 0.5559*Psi2sq + 0.0171*self.Psi2 + 0.9981#cosPsi2
+        self.SinPsi1 = -0.0942*Psi1cu - 0.1368*Psi1sq + 1.0965*self.Psi1 - 0.0241#sinPsi1
+        self.CosPsi1 = 0.1369*Psi1cu - 0.6799*Psi1sq + 0.1077*self.Psi1 + 0.9756#cosPsi1
+        self.SinPsi2 = -0.1460*Psi2cu - 0.0197*Psi2sq + 1.0068*self.Psi2 - 0.0008#sinPsi2
+        self.CosPsi2 = 0.0792*Psi2cu - 0.5559*Psi2sq + 0.0171*self.Psi2 + 0.9981#cosPsi2
 
-        SinPsi1D = -0.0942*Psi1delcu - 0.1368*Psi1delsq + 1.0965*Psi1del - 0.0241#sinPsi1
-        CosPsi1D = 0.1369*Psi1delcu - 0.6799*Psi1delsq + 0.1077*Psi1del + 0.9756#cosPsi1
-        SinPsi2D = -0.1460*Psi2delcu - 0.0197*Psi2delsq + 1.0068*Psi2del - 0.0008#sinPsi2
-        CosPsi2D = 0.0792*Psi2delcu - 0.5559*Psi2delsq + 0.0171*Psi2del +0.9981#cosPsi2
+        self.SinPsi1D = -0.0942*Psi1delcu - 0.1368*Psi1delsq + 1.0965*Psi1del - 0.0241#sinPsi1
+        self.CosPsi1D = 0.1369*Psi1delcu - 0.6799*Psi1delsq + 0.1077*Psi1del + 0.9756#cosPsi1
+        self.SinPsi2D = -0.1460*Psi2delcu - 0.0197*Psi2delsq + 1.0068*Psi2del - 0.0008#sinPsi2
+        self.CosPsi2D = 0.0792*Psi2delcu - 0.5559*Psi2delsq + 0.0171*Psi2del +0.9981#cosPsi2
 
     def _YOffsetEqn(self, YPlus, Denominator, Psi):
         
