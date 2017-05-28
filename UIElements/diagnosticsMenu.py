@@ -38,10 +38,6 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         
         '''
         self._popup.dismiss()
-    
-    def calibrateMotors(self):
-        self.data.gcode_queue.put("B01")
-        self.parentWidget.close()
         
     def calibrateChainLengths(self):
         self.popupContent      = CalibrateLengthsPopup(done=self.dismissMeasureMachinePopup)
