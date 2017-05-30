@@ -313,6 +313,7 @@ class Kinematics():
                 Sum = Sum-self.Jac[ii+J]*self.Solution[J-1]
                 J = J + 1
             i = i + 1
+        i = i - 1
         self.Solution[i-1] = Sum/self.Jac[ii+i]
         ii = ii + N
     
