@@ -43,28 +43,24 @@ class MeasureMachinePopup(GridLayout):
     def LeftCW(self):
         print "left CW"
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B06 L0 R0 ")
         self.data.gcode_queue.put("B09 L.5 ")
         self.data.gcode_queue.put("G90 ")
     
     def LeftCCW(self):
         print "left CCW"
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B06 L0 R0 ")
         self.data.gcode_queue.put("B09 L-.5 ")
         self.data.gcode_queue.put("G90 ")
         
     def RightCW(self):
         print "right CW"
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B06 L0 R0 ")
         self.data.gcode_queue.put("B09 R-.5 ")
         self.data.gcode_queue.put("G90 ")
     
     def RightCCW(self):
         print "right CCW"
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B06 L0 R0 ")
         self.data.gcode_queue.put("B09 R.5 ")
         self.data.gcode_queue.put("G90 ")
     
