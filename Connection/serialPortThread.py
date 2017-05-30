@@ -45,7 +45,7 @@ class SerialPortThread(MakesmithInitFuncs):
         valz = msg.split(",")
         
         try:
-            if self.data.uploadFlag:                                                                  #if we are uploading a file
+            if self.data.uploadFlag and self.data.gcodeIndex < len(self.data.gcode):                                                                  #if we are uploading a file
                 if int(valz[2][0:-3]) > 127 + len(self.data.gcode[self.data.gcodeIndex]):             #if there is space in the arduino buffer for the next line
                     if self.serialInstance.in_waiting < 200:                                              #if there is not a large amount of unprocessed data
                         self.machineIsReadyForData = True                                                    #send the line
