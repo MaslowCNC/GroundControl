@@ -110,6 +110,10 @@ class Kinematics():
         x = (self.D/2.0) + xTarget
         y = (self.machineHeight/2.0) + self.motorOffsetY  - yTarget
         
+        print "begin inverse: "
+        print "x: " + str(x)
+        print "y: " + str(y)
+        
         #Coordinates definition:
         #         x -->, y |
         #                  v
@@ -124,23 +128,37 @@ class Kinematics():
         else:
             self.Mirror = False
         
+        print "after mirror: "
+        print "Mirror: " + str(self.Mirror)
+        print "x: " + str(x)
         
         self.TanGamma = y/x
         self.TanLambda = y/(self.D-x)
         self.Y1Plus = self.R * math.sqrt(1 + self.TanGamma * self.TanGamma)
         self.Y2Plus = self.R * math.sqrt(1 + self.TanLambda * self.TanLambda)
-        self.Phi = -0.2 * (-8.202e-4 * x + 1.22) - 0.03
-      
+        #self.Phi = -0.2 * (-8.202e-4 * x + 1.22) - 0.03
+        
+        print "after TanGamma thing: "
+        print "self.TanGamma " + str(self.TanGamma)
+        print "self.TanLambda " + str(self.TanLambda)
+        print "self.Y1Plus " + str(self.Y1Plus)
+        print "self.Y2Plus " + str(self.Y2Plus)
+        
         self._MyTrig()
-        self.Psi1 = self.Theta - self.Phi
-        self.Psi2 = self.Theta + self.Phi
+        #self.Psi1 = self.Theta - self.Phi
+        #self.Psi2 = self.Theta + self.Phi
                                                  #These criteria will be zero when the correct values are reached 
                                                  #They are negated here as a numerical efficiency expedient
                                                  
         self.Crit[0] = - self._moment(self.Y1Plus, self.Y2Plus, self.Phi, self.MySinPhi, self.SinPsi1, self.CosPsi1, self.SinPsi2, self.CosPsi2)
         self.Crit[1] = - self._YOffsetEqn(self.Y1Plus, x - self.h * self.CosPsi1, self.SinPsi1)
         self.Crit[2] = - self._YOffsetEqn(self.Y2Plus, self.D - (x + self.h * self.CosPsi2), self.SinPsi2)
-
+        
+        
+        print "\n\n block zebra: "
+        print "self.Crit[0] " + str(self.Crit[0]*1000)
+        print "self.Crit[1] " + str(self.Crit[1]*1000)
+        print "self.Crit[2] " + str(self.Crit[2]*1000)
       
         while (Tries <= self.MaxTries):
             if (abs(self.Crit[0]) < self.MaxError):
@@ -314,6 +332,9 @@ class Kinematics():
                 J = J + 1
             i = i + 1
         i = i - 1
+        print "thas: "
+        print ii+i
+        print self.Jac[ii+i]
         self.Solution[i-1] = Sum/self.Jac[ii+i]
         ii = ii + N
     
@@ -327,9 +348,26 @@ class Kinematics():
         Psi2
         TanGamma
         TanLambda'''
-
+        
+        print "\n begin _moment"
+        
+        print "Called with:"
+        print "Y1Plus " + str(Y1Plus*1000)
+        print "Y2Plus " + str(Y2Plus*1000)
+        print "Phi " + str(Phi*1000)
+        print "MSinPhi " + str(MSinPhi*1000)
+        print "MSinPsi1 " + str(MSinPsi1*1000)
+        print "MCosPsi1 " + str(MCosPsi1*1000)
+        print "MSinPsi2 " + str(MSinPsi2*1000)
+        print "MCosPsi2 " + str(MCosPsi2*1000)
+        
         self.Psi1 = self.Theta - self.Phi
         self.Psi2 = self.Theta + self.Phi
+        
+        print "internal variables"
+        print "self.Psi1 " + str(self.Psi1*1000)
+        print "self.Psi2 " + str(self.Psi2*1000)
+        
         
         self.Offsetx1 = self.h * MCosPsi1
         self.Offsetx2 = self.h * MCosPsi2
@@ -338,12 +376,26 @@ class Kinematics():
         TanGamma = (self.y - self.Offsety1 + self.Y1Plus)/(self.x - self.Offsetx1)
         TanLambda = (self.y - self.Offsety2 + self.Y2Plus)/(self.D -(self.x + self.Offsetx2))
         
+        print "self.x " + str(self.x*1000)
+        print "self.y " + str(self.y*1000)
+        print "self.Y1Plus " + str(self.Y1Plus*1000)
+        
+        print "self.Offsetx1 " + str(self.Offsetx1*1000)
+        print "self.Offsetx2 " + str(self.Offsetx2*1000)
+        print "self.Offsety1 " + str(self.Offsety1*1000)
+        print "self.Offsety2 " + str(self.Offsety2*1000)
+        print "TanGamma " + str(TanGamma*1000)
+        print "TanLambda " + str(TanLambda*1000)
+        
         print "Moment returns: "
         print self.h3*MSinPhi + (self.h/(self.TanLambda+self.TanGamma))*(MSinPsi2 - MSinPsi1 + (self.TanGamma*MCosPsi1 - self.TanLambda * MCosPsi2))
         
         return self.h3*MSinPhi + (self.h/(self.TanLambda+self.TanGamma))*(MSinPsi2 - MSinPsi1 + (self.TanGamma*MCosPsi1 - self.TanLambda * MCosPsi2))   
 
     def _MyTrig(self):
+        
+        print "\n\nbegin my trig: "
+        
         Phisq = self.Phi * self.Phi
         Phicu = self.Phi * Phisq
         Phidel = self.Phi + self.DeltaPhi
@@ -359,7 +411,24 @@ class Kinematics():
         Psi2del = self.Psi2 + self.DeltaPhi
         Psi2delsq = Psi2del * Psi2del
         Psi2delcu = Psi2del * Psi2delsq
-      
+        
+        print "Phisq " + str(Phisq*1000.0)
+        print "Phicu " + str(Phicu*1000.0)
+        print "Phidel " + str(Phidel*1000.0)
+        print "Phidelsq " + str(Phidelsq*1000.0)
+        print "Phidelcu " + str(Phidelcu*1000.0)
+        print "Psi1sq " + str(Psi1sq*1000.0)
+        print "Psi1cu " + str(Psi1cu*1000.0)
+        print "Psi2sq " + str(Psi2sq*1000.0)
+        print "Psi2cu " + str(Psi2cu*1000.0)
+        print "Psi1del " + str(Psi1del*1000.0)
+        print "Psi1delsq " + str(Psi1delsq*1000.0)
+        print "Psi1delcu " + str(Psi1delcu*1000.0)
+        print "Psi2del " + str(Psi2del*1000.0)
+        print "Psi2delsq " + str(Psi2delsq*1000.0)
+        print "Psi2delcu " + str(Psi2delcu*1000.0)
+        print "\n\n\n"
+        
         # Phirange is 0 to -27 degrees
         # sin -0.1616   -0.0021    1.0002   -0.0000 (error < 6e-6) 
         # cos(phi): 0.0388   -0.5117    0.0012    1.0000 (error < 3e-5)
@@ -382,7 +451,19 @@ class Kinematics():
         self.CosPsi1D = 0.1369*Psi1delcu - 0.6799*Psi1delsq + 0.1077*Psi1del + 0.9756#cosPsi1
         self.SinPsi2D = -0.1460*Psi2delcu - 0.0197*Psi2delsq + 1.0068*Psi2del - 0.0008#sinPsi2
         self.CosPsi2D = 0.0792*Psi2delcu - 0.5559*Psi2delsq + 0.0171*Psi2del +0.9981#cosPsi2
-
+        
+        print "block 2"
+        print "self.MySinPhi " + str(self.MySinPhi*1000)
+        print "self.MySinPhiDelta " + str(self.MySinPhiDelta*1000)
+        print "self.SinPsi1 " + str(self.SinPsi1*1000)
+        print "self.CosPsi1 " + str(self.CosPsi1*1000)
+        print "self.SinPsi2 " + str(self.SinPsi2*1000)
+        print "self.CosPsi2 " + str(self.CosPsi2*1000)
+        print "self.SinPsi1D " + str(self.SinPsi1D*1000)
+        print "self.CosPsi1D " + str(self.CosPsi1D*1000)
+        print "self.SinPsi2D " + str(self.SinPsi2D*1000)
+        print "self.CosPsi2D " + str(self.CosPsi2D*1000)
+        
     def _YOffsetEqn(self, YPlus, Denominator, Psi):
         
         Temp = ((math.sqrt(YPlus * YPlus - self.R * self.R)/self.R) - (self.y + YPlus - self.h * math.sin(Psi))/Denominator)
