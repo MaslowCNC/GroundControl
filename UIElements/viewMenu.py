@@ -1,6 +1,6 @@
 from   kivy.uix.gridlayout                       import   GridLayout
 from   UIElements.loadDialog                     import   LoadDialog
-from   UIElements.scrollableTextPopup            import   ScrollableTextPopup
+from   UIElements.pageableTextPopup              import   PageableTextPopup
 from   kivy.uix.popup                            import   Popup
 import re
 from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
@@ -110,7 +110,7 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
                     popupText = popupText + "...\n...\n...\n"
                     break
                 
-        content = ScrollableTextPopup(cancel = self.dismiss_popup,
+        content = PageableTextPopup(cancel = self.dismiss_popup,
                                       prev = self.show_gcode_prev,
                                       next = self.show_gcode_next,
                                       text = popupText)
