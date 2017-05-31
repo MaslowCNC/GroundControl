@@ -4,7 +4,7 @@ from kivy.properties                  import    StringProperty
 from UIElements.scrollableLabel       import    ScrollableLabel
 
 
-class ScrollableTextPopup(FloatLayout):
+class PageableTextPopup(FloatLayout):
     '''
     
     A Pop-up Dialog To Display Text
@@ -13,4 +13,6 @@ class ScrollableTextPopup(FloatLayout):
     
     '''
     cancel = ObjectProperty(None)
+    next = ObjectProperty(None)
+    prev = ObjectProperty(None)
     text = StringProperty("")
