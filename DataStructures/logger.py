@@ -13,13 +13,21 @@ class Logger(MakesmithInitFuncs):
     errorValues = []
     recordingPositionalErrors = False 
     
+    #clear the old log file
+    with open("log.txt", "a") as logFile:
+            logFile.truncate()
+    
     def writeToLog(self, message):
         '''
         
-        Writes an error message into the log.
+        Writes a message into the log.
         
         '''
-        pass
+        #print "write to log: "
+        #print message
+        
+        with open("log.txt", "a") as logFile:
+            logFile.write(message)
     
     def writeErrorValueToLog(self, error):
         '''
