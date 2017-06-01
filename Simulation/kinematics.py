@@ -335,21 +335,38 @@ class Kinematics():
 
     #Lower triangular matrix solver
         
+        print "\n\nLower triangular matrix solver";
+        
         self.Solution[0] =  self.Crit[0]/self.Jac[0]
+        
+        print "self.Solution[0] " + str(self.Solution[0]*1000)
+        print "self.Crit[0] " + str(self.Crit[0]*1000)
+        print "self.Crit[1] " + str(self.Crit[1]*1000)
+        print "self.Crit[2] " + str(self.Crit[2]*1000)
+        
         ii = N-1
+        
+        print "ii " + str(ii)
+        print "N " + str(N)
         i=2
-        while (i<=N):
+        while (i<N):
+            print "outer loop i:" + str(i)
             M = i -1
             Sum = self.Crit[i-1]
+            print "Sum " + str(Sum)
             J=1
-            while (J<=M):
+            while (J<M):
+                print "inner loop J:" + str(J)
                 Sum = Sum-self.Jac[ii+J]*self.Solution[J-1]
+                print "Sum " + str(Sum)
                 J = J + 1
             i = i + 1
         i = i - 1
-        print "thas: "
-        print ii+i
-        print self.Jac[ii+i]
+        
+        print "\nEnd Mat Solve:---------------------------------------------------------- "
+        print "ii+i " + str(ii+i)
+        print "Sum " + str(Sum)
+        print "self.Jac[ii+i] " + str(self.Jac[ii+i]*1000)
         self.Solution[i-1] = Sum/self.Jac[ii+i]
         ii = ii + N
     
@@ -376,24 +393,29 @@ class Kinematics():
         print "MSinPsi2 " + str(MSinPsi2*1000)
         print "MCosPsi2 " + str(MCosPsi2*1000)
         
-        self.Psi1 = self.Theta - self.Phi
-        self.Psi2 = self.Theta + self.Phi
+        self.Psi1 = self.Theta - Phi
+        self.Psi2 = self.Theta + Phi
         
         print "internal variables"
         print "self.Psi1 " + str(self.Psi1*1000)
         print "self.Psi2 " + str(self.Psi2*1000)
         
         
+        print "--->Y1Plus " + str(Y1Plus*1000)
+        
         self.Offsetx1 = self.h * MCosPsi1
         self.Offsetx2 = self.h * MCosPsi2
         self.Offsety1 = self.h * MSinPsi1
         self.Offsety2 = self.h * MSinPsi2
-        self.TanGamma = (self.y - self.Offsety1 + self.Y1Plus)/(self.x - self.Offsetx1)
-        self.TanLambda = (self.y - self.Offsety2 + self.Y2Plus)/(self.D -(self.x + self.Offsetx2))
+        self.TanGamma = (self.y - self.Offsety1 + Y1Plus)/(self.x - self.Offsetx1)
+        self.TanLambda = (self.y - self.Offsety2 + Y2Plus)/(self.D -(self.x + self.Offsetx2))
+        
+        print "--->Y1Plus " + str(Y1Plus*1000)
         
         print "self.x " + str(self.x)
         print "self.y " + str(self.y)
-        print "self.Y1Plus " + str(self.Y1Plus*1000)
+        print "--->Y1Plus " + str(Y1Plus*1000)
+        print "Y1Plus " + str(Y1Plus*1000)
         
         print "self.Offsetx1 " + str(self.Offsetx1*1000)
         print "self.Offsetx2 " + str(self.Offsetx2*1000)
