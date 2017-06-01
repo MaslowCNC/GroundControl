@@ -183,8 +183,22 @@ class Kinematics():
 
 
             #solve for the next guess
-            print "original jac"
-            print self.Jac[0]
+            
+            buildOutJac  =  self._moment( self.Y1Plus + self.DeltaY, self.Y2Plus, self.Phi, self.MySinPhi, self.SinPsi1, self.CosPsi1, self.SinPsi2, self.CosPsi2) + self.Crit[0]
+            
+            print "\n\n++++++++++++++++++++++++++++++++++"
+            print "build out Jac[1]: " + str(buildOutJac*1000.0)
+            print "Crit[0] " + str(self.Crit[0]*1000)
+            print "self.Jac[0] " + str(self.Jac[0]*1000.0)
+            print "self.Jac[1] " + str(self.Jac[1]*1000.0)
+            print "self.Jac[2] " + str(self.Jac[2]*1000.0)
+            print "self.Jac[3] " + str(self.Jac[3]*1000.0)
+            print "self.Jac[4] " + str(self.Jac[4]*1000.0)
+            print "self.Jac[5] " + str(self.Jac[5]*1000.0)
+            print "self.Jac[6] " + str(self.Jac[6]*1000.0)
+            print "self.Jac[7] " + str(self.Jac[7]*1000.0)
+            print "self.Jac[8] " + str(self.Jac[8]*1000.0)
+            
             self._MatSolv()     # solves the matrix equation Jx=-Criterion                                                     
                        
             # update the variables with the new estimate
@@ -295,6 +309,7 @@ class Kinematics():
 
         # gaus elimination, no pivot
         
+        print "\n\ngaus elimination"
         print "Jac: "
         print self.Jac[0]
 
@@ -373,8 +388,8 @@ class Kinematics():
         self.Offsetx2 = self.h * MCosPsi2
         self.Offsety1 = self.h * MSinPsi1
         self.Offsety2 = self.h * MSinPsi2
-        TanGamma = (self.y - self.Offsety1 + self.Y1Plus)/(self.x - self.Offsetx1)
-        TanLambda = (self.y - self.Offsety2 + self.Y2Plus)/(self.D -(self.x + self.Offsetx2))
+        self.TanGamma = (self.y - self.Offsety1 + self.Y1Plus)/(self.x - self.Offsetx1)
+        self.TanLambda = (self.y - self.Offsety2 + self.Y2Plus)/(self.D -(self.x + self.Offsetx2))
         
         print "self.x " + str(self.x)
         print "self.y " + str(self.y)
@@ -384,14 +399,14 @@ class Kinematics():
         print "self.Offsetx2 " + str(self.Offsetx2*1000)
         print "self.Offsety1 " + str(self.Offsety1*1000)
         print "self.Offsety2 " + str(self.Offsety2*1000)
-        print "TanGamma " + str(TanGamma*1000)
-        print "TanLambda " + str(TanLambda*1000)
+        print "TanGamma " + str(self.TanGamma*1000)
+        print "TanLambda " + str(self.TanLambda*1000)
         
         print "\n\n\n moment buildout:"
-        print (self.TanGamma*MCosPsi1 - self.TanLambda * MCosPsi2)*1000.0
+        print (self.h3*MSinPhi)*1000 #(MSinPsi2 - MSinPsi1 +(self.TanGamma*MCosPsi1 - self.TanLambda * MCosPsi2))*10000.0
         
         print "Moment returns: "
-        print self.h3*MSinPhi + (self.h/(self.TanLambda+self.TanGamma))*(MSinPsi2 - MSinPsi1 + (self.TanGamma*MCosPsi1 - self.TanLambda * MCosPsi2))
+        print (self.h3*MSinPhi + (self.h/(self.TanLambda+self.TanGamma))*(MSinPsi2 - MSinPsi1 + (self.TanGamma*MCosPsi1 - self.TanLambda * MCosPsi2)))*1000.0
         
         return self.h3*MSinPhi + (self.h/(self.TanLambda+self.TanGamma))*(MSinPsi2 - MSinPsi1 + (self.TanGamma*MCosPsi1 - self.TanLambda * MCosPsi2))   
 
