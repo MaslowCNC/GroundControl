@@ -33,18 +33,23 @@ class Logger(MakesmithInitFuncs):
         self.messageBuffer = self.messageBuffer + message
         
         if len(self.messageBuffer) > 500:
-            t = threading.Thread(target=self.writeToFile, args=(self.messageBuffer))
+            
+            t = threading.Thread(target=self.writeToFile, args=(self.messageBuffer, "write"))
+            t.daemon = True
+            t.start()
             self.messageBuffer = ""
     
-    def writeToFile(self, toWrite):
+    def writeToFile(self, toWrite, *args):
         '''
         
         Write to the log file
         
         '''
+        
         with open("log.txt", "a") as logFile:
             logFile.write(toWrite)
         
+        return
         
     def writeErrorValueToLog(self, error):
         '''
