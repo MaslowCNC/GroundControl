@@ -107,12 +107,12 @@ class Kinematics():
         self._verifyValidTarget(xTarget, yTarget)
         
         #coordinate shift to put (0,0) in the center of the plywood from the left sprocket
-        x = (self.D/2.0) + xTarget
-        y = (self.machineHeight/2.0) + self.motorOffsetY  - yTarget
+        self.x = (self.D/2.0) + xTarget
+        self.y = (self.machineHeight/2.0) + self.motorOffsetY  - yTarget
         
         print "begin inverse: "
-        print "x: " + str(x)
-        print "y: " + str(y)
+        print "x: " + str(self.x)
+        print "y: " + str(self.y)
         
         #Coordinates definition:
         #         x -->, y |
@@ -121,8 +121,8 @@ class Kinematics():
         # upper left corner of plywood (270, 270)
         
         Tries = 0                                  #initialize                   
-        if(x > self.D/2.0):                              #the right half of the board mirrors the left half so all computations are done  using left half coordinates.
-          x = self.D-x                                  #Chain lengths are swapped at exit if the x,y is on the right half
+        if(self.x > self.D/2.0):                              #the right half of the board mirrors the left half so all computations are done  using left half coordinates.
+          self.x = self.D-self.x                                  #Chain lengths are swapped at exit if the x,y is on the right half
           self.Mirror = True
         
         else:
@@ -130,10 +130,10 @@ class Kinematics():
         
         print "after mirror: "
         print "Mirror: " + str(self.Mirror)
-        print "x: " + str(x)
+        print "x: " + str(self.x)
         
-        self.TanGamma = y/x
-        self.TanLambda = y/(self.D-x)
+        self.TanGamma = self.y/self.x
+        self.TanLambda = self.y/(self.D-self.x)
         self.Y1Plus = self.R * math.sqrt(1 + self.TanGamma * self.TanGamma)
         self.Y2Plus = self.R * math.sqrt(1 + self.TanLambda * self.TanLambda)
         #self.Phi = -0.2 * (-8.202e-4 * x + 1.22) - 0.03
@@ -151,8 +151,8 @@ class Kinematics():
                                                  #They are negated here as a numerical efficiency expedient
                                                  
         self.Crit[0] = - self._moment(self.Y1Plus, self.Y2Plus, self.Phi, self.MySinPhi, self.SinPsi1, self.CosPsi1, self.SinPsi2, self.CosPsi2)
-        self.Crit[1] = - self._YOffsetEqn(self.Y1Plus, x - self.h * self.CosPsi1, self.SinPsi1)
-        self.Crit[2] = - self._YOffsetEqn(self.Y2Plus, self.D - (x + self.h * self.CosPsi2), self.SinPsi2)
+        self.Crit[1] = - self._YOffsetEqn(self.Y1Plus, self.x - self.h * self.CosPsi1, self.SinPsi1)
+        self.Crit[2] = - self._YOffsetEqn(self.Y2Plus, self.D - (self.x + self.h * self.CosPsi2), self.SinPsi2)
         
         
         print "\n\n block zebra: "
@@ -376,8 +376,8 @@ class Kinematics():
         TanGamma = (self.y - self.Offsety1 + self.Y1Plus)/(self.x - self.Offsetx1)
         TanLambda = (self.y - self.Offsety2 + self.Y2Plus)/(self.D -(self.x + self.Offsetx2))
         
-        print "self.x " + str(self.x*1000)
-        print "self.y " + str(self.y*1000)
+        print "self.x " + str(self.x)
+        print "self.y " + str(self.y)
         print "self.Y1Plus " + str(self.Y1Plus*1000)
         
         print "self.Offsetx1 " + str(self.Offsetx1*1000)
@@ -386,6 +386,9 @@ class Kinematics():
         print "self.Offsety2 " + str(self.Offsety2*1000)
         print "TanGamma " + str(TanGamma*1000)
         print "TanLambda " + str(TanLambda*1000)
+        
+        print "\n\n\n moment buildout:"
+        print (self.TanGamma*MCosPsi1 - self.TanLambda * MCosPsi2)*1000.0
         
         print "Moment returns: "
         print self.h3*MSinPhi + (self.h/(self.TanLambda+self.TanGamma))*(MSinPsi2 - MSinPsi1 + (self.TanGamma*MCosPsi1 - self.TanLambda * MCosPsi2))
