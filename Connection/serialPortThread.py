@@ -20,6 +20,7 @@ class SerialPortThread(MakesmithInitFuncs):
         message = message + " \n"
         message = message.encode()
         print("Sending: " + str(message))
+        
         try:
             self.serialInstance.write(message)
         except:
@@ -33,14 +34,34 @@ class SerialPortThread(MakesmithInitFuncs):
             self.data.gcode_queue.put('G20 ')
         else:
             self.data.gcode_queue.put('G21 ')
+    
+    def _checkBufferSize(self, msg):
+        '''
         
+        Check if the machine has enough room in it's buffer for more gcode
+        
+        '''
+        
+        valz = msg.split(",")
+        
+        try:
+            if self.data.uploadFlag and self.data.gcodeIndex < len(self.data.gcode):                                                                  #if we are uploading a file
+                if int(valz[2][0:-3]) > 127 + len(self.data.gcode[self.data.gcodeIndex]):             #if there is space in the arduino buffer for the next line
+                    if self.serialInstance.in_waiting < 200:                                              #if there is not a large amount of unprocessed data
+                        self.machineIsReadyForData = True                                                    #send the line
+            else:
+                if int(valz[2][0:-3]) > 127:
+                    self.machineIsReadyForData = True
+        except:
+            print "Unable to check buffer"
+            print msg
+    
     def getmessage (self):
-        #print("Waiting for new message")
         #opens a serial connection called self.serialInstance
         
         try:
             #print("connecting")
-            self.serialInstance = serial.Serial(self.data.comport, 19200, timeout = .25) #self.data.comport is the com port which is opened
+            self.serialInstance = serial.Serial(self.data.comport, 57600, timeout = .25) #self.data.comport is the com port which is opened
         except:
             #print(self.data.comport + " is unavailable or in use")
             #self.data.message_queue.put("\n" + self.data.comport + " is unavailable or in use")
@@ -78,8 +99,11 @@ class SerialPortThread(MakesmithInitFuncs):
                 if len(msg) > 0:
                     self.lastMessageTime = time.time()
                     if msg == "ok\r\n":
-                        self.machineIsReadyForData = True
+                        pass
+                        #self.machineIsReadyForData = True
                     else:
+                        if msg[0] == "[":
+                            self._checkBufferSize(msg)
                         self.data.message_queue.put(msg)
                     
                 #send any emergency instructions to the machine if there are any

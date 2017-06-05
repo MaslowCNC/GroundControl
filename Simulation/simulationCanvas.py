@@ -46,14 +46,16 @@ class SimulationCanvas(FloatLayout):
         self.posToLength.initialize(self.sled, self.bedWidth+2*self.motorTranslate, self.bedHeight+self.motorLift, self.motorTranslate, self.motorLift)
         
     def setSpindleLocation(self,x,y):
-        self.chainA.setEnd(x,y)
-        self.chainB.setEnd(x,y)
+        
+        self.sled.setXY(x,y)
+        #self.chainA.setEnd(x,y)
+        #self.chainB.setEnd(x,y)
     
     def xPosSliderValueChange(self,callback,value):
-        self.setSpindleLocation(value,self.chainA.toPos[1])
+        self.setSpindleLocation(value,self.yPosSlider.value)
         
     def yPosSliderValueChange(self,callback,value):
-        self.setSpindleLocation(self.chainA.toPos[0], value)
+        self.setSpindleLocation(self.xPosSlider.value, value)
     
     def drawFrame(self):
         self.frameLeft.initialize()

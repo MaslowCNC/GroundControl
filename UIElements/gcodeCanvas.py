@@ -7,7 +7,7 @@ and zooming features. It was not originally written as a stand alone module whic
 
 from kivy.uix.floatlayout                    import FloatLayout
 from kivy.properties                         import NumericProperty, ObjectProperty
-from kivy.graphics                           import Color, Ellipse, Line
+from kivy.graphics                           import Color, Ellipse, Line, Point
 from kivy.clock                              import Clock
 from DataStructures.makesmithInitFuncs       import MakesmithInitFuncs
 from UIElements.positionIndicator            import PositionIndicator
@@ -20,12 +20,9 @@ import math
 
 class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
-    scatterObject     = ObjectProperty(None)
-    scatterInstance   = ObjectProperty(None)
-    positionIndicator = ObjectProperty(None)
-    
-    offsetX = NumericProperty(0)
-    offsetY = NumericProperty(0)
+    #scatterObject     = ObjectProperty(None)
+    #scatterInstance   = ObjectProperty(None)
+    #positionIndicator = ObjectProperty(None)
     
     canvasScaleFactor = 1 #scale from mm to pixels
     INCHES            = 25.4
@@ -41,12 +38,13 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     prependString = "G01 "
     
+    
+    
     def initialize(self):
 
         self.drawWorkspace()
             
         Window.bind(on_resize = self.centerCanvas)
-        Window.bind(on_motion = self.zoomCanvas)
 
         self.data.bind(gcode = self.updateGcode)
         self.data.bind(gcodeShift = self.reloadGcode)
@@ -56,6 +54,15 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         
         self.reloadGcode()
+    
+    def addPoint(self, x, y):
+        '''
+        
+        Add a point to the line currently being plotted
+        
+        '''
+
+        self.line.points.extend((x,y))
     
     def _keyboard_closed(self):
         '''
@@ -81,6 +88,9 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if keycode[1] == self.data.config.get('Ground Control Settings', 'zoomOut'):
             mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
             self.scatterInstance.apply_transform(mat, anchor)
+
+    def isClose(self, a, b):
+        return abs(a-b) <= self.data.tolerance
     
     def reloadGcode(self, *args):
         '''
@@ -109,11 +119,24 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.data.gcode = filtersparsed
             
             filterfile.close() #closes the filter save file
+
+            #Find gcode indicies of z moves
+            self.data.zMoves = [0]
+            zList = []
+            for index, line in enumerate(self.data.gcode):
+                z = re.search("Z(?=.)([+-]?([0-9]*)(\.([0-9]+))?)",line)
+                if z:
+                    zList.append(z)
+                    if len(zList) > 1:
+                        if not self.isClose(float(zList[-1].groups()[0]),float(zList[-2].groups()[0])):
+                            self.data.zMoves.append(index-1)
+                    else:
+                        self.data.zMoves.append(index)
         except:
             if filename is not "":
                 self.data.message_queue.put("Message: Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use Actions > Open G-code")
             self.data.gcodeFile = ""
-        
+    
     def centerCanvas(self, *args):
         '''
         
@@ -126,18 +149,22 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         anchor = (0,0)
         mat = Matrix().scale(.45, .45, 1)
         self.scatterInstance.apply_transform(mat, anchor)
+
+    def on_touch_up(self, touch):
+        
+        if touch.is_mouse_scrolling:
+            self.zoomCanvas(touch)
     
-    def zoomCanvas(self, callback, type, motion, *args):
-        if motion.is_mouse_scrolling:
-            scaleFactor = .03
-            anchor = (0,0)
+    def zoomCanvas(self, touch):
+        if touch.is_mouse_scrolling:
+            scaleFactor = .1
             
-            if motion.button == 'scrollup':
+            if touch.button == 'scrollup':
                 mat = Matrix().scale(1-scaleFactor, 1-scaleFactor, 1)
-                self.scatterInstance.apply_transform(mat, anchor)
-            elif motion.button == 'scrolldown':
+                self.scatterInstance.apply_transform(mat, anchor = touch.pos)
+            elif touch.button == 'scrolldown':
                 mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
-                self.scatterInstance.apply_transform(mat, anchor)
+                self.scatterInstance.apply_transform(mat, anchor = touch.pos)
 
     def drawWorkspace(self, *args):
 
@@ -157,36 +184,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             #create the axis lines
             Line(points = (-width/2,0,width/2,0), dash_offset = 5, group='workspace')
             Line(points = (0, -height/2,0,height/2), dash_offset = 5, group='workspace')
-
-    def calcAngle(self, X, Y, centerX, centerY):
-        '''
-        
-        calcAngle returns the angle from the positive x axis to a point given the center of the circle 
-        and the point. Angle returned in degrees.
-    
-        '''
-
-        #Special cases at quadrant boundaries (resolves /div0 errors)
-        if X == centerX:
-            if Y >= centerY: theta = -0.5*math.pi
-            if Y < centerY:  theta = 0.5*math.pi
-        elif Y == centerY:
-            if X > centerX: theta = 0.0*math.pi
-            if X < centerX: theta = 1.0*math.pi
-
-        #Normal cases
-        if X > centerX and Y > centerY: #quadrant one
-            theta = math.atan((centerY - Y)/(X - centerX))
-        if X < centerX and Y > centerY: #quadrant two
-            theta = math.atan((Y - centerY)/(X - centerX))
-            theta = 1.0*math.pi - theta
-        if X < centerX and Y < centerY: #quadrant three
-            theta = math.atan((Y - centerY)/(X - centerX))
-            theta = 1.0*math.pi - theta
-        if X > centerX and Y < centerY: #quadrant four
-            theta = math.atan((centerY - Y)/(X - centerX))
-        
-        return(math.degrees(theta + 0.5*math.pi))   
     
     def drawLine(self,gCodeLine,command):
         '''
@@ -222,11 +219,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             #Draw lines for G1 and G0
             with self.scatterObject.canvas:
                 Color(1, 1, 1)
-                if command == 'G00':
-                    Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode', dash_length = 4, dash_offset = 2)
+                self.addPoint(xTarget , yTarget)
+                '''if command == 'G00':
+                    Line(points = (self.xPosition , self.yPosition , xTarget, yTarget), width = 1, group = 'gcode', dash_length = 4, dash_offset = 2)
                 elif command == 'G01':
-                    Line(points = (self.offsetX + self.xPosition , self.offsetY + self.yPosition , self.offsetX +  xTarget, self.offsetY  + yTarget), width = 1, group = 'gcode')
-           
+                    Line(points = (self.xPosition , self.yPosition , xTarget, yTarget), width = 1, group = 'gcode')
+                '''
             #If the zposition has changed, add indicators
             tol = 0.05 #Acceptable error in mm
             if abs(zTarget - self.zPosition) >= tol:
@@ -237,7 +235,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                     else:
                         Color(1, 0, 0)
                         radius = 2
-                    Line(circle=(self.offsetX + self.xPosition , self.offsetY + self.yPosition, radius), width = 2, group = 'gcode')
+                    Line(circle=(self.xPosition , self.yPosition, radius), group = 'gcode')
+                    Color(1, 1, 1)
             
             self.xPosition = xTarget
             self.yPosition = yTarget
@@ -277,24 +276,38 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             centerX = self.xPosition + iTarget
             centerY = self.yPosition + jTarget
             
-            angle1 = self.calcAngle(self.xPosition, self.yPosition, centerX, centerY)
-            angle2 = self.calcAngle(xTarget, yTarget, centerX, centerY)
+            angle1 = math.atan2(self.yPosition - centerY, self.xPosition - centerX)
+            angle2 = math.atan2(yTarget - centerY, xTarget - centerX)
             
-            if command == 'G02':
-                angleStart = angle2
-                angleEnd = angle1
-            elif command == 'G03':
-                angleStart = angle1
-                angleEnd = angle2
             
-            if angleStart < angleEnd:
-                angleEnd = angleEnd - 360
+            #atan2 returns results from -pi to +pi and we want results from 0 - 2pi
+            if angle1 < 0:
+                angle1 = angle1 + 2*math.pi
+            if angle2 < 0:
+                angle2 = angle2 + 2*math.pi
             
-            #Draw arc for G02 and G03
-            with self.scatterObject.canvas:
-                Color(1, 1, 1)
-                Line(circle=(self.offsetX + centerX , self.offsetY + centerY, radius, angleStart, angleEnd), group = 'gcode')
-
+            
+            #take into account command G1 or G2
+            if int(command[1:]) == 2:
+                if angle1 < angle2:
+                    angle1 = angle1 + 2*math.pi
+                direction = -1
+            else:
+                if angle2 < angle1:
+                    angle2 = angle2 + 2*math.pi
+                direction = 1
+            
+            arcLen = abs(angle1 - angle2)
+            
+            i = 0
+            while abs(i) < arcLen:
+                xPosOnLine = centerX + radius*math.cos(angle1 + i)
+                yPosOnLine = centerY + radius*math.sin(angle1 + i)
+                self.addPoint(xPosOnLine , yPosOnLine)
+                i = i+.1*direction #this is going to need to be a direction 
+            
+            self.addPoint(xTarget , yTarget)
+            
             self.xPosition = xTarget
             self.yPosition = yTarget
         except:
@@ -322,7 +335,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 xTarget = float(x.groups()[0]) + self.data.gcodeShift[0]
                 gCodeLine = gCodeLine[0:x.start()+1] + str(xTarget) + gCodeLine[x.end():]
             
-            
             y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if y:
                 yTarget = float(y.groups()[0]) + self.data.gcodeShift[1]
@@ -349,7 +361,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             return #we have reached the end of the file
         
         fullString = fullString + " " #ensures that there is a space at the end of the line
-        
         
         #find 'G' anywhere in string
         gString = fullString[fullString.find('G'):fullString.find('G') + 3]
@@ -400,14 +411,16 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         '''
         
-        #Draw numberOfTimesToCall lines on the canvas
-        numberOfTimesToCall = 50
+        with self.scatterObject.canvas:
+            self.line = Line(points = (), width = 1, group = 'gcode')
         
+        #Draw numberOfTimesToCall lines on the canvas
+        numberOfTimesToCall = 500
         for _ in range(numberOfTimesToCall):
             self.updateOneLine()
         
         #Repeat until end of file
-        if self.lineNumber < min(len(self.data.gcode),20000):
+        if self.lineNumber < min(len(self.data.gcode),60000):
             Clock.schedule_once(self.callBackMechanism)
     
     def updateGcode(self, *args):
@@ -429,8 +442,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.clearGcode()
         
         #Check to see if file is too large to load
-        if len(self.data.gcode) > 20000:
-            errorText = "The current file contains " + str(len(self.data.gcode)) + " lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first 20000 lines are shown here.\nThe complete program will cut if you choose to do so."
+        if len(self.data.gcode) > 60000:
+            errorText = "The current file contains " + str(len(self.data.gcode)) + " lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first 60000 lines are shown here.\nThe complete program will cut if you choose to do so."
             print errorText
             self.data.message_queue.put("Message: " + errorText)
         

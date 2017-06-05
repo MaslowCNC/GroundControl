@@ -126,6 +126,20 @@ class GroundControlApp(App):
             "desc": "The path to the open file",
             "section": "Maslow Settings",
             "key": "openFile"
+        },
+        {
+            "type": "string",
+            "title": "Macro 1",
+            "desc": "User defined gcode bound to the Macro 1 button",
+            "section": "Maslow Settings",
+            "key": "macro1"
+        },
+        {
+            "type": "string",
+            "title": "Macro 2",
+            "desc": "User defined gcode bound to the Macro 2 button",
+            "section": "Maslow Settings",
+            "key": "macro2"
         }
     ]
     '''
@@ -195,7 +209,6 @@ class GroundControlApp(App):
         interface       =  FloatLayout()
         self.data       =  Data()
         
-        
         self.frontpage = FrontPage(self.data, name='FrontPage')
         interface.add_widget(self.frontpage)
         
@@ -230,6 +243,7 @@ class GroundControlApp(App):
         Push settings to machine
         '''
         self.data.bind(connectionStatus = self.push_settings_to_machine)
+        self.data.pushSettings = self.push_settings_to_machine
         
         
         return interface
@@ -248,7 +262,9 @@ class GroundControlApp(App):
                                                'sledWidth':310, 
                                                'sledHeight':139, 
                                                'sledCG':79, 
-                                               'openFile': " "})
+                                               'openFile': " ",
+                                               'macro1': "",
+                                               'macro2': ""})
 
         config.setdefaults('Advanced Settings', {'encoderSteps': 8148.0,
                                                  'gearTeeth': 10, 
@@ -315,7 +331,7 @@ class GroundControlApp(App):
     
     def writeToTextConsole(self, message):
         try:
-            newText = self.frontpage.consoleText[-3000:] + message
+            newText = self.frontpage.consoleText[-500:] + message
             self.frontpage.consoleText = newText
             self.frontpage.textconsole.gotToBottom()  
         except:
@@ -343,6 +359,10 @@ class GroundControlApp(App):
             elif message[0:8] == "Message:":
                 self.previousUploadStatus = self.data.uploadFlag 
                 self.data.uploadFlag = 0
+                try:
+                    self._popup.dismiss()                                           #close any open popup
+                except:
+                    pass                                                            #there wasn't a popup to close
                 content = NotificationPopup(continueOn = self.dismiss_popup_continue, hold=self.dismiss_popup_hold , text = message[9:])
                 self._popup = Popup(title="Notification: ", content=content,
                             auto_dismiss=False, size_hint=(0.35, 0.35))
@@ -357,6 +377,7 @@ class GroundControlApp(App):
         
         '''
         self._popup.dismiss()
+        self.data.quick_queue.put("~") #send cycle resume command to unpause the machine
         self.data.uploadFlag = self.previousUploadStatus #resume cutting if the machine was cutting before
     
     def dismiss_popup_hold(self):
@@ -399,7 +420,7 @@ class GroundControlApp(App):
                 self.writeToTextConsole("Unable to resolve z Kinematics.")
                 zval = 0
         except:
-            print "bad data"
+            print "Unable to plot position on screen"
             return
         
         self.frontpage.setPosReadout(xval,yval,zval)
