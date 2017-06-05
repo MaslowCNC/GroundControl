@@ -377,6 +377,7 @@ class GroundControlApp(App):
         
         '''
         self._popup.dismiss()
+        self.data.quick_queue.put("~") #send cycle resume command to unpause the machine
         self.data.uploadFlag = self.previousUploadStatus #resume cutting if the machine was cutting before
     
     def dismiss_popup_hold(self):
