@@ -1,4 +1,5 @@
 from DataStructures.makesmithInitFuncs         import   MakesmithInitFuncs
+from DataStructures.data          import   Data
 import serial
 import time
 
@@ -15,16 +16,30 @@ class SerialPortThread(MakesmithInitFuncs):
     
     machineIsReadyForData = False
     lastMessageTime       = time.time()
+    lastWriteTime = time.time()
+
+    # Minimum time between lines sent to allow Arduino to cope
+    # could be smaller (0.02) however larger number doesn't seem to impact performance
+    MINTimePerLine = 0.05    
+
     
     def _write (self, message):
-        message = message + " \n"
-        message = message.encode()
-        print("Sending: " + str(message))
+
+        taken = time.time() - self.lastWriteTime
+        if taken < self.MINTimePerLine:  # wait between sends
+            # self.data.logger.writeToLog("Sleeping: " + str( taken ) + "\n")
+            time.sleep (self.MINTimePerLine) # could use (taken - MINTimePerLine)
         
+        message = message + '\n'
+        message = message.encode()
         try:
             self.serialInstance.write(message)
+            self.data.logger.writeToLog("Sent: " + str(message))
         except:
             print("write issue")
+            self.data.logger.writeToLog("Send FAILED: " + str(message))
+    
+        self.lastWriteTime = time.time()
 
     def _getFirmwareVersion(self):
         self.data.gcode_queue.put('B05 ')
