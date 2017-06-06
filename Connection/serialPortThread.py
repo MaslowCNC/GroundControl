@@ -110,7 +110,7 @@ class SerialPortThread(MakesmithInitFuncs):
                 
                 #send regular instructions to the machine if there are any
                 if self.bufferSpace == 256:
-                    print "ready"
+                    
                     if self.data.gcode_queue.empty() != True:
                         command = self.data.gcode_queue.get_nowait() + " "
                         self._write(command)
@@ -118,11 +118,14 @@ class SerialPortThread(MakesmithInitFuncs):
                 #Send the next line of gcode to the machine if we're running a program
                 if self.bufferSpace > len(self.data.gcode[self.data.gcodeIndex]):
                     if self.data.uploadFlag:
-                        try:
-                            self._write(self.data.gcode[self.data.gcodeIndex])
+                        self._write(self.data.gcode[self.data.gcodeIndex])
+                        
+                        #increment gcode index
+                        if self.data.gcodeIndex + 1 < len(self.data.gcode):
                             self.data.gcodeIndex = self.data.gcodeIndex + 1
-                        except:
+                        else:
                             self.data.uploadFlag = 0
+                            self.data.gcodeIndex = 0
                             print "Gcode Ended"
                 
                 
@@ -140,5 +143,4 @@ class SerialPortThread(MakesmithInitFuncs):
                     self.data.connectionStatus = 0
                     self.serialInstance.close()
                     return
-                msg = ""
                     
