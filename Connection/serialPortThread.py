@@ -99,11 +99,10 @@ class SerialPortThread(MakesmithInitFuncs):
                 if len(msg) > 0:
                     self.lastMessageTime = time.time()
                     if msg == "ok\r\n":
-                        pass
-                        #self.machineIsReadyForData = True
+                        self.machineIsReadyForData = True
                     else:
-                        if msg[0] == "[":
-                            self._checkBufferSize(msg)
+                        #if msg[0] == "[":
+                        #    self._checkBufferSize(msg)
                         self.data.message_queue.put(msg)
                     
                 #send any emergency instructions to the machine if there are any
