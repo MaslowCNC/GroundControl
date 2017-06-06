@@ -79,7 +79,7 @@ class SerialPortThread(MakesmithInitFuncs):
             while True:
                 
                 
-                #read serial line from machine if available
+                                        #Read serial line from machine if available
                 #-------------------------------------------------------------------------------------
                 lineFromMachine = ""
                 if self.serialInstance.in_waiting > 0:
@@ -96,7 +96,11 @@ class SerialPortThread(MakesmithInitFuncs):
                     print "OK Space available: " + str(self.bufferSpace)
                 
                 
-                #Write to the machine if ready
+                
+                
+                
+                
+                                            #Write to the machine if ready
                 #-------------------------------------------------------------------------------------
                 
                 #send any emergency instructions to the machine if there are any
@@ -104,15 +108,29 @@ class SerialPortThread(MakesmithInitFuncs):
                     command = self.data.quick_queue.get_nowait() + " "
                     self._write(command)
                 
-                
+                #send regular instructions to the machine if there are any
                 if self.bufferSpace == 256:
                     print "ready"
                     if self.data.gcode_queue.empty() != True:
                         command = self.data.gcode_queue.get_nowait() + " "
                         self._write(command)
                 
+                #Send the next line of gcode to the machine if we're running a program
+                if self.bufferSpace == 256:
+                    if self.data.uploadFlag:
+                        try:
+                            self._write(self.data.gcode[self.data.gcodeIndex])
+                            self.data.gcodeIndex = self.data.gcodeIndex + 1
+                        except:
+                            self.data.uploadFlag = 0
+                            print "Gcode Ended"
                 
-                #Check for serial connection loss
+                
+                
+                
+                
+                
+                                            #Check for serial connection loss
                 #-------------------------------------------------------------------------------------
                 if time.time() - self.lastMessageTime > 2:
                     print "connection lost"
