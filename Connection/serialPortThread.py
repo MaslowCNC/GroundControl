@@ -17,7 +17,7 @@ class SerialPortThread(MakesmithInitFuncs):
     lastMessageTime       = time.time()
     
     def _write (self, message):
-        message = message + " \n"
+        message = message + 'L' + str(len(message)) + " \n"
         message = message.encode()
         print("Sending: " + str(message))
         
