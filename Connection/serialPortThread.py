@@ -44,27 +44,6 @@ class SerialPortThread(MakesmithInitFuncs):
         else:
             self.data.gcode_queue.put('G21 ')
     
-    def _checkBufferSize(self, msg):
-        '''
-        
-        Check if the machine has enough room in it's buffer for more gcode
-        
-        '''
-        
-        valz = msg.split(",")
-        
-        try:
-            if self.data.uploadFlag and self.data.gcodeIndex < len(self.data.gcode):                                                                  #if we are uploading a file
-                if int(valz[2][0:-3]) > 127 + len(self.data.gcode[self.data.gcodeIndex]):             #if there is space in the arduino buffer for the next line
-                    if self.serialInstance.in_waiting < 200:                                              #if there is not a large amount of unprocessed data
-                        self.machineIsReadyForData = True                                                    #send the line
-            else:
-                if int(valz[2][0:-3]) > 127:
-                    self.machineIsReadyForData = True
-        except:
-            print "Unable to check buffer"
-            print msg
-    
     def getmessage (self):
         #opens a serial connection called self.serialInstance
         
