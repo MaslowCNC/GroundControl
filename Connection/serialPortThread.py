@@ -116,7 +116,7 @@ class SerialPortThread(MakesmithInitFuncs):
                         self._write(command)
                 
                 #Send the next line of gcode to the machine if we're running a program
-                if self.bufferSpace == 256:
+                if self.bufferSpace > len(self.data.gcode[self.data.gcodeIndex]):
                     if self.data.uploadFlag:
                         try:
                             self._write(self.data.gcode[self.data.gcodeIndex])
