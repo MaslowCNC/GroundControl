@@ -1,6 +1,7 @@
 from DataStructures.makesmithInitFuncs         import   MakesmithInitFuncs
 import serial
 import time
+import Queue
 
 
 class SerialPortThread(MakesmithInitFuncs):
@@ -13,13 +14,21 @@ class SerialPortThread(MakesmithInitFuncs):
     
     '''
     
-    machineIsReadyForData = False
-    lastMessageTime       = time.time()
+    machineIsReadyForData      = False
+    lastMessageTime            = time.time()
+    bufferSpace                = 256
+    lengthOfLastLineStack      =  Queue.Queue()
     
     def _write (self, message):
         message = message + 'L' + str(len(message) + 1 + 2 + len(str(len(message))) ) + " \n"
+        
+        self.bufferSpace       = self.bufferSpace - len(message)
+        self.lengthOfLastLineStack.put(len(message))
+        
         message = message.encode()
-        print("Sending: " + str(message))
+        print "Sending: " + str(message)
+        
+        print "Sent Space available: " + str(self.bufferSpace)
         
         try:
             self.serialInstance.write(message)
@@ -100,6 +109,9 @@ class SerialPortThread(MakesmithInitFuncs):
                     self.lastMessageTime = time.time()
                     if msg == "ok\r\n":
                         self.machineIsReadyForData = True
+                        if self.lengthOfLastLineStack.empty() != True:                                     #if we've sent lines to the machine
+                            self.bufferSpace = self.bufferSpace + self.lengthOfLastLineStack.get_nowait()    #free up that space in the buffer
+                        print "OK Space available: " + str(self.bufferSpace)
                     else:
                         #if msg[0] == "[":
                         #    self._checkBufferSize(msg)
