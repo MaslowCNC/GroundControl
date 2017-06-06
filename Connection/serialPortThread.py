@@ -78,46 +78,42 @@ class SerialPortThread(MakesmithInitFuncs):
             
             while True:
                 
-                #get any messages from the machine
-                try:
-                    msg = self.serialInstance.readline()
-                    msg = msg.decode('utf-8')
-                except:
-                    pass
-                if len(msg) > 0:
+                
+                #read serial line from machine if available
+                #-------------------------------------------------------------------------------------
+                lineFromMachine = ""
+                if self.serialInstance.in_waiting > 0:
+                    lineFromMachine = self.serialInstance.readline()
                     self.lastMessageTime = time.time()
-                    if msg == "ok\r\n":
-                        self.machineIsReadyForData = True
-                        if self.lengthOfLastLineStack.empty() != True:                                     #if we've sent lines to the machine
-                            self.bufferSpace = self.bufferSpace + self.lengthOfLastLineStack.get_nowait()    #free up that space in the buffer
-                        print "OK Space available: " + str(self.bufferSpace)
-                    else:
-                        #if msg[0] == "[":
-                        #    self._checkBufferSize(msg)
-                        self.data.message_queue.put(msg)
-                    
+                    self.data.message_queue.put(lineFromMachine)
+                    print lineFromMachine
+                    print time.time()
+                
+                #Check if a line has been completed
+                if lineFromMachine == "ok\r\n":
+                    if self.lengthOfLastLineStack.empty() != True:                                     #if we've sent lines to the machine
+                        self.bufferSpace = self.bufferSpace + self.lengthOfLastLineStack.get_nowait()    #free up that space in the buffer
+                    print "OK Space available: " + str(self.bufferSpace)
+                
+                
+                #Write to the machine if ready
+                #-------------------------------------------------------------------------------------
+                
                 #send any emergency instructions to the machine if there are any
                 if self.data.quick_queue.empty() != True:
                     command = self.data.quick_queue.get_nowait() + " "
                     self._write(command)
-                    
-                #send gcode to machine if it is ready
-                if self.machineIsReadyForData:
-                    if self.data.gcode_queue.empty() != True:
-                        gcode = self.data.gcode_queue.get_nowait() + " "
-                        self._write(gcode)
-                        self.machineIsReadyForData = False
-                        
-                    elif self.data.uploadFlag:
-                        try:
-                            self._write(self.data.gcode[self.data.gcodeIndex])
-                            self.data.gcodeIndex = self.data.gcodeIndex + 1
-                            self.machineIsReadyForData = False
-                        except:
-                            self.data.uploadFlag = 0
-                            print "Gcode Ended"
                 
-                #check for serial connection loss
+                
+                if self.bufferSpace == 256:
+                    print "ready"
+                    if self.data.gcode_queue.empty() != True:
+                        command = self.data.gcode_queue.get_nowait() + " "
+                        self._write(command)
+                
+                
+                #Check for serial connection loss
+                #-------------------------------------------------------------------------------------
                 if time.time() - self.lastMessageTime > 2:
                     print "connection lost"
                     self.data.message_queue.put("Connection Lost")
