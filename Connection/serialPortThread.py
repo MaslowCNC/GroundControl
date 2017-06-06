@@ -101,6 +101,8 @@ class SerialPortThread(MakesmithInitFuncs):
                     if msg == "ok\r\n":
                         pass
                         #self.machineIsReadyForData = True
+                    elif msg[0:8] == "Firmware":
+                        self.data.message_queue.put("Ground Control " + str(self.data.version) + "\r\n" + msg + "\r\n")
                     else:
                         if msg[0] == "[":
                             self._checkBufferSize(msg)
