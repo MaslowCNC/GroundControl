@@ -245,6 +245,7 @@ class GroundControlApp(App):
         self.data.bind(connectionStatus = self.push_settings_to_machine)
         self.data.pushSettings = self.push_settings_to_machine
         
+        self.push_settings_to_machine()
         
         return interface
         
@@ -367,6 +368,10 @@ class GroundControlApp(App):
                 self._popup = Popup(title="Notification: ", content=content,
                             auto_dismiss=False, size_hint=(0.35, 0.35))
                 self._popup.open()
+            elif message[0:8] == "Firmware":
+                 self.writeToTextConsole("Ground Control " + str(self.data.version) + "\r\n" + message + "\r\n")
+            elif message == "ok\r\n":
+                pass #displaying all the 'ok' messages clutters up the display
             else:
                 self.writeToTextConsole(message)
     
@@ -377,6 +382,7 @@ class GroundControlApp(App):
         
         '''
         self._popup.dismiss()
+        self.data.quick_queue.put("~") #send cycle resume command to unpause the machine
         self.data.uploadFlag = self.previousUploadStatus #resume cutting if the machine was cutting before
     
     def dismiss_popup_hold(self):

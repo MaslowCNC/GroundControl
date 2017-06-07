@@ -1,6 +1,7 @@
 from DataStructures.makesmithInitFuncs         import   MakesmithInitFuncs
 import serial
 import time
+import Queue
 
 
 class SerialPortThread(MakesmithInitFuncs):
@@ -13,13 +14,21 @@ class SerialPortThread(MakesmithInitFuncs):
     
     '''
     
-    machineIsReadyForData = False
-    lastMessageTime       = time.time()
+    machineIsReadyForData      = False
+    lastMessageTime            = time.time()
+    bufferSpace                = 256
+    lengthOfLastLineStack      =  Queue.Queue()
     
     def _write (self, message):
-        message = message + " \n"
+        message = message + ' \n'#'L' + str(len(message) + 1 + 2 + len(str(len(message))) ) + " \n"
+        
+        self.bufferSpace       = self.bufferSpace - len(message)
+        self.lengthOfLastLineStack.put(len(message))
+        
         message = message.encode()
-        print("Sending: " + str(message))
+        print "Sending: " + str(message)
+        
+        print "Sent Space available: " + str(self.bufferSpace)
         
         try:
             self.serialInstance.write(message)
@@ -34,27 +43,6 @@ class SerialPortThread(MakesmithInitFuncs):
             self.data.gcode_queue.put('G20 ')
         else:
             self.data.gcode_queue.put('G21 ')
-    
-    def _checkBufferSize(self, msg):
-        '''
-        
-        Check if the machine has enough room in it's buffer for more gcode
-        
-        '''
-        
-        valz = msg.split(",")
-        
-        try:
-            if self.data.uploadFlag and self.data.gcodeIndex < len(self.data.gcode):                                                                  #if we are uploading a file
-                if int(valz[2][0:-3]) > 127 + len(self.data.gcode[self.data.gcodeIndex]):             #if there is space in the arduino buffer for the next line
-                    if self.serialInstance.in_waiting < 200:                                              #if there is not a large amount of unprocessed data
-                        self.machineIsReadyForData = True                                                    #send the line
-            else:
-                if int(valz[2][0:-3]) > 127:
-                    self.machineIsReadyForData = True
-        except:
-            print "Unable to check buffer"
-            print msg
     
     def getmessage (self):
         #opens a serial connection called self.serialInstance
@@ -90,44 +78,65 @@ class SerialPortThread(MakesmithInitFuncs):
             
             while True:
                 
-                #get any messages from the machine
+                
+                                        #Read serial line from machine if available
+                #-------------------------------------------------------------------------------------
+                lineFromMachine = ""
+                
                 try:
-                    msg = self.serialInstance.readline()
-                    msg = msg.decode('utf-8')
+                    if self.serialInstance.in_waiting > 0:
+                        lineFromMachine = self.serialInstance.readline()
+                        self.lastMessageTime = time.time()
+                        self.data.message_queue.put(lineFromMachine)
                 except:
                     pass
-                if len(msg) > 0:
-                    self.lastMessageTime = time.time()
-                    if msg == "ok\r\n":
-                        pass
-                        #self.machineIsReadyForData = True
-                    else:
-                        if msg[0] == "[":
-                            self._checkBufferSize(msg)
-                        self.data.message_queue.put(msg)
-                    
+                
+                #Check if a line has been completed
+                if lineFromMachine == "ok\r\n":
+                    if self.lengthOfLastLineStack.empty() != True:                                     #if we've sent lines to the machine
+                        self.bufferSpace = self.bufferSpace + self.lengthOfLastLineStack.get_nowait()    #free up that space in the buffer
+                    print "OK Space available: " + str(self.bufferSpace)
+                
+                
+                
+                
+                
+                
+                                            #Write to the machine if ready
+                #-------------------------------------------------------------------------------------
+                
                 #send any emergency instructions to the machine if there are any
                 if self.data.quick_queue.empty() != True:
                     command = self.data.quick_queue.get_nowait() + " "
                     self._write(command)
+                
+                #send regular instructions to the machine if there are any
+                if self.bufferSpace == 256:
                     
-                #send gcode to machine if it is ready
-                if self.machineIsReadyForData:
                     if self.data.gcode_queue.empty() != True:
-                        gcode = self.data.gcode_queue.get_nowait() + " "
-                        self._write(gcode)
-                        self.machineIsReadyForData = False
+                        command = self.data.gcode_queue.get_nowait() + " "
+                        self._write(command)
+                
+                #Send the next line of gcode to the machine if we're running a program
+                if self.bufferSpace == 256:#> len(self.data.gcode[self.data.gcodeIndex]):
+                    if self.data.uploadFlag:
+                        self._write(self.data.gcode[self.data.gcodeIndex])
                         
-                    elif self.data.uploadFlag:
-                        try:
-                            self._write(self.data.gcode[self.data.gcodeIndex])
+                        #increment gcode index
+                        if self.data.gcodeIndex + 1 < len(self.data.gcode):
                             self.data.gcodeIndex = self.data.gcodeIndex + 1
-                            self.machineIsReadyForData = False
-                        except:
+                        else:
                             self.data.uploadFlag = 0
+                            self.data.gcodeIndex = 0
                             print "Gcode Ended"
                 
-                #check for serial connection loss
+                
+                
+                
+                
+                
+                                            #Check for serial connection loss
+                #-------------------------------------------------------------------------------------
                 if time.time() - self.lastMessageTime > 2:
                     print "connection lost"
                     self.data.message_queue.put("Connection Lost")
@@ -136,5 +145,4 @@ class SerialPortThread(MakesmithInitFuncs):
                     self.data.connectionStatus = 0
                     self.serialInstance.close()
                     return
-                msg = ""
                     
