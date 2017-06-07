@@ -82,12 +82,14 @@ class SerialPortThread(MakesmithInitFuncs):
                                         #Read serial line from machine if available
                 #-------------------------------------------------------------------------------------
                 lineFromMachine = ""
-                if self.serialInstance.in_waiting > 0:
-                    lineFromMachine = self.serialInstance.readline()
-                    self.lastMessageTime = time.time()
-                    self.data.message_queue.put(lineFromMachine)
-                    #print lineFromMachine
-                    #print time.time()
+                
+                try:
+                    if self.serialInstance.in_waiting > 0:
+                        lineFromMachine = self.serialInstance.readline()
+                        self.lastMessageTime = time.time()
+                        self.data.message_queue.put(lineFromMachine)
+                except:
+                    pass
                 
                 #Check if a line has been completed
                 if lineFromMachine == "ok\r\n":
