@@ -367,6 +367,8 @@ class GroundControlApp(App):
                 self._popup = Popup(title="Notification: ", content=content,
                             auto_dismiss=False, size_hint=(0.35, 0.35))
                 self._popup.open()
+            elif message[0:8] == "Firmware":
+                 self.writeToTextConsole("Ground Control " + str(self.data.version) + "\r\n" + message + "\r\n")
             else:
                 self.writeToTextConsole(message)
     
