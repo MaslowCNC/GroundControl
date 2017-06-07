@@ -167,6 +167,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
             print("Run Paused")
         else:
             self.data.uploadFlag = 1
+            self.data.quick_queue.put("~") #send cycle resume command to unpause the machine
             print("Run Resumed")
     
     def jmpsize(self):

@@ -6,6 +6,7 @@ behavior.
 '''
 
 from DataStructures.makesmithInitFuncs       import MakesmithInitFuncs
+import threading
 
 
 class Logger(MakesmithInitFuncs):
@@ -13,14 +14,43 @@ class Logger(MakesmithInitFuncs):
     errorValues = []
     recordingPositionalErrors = False 
     
+    messageBuffer = ""
+    
+    #clear the old log file
+    with open("log.txt", "a") as logFile:
+            logFile.truncate()
+    
     def writeToLog(self, message):
         '''
         
-        Writes an error message into the log.
+        Writes a message into the log
+        
+        Actual writing is done in a separate thread to no lock up the UI because file IO is 
+        way slow
         
         '''
-        pass
+        
+        self.messageBuffer = self.messageBuffer + message
+        
+        if len(self.messageBuffer) > 500:
+            
+            t = threading.Thread(target=self.writeToFile, args=(self.messageBuffer, "write"))
+            t.daemon = True
+            t.start()
+            self.messageBuffer = ""
     
+    def writeToFile(self, toWrite, *args):
+        '''
+        
+        Write to the log file
+        
+        '''
+        
+        with open("log.txt", "a") as logFile:
+            logFile.write(toWrite)
+        
+        return
+        
     def writeErrorValueToLog(self, error):
         '''
         
