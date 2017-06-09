@@ -11,7 +11,7 @@ from   kivy.uix.popup                            import   Popup
 
 class MeasureMachinePopup(GridLayout):
     done   = ObjectProperty(None)
-    numberOfTimesTestCutRun = 0
+    numberOfTimesTestCutRun = -2
     
     def slideJustChanged(self):
         if self.carousel.index == 0:
