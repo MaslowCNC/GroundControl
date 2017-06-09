@@ -11,7 +11,7 @@ from   kivy.uix.popup                            import   Popup
 
 class MeasureMachinePopup(GridLayout):
     done   = ObjectProperty(None)
-    numberOfTimesTestCutRun = 0
+    numberOfTimesTestCutRun = -2
     
     def slideJustChanged(self):
         if self.carousel.index == 0:
@@ -32,11 +32,11 @@ class MeasureMachinePopup(GridLayout):
         if self.carousel.index == 4:
             #review calculations
             self.updateReviewValuesText()
-        if self.carousel.index == 7:
+        if self.carousel.index == 8:
             #Cut test shape
             self.goFwdBtn.disabled = False
             self.data.pushSettings()
-        if self.carousel.index == 8:
+        if self.carousel.index == 9:
             #Final finish step
             self.goFwdBtn.disabled = True
         
@@ -213,4 +213,20 @@ class MeasureMachinePopup(GridLayout):
             self.unitsBtn.text = 'Inches'
         else:
             self.unitsBtn.text = 'MM'
+    
+    def moveZ(self, dist):
+        '''
         
+        Move the z-axis the specified distance
+        
+        '''
+        self.data.gcode_queue.put("G91 G00 Z" + str(dist) + " G90 ")
+    
+    def zeroZ(self):
+        '''
+        
+        Define the z-axis to be currently at height 0
+        
+        '''
+        self.data.gcode_queue.put("G10 Z0 ")
+        self.carousel.load_next()

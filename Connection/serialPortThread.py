@@ -28,8 +28,6 @@ class SerialPortThread(MakesmithInitFuncs):
         message = message.encode()
         print "Sending: " + str(message)
         
-        print "Sent Space available: " + str(self.bufferSpace)
-        
         try:
             self.serialInstance.write(message)
         except:
@@ -95,8 +93,6 @@ class SerialPortThread(MakesmithInitFuncs):
                 if lineFromMachine == "ok\r\n":
                     if self.lengthOfLastLineStack.empty() != True:                                     #if we've sent lines to the machine
                         self.bufferSpace = self.bufferSpace + self.lengthOfLastLineStack.get_nowait()    #free up that space in the buffer
-                    print "OK Space available: " + str(self.bufferSpace)
-                
                 
                 
                 
