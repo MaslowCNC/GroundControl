@@ -346,19 +346,38 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             print originalLine
             return originalLine
     
-    def updateOneLine(self):
+    def loadNextLine(self):
+        '''
+        
+        Load the next line of gcode
+        
+        '''
+        
+        try:
+            self.data.gcode[self.lineNumber] = self.moveLine(self.data.gcode[self.lineNumber])    #move the line if the gcode has been moved
+            fullString = self.data.gcode[self.lineNumber]
+            self.lineNumber = self.lineNumber + 1
+        except:
+            return #we have reached the end of the file
+        
+        #if the line contains multiple gcode commands split them and execute them individually
+        listOfLines = fullString.split('G')
+        
+        if len(listOfLines) > 1:                              #if the line contains at least one 'G'
+            for line in listOfLines:
+                if len(line) > 0:                                   #If the line is not blank
+                    self.updateOneLine('G' + line)                     #Draw it
+        else:
+            self.updateOneLine(fullString)
+        
+    def updateOneLine(self, fullString):
         '''
         
         Draw the next line on the gcode canvas
         
         '''
-        validPrefixList = ['G00','G0 ','G1 ','G01','G2 ','G02','G3 ','G03']
         
-        try:
-            self.data.gcode[self.lineNumber] = self.moveLine(self.data.gcode[self.lineNumber])    #move the line if the gcode has been moved
-            fullString = self.data.gcode[self.lineNumber]
-        except:
-            return #we have reached the end of the file
+        validPrefixList = ['G00','G0 ','G1 ','G01','G2 ','G02','G3 ','G03', 'G17']
         
         fullString = fullString + " " #ensures that there is a space at the end of the line
         
@@ -369,7 +388,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.prependString = gString
         
         if fullString.find('G') == -1: #this adds the gcode operator if it is omitted by the program
-            fullString = self.prependString + fullString
+            fullString = self.prependString + ' ' + fullString
             gString = self.prependString
         
         if gString == 'G00' or gString == 'G0 ':
@@ -383,6 +402,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                            
         if gString == 'G03' or gString == 'G3 ':
             self.drawArc(fullString, 'G03')
+        
+        if gString == 'G17':
+            #Take no action, XY coordinate plane is the default
+            pass
         
         if gString == 'G18':
             print "G18 not supported"
@@ -401,12 +424,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if gString == 'G91':
             self.absoluteFlag = 1
         
-        self.lineNumber = self.lineNumber + 1
-        
     def callBackMechanism(self, callback) :
         '''
         
-        Call the updateOneLine function periodically in a non-blocking way to
+        Call the loadNextLine function periodically in a non-blocking way to
         update the gcode.
         
         '''
@@ -417,7 +438,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         #Draw numberOfTimesToCall lines on the canvas
         numberOfTimesToCall = 500
         for _ in range(numberOfTimesToCall):
-            self.updateOneLine()
+            self.loadNextLine()
         
         #Repeat until end of file
         if self.lineNumber < min(len(self.data.gcode),60000):
