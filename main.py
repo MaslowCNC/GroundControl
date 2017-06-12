@@ -350,7 +350,7 @@ class GroundControlApp(App):
             if message[0] == "<":
                 self.setPosOnScreen(message)
             elif message[0] == "[":
-                if message[1:10] == "PosError:":
+                if message[1:4] == "PE:":
                     self.setErrorOnScreen(message)
                 elif message[1:8] == "Measure":
                     print "measure seen"
@@ -436,13 +436,22 @@ class GroundControlApp(App):
         try:
             startpt = message.find(':')+1 
             endpt = message.find(',', startpt)
-            errorValueAsString = message[startpt:endpt]
-            errorValueAsFloat  = float(errorValueAsString)
+            leftErrorValueAsString = message[startpt:endpt]
+            leftErrorValueAsFloat  = float(leftErrorValueAsString)
             
-            self.frontpage.gcodecanvas.positionIndicator.setError(errorValueAsFloat)
-            self.data.logger.writeErrorValueToLog(errorValueAsFloat)
-        except:
+            startpt = endpt + 1
+            endpt = message.find(',', startpt)
+            rightErrorValueAsString = message[startpt:endpt]
+            
+            rightErrorValueAsFloat  = float(rightErrorValueAsString)
+            
+            avgError = (abs(leftErrorValueAsFloat) + abs(rightErrorValueAsFloat))/2
+            
+            self.frontpage.gcodecanvas.positionIndicator.setError(avgError)
+            self.data.logger.writeErrorValueToLog(avgError)
+        except Exception, e:
             print "unable to read error value"
+            print e
         
         
     
