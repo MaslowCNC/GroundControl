@@ -165,7 +165,6 @@ class MeasureMachinePopup(GridLayout):
     def cutTestPatern(self):
         
         #Credit for this test pattern to DavidLang
-        #self.data.gcode_queue.put("G21 ")
         self.data.units = "MM"
         self.data.gcode_queue.put("G21 ")
         self.data.gcode_queue.put("G90  ")
@@ -220,6 +219,8 @@ class MeasureMachinePopup(GridLayout):
         Move the z-axis the specified distance
         
         '''
+        self.data.units = "MM"
+        self.data.gcode_queue.put("G21 ")
         self.data.gcode_queue.put("G91 G00 Z" + str(dist) + " G90 ")
     
     def zeroZ(self):
