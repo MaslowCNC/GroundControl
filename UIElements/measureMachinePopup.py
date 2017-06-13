@@ -210,16 +210,8 @@ class MeasureMachinePopup(GridLayout):
     def switchUnits(self):
         if self.unitsBtn.text == 'MM':
             self.unitsBtn.text = 'Inches'
-            self.raise1.text        = 'Raise Z-Axis .04in'
-            self.raisePoint1.text   = 'Raise Z-Axis .004in'
-            self.lower1.text        = 'Lower Z-Axis .04in'
-            self.lowerPoint1.text   = 'Lower Z-Axis .004in'
         else:
             self.unitsBtn.text = 'MM'
-            self.raise1.text        = 'Raise Z-Axis 1mm'
-            self.raisePoint1.text   = 'Raise Z-Axis .1mm'
-            self.lower1.text        = 'Lower Z-Axis 1mm'
-            self.lowerPoint1.text   = 'Lower Z-Axis .1mm'
     
     def moveZ(self, dist):
         '''
