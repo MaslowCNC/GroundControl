@@ -872,7 +872,7 @@
                 cols: 1
                 size_hint_x: leftCol
                 Label:
-                    text: "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of the right chain on the vertical tooth of the right sprocket\n as shown in the picture below\n\nThe left chain does not need to be moved, it can be left partly extended\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Next"
+                    text: "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of the right chain on the vertical tooth of the right sprocket\n as shown in the picture below\n\nThe left chain does not need to be moved, it can be left partly extended\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Next\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way"
                     size_hint_x: leftCol
                 GridLayout:
                     cols: 2
@@ -887,6 +887,9 @@
                 Button:
                     text: 'Calibrate\nChain Lengths'
                     on_release: root.calibrateChainLengths()
+                Button:
+                    text: 'Stop'
+                    on_release: root.stopCut()
                 Button:
                     text: 'Next'
                     on_release: carousel.load_next()
