@@ -675,6 +675,10 @@
     vertMeasure:vertMeasure
     unitsBtn:unitsBtn
     enterValues:enterValues
+    raise1: raise1
+    lower1: lower1
+    raisePoint1: raisePoint1
+    lowerPoint1: lowerPoint1
     
     cols: 1
     size: root.size
@@ -908,17 +912,24 @@
                 size_hint_x: rightCol
                 Label:
                 Button:
+                    text: root.unitsBtn.text
+                    on_release: root.switchUnits()
+                Button:
                     text: 'Raise Z-Axis 1mm'
                     on_release: root.moveZ(1)
+                    id: raise1
                 Button:
                     text: 'Raise Z-Axis .1mm'
                     on_release: root.moveZ(.1)
+                    id: raisePoint1
                 Button:
                     text: 'Lower Z-Axis 1mm'
                     on_release: root.moveZ(-1)
+                    id: lower1
                 Button:
                     text: 'Lower Z-Axis .1mm'
                     on_release: root.moveZ(-.1)
+                    id: lowerPoint1
                 Button:
                     text: 'Define Zero'
                     on_release: root.zeroZ()
