@@ -20,7 +20,7 @@ class SerialPortThread(MakesmithInitFuncs):
     lengthOfLastLineStack      =  Queue.Queue()
     
     def _write (self, message):
-        message = message + 'L' + str(len(message) + 1 + 2 + len(str(len(message))) ) + " \n"
+        message = message + 'W' + str(len(message) + 1 + 2 + len(str(len(message))) ) + " \n"
         
         self.bufferSpace       = self.bufferSpace - len(message)
         self.lengthOfLastLineStack.put(len(message))
