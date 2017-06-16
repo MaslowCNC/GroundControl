@@ -18,9 +18,22 @@ class SerialPortThread(MakesmithInitFuncs):
     lastMessageTime            = time.time()
     bufferSpace                = 256
     lengthOfLastLineStack      =  Queue.Queue()
+    lastWriteTime = time.time()
+
+    # Minimum time between lines sent to allow Arduino to cope
+    # could be smaller (0.02) however larger number doesn't seem to impact performance
+    MINTimePerLine = 0.1
     
     def _write (self, message):
-        message = message + ' \n'#'L' + str(len(message) + 1 + 2 + len(str(len(message))) ) + " \n"
+        
+        
+        taken = time.time() - self.lastWriteTime
+        if taken < self.MINTimePerLine:  # wait between sends
+              self.data.logger.writeToLog("Sleeping: " + str( taken ) + "\n")
+              time.sleep (self.MINTimePerLine) # could use (taken - MINTimePerLine)
+              
+        
+        message = message + 'L' + str(len(message) + 1 + 2 + len(str(len(message))) ) + " \n"
         
         self.bufferSpace       = self.bufferSpace - len(message)
         self.lengthOfLastLineStack.put(len(message))
@@ -32,6 +45,8 @@ class SerialPortThread(MakesmithInitFuncs):
             self.serialInstance.write(message)
         except:
             print("write issue")
+        
+        self.lastWriteTime = time.time()
 
     def _getFirmwareVersion(self):
         self.data.gcode_queue.put('B05 ')
@@ -114,7 +129,7 @@ class SerialPortThread(MakesmithInitFuncs):
                         self._write(command)
                 
                 #Send the next line of gcode to the machine if we're running a program
-                if self.bufferSpace == 256:#> len(self.data.gcode[self.data.gcodeIndex]):
+                if self.bufferSpace > len(self.data.gcode[self.data.gcodeIndex]):
                     if self.data.uploadFlag:
                         self._write(self.data.gcode[self.data.gcodeIndex])
                         
