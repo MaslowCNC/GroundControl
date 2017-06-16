@@ -34,10 +34,15 @@ class PositionIndicator(Widget):
         self.pos = (crossPosX,crossPosY)
         
     
-    def setError(self, positionError):
+    def setError(self, positionError, units):
         '''
         
         Set the error circle indicator.
         
         '''
+        if units == "MM":
+            positionError = positionError*self.MILLIMETER
+        elif units == "INCHES":
+            positionError = positionError*self.INCH
+            
         self.positionErrorRadius = positionError
