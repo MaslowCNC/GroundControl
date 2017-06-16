@@ -445,12 +445,23 @@ class GroundControlApp(App):
             
             rightErrorValueAsFloat  = float(rightErrorValueAsString)
             
+            if self.data.units == "INCHES":
+                print "inches seen"
+                rightErrorValueAsFloat = rightErrorValueAsFloat/25.4
+                leftErrorValueAsFloat  = leftErrorValueAsFloat/25.4
+            
             avgError = (abs(leftErrorValueAsFloat) + abs(rightErrorValueAsFloat))/2
             
-            self.frontpage.gcodecanvas.positionIndicator.setError(avgError)
+            self.frontpage.gcodecanvas.positionIndicator.setError(avgError, self.data.units)
             self.data.logger.writeErrorValueToLog(avgError)
             
-            self.frontpage.gcodecanvas.targetIndicator.setPos(self.xval + 10,self.yval + 10,self.data.units)
+            print "Error values:"
+            print leftErrorValueAsFloat
+            print rightErrorValueAsFloat
+            print self.xval
+            print self.yval
+            
+            self.frontpage.gcodecanvas.targetIndicator.setPos(self.xval - .5*rightErrorValueAsFloat + .5*leftErrorValueAsFloat, self.yval - .5*rightErrorValueAsFloat - .5*leftErrorValueAsFloat,self.data.units)
             
             
         except Exception, e:
