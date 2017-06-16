@@ -20,15 +20,13 @@ class SerialPortThread(MakesmithInitFuncs):
     lengthOfLastLineStack      =  Queue.Queue()
     
     def _write (self, message):
-        message = message + " \n"#'L' + str(len(message) + 1 + 2 + len(str(len(message))) ) + " \n"
+        message = message + ' \n'#'L' + str(len(message) + 1 + 2 + len(str(len(message))) ) + " \n"
         
         self.bufferSpace       = self.bufferSpace - len(message)
         self.lengthOfLastLineStack.put(len(message))
         
         message = message.encode()
         print "Sending: " + str(message)
-        
-        print "Sent Space available: " + str(self.bufferSpace)
         
         try:
             self.serialInstance.write(message)
@@ -82,19 +80,19 @@ class SerialPortThread(MakesmithInitFuncs):
                                         #Read serial line from machine if available
                 #-------------------------------------------------------------------------------------
                 lineFromMachine = ""
-                if self.serialInstance.in_waiting > 0:
-                    lineFromMachine = self.serialInstance.readline()
-                    self.lastMessageTime = time.time()
-                    self.data.message_queue.put(lineFromMachine)
-                    #print lineFromMachine
-                    #print time.time()
+                
+                try:
+                    if self.serialInstance.in_waiting > 0:
+                        lineFromMachine = self.serialInstance.readline()
+                        self.lastMessageTime = time.time()
+                        self.data.message_queue.put(lineFromMachine)
+                except:
+                    pass
                 
                 #Check if a line has been completed
                 if lineFromMachine == "ok\r\n":
                     if self.lengthOfLastLineStack.empty() != True:                                     #if we've sent lines to the machine
                         self.bufferSpace = self.bufferSpace + self.lengthOfLastLineStack.get_nowait()    #free up that space in the buffer
-                    print "OK Space available: " + str(self.bufferSpace)
-                
                 
                 
                 
