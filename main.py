@@ -411,25 +411,25 @@ class GroundControlApp(App):
             
             valz = numz.split(",")
             
-            xval  = float(valz[0])
-            yval  = float(valz[1])
-            zval  = float(valz[2])
+            self.xval  = float(valz[0])
+            self.yval  = float(valz[1])
+            self.zval  = float(valz[2])
             
-            if math.isnan(xval):
+            if math.isnan(self.xval):
                 self.writeToTextConsole("Unable to resolve x Kinematics.")
-                xval = 0
-            if math.isnan(yval):
+                self.xval = 0
+            if math.isnan(self.yval):
                 self.writeToTextConsole("Unable to resolve y Kinematics.")
-                yval = 0
-            if math.isnan(zval):
+                self.yval = 0
+            if math.isnan(self.zval):
                 self.writeToTextConsole("Unable to resolve z Kinematics.")
-                zval = 0
+                self.zval = 0
         except:
             print "Unable to plot position on screen"
             return
         
-        self.frontpage.setPosReadout(xval,yval,zval)
-        self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,self.data.units)
+        self.frontpage.setPosReadout(self.xval,self.yval,self.zval)
+        self.frontpage.gcodecanvas.positionIndicator.setPos(self.xval,self.yval,self.data.units)
     
     def setErrorOnScreen(self, message):
         
@@ -449,6 +449,10 @@ class GroundControlApp(App):
             
             self.frontpage.gcodecanvas.positionIndicator.setError(avgError)
             self.data.logger.writeErrorValueToLog(avgError)
+            
+            self.frontpage.gcodecanvas.targetIndicator.setPos(self.xval + 10,self.yval + 10,self.data.units)
+            
+            
         except Exception, e:
             print "unable to read error value"
             print e
