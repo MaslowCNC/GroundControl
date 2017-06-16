@@ -20,7 +20,7 @@ class SerialPortThread(MakesmithInitFuncs):
     lengthOfLastLineStack      =  Queue.Queue()
     
     def _write (self, message):
-        message = message + ' \n'#'L' + str(len(message) + 1 + 2 + len(str(len(message))) ) + " \n"
+        message = message + 'L' + str(len(message) + 1 + 2 + len(str(len(message))) ) + " \n"
         
         self.bufferSpace       = self.bufferSpace - len(message)
         self.lengthOfLastLineStack.put(len(message))
@@ -114,7 +114,7 @@ class SerialPortThread(MakesmithInitFuncs):
                         self._write(command)
                 
                 #Send the next line of gcode to the machine if we're running a program
-                if self.bufferSpace == 256:#> len(self.data.gcode[self.data.gcodeIndex]):
+                if self.bufferSpace > len(self.data.gcode[self.data.gcodeIndex]):
                     if self.data.uploadFlag:
                         self._write(self.data.gcode[self.data.gcodeIndex])
                         
