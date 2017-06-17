@@ -39,7 +39,23 @@ class MeasureMachinePopup(GridLayout):
         if self.carousel.index == 9:
             #Final finish step
             self.goFwdBtn.disabled = True
+    
+	def begin(self):
+		print "begin fcn ran"
+		self.carousel.load_next()
+    
+    def defineInitialState(self):
+        '''
         
+        Ensure that the calibration process begins with known initial conditions for where the axis
+        think that they are are by setting both to zero. This prevents strange behavior when rotating
+        each sprocket to 12:00
+        
+        '''
+        print "define initial state"
+        self.data.gcode_queue.put("B06 L0 R0 ");
+        self.carousel.load_next()
+    
     def LeftCW(self):
         print "left CW"
         self.data.gcode_queue.put("G91 ")
