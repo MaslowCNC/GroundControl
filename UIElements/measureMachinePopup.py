@@ -39,7 +39,11 @@ class MeasureMachinePopup(GridLayout):
         if self.carousel.index == 9:
             #Final finish step
             self.goFwdBtn.disabled = True
-        
+    
+	def begin(self):
+		print "begin fcn ran"
+		self.carousel.load_next()
+	
     def LeftCW(self):
         print "left CW"
         self.data.gcode_queue.put("G91 ")
