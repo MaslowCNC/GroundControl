@@ -245,6 +245,7 @@ class GroundControlApp(App):
         self.data.bind(connectionStatus = self.push_settings_to_machine)
         self.data.pushSettings = self.push_settings_to_machine
         
+        self.push_settings_to_machine()
         
         return interface
         
@@ -349,7 +350,7 @@ class GroundControlApp(App):
             if message[0] == "<":
                 self.setPosOnScreen(message)
             elif message[0] == "[":
-                if message[1:10] == "PosError:":
+                if message[1:4] == "PE:":
                     self.setErrorOnScreen(message)
                 elif message[1:8] == "Measure":
                     print "measure seen"
@@ -367,6 +368,10 @@ class GroundControlApp(App):
                 self._popup = Popup(title="Notification: ", content=content,
                             auto_dismiss=False, size_hint=(0.35, 0.35))
                 self._popup.open()
+            elif message[0:8] == "Firmware":
+                 self.writeToTextConsole("Ground Control " + str(self.data.version) + "\r\n" + message + "\r\n")
+            elif message == "ok\r\n":
+                pass #displaying all the 'ok' messages clutters up the display
             else:
                 self.writeToTextConsole(message)
     
@@ -406,38 +411,55 @@ class GroundControlApp(App):
             
             valz = numz.split(",")
             
-            xval  = float(valz[0])
-            yval  = float(valz[1])
-            zval  = float(valz[2])
+            self.xval  = float(valz[0])
+            self.yval  = float(valz[1])
+            self.zval  = float(valz[2])
             
-            if math.isnan(xval):
+            if math.isnan(self.xval):
                 self.writeToTextConsole("Unable to resolve x Kinematics.")
-                xval = 0
-            if math.isnan(yval):
+                self.xval = 0
+            if math.isnan(self.yval):
                 self.writeToTextConsole("Unable to resolve y Kinematics.")
-                yval = 0
-            if math.isnan(zval):
+                self.yval = 0
+            if math.isnan(self.zval):
                 self.writeToTextConsole("Unable to resolve z Kinematics.")
-                zval = 0
+                self.zval = 0
         except:
             print "Unable to plot position on screen"
             return
         
-        self.frontpage.setPosReadout(xval,yval,zval)
-        self.frontpage.gcodecanvas.positionIndicator.setPos(xval,yval,self.data.units)
+        self.frontpage.setPosReadout(self.xval,self.yval,self.zval)
+        self.frontpage.gcodecanvas.positionIndicator.setPos(self.xval,self.yval,self.data.units)
     
     def setErrorOnScreen(self, message):
         
         try:
             startpt = message.find(':')+1 
             endpt = message.find(',', startpt)
-            errorValueAsString = message[startpt:endpt]
-            errorValueAsFloat  = float(errorValueAsString)
+            leftErrorValueAsString = message[startpt:endpt]
+            leftErrorValueAsFloat  = float(leftErrorValueAsString)
             
-            self.frontpage.gcodecanvas.positionIndicator.setError(errorValueAsFloat)
-            self.data.logger.writeErrorValueToLog(errorValueAsFloat)
-        except:
+            startpt = endpt + 1
+            endpt = message.find(',', startpt)
+            rightErrorValueAsString = message[startpt:endpt]
+            
+            rightErrorValueAsFloat  = float(rightErrorValueAsString)
+            
+            if self.data.units == "INCHES":
+                rightErrorValueAsFloat = rightErrorValueAsFloat/25.4
+                leftErrorValueAsFloat  = leftErrorValueAsFloat/25.4
+            
+            avgError = (abs(leftErrorValueAsFloat) + abs(rightErrorValueAsFloat))/2
+            
+            self.frontpage.gcodecanvas.positionIndicator.setError(0, self.data.units)
+            self.data.logger.writeErrorValueToLog(avgError)
+            
+            self.frontpage.gcodecanvas.targetIndicator.setPos(self.xval - .5*rightErrorValueAsFloat + .5*leftErrorValueAsFloat, self.yval - .5*rightErrorValueAsFloat - .5*leftErrorValueAsFloat,self.data.units)
+            
+            
+        except Exception, e:
             print "unable to read error value"
+            print e
         
         
     
