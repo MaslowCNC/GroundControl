@@ -25,7 +25,7 @@ class SerialPortThread(MakesmithInitFuncs):
     MINTimePerLine = 0.05    
     
     def _write (self, message):
-        message = message + ' \n'#'L' + str(len(message) + 1 + 2 + len(str(len(message))) ) + " \n"
+        message = message + 'W' + str(len(message) + 1 + 2 + len(str(len(message))) ) + " \n"
         
         taken = time.time() - self.lastWriteTime
         if taken < self.MINTimePerLine:  # wait between sends
@@ -130,7 +130,7 @@ class SerialPortThread(MakesmithInitFuncs):
                         self._write(command)
                 
                 #Send the next line of gcode to the machine if we're running a program
-                if self.bufferSpace == 256:#> len(self.data.gcode[self.data.gcodeIndex]):
+                if self.bufferSpace > len(self.data.gcode[self.data.gcodeIndex]):
                     if self.data.uploadFlag:
                         self._write(self.data.gcode[self.data.gcodeIndex])
                         
