@@ -25,20 +25,21 @@ class SerialPortThread(MakesmithInitFuncs):
     MINTimePerLine = 0.05    
     
     def _write (self, message):
-        message = message + ' \n'#'L' + str(len(message) + 1 + 2 + len(str(len(message))) ) + " \n"
+        #message = message + 'L' + str(len(message) + 1 + 2 + len(str(len(message))) )
         
         taken = time.time() - self.lastWriteTime
         if taken < self.MINTimePerLine:  # wait between sends
             # self.data.logger.writeToLog("Sleeping: " + str( taken ) + "\n")
             time.sleep (self.MINTimePerLine) # could use (taken - MINTimePerLine)
         
-        self.bufferSpace       = self.bufferSpace - len(message)
-        self.lengthOfLastLineStack.put(len(message))
-        
         message = message.encode()
         print "Sending: " + str(message)
         
         message = message + '\n'
+        
+        self.bufferSpace       = self.bufferSpace - len(message)
+        self.lengthOfLastLineStack.put(len(message))
+        
         message = message.encode()
         try:
             self.serialInstance.write(message)
@@ -109,7 +110,6 @@ class SerialPortThread(MakesmithInitFuncs):
                 if lineFromMachine == "ok\r\n":
                     if self.lengthOfLastLineStack.empty() != True:                                     #if we've sent lines to the machine
                         self.bufferSpace = self.bufferSpace + self.lengthOfLastLineStack.get_nowait()    #free up that space in the buffer
-                
                 
                 
                 
