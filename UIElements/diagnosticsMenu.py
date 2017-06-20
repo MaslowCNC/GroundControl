@@ -40,6 +40,9 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self._popup.dismiss()
         
     def calibrateChainLengths(self):
+        #establish known initial conditions
+        self.data.gcode_queue.put("B06 L0 R0 ");
+        
         self.popupContent      = CalibrateLengthsPopup(done=self.dismissMeasureMachinePopup)
         self.popupContent.data = self.data
         self._popup = Popup(title="Calibrate Chain Lengths", content=self.popupContent,
