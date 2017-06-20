@@ -16,7 +16,7 @@ class SerialPortThread(MakesmithInitFuncs):
     '''
     
     machineIsReadyForData      = False
-    lastMessageTime            = time.time()
+    lastWriteTime              = time.time()
     bufferSpace                = 256
     lengthOfLastLineStack      =  Queue.Queue()
     
