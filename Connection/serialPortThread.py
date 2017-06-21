@@ -1,4 +1,5 @@
 from DataStructures.makesmithInitFuncs         import   MakesmithInitFuncs
+from DataStructures.data          import   Data
 import serial
 import time
 import Queue
@@ -15,23 +16,39 @@ class SerialPortThread(MakesmithInitFuncs):
     '''
     
     machineIsReadyForData      = False
-    lastMessageTime            = time.time()
+    lastWriteTime              = time.time()
     bufferSpace                = 256
     lengthOfLastLineStack      =  Queue.Queue()
     
+    # Minimum time between lines sent to allow Arduino to cope
+    # could be smaller (0.02) however larger number doesn't seem to impact performance
+    MINTimePerLine = 0.05    
+    
     def _write (self, message):
-        message = message + ' \n'#'L' + str(len(message) + 1 + 2 + len(str(len(message))) ) + " \n"
+        #message = message + 'L' + str(len(message) + 1 + 2 + len(str(len(message))) )
+        
+        taken = time.time() - self.lastWriteTime
+        if taken < self.MINTimePerLine:  # wait between sends
+            # self.data.logger.writeToLog("Sleeping: " + str( taken ) + "\n")
+            time.sleep (self.MINTimePerLine) # could use (taken - MINTimePerLine)
+        
+        message = message.encode()
+        print "Sending: " + str(message)
+        
+        message = message + '\n'
         
         self.bufferSpace       = self.bufferSpace - len(message)
         self.lengthOfLastLineStack.put(len(message))
         
         message = message.encode()
-        print "Sending: " + str(message)
-        
         try:
             self.serialInstance.write(message)
+            self.data.logger.writeToLog("Sent: " + str(message))
         except:
             print("write issue")
+            self.data.logger.writeToLog("Send FAILED: " + str(message))
+    
+        self.lastWriteTime = time.time()
 
     def _getFirmwareVersion(self):
         self.data.gcode_queue.put('B05 ')
@@ -44,6 +61,10 @@ class SerialPortThread(MakesmithInitFuncs):
     
     def getmessage (self):
         #opens a serial connection called self.serialInstance
+        
+        #check for serial version being > 3
+        if float(serial.VERSION[0]) < 3:
+            self.data.message_queue.put("Pyserial version 3.x is needed, version " + serial.VERSION + " is installed")
         
         try:
             #print("connecting")
@@ -97,7 +118,6 @@ class SerialPortThread(MakesmithInitFuncs):
                 
                 
                 
-                
                                             #Write to the machine if ready
                 #-------------------------------------------------------------------------------------
                 
@@ -134,8 +154,8 @@ class SerialPortThread(MakesmithInitFuncs):
                                             #Check for serial connection loss
                 #-------------------------------------------------------------------------------------
                 if time.time() - self.lastMessageTime > 2:
-                    print "connection lost"
-                    self.data.message_queue.put("Connection Lost")
+                    print "Connection Timed Out"
+                    self.data.message_queue.put("Connection Timed Out\n")
                     if self.data.uploadFlag:
                         self.data.message_queue.put("Message: USB connection lost. This has likely caused the machine to loose it's calibration, which can cause erratic behavior. It is recommended to stop the program, remove the sled, and perform the chain calibration process. Press Continue to override and proceed with the cut.")
                     self.data.connectionStatus = 0
