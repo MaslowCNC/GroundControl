@@ -25,7 +25,7 @@
     scatterObject:scatterObject
     scatterInstance:scatterInstance
     positionIndicator:positionIndicator
-    #targetIndicator:targetIndicator
+    targetIndicator:targetIndicator
     
     ScatterPlane:
         do_rotation: False
@@ -35,8 +35,8 @@
             text: ""
         PositionIndicator:
             id: positionIndicator
-#        PositionIndicator:
-#            id: targetIndicator
+        PositionIndicator:
+            id: targetIndicator
     
 <FrontPage>:
     textconsole:textconsole
@@ -714,7 +714,7 @@
                     text: 'The controls you will need\nfor each step will be on here\non the right'
                 Button:
                     text: "Begin"
-                    on_release: carousel.load_next()
+                    on_release: root.defineInitialState()
                 Label:
         GridLayout:
             cols: 2
@@ -932,7 +932,7 @@
                 cols: 1
                 size_hint_x: leftCol
                 Label:
-                    text: "To refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short horizontal cuts and two short vertical cuts\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe size of bit used is not critical\n\nThe process will repeat until both measurements are within .5mm\n\nPress Cut Test Pattern to begin"
+                    text: "To refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short horizontal cuts and two short vertical cuts\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe size of bit used is not critical\nMeasure to any point on the mark as long as you are consistent\n\nThe process will repeat until both measurements are equal to within .5mm\nThe more accurate your measurements, the more accurate your machine will be\n\nPress Cut Test Pattern to begin"
                 GridLayout:
                     cols: 3
                     Image:

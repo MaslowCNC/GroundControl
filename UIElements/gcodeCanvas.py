@@ -20,10 +20,6 @@ import math
 
 class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
-    #scatterObject     = ObjectProperty(None)
-    #scatterInstance   = ObjectProperty(None)
-    #positionIndicator = ObjectProperty(None)
-    
     canvasScaleFactor = 1 #scale from mm to pixels
     INCHES            = 25.4
     MILLIMETERS       = 1 
@@ -41,7 +37,9 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     
     def initialize(self):
-
+        
+        self.targetIndicator.color = (1,0,0)
+        
         self.drawWorkspace()
             
         Window.bind(on_resize = self.centerCanvas)
