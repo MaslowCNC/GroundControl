@@ -156,9 +156,6 @@ class SerialPortThread(MakesmithInitFuncs):
                 if time.time() - self.lastMessageTime > 2:
                     print "Connection Timed Out"
                     self.data.message_queue.put("Connection Timed Out\n")
-                    self.data.message_queue.put("Port is Open?: "      + str(self.serialInstance.isOpen()) + "\n")
-                    self.data.message_queue.put("pyserial version: " + str(serial.VERSION) + "\n")
-                    self.data.message_queue.put("Rx bytes available from OS: " + str(self.serialInstance.in_waiting) + "\n")
                     if self.data.uploadFlag:
                         self.data.message_queue.put("Message: USB connection lost. This has likely caused the machine to loose it's calibration, which can cause erratic behavior. It is recommended to stop the program, remove the sled, and perform the chain calibration process. Press Continue to override and proceed with the cut.")
                     self.data.connectionStatus = 0
