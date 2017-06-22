@@ -12,6 +12,9 @@ class RunMenu(FloatLayout):
         App.get_running_app().stop()
     
     def returnToCenter(self):
+        
+        self.data.gcode_queue.put("G90  ")
+        
         if int(self.data.config.get('Maslow Settings', 'zAxis')):
             if self.data.units == "INCHES":
                 self.data.gcode_queue.put("G00 Z.25 ")
