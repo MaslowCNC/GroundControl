@@ -32,6 +32,10 @@ class CalibrateLengthsPopup(GridLayout):
         self.data.gcode_queue.put("B09 R.5 ")
         self.data.gcode_queue.put("G90 ")
     
+    def stop(self):
+        self.data.quick_queue.put("!") 
+        with self.data.gcode_queue.mutex:
+            self.data.gcode_queue.queue.clear()
     
     def setZero(self):
         #mark that the sprockets are straight up
