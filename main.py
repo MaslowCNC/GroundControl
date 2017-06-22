@@ -428,7 +428,7 @@ class GroundControlApp(App):
             self.frontpage.setPosReadout(self.xval,self.yval,self.zval)
             self.frontpage.gcodecanvas.positionIndicator.setPos(self.xval,self.yval,self.data.units)
         except:
-            print "Machine Position Report Command Misread"
+            print "One Machine Position Report Command Misread"
             return
         
         
@@ -460,7 +460,7 @@ class GroundControlApp(App):
             
             
         except:
-            print "Machine Position Report Command Misread"
+            print "One Machine Position Report Command Misread"
         
         
     
