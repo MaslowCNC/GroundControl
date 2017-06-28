@@ -239,6 +239,8 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         '''
         
+        self.data.gcode_queue.put("G90  ")
+        
         #if the machine has a z-axis lift it then go home
         if int(self.data.config.get('Maslow Settings', 'zAxis')):
             if self.units == "INCHES":

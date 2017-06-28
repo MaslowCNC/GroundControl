@@ -46,7 +46,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self.popupContent      = CalibrateLengthsPopup(done=self.dismissMeasureMachinePopup)
         self.popupContent.data = self.data
         self._popup = Popup(title="Calibrate Chain Lengths", content=self.popupContent,
-                            size_hint=(0.85, 0.95))
+                            size_hint=(0.85, 0.95), auto_dismiss = False)
         self._popup.open()
     
     def manualCalibrateChainLengths(self):
@@ -79,7 +79,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self.popupContent      = MeasureMachinePopup(done=self.dismissMeasureMachinePopup)
         self.popupContent.data = self.data
         self._popup = Popup(title="Setup Machine Dimensions", content=self.popupContent,
-                            size_hint=(0.85, 0.95))
+                            size_hint=(0.85, 0.95), auto_dismiss = False)
         self._popup.open()
     
     def dismissMeasureMachinePopup(self):
