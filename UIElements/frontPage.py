@@ -124,10 +124,10 @@ class FrontPage(Screen, MakesmithInitFuncs):
         targetIndex = self.data.gcodeIndex + dist
         
         #check to see if we are still within the length of the file
-        if targetIndex < 0:             #negative index not allowed 
-            self.data.gcodeIndex = 0
-        elif maxIndex < 0:              #break if there is no data to read
+        if maxIndex < 0:              #break if there is no data to read
             return
+        elif targetIndex < 0:             #negative index not allowed 
+            self.data.gcodeIndex = 0
         elif targetIndex > maxIndex:    #reading past the end of the file is not allowed
             self.data.gcodeIndex = maxIndex
         else:
