@@ -173,6 +173,20 @@ class GroundControlApp(App):
             "desc": "The number of encoder steps per revolution of the z-axis",
             "section": "Advanced Settings",
             "key": "zEncoderSteps"
+        },
+        {
+            "type": "string",
+            "title": "Home Position X Coordinate",
+            "desc": "The X coordinate of the home position",
+            "section": "Advanced Settings",
+            "key": "homeX"
+        },
+        {
+            "type": "string",
+            "title": "Home Position Y Coordinate",
+            "desc": "The X coordinate of the home position",
+            "section": "Advanced Settings",
+            "key": "homeY"
         }
     ]
     '''
@@ -221,6 +235,9 @@ class GroundControlApp(App):
         
         self.data.comport = self.config.get('Maslow Settings', 'COMport')
         self.data.gcodeFile = self.config.get('Maslow Settings', 'openFile')
+        offsetX = float(self.config.get('Advanced Settings', 'homeX'))
+        offsetY = float(self.config.get('Advanced Settings', 'homeY'))
+        self.data.gcodeShift = [offsetX,offsetY]
         self.data.config  = self.config
         
         
@@ -270,7 +287,9 @@ class GroundControlApp(App):
         config.setdefaults('Advanced Settings', {'encoderSteps': 8148.0,
                                                  'gearTeeth': 10, 
                                                  'chainPitch':6.35,
-                                                 'zEncoderSteps':7560.0})
+                                                 'zEncoderSteps':7560.0,
+                                                 'homeX': 0.0,
+                                                 'homeY': 0.0})
         
         config.setdefaults('Ground Control Settings', {'zoomIn': "pageup",
                                                  'validExtensions':".nc, .ngc, .text, .gcode",
