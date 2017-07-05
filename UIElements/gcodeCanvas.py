@@ -217,12 +217,17 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             #Draw lines for G1 and G0
             with self.scatterObject.canvas:
                 Color(1, 1, 1)
-                self.addPoint(xTarget , yTarget)
-                '''if command == 'G00':
+                
+                if command == 'G00':
+                    #draw a dashed line
                     Line(points = (self.xPosition , self.yPosition , xTarget, yTarget), width = 1, group = 'gcode', dash_length = 4, dash_offset = 2)
-                elif command == 'G01':
-                    Line(points = (self.xPosition , self.yPosition , xTarget, yTarget), width = 1, group = 'gcode')
-                '''
+                    
+                    #start a new straight line from the end of the dashed line
+                    self.line = Line(points = (), width = 1, group = 'gcode')
+                    self.addPoint(xTarget , yTarget)
+                else:
+                    self.addPoint(xTarget , yTarget)
+                
             #If the zposition has changed, add indicators
             tol = 0.05 #Acceptable error in mm
             if abs(zTarget - self.zPosition) >= tol:
