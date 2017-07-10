@@ -187,6 +187,20 @@ class GroundControlApp(App):
             "desc": "The X coordinate of the home position",
             "section": "Advanced Settings",
             "key": "homeY"
+        },
+        {
+            "type": "bool",
+            "title": "Truncate Floating Point Numbers",
+            "desc": "Truncate floating point numbers at the specified number of decimal places",
+            "section": "Advanced Settings",
+            "key": "truncate"
+        },
+        {
+            "type": "string",
+            "title": "Floating Point Precision",
+            "desc": "If truncate floating point numbers is enabled, the number of digits after the decimal place to preserve",
+            "section": "Advanced Settings",
+            "key": "digits"
         }
     ]
     '''
@@ -289,7 +303,9 @@ class GroundControlApp(App):
                                                  'chainPitch':6.35,
                                                  'zEncoderSteps':7560.0,
                                                  'homeX': 0.0,
-                                                 'homeY': 0.0})
+                                                 'homeY': 0.0,
+                                                 'truncate': True,
+                                                 'digits' : 2})
         
         config.setdefaults('Ground Control Settings', {'zoomIn': "pageup",
                                                  'validExtensions':".nc, .ngc, .text, .gcode",
@@ -315,6 +331,10 @@ class GroundControlApp(App):
 
             if (key == "bedHeight" or key == "bedWidth"):
                 self.frontpage.gcodecanvas.drawWorkspace()
+
+        if section == "Advanced Settings":
+            if (key == "truncate") or (key == "digits"):
+                self.frontpage.gcodecanvas.reloadGcode()
 
     def close_settings(self, settings):
         """

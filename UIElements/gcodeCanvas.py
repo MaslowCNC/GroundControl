@@ -103,7 +103,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             rawfilters = filterfile.read()
             filtersparsed = re.sub(r'\(([^)]*)\)','',rawfilters) #removes mach3 style gcode comments
             filtersparsed = re.sub(r';([^\n]*)\n','',filtersparsed) #removes standard ; initiated gcode comments
-            filtersparsed = re.sub(r'([+-]?\d*\.\d{1,4})(\d*)',r'\g<1>',filtersparsed) #truncates all long floats to 4 decimal places, leaves shorter floats
+
+            if self.data.config.getint('Advanced Settings','truncate'):
+                digits = self.data.config.get('Advanced Settings','digits')
+                filtersparsed = re.sub(r'([+-]?\d*\.\d{1,'+digits+'})(\d*)',r'\g<1>',filtersparsed) #truncates all long floats to 4 decimal places, leaves shorter floats
+
             filtersparsed = re.split('\n', filtersparsed) #splits the gcode into elements to be added to the list
             filtersparsed = [x + ' ' for x in filtersparsed] #adds a space to the end of each line
             filtersparsed = [x.lstrip() for x in filtersparsed]
