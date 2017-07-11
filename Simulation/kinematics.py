@@ -306,31 +306,49 @@ class Kinematics():
         N = 0
 
         fact = 0
-
+        
+        print "test loop"
+        b = 0
+        while b < 5 :
+            print b
+            b = b + 1
+        print b
+        
         # gaus elimination, no pivot
         
         print "\n\ngaus elimination"
         print "Jac: "
         print self.Jac[0]
-
+        
+        print("Crits at begin: ")
+        print "self.Crit[0] " + str(self.Crit[0]*1000)
+        print "self.Crit[1] " + str(self.Crit[1]*1000)
+        print "self.Crit[2] " + str(self.Crit[2]*1000)
+        
         N = 3
         NN = N-1
-        i=1
+        i = 1
         while (i<=NN):
+            print "for loop #1";
+            print "i = " + str(i)
             J = (N+1-i)
             JJ = (J-1) * N-1
             L = J-1
             KK = -1
-            K=0
+            K = 0
             while (K<L):
-                fact = self.Jac[KK+J]/self.Jac[JJ+J]
+                print "for loop #2"
+                print "K = " + str(K)
+                fact = self.Jac[KK+J]/self.Jac[JJ+J];
                 M = 1
                 while (M<=J):
+                    print "for loop #3"
+                    print "M = " + str(M)
                     self.Jac[KK + M]= self.Jac[KK + M] -fact * self.Jac[JJ+M]
                     M = M + 1
+                KK = KK + N;
+                self.Crit[K] = self.Crit[K] - fact * self.Crit[J-1];
                 K = K + 1
-            KK = KK + N      
-            self.Crit[K] = self.Crit[K] - fact * self.Crit[J-1]
             i = i + 1
 
     #Lower triangular matrix solver
