@@ -304,7 +304,7 @@ class GroundControlApp(App):
                                                  'zEncoderSteps':7560.0,
                                                  'homeX': 0.0,
                                                  'homeY': 0.0,
-                                                 'truncate': True,
+                                                 'truncate': 1,
                                                  'digits' : 2})
         
         config.setdefaults('Ground Control Settings', {'zoomIn': "pageup",
