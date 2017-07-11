@@ -202,7 +202,9 @@ class Kinematics():
             self._MatSolv()     # solves the matrix equation Jx=-Criterion                                                     
                        
             # update the variables with the new estimate
-
+            
+            print "\n\n@@@@@@@@@@@@@@@@@@@@@"
+            
             self.Phi = self.Phi + self.Solution[0]
             self.Y1Plus = self.Y1Plus + self.Solution[1]                         #don't allow the anchor points to be inside a sprocket
             if (self.Y1Plus < self.R):
@@ -214,41 +216,52 @@ class Kinematics():
             
 
             self.Psi1 = self.Theta - self.Phi
-            self.Psi2 = self.Theta + self.Phi   
+            self.Psi2 = self.Theta + self.Phi
+            
+            print "self.Phi " + str(self.Phi*1000.0)
+            print "self.Y1Plus " + str(self.Y1Plus*1000.0)
+            print "self.Y2Plus " + str(self.Y2Plus*1000.0)
+            print "self.Psi1 " + str(self.Psi1*1000.0)
+            print "self.Psi2 " + str(self.Psi2*1000.0)
                                                                  #evaluate the
                                                                  #three criterion equations
-        self._MyTrig()
-        
-        Crit[0] = - _moment(Y1Plus, Y2Plus, Phi, MySinPhi, SinPsi1, CosPsi1, SinPsi2, CosPsi2)
-        Crit[1] = - _YOffsetEqn(Y1Plus, x - h * CosPsi1, SinPsi1)
-        Crit[2] = - _YOffsetEqn(Y2Plus, D - (x + h * CosPsi2), SinPsi2)
-        Tries = Tries + 1                                       # increment itteration count
+            self._MyTrig()
+            
+            self.Crit[0] = - self._moment(self.Y1Plus, self.Y2Plus, self.Phi, self.MySinPhi, self.SinPsi1, self.CosPsi1, self.SinPsi2, self.CosPsi2)
+            self.Crit[1] = - self._YOffsetEqn(self.Y1Plus, self.x - self.h * self.CosPsi1, self.SinPsi1)
+            self.Crit[2] = - self._YOffsetEqn(self.Y2Plus, self.D - (self.x + self.h * self.CosPsi2), self.SinPsi2)
+            Tries = Tries + 1                                       # increment itteration count
 
-      
-        #Variables are within accuracy limits
-        #  perform output computation
+          
+            #Variables are within accuracy limits
+            #  perform output computation
 
-        self.Offsetx1 = self.h * self.CosPsi1
-        self.Offsetx2 = self.h * self.CosPsi2
-        self.Offsety1 = self.h *  self.SinPsi1
-        self.Offsety2 = self.h * self.SinPsi2
-        self.TanGamma = (y - Offsety1 + Y1Plus)/(x - Offsetx1)
-        self.TanLambda = (y - Offsety2 + Y2Plus)/(D -(x + Offsetx2))
-        self.Gamma = atan(TanGamma)
-        self.Lambda =atan(TanLambda)
+            self.Offsetx1 = self.h * self.CosPsi1
+            self.Offsetx2 = self.h * self.CosPsi2
+            self.Offsety1 = self.h *  self.SinPsi1
+            self.Offsety2 = self.h * self.SinPsi2
+            self.TanGamma = (self.y - self.Offsety1 + self.Y1Plus)/(self.x - self.Offsetx1)
+            self.TanLambda = (self.y - self.Offsety2 + self.Y2Plus)/(self.D -(self.x + self.Offsetx2))
+            self.Gamma  = math.atan(self.TanGamma)
+            self.Lambda = math.atan(self.TanLambda)
 
-        #compute the chain lengths
+            #compute the chain lengths
 
-        if(Mirror):
-            Chain2 = sqrt((x - Offsetx1)*(x - Offsetx1) + (y + Y1Plus - Offsety1)*(y + Y1Plus - Offsety1)) - R * TanGamma + R * Gamma   #right chain length                       
-            Chain1 = sqrt((D - (x + Offsetx2))*(D - (x + Offsetx2))+(y + Y2Plus - Offsety2)*(y + Y2Plus - Offsety2)) - R * TanLambda + R * Lambda   #left chain length
-        else:
-            Chain1 = sqrt((x - Offsetx1)*(x - Offsetx1) + (y + Y1Plus - Offsety1)*(y + Y1Plus - Offsety1)) - R * TanGamma + R * Gamma   #left chain length                       
-            Chain2 = sqrt((D - (x + Offsetx2))*(D - (x + Offsetx2))+(y + Y2Plus - Offsety2)*(y + Y2Plus - Offsety2)) - R * TanLambda + R * Lambda   #right chain length
-        
-        
-        aChainLength = Chain1
-        bChainLength = Chain2
+            if(self.Mirror):
+                Chain2 = math.sqrt((self.x - self.Offsetx1)*(self.x - self.Offsetx1) + (self.y + self.Y1Plus - self.Offsety1)*(self.y + self.Y1Plus - self.Offsety1)) - self.R * self.TanGamma + self.R * self.Gamma   #right chain length                       
+                Chain1 = math.sqrt((self.D - (self.x + self.Offsetx2))*(self.D - (self.x + self.Offsetx2))+(self.y + self.Y2Plus - self.Offsety2)*(self.y + self.Y2Plus - self.Offsety2)) - self.R * self.TanLambda + self.R * self.Lambda   #left chain length
+            else:
+                Chain1 = math.sqrt((self.x - self.Offsetx1)*(self.x - self.Offsetx1) + (self.y + self.Y1Plus - self.Offsety1)*(self.y + self.Y1Plus - self.Offsety1)) - self.R * self.TanGamma + self.R * self.Gamma   #left chain length                       
+                Chain2 = math.sqrt((self.D - (self.x + self.Offsetx2))*(self.D - (self.x + self.Offsetx2))+(self.y + self.Y2Plus - self.Offsety2)*(self.y + self.Y2Plus - self.Offsety2)) - self.R * self.TanLambda + self.R * self.Lambda   #right chain length
+            
+            
+            print "\n\n++++++++++++++"
+            print "Returning Lengths: "
+            print "Chain1: " + str(Chain1)
+            print "Chain2: " + str(Chain2)
+            
+            aChainLength = Chain1
+            bChainLength = Chain2
 
     def forward(self, chainALength, chainBLength):
         '''
@@ -356,37 +369,34 @@ class Kinematics():
         print "\n\nLower triangular matrix solver";
         
         self.Solution[0] =  self.Crit[0]/self.Jac[0]
+        ii = N-1
         
         print "self.Solution[0] " + str(self.Solution[0]*1000)
         print "self.Crit[0] " + str(self.Crit[0]*1000)
         print "self.Crit[1] " + str(self.Crit[1]*1000)
         print "self.Crit[2] " + str(self.Crit[2]*1000)
-        
-        ii = N-1
-        
         print "ii " + str(ii)
         print "N " + str(N)
-        i=2
-        while (i<N):
-            print "outer loop i:" + str(i)
-            M = i -1
-            Sum = self.Crit[i-1]
-            print "Sum " + str(Sum)
-            J=1
-            while (J<M):
-                print "inner loop J:" + str(J)
-                Sum = Sum-self.Jac[ii+J]*self.Solution[J-1]
-                print "Sum " + str(Sum)
-                J = J + 1
-            i = i + 1
-        i = i - 1
         
-        print "\nEnd Mat Solve:---------------------------------------------------------- "
-        print "ii+i " + str(ii+i)
-        print "Sum " + str(Sum)
-        print "self.Jac[ii+i] " + str(self.Jac[ii+i]*1000)
-        self.Solution[i-1] = Sum/self.Jac[ii+i]
-        ii = ii + N
+        i = 2
+        while (i<=N):
+            print "Loop #1"
+            print "i = " + str(i)
+            M = i -1;
+            Sum = self.Crit[i-1];
+            
+            J = 1
+            while (J<=M):
+                print "loop #2"
+                print "J = " + str(J)
+                Sum = Sum-self.Jac[ii+J]*self.Solution[J-1];
+                print "Sum = " + str(Sum*1000)
+                J = J + 1
+            
+            self.Solution[i-1] = Sum/self.Jac[ii+i];
+            ii = ii + N;
+            
+            i = i + 1
     
     def _moment(self, Y1Plus, Y2Plus, Phi, MSinPhi, MSinPsi1, MCosPsi1, MSinPsi2, MCosPsi2):   #computes net moment about center of mass
         '''Temp
