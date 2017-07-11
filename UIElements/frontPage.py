@@ -124,10 +124,10 @@ class FrontPage(Screen, MakesmithInitFuncs):
         targetIndex = self.data.gcodeIndex + dist
         
         #check to see if we are still within the length of the file
-        if targetIndex < 0:             #negative index not allowed 
-            self.data.gcodeIndex = 0
-        elif maxIndex < 0:              #break if there is no data to read
+        if maxIndex < 0:              #break if there is no data to read
             return
+        elif targetIndex < 0:             #negative index not allowed 
+            self.data.gcodeIndex = 0
         elif targetIndex > maxIndex:    #reading past the end of the file is not allowed
             self.data.gcodeIndex = maxIndex
         else:
@@ -167,6 +167,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
             print("Run Paused")
         else:
             self.data.uploadFlag = 1
+            self.data.quick_queue.put("~") #send cycle resume command to unpause the machine
             print("Run Resumed")
     
     def jmpsize(self):
@@ -238,6 +239,8 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         '''
         
+        self.data.gcode_queue.put("G90  ")
+        
         #if the machine has a z-axis lift it then go home
         if int(self.data.config.get('Maslow Settings', 'zAxis')):
             if self.units == "INCHES":
@@ -259,6 +262,9 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         '''
         self.data.gcodeShift = [self.numericalPosX,self.numericalPosY]
+        self.data.config.set('Advanced Settings', 'homeX', str(self.numericalPosX))
+        self.data.config.set('Advanced Settings', 'homeY', str(self.numericalPosY))
+        self.data.config.write()
     
     def startRun(self):
         

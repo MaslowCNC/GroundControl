@@ -11,7 +11,7 @@ from   kivy.uix.popup                            import   Popup
 
 class MeasureMachinePopup(GridLayout):
     done   = ObjectProperty(None)
-    numberOfTimesTestCutRun = 0
+    numberOfTimesTestCutRun = -2
     
     def slideJustChanged(self):
         if self.carousel.index == 0:
@@ -32,36 +32,52 @@ class MeasureMachinePopup(GridLayout):
         if self.carousel.index == 4:
             #review calculations
             self.updateReviewValuesText()
-        if self.carousel.index == 7:
+        if self.carousel.index == 8:
             #Cut test shape
             self.goFwdBtn.disabled = False
             self.data.pushSettings()
-        if self.carousel.index == 8:
+        if self.carousel.index == 9:
             #Final finish step
             self.goFwdBtn.disabled = True
+    
+	def begin(self):
+		print "begin fcn ran"
+		self.carousel.load_next()
+    
+    def defineInitialState(self):
+        '''
         
+        Ensure that the calibration process begins with known initial conditions for where the axis
+        think that they are are by setting both to zero. This prevents strange behavior when rotating
+        each sprocket to 12:00
+        
+        '''
+        print "define initial state"
+        self.data.gcode_queue.put("B06 L0 R0 ");
+        self.carousel.load_next()
+    
     def LeftCW(self):
         print "left CW"
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B09 L.5 ")
+        self.data.gcode_queue.put("B09 L.5 F100 ")
         self.data.gcode_queue.put("G90 ")
     
     def LeftCCW(self):
         print "left CCW"
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B09 L-.5 ")
+        self.data.gcode_queue.put("B09 L-.5 F100 ")
         self.data.gcode_queue.put("G90 ")
         
     def RightCW(self):
         print "right CW"
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B09 R-.5 ")
+        self.data.gcode_queue.put("B09 R-.5 F100 ")
         self.data.gcode_queue.put("G90 ")
     
     def RightCCW(self):
         print "right CCW"
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B09 R.5 ")
+        self.data.gcode_queue.put("B09 R.5 F100 ")
         self.data.gcode_queue.put("G90 ")
     
     def extendLeft(self, dist):
@@ -165,7 +181,6 @@ class MeasureMachinePopup(GridLayout):
     def cutTestPatern(self):
         
         #Credit for this test pattern to DavidLang
-        #self.data.gcode_queue.put("G21 ")
         self.data.units = "MM"
         self.data.gcode_queue.put("G21 ")
         self.data.gcode_queue.put("G90  ")
@@ -213,4 +228,22 @@ class MeasureMachinePopup(GridLayout):
             self.unitsBtn.text = 'Inches'
         else:
             self.unitsBtn.text = 'MM'
+    
+    def moveZ(self, dist):
+        '''
         
+        Move the z-axis the specified distance
+        
+        '''
+        self.data.units = "MM"
+        self.data.gcode_queue.put("G21 ")
+        self.data.gcode_queue.put("G91 G00 Z" + str(dist) + " G90 ")
+    
+    def zeroZ(self):
+        '''
+        
+        Define the z-axis to be currently at height 0
+        
+        '''
+        self.data.gcode_queue.put("G10 Z0 ")
+        self.carousel.load_next()

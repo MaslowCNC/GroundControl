@@ -20,10 +20,6 @@ import math
 
 class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
-    #scatterObject     = ObjectProperty(None)
-    #scatterInstance   = ObjectProperty(None)
-    #positionIndicator = ObjectProperty(None)
-    
     canvasScaleFactor = 1 #scale from mm to pixels
     INCHES            = 25.4
     MILLIMETERS       = 1 
@@ -41,7 +37,9 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     
     def initialize(self):
-
+        
+        self.targetIndicator.color = (1,0,0)
+        
         self.drawWorkspace()
             
         Window.bind(on_resize = self.centerCanvas)
@@ -105,6 +103,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             rawfilters = filterfile.read()
             filtersparsed = re.sub(r'\(([^)]*)\)','',rawfilters) #removes mach3 style gcode comments
             filtersparsed = re.sub(r';([^\n]*)\n','',filtersparsed) #removes standard ; initiated gcode comments
+
+            if self.data.config.getint('Advanced Settings','truncate'):
+                digits = self.data.config.get('Advanced Settings','digits')
+                filtersparsed = re.sub(r'([+-]?\d*\.\d{1,'+digits+'})(\d*)',r'\g<1>',filtersparsed) #truncates all long floats to 4 decimal places, leaves shorter floats
+
             filtersparsed = re.split('\n', filtersparsed) #splits the gcode into elements to be added to the list
             filtersparsed = [x + ' ' for x in filtersparsed] #adds a space to the end of each line
             filtersparsed = [x.lstrip() for x in filtersparsed]
@@ -219,12 +222,17 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             #Draw lines for G1 and G0
             with self.scatterObject.canvas:
                 Color(1, 1, 1)
-                self.addPoint(xTarget , yTarget)
-                '''if command == 'G00':
+                
+                if command == 'G00':
+                    #draw a dashed line
                     Line(points = (self.xPosition , self.yPosition , xTarget, yTarget), width = 1, group = 'gcode', dash_length = 4, dash_offset = 2)
-                elif command == 'G01':
-                    Line(points = (self.xPosition , self.yPosition , xTarget, yTarget), width = 1, group = 'gcode')
-                '''
+                    
+                    #start a new straight line from the end of the dashed line
+                    self.line = Line(points = (), width = 1, group = 'gcode')
+                    self.addPoint(xTarget , yTarget)
+                else:
+                    self.addPoint(xTarget , yTarget)
+                
             #If the zposition has changed, add indicators
             tol = 0.05 #Acceptable error in mm
             if abs(zTarget - self.zPosition) >= tol:
@@ -346,19 +354,38 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             print originalLine
             return originalLine
     
-    def updateOneLine(self):
+    def loadNextLine(self):
+        '''
+        
+        Load the next line of gcode
+        
+        '''
+        
+        try:
+            self.data.gcode[self.lineNumber] = self.moveLine(self.data.gcode[self.lineNumber])    #move the line if the gcode has been moved
+            fullString = self.data.gcode[self.lineNumber]
+            self.lineNumber = self.lineNumber + 1
+        except:
+            return #we have reached the end of the file
+        
+        #if the line contains multiple gcode commands split them and execute them individually
+        listOfLines = fullString.split('G')
+        
+        if len(listOfLines) > 1:                              #if the line contains at least one 'G'
+            for line in listOfLines:
+                if len(line) > 0:                                   #If the line is not blank
+                    self.updateOneLine('G' + line)                     #Draw it
+        else:
+            self.updateOneLine(fullString)
+        
+    def updateOneLine(self, fullString):
         '''
         
         Draw the next line on the gcode canvas
         
         '''
-        validPrefixList = ['G00','G0 ','G1 ','G01','G2 ','G02','G3 ','G03']
         
-        try:
-            self.data.gcode[self.lineNumber] = self.moveLine(self.data.gcode[self.lineNumber])    #move the line if the gcode has been moved
-            fullString = self.data.gcode[self.lineNumber]
-        except:
-            return #we have reached the end of the file
+        validPrefixList = ['G00','G0 ','G1 ','G01','G2 ','G02','G3 ','G03', 'G17']
         
         fullString = fullString + " " #ensures that there is a space at the end of the line
         
@@ -369,7 +396,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.prependString = gString
         
         if fullString.find('G') == -1: #this adds the gcode operator if it is omitted by the program
-            fullString = self.prependString + fullString
+            fullString = self.prependString + ' ' + fullString
             gString = self.prependString
         
         if gString == 'G00' or gString == 'G0 ':
@@ -383,6 +410,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                            
         if gString == 'G03' or gString == 'G3 ':
             self.drawArc(fullString, 'G03')
+        
+        if gString == 'G17':
+            #Take no action, XY coordinate plane is the default
+            pass
         
         if gString == 'G18':
             print "G18 not supported"
@@ -401,12 +432,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if gString == 'G91':
             self.absoluteFlag = 1
         
-        self.lineNumber = self.lineNumber + 1
-        
     def callBackMechanism(self, callback) :
         '''
         
-        Call the updateOneLine function periodically in a non-blocking way to
+        Call the loadNextLine function periodically in a non-blocking way to
         update the gcode.
         
         '''
@@ -417,7 +446,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         #Draw numberOfTimesToCall lines on the canvas
         numberOfTimesToCall = 500
         for _ in range(numberOfTimesToCall):
-            self.updateOneLine()
+            self.loadNextLine()
         
         #Repeat until end of file
         if self.lineNumber < min(len(self.data.gcode),60000):
