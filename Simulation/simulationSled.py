@@ -18,7 +18,7 @@ class SimulationSled(FloatLayout):
     rightChain       = None
     
     
-    sledHeight = 130
+    sledHeight = 100
     sledWidth  = 300
     
     toolX           = 0
@@ -41,6 +41,8 @@ class SimulationSled(FloatLayout):
         self.rightChain.bind(toPos   = self.updateSled)
         
         self.kinematics = Kinematics()
+        self.sledWidth  = self.kinematics.l
+        self.sledHeight = self.kinematics.s
         
         self.initialized = True
         
@@ -51,7 +53,15 @@ class SimulationSled(FloatLayout):
         if self.initialized:
             
             self.kinematics.recomputeGeometry()
-            self.kinematics.inverse(0,0)
+            
+            lineLengths = self.kinematics.inverse(self.toolX - 1219.2,self.toolY- 609.6)
+            print "read:"
+            print lineLengths
+            print self.leftChain.length
+            print self.rightChain.length
+            
+            print self.toolX - 1219.2
+            print self.toolY - 609.6
             
             leftChainAttachment  = (self.toolX - self.sledWidth/2, self.toolY + self.sledHeight)
             rightChainAttahcment = (self.toolX + self.sledWidth/2, self.toolY + self.sledHeight)

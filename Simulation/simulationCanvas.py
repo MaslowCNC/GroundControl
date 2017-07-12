@@ -6,6 +6,7 @@ from kivy.core.window                        import Window
 from simulationLine                          import SimulationLine
 from simulationAngle                         import SimulationAngle
 from simulationSled                          import SimulationSled
+from kinematics                              import Kinematics
 from chainLengthToXY                         import ChainLengthtoXY
 from posToChainLength                        import PosToChainLength
 from kivy.graphics.transformation            import Matrix
@@ -16,10 +17,10 @@ import math
 class SimulationCanvas(FloatLayout):
     scatterObject     = ObjectProperty(None)
     
-    motorLift          = 220
-    motorTranslate     = 258.8
     bedWidth           = 2438.4 #8'
     bedHeight          = 1219.2 #4'
+    motorLift          = Kinematics.motorOffsetY
+    motorTranslate     = (Kinematics.D - bedWidth)/2
     
     motorY = bedHeight + motorLift
     motor2X = bedWidth + motorTranslate
