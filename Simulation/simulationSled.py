@@ -4,6 +4,8 @@ from kivy.graphics                           import Color, Ellipse, Line
 from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
 
+from kinematics                              import Kinematics
+
 import re
 import math
 
@@ -11,40 +13,26 @@ class SimulationSled(FloatLayout):
     
     #scatterObject     = ObjectProperty(None)
     
-    angleObject   = None
-    leftChain = None
-    rightChain = None
+    angleObject      = None
+    leftChain        = None
+    rightChain       = None
     
-    sledPointOne    = ObjectProperty([0,0]) #top right corner
-    sledPointTwo    = ObjectProperty([0,0]) #top left corner
-    sledToolPos     = ObjectProperty([0,0]) #top left corner
-    sledMidpointTop = ObjectProperty([0,0])
-    bottomLeft      = ObjectProperty([0,0])
-    bottomRight     = ObjectProperty([0,0])
     
-    sledHeight = 130
+    sledHeight = 100
     sledWidth  = 300
     
     toolX           = 0
     toolY           = 0
     
-    slant = 0
-    slantAsString       = StringProperty("Slant: ")
-    toolPosAsString     = StringProperty("Pos: ")
-    topLengthAsString   = StringProperty("Length: ")
-    lengthOfTopBar      = sledWidth
-    correctionFactor    = [0,0]
-    correctionFactorString = StringProperty("Correction: " + str(correctionFactor))
-    errorDist           = 0
-    errorDistString     = StringProperty("Error: " + str(errorDist))
+    widthLinePoints  = ObjectProperty([0,0,0,0])
+    heightLinePoints = ObjectProperty([0,0,0,0])
     
     initialized         = False
     
     
-    def initialize(self, leftChain, rightChain, end, angle):
+    def initialize(self, leftChain, rightChain, end):
         self.leftChain = leftChain
         self.rightChain = rightChain
-        self.angleObject = angle
         self.end = end
         
         self.leftChain.bind(fromPos = self.updateSled)
@@ -52,25 +40,37 @@ class SimulationSled(FloatLayout):
         self.rightChain.bind(fromPos = self.updateSled)
         self.rightChain.bind(toPos   = self.updateSled)
         
+        self.kinematics = Kinematics()
+        self.sledWidth  = self.kinematics.l
+        self.sledHeight = self.kinematics.s
+        
         self.initialized = True
         
         self.updateSled()
-    
     
     def updateSled(self, *args):
         
         if self.initialized:
             
+            self.kinematics.recomputeGeometry()
+            
+            lineLengths = self.kinematics.inverse(self.toolX - 1219.2,self.toolY- 609.6)
+            print "read:"
+            print lineLengths
+            print self.leftChain.length
+            print self.rightChain.length
+            
+            print self.toolX - 1219.2
+            print self.toolY - 609.6
+            
             leftChainAttachment  = (self.toolX - self.sledWidth/2, self.toolY + self.sledHeight)
             rightChainAttahcment = (self.toolX + self.sledWidth/2, self.toolY + self.sledHeight)
             
-            print self.toolX
-            print self.sledWidth/2
+            self.widthLinePoints  = (leftChainAttachment[0], leftChainAttachment[1], rightChainAttahcment[0], rightChainAttahcment[1])
+            self.heightLinePoints = (self.toolX, self.toolY, self.toolX, self.toolY + self.sledHeight)
             
             self.leftChain.toPos  = leftChainAttachment
             self.rightChain.toPos = rightChainAttahcment
-            
-    
     
     def setXY(self, x, y):
         

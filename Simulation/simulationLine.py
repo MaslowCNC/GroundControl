@@ -25,7 +25,7 @@ class SimulationLine(FloatLayout):
     
     def updateLength(self, *args):
         self.length = math.sqrt(math.pow((self.fromPos[0] - self.toPos[0]),2) + math.pow((self.fromPos[1] - self.toPos[1]),2))
-        self.lengthAsString = str(self.length)
+        self.lengthAsString = ""
         try:
             self.slope = (self.fromPos[1] - self.toPos[1])/(self.fromPos[0] - self.toPos[0])
         except:
