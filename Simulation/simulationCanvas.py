@@ -33,6 +33,12 @@ class SimulationCanvas(GridLayout):
         self.sledMountSpacingError.bind(value=self.onSliderChange)
         self.sledCGError.bind(value=self.onSliderChange)
         
+        mat = Matrix().scale(.3, .3, 1)
+        self.scatterInstance.apply_transform(mat)
+        
+        mat = Matrix().translate(8000, 8000, 0)
+        self.scatterInstance.apply_transform(mat)
+        
         self.recompute()
         
     def setInitialZoom(self):
@@ -101,6 +107,7 @@ class SimulationCanvas(GridLayout):
         for point in self.listOfDistortedPoints:
             points.append(point[0])
             points.append(point[1])
+        
         
         with self.scatterInstance.canvas:
             Color(1,0,0)
