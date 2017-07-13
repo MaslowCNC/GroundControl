@@ -6,6 +6,8 @@ from kivy.core.window                        import Window
 from kinematics                              import Kinematics
 from testPoint                               import TestPoint
 from kivy.graphics.transformation            import Matrix
+from kivy.clock                              import Clock
+from functools                               import partial
 
 import re
 import math
@@ -55,9 +57,35 @@ class SimulationCanvas(GridLayout):
         #re-draw 4x8 outline
         self.drawOutline()
         
-        testPoint = TestPoint()
-        testPoint.initialize(self.scatterInstance.canvas, self.correctKinematics, self.distortedKinematics)
+        leftRigthBound  = int(self.correctKinematics.machineWidth/2)
+        topBottomBound  = int(self.correctKinematics.machineHeight/2)
+        
+        self.testPointGenerator = TestPoint()
+        self.testPointGenerator.initialize(self.scatterInstance.canvas, self.correctKinematics, self.distortedKinematics)
+        
+        self.listOfPointsToPlot = []
+        self.pointIndex = 0
+        
+        for j in range(-topBottomBound, topBottomBound, 200):
+            for i in range(-leftRigthBound, leftRigthBound, 200):
+                point = (i,j)
+                self.listOfPointsToPlot.append(point)
+                
+        self.plotNextPoint()
     
+    def plotNextPoint(self, *args):
+        point = self.listOfPointsToPlot[self.pointIndex]
+        self.pointIndex = self.pointIndex + 1
+        xValue = point[0]
+        yValue = point[1]
+        
+        self.testPointGenerator.plotPoint(xValue, yValue)
+        
+        if self.pointIndex < len(self.listOfPointsToPlot):
+            Clock.schedule_once(self.plotNextPoint)
+        
+        
+        
     def addPoints(self):
         pass
     
@@ -66,8 +94,6 @@ class SimulationCanvas(GridLayout):
         self.distortedKinematics.motorOffsetY = self.correctKinematics.motorOffsetY + self.motorVerticalError.value
         self.distortedKinematics.l = self.correctKinematics.l + self.sledMountSpacingError.value
         self.distortedKinematics.D = self.correctKinematics.D + self.motorSpacingError.value
-        
-        self.recompute()
     
     def drawOutline(self):
         
@@ -79,3 +105,19 @@ class SimulationCanvas(GridLayout):
             Line(points=(bedWidth/2, -bedHeight/2, bedWidth/2, bedHeight/2))
             Line(points=(-bedWidth/2, -bedHeight/2, +bedWidth/2, -bedHeight/2))
             Line(points=(-bedWidth/2, bedHeight/2, +bedWidth/2, bedHeight/2))
+            
+    def on_touch_up(self, touch):
+        
+        if touch.is_mouse_scrolling:
+            self.zoomCanvas(touch)
+    
+    def zoomCanvas(self, touch):
+        if touch.is_mouse_scrolling:
+            scaleFactor = .1
+            
+            if touch.button == 'scrollup':
+                mat = Matrix().scale(1-scaleFactor, 1-scaleFactor, 1)
+                self.scatterInstance.apply_transform(mat, anchor = touch.pos)
+            elif touch.button == 'scrolldown':
+                mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
+                self.scatterInstance.apply_transform(mat, anchor = touch.pos)
