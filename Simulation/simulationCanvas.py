@@ -102,28 +102,37 @@ class SimulationCanvas(GridLayout):
         print "would draw lines now"
         
         #draw distorted points
-        points = []
         
-        for point in self.listOfDistortedPoints:
-            points.append(point[0])
-            points.append(point[1])
+        print "number of verticalPoints"
+        print len(self.verticalPoints)
         
-        
-        with self.scatterInstance.canvas:
-            Color(1,0,0)
-            Line(points=points)
+        for i in range(0, len(self.verticalPoints)):
+            points = []
+            
+            for j in range(0,len(self.horizontalPoints)):
+                point = self.listOfDistortedPoints[j + i*len(self.horizontalPoints)]
+                points.append(point[0])
+                points.append(point[1])
+            
+            with self.scatterInstance.canvas:
+                Color(1,0,0)
+                Line(points=points)
         
         
         #draw regular lines
-        points = []
         
-        for point in self.listOfPointsPlotted:
-            points.append(point[0])
-            points.append(point[1])
+        for i in range(0, len(self.verticalPoints)):
+            points = []
+            
+            for j in range(0,len(self.horizontalPoints)):
+                point = self.listOfPointsPlotted[j + i*len(self.horizontalPoints)]
+                points.append(point[0])
+                points.append(point[1])
+            
+            with self.scatterInstance.canvas:
+                Color(0,1,0)
+                Line(points=points)
         
-        with self.scatterInstance.canvas:
-            Color(0,1,0)
-            Line(points=points)
         
     def addPoints(self):
         pass
