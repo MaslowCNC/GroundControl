@@ -43,7 +43,12 @@ class TestPoint(GridLayout):
         #print distortedPosY
         
         with self.targetCanvas:
-            Color(1, 1, 0)
+            Color(0, 1, 0)
             Line(circle=(correctPosX, correctPosY, radius))
-            Color(1, 1, 1)
+            Color(1, 0, 0)
             Line(circle=(distortedPosX, distortedPosY, radius))
+        
+        distortedPoint = (distortedPosX, distortedPosY)
+        correctPoint   = (correctPosX, correctPosY)
+        
+        return correctPoint, distortedPoint

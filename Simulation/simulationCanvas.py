@@ -64,10 +64,14 @@ class SimulationCanvas(GridLayout):
         self.testPointGenerator.initialize(self.scatterInstance.canvas, self.correctKinematics, self.distortedKinematics)
         
         self.listOfPointsToPlot = []
+        self.listOfPointsPlotted = []
+        self.listOfDistortedPoints = []
         self.pointIndex = 0
+        self.verticalPoints   = range(topBottomBound, -topBottomBound, -200)
+        self.horizontalPoints = range(-leftRigthBound, leftRigthBound, 200)
         
-        for j in range(-topBottomBound, topBottomBound, 200):
-            for i in range(-leftRigthBound, leftRigthBound, 200):
+        for j in self.verticalPoints:
+            for i in self.horizontalPoints:
                 point = (i,j)
                 self.listOfPointsToPlot.append(point)
                 
@@ -79,12 +83,40 @@ class SimulationCanvas(GridLayout):
         xValue = point[0]
         yValue = point[1]
         
-        self.testPointGenerator.plotPoint(xValue, yValue)
+        pointPlotted, distortedPoint = self.testPointGenerator.plotPoint(xValue, yValue)
+        self.listOfPointsPlotted.append(pointPlotted)
+        self.listOfDistortedPoints.append(distortedPoint)
         
         if self.pointIndex < len(self.listOfPointsToPlot):
             Clock.schedule_once(self.plotNextPoint)
+        else:
+            self.drawLines()
+        
+    def drawLines(self):
+        print "would draw lines now"
+        
+        #draw distorted points
+        points = []
+        
+        for point in self.listOfDistortedPoints:
+            points.append(point[0])
+            points.append(point[1])
+        
+        with self.scatterInstance.canvas:
+            Color(1,0,0)
+            Line(points=points)
         
         
+        #draw regular lines
+        points = []
+        
+        for point in self.listOfPointsPlotted:
+            points.append(point[0])
+            points.append(point[1])
+        
+        with self.scatterInstance.canvas:
+            Color(0,1,0)
+            Line(points=points)
         
     def addPoints(self):
         pass
