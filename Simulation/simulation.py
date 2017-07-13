@@ -27,6 +27,8 @@ class SimulationApp(App):
         self.simulationCanvas = SimulationCanvas()
         interface.add_widget(self.simulationCanvas)
         
+        self.simulationCanvas.initialize()
+        
         return interface
         
         

@@ -5,11 +5,14 @@
     motorVerticalError:motorVerticalError
     sledMountSpacingError:sledMountSpacingError
     sledCGError:sledCGError
+    scatterInstance:scatterInstance
     
     cols: 2
-    Label:
-        text: "this is the canvas"
+    ScatterPlane:
+        do_rotation: False
+        id: scatterInstance
         size_hint_x: .9
+        
     GridLayout:
         cols: 1
         size_hint_x: .1
@@ -46,4 +49,8 @@
         Button:
             text: "Reset All"
             on_release: root.resetSliders()
-            
+        Button:
+            text: "Recompute"
+            on_release: root.recompute()
+
+<TestPoint>

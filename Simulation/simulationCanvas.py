@@ -4,6 +4,7 @@ from kivy.graphics                           import Color, Ellipse, Line
 from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
 from kinematics                              import Kinematics
+from testPoint                               import TestPoint
 from kivy.graphics.transformation            import Matrix
 
 import re
@@ -20,10 +21,17 @@ class SimulationCanvas(GridLayout):
     motorY = bedHeight + motorLift
     motor2X = bedWidth + motorTranslate
     
-    
+    correctKinematics   = Kinematics()
+    distortedKinematics = Kinematics()
     
     def initialize(self):
-        pass
+        print "canvas initialized"
+        self.motorSpacingError.bind(value=self.onSliderChange)
+        self.motorVerticalError.bind(value=self.onSliderChange)
+        self.sledMountSpacingError.bind(value=self.onSliderChange)
+        self.sledCGError.bind(value=self.onSliderChange)
+        
+        self.recompute()
         
     def setInitialZoom(self):
         mat = Matrix().scale(.4, .4, 1)
@@ -39,3 +47,35 @@ class SimulationCanvas(GridLayout):
         self.sledMountSpacingError.value = 0
         self.sledCGError.value = 0
     
+    def recompute(self):
+        print "recompute"
+        
+        self.scatterInstance.canvas.clear()
+        
+        #re-draw 4x8 outline
+        self.drawOutline()
+        
+        testPoint = TestPoint()
+        testPoint.initialize(self.scatterInstance.canvas, self.correctKinematics, self.distortedKinematics)
+    
+    def addPoints(self):
+        pass
+    
+    def onSliderChange(self, *args):
+        
+        self.distortedKinematics.motorOffsetY = self.correctKinematics.motorOffsetY + self.motorVerticalError.value
+        self.distortedKinematics.l = self.correctKinematics.l + self.sledMountSpacingError.value
+        self.distortedKinematics.D = self.correctKinematics.D + self.motorSpacingError.value
+        
+        self.recompute()
+    
+    def drawOutline(self):
+        
+        bedWidth  = self.correctKinematics.machineWidth
+        bedHeight = self.correctKinematics.machineHeight
+        
+        with self.scatterInstance.canvas:
+            Line(points=(-bedWidth/2, -bedHeight/2, -bedWidth/2, bedHeight/2))
+            Line(points=(bedWidth/2, -bedHeight/2, bedWidth/2, bedHeight/2))
+            Line(points=(-bedWidth/2, -bedHeight/2, +bedWidth/2, -bedHeight/2))
+            Line(points=(-bedWidth/2, bedHeight/2, +bedWidth/2, bedHeight/2))
