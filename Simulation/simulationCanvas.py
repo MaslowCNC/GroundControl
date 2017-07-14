@@ -55,7 +55,7 @@ class SimulationCanvas(GridLayout):
         self.motorSpacingError.value = 0
         self.motorVerticalError.value = 0
         self.sledMountSpacingError.value = 0
-        self.sledCGError.value = 0
+        self.vertBitDist.value = 0
     
     def recompute(self):
         print "recompute"
