@@ -162,9 +162,16 @@ class SimulationCanvas(GridLayout):
     def onSliderChange(self, *args):
         
         self.distortedKinematics.motorOffsetY = self.correctKinematics.motorOffsetY + self.motorVerticalError.value
+        self.motorVerticalErrorLabel.text = "Motor Vertical\nError: " + str(int(self.motorVerticalError.value)) + "mm"
+        
         self.distortedKinematics.l = self.correctKinematics.l + self.sledMountSpacingError.value
+        self.sledMountSpacingErrorLabel.text = "Sled Mount\nSpacing Error: " + str(int(self.sledMountSpacingError.value)) + "mm"
+        
         self.distortedKinematics.D = self.correctKinematics.D + self.motorSpacingError.value
+        self.motorSpacingErrorLabel.text = "Motor Spacing\nError: " + str(int(self.motorSpacingError.value)) + "mm"
+        
         self.distortedKinematics.s = self.correctKinematics.s + self.vertBitDist.value
+        self.vertBitDistLabel.text = "Vert Dist To\nBit Error: " + str(int(self.vertBitDist.value)) + "mm"
         
         self.distortedKinematics.recomputeGeometry()
     
