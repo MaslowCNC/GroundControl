@@ -6,14 +6,23 @@
     sledMountSpacingError:sledMountSpacingError
     scatterInstance:scatterInstance
     vertBitDist:vertBitDist
+    vertCGDist:vertCGDist
     motorSpacingErrorLabel:motorSpacingErrorLabel
     motorVerticalErrorLabel:motorVerticalErrorLabel
     sledMountSpacingErrorLabel:sledMountSpacingErrorLabel
     vertBitDistLabel:vertBitDistLabel
+    vertCGDistLabel:vertCGDistLabel
+    machineLabel:machineLabel
+    gridSize:gridSize
+    gridSizeLabel:gridSizeLabel
     
-    rows: 2
+    rows: 3
     Label:
         text: "This simulation is designed to help us understand how the math behind Maslow is affected by errors in the computed machine dimensions\nTry adding error to any measurement, then press Recompute to see the affect\nThe path computed with the correct values is shown in green, the path with error added is shown in red"
+        size_hint_y:.1
+    Label:
+        text: "Machine Specs will appear here"
+        id: machineLabel
         size_hint_y:.1
     GridLayout:
         cols: 2
@@ -59,6 +68,22 @@
                 max:50
                 value: 0
                 id: vertBitDist
+            Label: 
+                text: "Vert Dist\nBit to CG Error: 0mm"
+                id: vertCGDistLabel
+            Slider:
+                min: -50
+                max:50
+                value: 0
+                id: vertCGDist
+            Label: 
+                text: "Grid Size: 150mm"
+                id: gridSizeLabel
+            Slider:
+                min: 25
+                max:300
+                value: 300
+                id: gridSize
             
             Button:
                 text: "Reset All"
