@@ -13,6 +13,8 @@
     vertBitDistLabel:vertBitDistLabel
     vertCGDistLabel:vertCGDistLabel
     machineLabel:machineLabel
+    gridSize:gridSize
+    gridSizeLabel:gridSizeLabel
     
     rows: 3
     Label:
@@ -74,6 +76,14 @@
                 max:50
                 value: 0
                 id: vertCGDist
+            Label: 
+                text: "Grid Size: 150mm"
+                id: gridSizeLabel
+            Slider:
+                min: 25
+                max:300
+                value: 300
+                id: gridSize
             
             Button:
                 text: "Reset All"

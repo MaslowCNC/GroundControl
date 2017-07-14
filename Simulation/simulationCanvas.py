@@ -33,6 +33,7 @@ class SimulationCanvas(GridLayout):
         self.sledMountSpacingError.bind(value=self.onSliderChange)
         self.vertBitDist.bind(value=self.onSliderChange)
         self.vertCGDist.bind(value=self.onSliderChange)
+        self.gridSize.bind(value=self.onSliderChange)
         
         #scale it down to fit on the screen
         self.scatterInstance.apply_transform(Matrix().scale(.3, .3, 1))
@@ -58,6 +59,7 @@ class SimulationCanvas(GridLayout):
         self.sledMountSpacingError.value = 0
         self.vertBitDist.value = 0
         self.vertCGDist.value = 0
+        self.gridSize.value=150
     
     def recompute(self):
         print "recompute"
@@ -78,10 +80,8 @@ class SimulationCanvas(GridLayout):
         self.listOfPointsPlotted = []
         self.listOfDistortedPoints = []
         self.pointIndex = 0
-        horizontalStepSize = (2*leftRigthBound)/12
-        verticalStepSize   = (2*topBottomBound)/7
-        self.verticalPoints   = range(topBottomBound, -topBottomBound, -200)
-        self.horizontalPoints = range(-leftRigthBound, leftRigthBound, horizontalStepSize)
+        self.verticalPoints   = range(topBottomBound, -topBottomBound, -1 * int(self.gridSize.value))
+        self.horizontalPoints = range(-leftRigthBound, leftRigthBound, int(self.gridSize.value))
         
         #self.doSpecificCalculation()
         
@@ -225,6 +225,7 @@ class SimulationCanvas(GridLayout):
         
         self.machineLabel.text = "distance between sled attachments ideal: "+str(self.correctKinematics.l)+" actual: "+str(self.distortedKinematics.l)+"mm\nvertical distance between sled attachments and bit ideal: "+str(self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.s)+"mm\nvertical distance between sled attachments and CG ideal: "+str(self.correctKinematics.h3+self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.h3+self.distortedKinematics.s)+"mm\ndistance between motors ideal: "+str(self.correctKinematics.D)+" actual: "+str(self.distortedKinematics.D)+"mm"
 
+        self.gridSizeLabel.text = "Grid Size: "+str(int(self.gridSize.value))+"mm"
 
         self.distortedKinematics.recomputeGeometry()
     
