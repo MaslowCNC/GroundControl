@@ -255,12 +255,12 @@ class Kinematics():
                 Chain2 = math.sqrt((self.D - (self.x + self.Offsetx2))*(self.D - (self.x + self.Offsetx2))+(self.y + self.Y2Plus - self.Offsety2)*(self.y + self.Y2Plus - self.Offsety2)) - self.R * self.TanLambda + self.R * self.Lambda   #right chain length
             
             
-            print "\n\n++++++++++++++"
-            print "Returning Lengths: "
-            print "Chain1: " + str(Chain1)
-            print "Chain2: " + str(Chain2)
-            print "self.Gamma: " + str(self.Gamma)
-            print "self.Lambda: " + str(self.Lambda)
+            #print "\n\n++++++++++++++"
+            #print "Returning Lengths: "
+            #print "Chain1: " + str(Chain1)
+            #print "Chain2: " + str(Chain2)
+            #print "self.Gamma: " + str(self.Gamma)
+            #print "self.Lambda: " + str(self.Lambda)
             
             aChainLength = Chain1
             bChainLength = Chain2
@@ -273,11 +273,8 @@ class Kinematics():
         Take the chain lengths and return an XY position
         
         '''
-        xGuess = 0
+        xGuess = -10
         yGuess = 0
-        
-        guessLengthA
-        guessLengthB
         
         guessCount = 0
         
@@ -285,7 +282,7 @@ class Kinematics():
             
             
             #check our guess
-            inverse(xGuess, yGuess, guessLengthA, guessLengthB)
+            guessLengthA, guessLengthB = self.inverse(xGuess, yGuess)
             
             aChainError = chainALength - guessLengthA
             bChainError = chainBLength - guessLengthB
@@ -299,15 +296,12 @@ class Kinematics():
             
             
             #if we've converged on the point...or it's time to give up, exit the loop
-            if((abs(aChainError) < .1 and abs(bChainError) < .1) or guessCount > 100):
-                if(guessCount > 100):
+            if((abs(aChainError) < .0000001 and abs(bChainError) < .0000001) or guessCount > 5000):
+                if(guessCount > 5000):
                     print "Message: Unable to find valid machine position. Please calibrate chain lengths."
-                    xPos = 0
-                    yPos = 0
+                    return 0, 0
                 else:
-                    xPos = xGuess
-                    yPos = yGuess
-                break
+                    return xGuess, yGuess
 
     def _MatSolv(self):
         Sum = 0
