@@ -27,6 +27,8 @@ class TestPoint(GridLayout):
     def plotPoint(self, correctPosX, correctPosY, *args):
         #print "plotting point"
         radius = 5
+        self.xLocation = correctPosX
+        self.yLocation = correctPosY
         
         #take the position, translate it to chain lengths
         chainALength, chainBLength = self.correctKinematics.inverse(correctPosX, correctPosY)
@@ -51,6 +53,7 @@ class TestPoint(GridLayout):
             Color(1, 0, 0)
             Line(circle=(distortedPosX+self.bedWidth/2, distortedPosY+self.bedHeight/2, radius))
         
+        print 'ideal, {:+7.2f}, {:+7.2f}  pos, {:+7.2f}, {:+7.2f}  Error, {:7.2f}, {:7.2f}  Distortion, {:7.2f}, {:7.2f}'.format(self.xLocation,self.yLocation,correctPosX,correctPosY,self.xLocation-correctPosX,self.yLocation-correctPosY,correctPosX-distortedPosX,correctPosY-distortedPosY)
         distortedPoint = (distortedPosX, distortedPosY)
         correctPoint   = (correctPosX, correctPosY)
         
