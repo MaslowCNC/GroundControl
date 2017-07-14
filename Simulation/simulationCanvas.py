@@ -73,8 +73,10 @@ class SimulationCanvas(GridLayout):
         self.listOfPointsPlotted = []
         self.listOfDistortedPoints = []
         self.pointIndex = 0
+        horizontalStepSize = (2*leftRigthBound)/12
+        verticalStepSize   = (2*topBottomBound)/7
         self.verticalPoints   = range(topBottomBound, -topBottomBound, -200)
-        self.horizontalPoints = range(-leftRigthBound, leftRigthBound, 200)
+        self.horizontalPoints = range(-leftRigthBound, leftRigthBound, horizontalStepSize)
         
         for j in self.verticalPoints:
             for i in self.horizontalPoints:
