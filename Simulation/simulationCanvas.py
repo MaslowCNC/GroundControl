@@ -31,7 +31,7 @@ class SimulationCanvas(GridLayout):
         self.motorSpacingError.bind(value=self.onSliderChange)
         self.motorVerticalError.bind(value=self.onSliderChange)
         self.sledMountSpacingError.bind(value=self.onSliderChange)
-        self.sledCGError.bind(value=self.onSliderChange)
+        self.vertBitDist.bind(value=self.onSliderChange)
         
         mat = Matrix().scale(.3, .3, 1)
         self.scatterInstance.apply_transform(mat)
@@ -101,7 +101,7 @@ class SimulationCanvas(GridLayout):
             self.drawLines()
         
     def drawLines(self):
-        print "would draw lines now"
+        
         
         #draw distorted points
         
@@ -164,6 +164,9 @@ class SimulationCanvas(GridLayout):
         self.distortedKinematics.motorOffsetY = self.correctKinematics.motorOffsetY + self.motorVerticalError.value
         self.distortedKinematics.l = self.correctKinematics.l + self.sledMountSpacingError.value
         self.distortedKinematics.D = self.correctKinematics.D + self.motorSpacingError.value
+        self.distortedKinematics.s = self.correctKinematics.s + self.vertBitDist.value
+        
+        self.distortedKinematics.recomputeGeometry()
     
     def drawOutline(self):
         

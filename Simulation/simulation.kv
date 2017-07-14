@@ -4,8 +4,8 @@
     motorSpacingError:motorSpacingError
     motorVerticalError:motorVerticalError
     sledMountSpacingError:sledMountSpacingError
-    sledCGError:sledCGError
     scatterInstance:scatterInstance
+    vertBitDist:vertBitDist
     
     cols: 2
     ScatterPlane:
@@ -20,31 +20,31 @@
         Label: 
             text: "Motor Spacing\nError"
         Slider:
-            min: -30
-            max:30
+            min: -50
+            max:50
             value: 0
             id: motorSpacingError
         Label: 
             text: "Motor Vertical\nError"
         Slider:
-            min: -30
-            max:30
+            min: -50
+            max:50
             value: 0
             id: motorVerticalError
         Label: 
             text: "Sled Mount\nSpacing Error"
         Slider:
-            min: -30
-            max:30
+            min: -50
+            max:50
             value: 0
             id: sledMountSpacingError
         Label: 
-            text: "Sled CG\nError"
+            text: "Vert Dist To\nBit Error"
         Slider:
-            min: -30
-            max:30
+            min: -50
+            max:50
             value: 0
-            id: sledCGError
+            id: vertBitDist
         
         Button:
             text: "Reset All"
