@@ -15,6 +15,9 @@ class TestPoint(GridLayout):
         self.targetCanvas        = targetCanvas
         self.correctKinematics   = correctKinematics
         self.distortedKinematics = distortedKinematics
+        self.bedWidth  = self.correctKinematics.machineWidth
+        self.bedHeight = self.correctKinematics.machineHeight
+
         
     
     def setTarget(self, xTarget, yTarget):
@@ -44,9 +47,9 @@ class TestPoint(GridLayout):
         
         with self.targetCanvas:
             Color(0, 1, 0)
-            Line(circle=(correctPosX, correctPosY, radius))
+            Line(circle=(correctPosX+self.bedWidth/2, correctPosY+self.bedHeight/2, radius))
             Color(1, 0, 0)
-            Line(circle=(distortedPosX, distortedPosY, radius))
+            Line(circle=(distortedPosX+self.bedWidth/2, distortedPosY+self.bedHeight/2, radius))
         
         distortedPoint = (distortedPosX, distortedPosY)
         correctPoint   = (correctPosX, correctPosY)

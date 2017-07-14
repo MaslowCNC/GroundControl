@@ -107,6 +107,8 @@ class SimulationCanvas(GridLayout):
         
     def drawLines(self):
         
+        bedWidth  = self.correctKinematics.machineWidth
+        bedHeight = self.correctKinematics.machineHeight
         
         #draw distorted points
         
@@ -116,8 +118,8 @@ class SimulationCanvas(GridLayout):
             
             for j in range(0,len(self.horizontalPoints)):
                 point = self.listOfDistortedPoints[j + i*len(self.horizontalPoints)]
-                points.append(point[0])
-                points.append(point[1])
+                points.append(point[0]+self.bedWidth/2)
+                points.append(point[1]+self.bedHeight/2)
             
             with self.scatterInstance.canvas:
                 Color(1,0,0)
@@ -127,8 +129,8 @@ class SimulationCanvas(GridLayout):
             points = []
             for j in range(0,len(self.listOfDistortedPoints),len(self.horizontalPoints)):
                 point = self.listOfDistortedPoints[j+i]
-                points.append(point[0])
-                points.append(point[1])
+                points.append(point[0]+self.bedWidth/2)
+                points.append(point[1]+self.bedHeight/2)
             
             
             with self.scatterInstance.canvas:
@@ -142,8 +144,8 @@ class SimulationCanvas(GridLayout):
             
             for j in range(0,len(self.horizontalPoints)):
                 point = self.listOfPointsPlotted[j + i*len(self.horizontalPoints)]
-                points.append(point[0])
-                points.append(point[1])
+                points.append(point[0]+self.bedWidth/2)
+                points.append(point[1]+self.bedHeight/2)
             
             with self.scatterInstance.canvas:
                 Color(0,1,0)
@@ -153,8 +155,8 @@ class SimulationCanvas(GridLayout):
             points = []
             for j in range(0,len(self.listOfPointsPlotted),len(self.horizontalPoints)):
                 point = self.listOfPointsPlotted[j+i]
-                points.append(point[0])
-                points.append(point[1])
+                points.append(point[0]+self.bedWidth/2)
+                points.append(point[1]+self.bedHeight/2)
             
             
             with self.scatterInstance.canvas:
@@ -197,10 +199,10 @@ class SimulationCanvas(GridLayout):
         bedHeight = self.correctKinematics.machineHeight
         
         with self.scatterInstance.canvas:
-            Line(points=(-bedWidth/2, -bedHeight/2, -bedWidth/2, bedHeight/2))
-            Line(points=(bedWidth/2, -bedHeight/2, bedWidth/2, bedHeight/2))
-            Line(points=(-bedWidth/2, -bedHeight/2, +bedWidth/2, -bedHeight/2))
-            Line(points=(-bedWidth/2, bedHeight/2, +bedWidth/2, bedHeight/2))
+            Line(points=(0, 0, 0, bedHeight))
+            Line(points=(0, bedHeight, bedWidth, bedHeight))
+            Line(points=(bedWidth, bedHeight, bedWidth, 0))
+            Line(points=(bedWidth, 0, 0, 0))
             
     def on_touch_up(self, touch):
         
