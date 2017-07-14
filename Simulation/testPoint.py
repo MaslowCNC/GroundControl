@@ -30,8 +30,6 @@ class TestPoint(GridLayout):
         self.xLocation = correctPosX
         self.yLocation = correctPosY
         
-        self.xLocation=correctPosX
-        self.yLocation=correctPosY
         #take the position, translate it to chain lengths
         chainALength, chainBLength = self.correctKinematics.inverse(correctPosX, correctPosY)
         #print chainALength
