@@ -33,11 +33,11 @@ class SimulationCanvas(GridLayout):
         self.sledMountSpacingError.bind(value=self.onSliderChange)
         self.vertBitDist.bind(value=self.onSliderChange)
         
-        mat = Matrix().scale(.3, .3, 1)
-        self.scatterInstance.apply_transform(mat)
+        #scale it down to fit on the screen
+        self.scatterInstance.apply_transform(Matrix().scale(.3, .3, 1))
         
-        mat = Matrix().translate(8000, 8000, 0)
-        self.scatterInstance.apply_transform(mat)
+        self.scatterInstance.x = 800
+        
         
         self.recompute()
         
