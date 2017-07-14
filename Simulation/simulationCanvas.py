@@ -36,7 +36,9 @@ class SimulationCanvas(GridLayout):
         #scale it down to fit on the screen
         self.scatterInstance.apply_transform(Matrix().scale(.3, .3, 1))
         
-        self.scatterInstance.x = 800
+        
+        mat = Matrix().translate(500, 500, 0)
+        self.scatterInstance.apply_transform(mat)
         
         
         self.recompute()
@@ -58,6 +60,7 @@ class SimulationCanvas(GridLayout):
     def recompute(self):
         print "recompute"
         
+        #clear the canvas to redraw
         self.scatterInstance.canvas.clear()
         
         #re-draw 4x8 outline
@@ -78,13 +81,15 @@ class SimulationCanvas(GridLayout):
         self.verticalPoints   = range(topBottomBound, -topBottomBound, -200)
         self.horizontalPoints = range(-leftRigthBound, leftRigthBound, horizontalStepSize)
         
+        #self.doSpecificCalculation()
+        
         for j in self.verticalPoints:
             for i in self.horizontalPoints:
                 point = (i,j)
                 self.listOfPointsToPlot.append(point)
                 
         self.plotNextPoint()
-    
+
     def plotNextPoint(self, *args):
         point = self.listOfPointsToPlot[self.pointIndex]
         self.pointIndex = self.pointIndex + 1
@@ -158,6 +163,17 @@ class SimulationCanvas(GridLayout):
         
     def addPoints(self):
         pass
+    
+    def doSpecificCalculation(self):
+        print "The horizontal measurement of a centered 48 inch long part cut low down on the sheet is: "
+        
+        lengthMM = 1219.2
+        
+        pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, -200)
+        pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2, -200)
+        
+        print distortedPoint2[0] - distortedPoint1[0]
+        print "Error: " + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0]))
     
     def onSliderChange(self, *args):
         

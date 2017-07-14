@@ -11,56 +11,60 @@
     sledMountSpacingErrorLabel:sledMountSpacingErrorLabel
     vertBitDistLabel:vertBitDistLabel
     
-    cols: 2
-    ScatterPlane:
-        do_rotation: False
-        id: scatterInstance
-        size_hint_x: .9
-        Label:
-            text: "this is some text"
-        
+    rows: 2
+    Label:
+        text: "This simulation is designed to help us understand how the math behind Maslow is affected by errors in the computed machine dimensions\nTry adding error to any measurement, then press Recompute to see the affect\nThe path computed with the correct values is shown in green, the path with error added is shown in red"
+        size_hint_y:.1
     GridLayout:
-        cols: 1
-        size_hint_x: .1
-        
-        Label: 
-            text: "Motor Spacing\nError: 0mm"
-            id: motorSpacingErrorLabel
-        Slider:
-            min: -50
-            max:50
-            value: 0
-            id: motorSpacingError
-        Label: 
-            text: "Motor Vertical\nError: 0mm"
-            id: motorVerticalErrorLabel
-        Slider:
-            min: -50
-            max:50
-            value: 0
-            id: motorVerticalError
-        Label: 
-            text: "Sled Mount\nSpacing Error: 0mm"
-            id: sledMountSpacingErrorLabel
-        Slider:
-            min: -50
-            max:50
-            value: 0
-            id: sledMountSpacingError
-        Label: 
-            text: "Vert Dist To\nBit Error: 0mm"
-            id: vertBitDistLabel
-        Slider:
-            min: -50
-            max:50
-            value: 0
-            id: vertBitDist
-        
-        Button:
-            text: "Reset All"
-            on_release: root.resetSliders()
-        Button:
-            text: "Recompute"
-            on_release: root.recompute()
+        cols: 2
+        size_hint_y: .9
+        ScatterPlane:
+            do_rotation: False
+            id: scatterInstance
+            size_hint_x: .9
+            
+        GridLayout:
+            cols: 1
+            size_hint_x: .1
+            
+            Label: 
+                text: "Motor Spacing\nError: 0mm"
+                id: motorSpacingErrorLabel
+            Slider:
+                min: -50
+                max:50
+                value: 0
+                id: motorSpacingError
+            Label: 
+                text: "Motor Vertical\nError: 0mm"
+                id: motorVerticalErrorLabel
+            Slider:
+                min: -50
+                max:50
+                value: 0
+                id: motorVerticalError
+            Label: 
+                text: "Sled Mount\nSpacing Error: 0mm"
+                id: sledMountSpacingErrorLabel
+            Slider:
+                min: -50
+                max:50
+                value: 0
+                id: sledMountSpacingError
+            Label: 
+                text: "Vert Dist To\nBit Error: 0mm"
+                id: vertBitDistLabel
+            Slider:
+                min: -50
+                max:50
+                value: 0
+                id: vertBitDist
+            
+            Button:
+                text: "Reset All"
+                on_release: root.resetSliders()
+            Button:
+                text: "Recompute"
+                on_release: root.recompute()
 
 <TestPoint>
