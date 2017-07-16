@@ -50,10 +50,13 @@ class TestPoint(GridLayout):
         with self.targetCanvas:
             Color(0, 0, 1)
             Line(circle=(self.xLocation+self.bedWidth/2, self.yLocation+self.bedHeight/2, radius-3))
+            Line(circle=(self.bedWidth/2-self.xLocation, self.yLocation+self.bedHeight/2, radius-3))
             Color(0, 1, 0)
             Line(circle=(correctPosX+self.bedWidth/2, correctPosY+self.bedHeight/2, radius-2))
+            Line(circle=(self.bedWidth/2-correctPosX, correctPosY+self.bedHeight/2, radius-2))
             Color(1, 0, 0)
             Line(circle=(distortedPosX+self.bedWidth/2, distortedPosY+self.bedHeight/2, radius))
+            Line(circle=(+self.bedWidth/2-distortedPosX, distortedPosY+self.bedHeight/2, radius))
 
         print 'ideal, {:+7.2f}, {:+7.2f}  pos, {:+7.2f}, {:+7.2f}  Error, {:7.2f}, {:7.2f}  Distortion, {:7.2f}, {:7.2f}'.format(self.xLocation,self.yLocation,correctPosX,correctPosY,self.xLocation-correctPosX,self.yLocation-correctPosY,correctPosX-distortedPosX,correctPosY-distortedPosY)
         distortedPoint = (distortedPosX, distortedPosY)
