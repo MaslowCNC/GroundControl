@@ -15,7 +15,7 @@
     machineLabel:machineLabel
     gridSize:gridSize
     gridSizeLabel:gridSizeLabel
-    
+
     rows: 3
     Label:
         text: "This simulation is designed to help us understand how the math behind Maslow is affected by errors in the computed machine dimensions\nTry adding error to any measurement, then press Recompute to see the affect\nThe path computed with the correct values is shown in green, the path with error added is shown in red"
@@ -31,12 +31,12 @@
             do_rotation: False
             id: scatterInstance
             size_hint_x: .9
-            
+
         GridLayout:
             cols: 1
             size_hint_x: .1
-            
-            Label: 
+
+            Label:
                 text: "Motor Spacing\nError: 0mm"
                 id: motorSpacingErrorLabel
             Slider:
@@ -44,7 +44,7 @@
                 max:50
                 value: 0
                 id: motorSpacingError
-            Label: 
+            Label:
                 text: "Motor Vertical\nError: 0mm"
                 id: motorVerticalErrorLabel
             Slider:
@@ -52,7 +52,7 @@
                 max:50
                 value: 0
                 id: motorVerticalError
-            Label: 
+            Label:
                 text: "Sled Mount\nSpacing Error: 0mm"
                 id: sledMountSpacingErrorLabel
             Slider:
@@ -60,7 +60,7 @@
                 max:50
                 value: 0
                 id: sledMountSpacingError
-            Label: 
+            Label:
                 text: "Vert Dist To\nBit Error: 0mm"
                 id: vertBitDistLabel
             Slider:
@@ -68,7 +68,7 @@
                 max:50
                 value: 0
                 id: vertBitDist
-            Label: 
+            Label:
                 text: "Vert Dist\nBit to CG Error: 0mm"
                 id: vertCGDistLabel
             Slider:
@@ -76,7 +76,7 @@
                 max:50
                 value: 0
                 id: vertCGDist
-            Label: 
+            Label:
                 text: "Grid Size: 150mm"
                 id: gridSizeLabel
             Slider:
@@ -84,7 +84,7 @@
                 max:300
                 value: 300
                 id: gridSize
-            
+
             Button:
                 text: "Reset All"
                 on_release: root.resetSliders()
