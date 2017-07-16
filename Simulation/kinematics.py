@@ -232,40 +232,43 @@ class Kinematics():
             self.Crit[2] = - self._YOffsetEqn(self.Y2Plus, self.D - (self.x + self.h * self.CosPsi2), self.SinPsi2)
             Tries = Tries + 1                                       # increment itteration count
 
-          
-            #Variables are within accuracy limits
-            #  perform output computation
 
-            self.Offsetx1 = self.h * self.CosPsi1
-            self.Offsetx2 = self.h * self.CosPsi2
-            self.Offsety1 = self.h *  self.SinPsi1
-            self.Offsety2 = self.h * self.SinPsi2
-            self.TanGamma = (self.y - self.Offsety1 + self.Y1Plus)/(self.x - self.Offsetx1)
-            self.TanLambda = (self.y - self.Offsety2 + self.Y2Plus)/(self.D -(self.x + self.Offsetx2))
-            self.Gamma  = math.atan(self.TanGamma)
-            self.Lambda = math.atan(self.TanLambda)
+        if (Tries > self.MaxTries):
+            print "unable to calculate chain lengths"
 
-            #compute the chain lengths
+        #Variables are within accuracy limits
+        #  perform output computation
 
-            if(self.Mirror):
-                Chain2 = math.sqrt((self.x - self.Offsetx1)*(self.x - self.Offsetx1) + (self.y + self.Y1Plus - self.Offsety1)*(self.y + self.Y1Plus - self.Offsety1)) - self.R * self.TanGamma + self.R * self.Gamma   #right chain length                       
-                Chain1 = math.sqrt((self.D - (self.x + self.Offsetx2))*(self.D - (self.x + self.Offsetx2))+(self.y + self.Y2Plus - self.Offsety2)*(self.y + self.Y2Plus - self.Offsety2)) - self.R * self.TanLambda + self.R * self.Lambda   #left chain length
-            else:
-                Chain1 = math.sqrt((self.x - self.Offsetx1)*(self.x - self.Offsetx1) + (self.y + self.Y1Plus - self.Offsety1)*(self.y + self.Y1Plus - self.Offsety1)) - self.R * self.TanGamma + self.R * self.Gamma   #left chain length                       
-                Chain2 = math.sqrt((self.D - (self.x + self.Offsetx2))*(self.D - (self.x + self.Offsetx2))+(self.y + self.Y2Plus - self.Offsety2)*(self.y + self.Y2Plus - self.Offsety2)) - self.R * self.TanLambda + self.R * self.Lambda   #right chain length
-            
-            
-            #print "\n\n++++++++++++++"
-            #print "Returning Lengths: "
-            #print "Chain1: " + str(Chain1)
-            #print "Chain2: " + str(Chain2)
-            #print "self.Gamma: " + str(self.Gamma)
-            #print "self.Lambda: " + str(self.Lambda)
-            
-            aChainLength = Chain1
-            bChainLength = Chain2
-            
-            return aChainLength, bChainLength
+        self.Offsetx1 = self.h * self.CosPsi1
+        self.Offsetx2 = self.h * self.CosPsi2
+        self.Offsety1 = self.h *  self.SinPsi1
+        self.Offsety2 = self.h * self.SinPsi2
+        self.TanGamma = (self.y - self.Offsety1 + self.Y1Plus)/(self.x - self.Offsetx1)
+        self.TanLambda = (self.y - self.Offsety2 + self.Y2Plus)/(self.D -(self.x + self.Offsetx2))
+        self.Gamma  = math.atan(self.TanGamma)
+        self.Lambda = math.atan(self.TanLambda)
+
+        #compute the chain lengths
+
+        if(self.Mirror):
+            Chain2 = math.sqrt((self.x - self.Offsetx1)*(self.x - self.Offsetx1) + (self.y + self.Y1Plus - self.Offsety1)*(self.y + self.Y1Plus - self.Offsety1)) - self.R * self.TanGamma + self.R * self.Gamma   #right chain length                       
+            Chain1 = math.sqrt((self.D - (self.x + self.Offsetx2))*(self.D - (self.x + self.Offsetx2))+(self.y + self.Y2Plus - self.Offsety2)*(self.y + self.Y2Plus - self.Offsety2)) - self.R * self.TanLambda + self.R * self.Lambda   #left chain length
+        else:
+            Chain1 = math.sqrt((self.x - self.Offsetx1)*(self.x - self.Offsetx1) + (self.y + self.Y1Plus - self.Offsety1)*(self.y + self.Y1Plus - self.Offsety1)) - self.R * self.TanGamma + self.R * self.Gamma   #left chain length                       
+            Chain2 = math.sqrt((self.D - (self.x + self.Offsetx2))*(self.D - (self.x + self.Offsetx2))+(self.y + self.Y2Plus - self.Offsety2)*(self.y + self.Y2Plus - self.Offsety2)) - self.R * self.TanLambda + self.R * self.Lambda   #right chain length
+        
+        
+        #print "\n\n++++++++++++++"
+        #print "Returning Lengths: "
+        #print "Chain1: " + str(Chain1)
+        #print "Chain2: " + str(Chain2)
+        #print "self.Gamma: " + str(self.Gamma)
+        #print "self.Lambda: " + str(self.Lambda)
+        
+        aChainLength = Chain1
+        bChainLength = Chain2
+        
+        return aChainLength, bChainLength
 
     def forward(self, chainALength, chainBLength):
         '''
