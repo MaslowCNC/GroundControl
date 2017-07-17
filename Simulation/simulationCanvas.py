@@ -33,16 +33,25 @@ class SimulationCanvas(GridLayout):
         self.sledMountSpacingError.bind(value=self.onSliderChange)
         self.vertBitDist.bind(value=self.onSliderChange)
         
-        #scale it down to fit on the screen
-        self.scatterInstance.apply_transform(Matrix().scale(.3, .3, 1))
-        
-        
-        mat = Matrix().translate(500, 500, 0)
-        self.scatterInstance.apply_transform(mat)
-        
+        Clock.schedule_once(self.moveToCenter, 3)
         
         self.recompute()
+    
+    def moveToCenter(self, *args):
         
+        
+        #This moves the simulation onto the screen, I would love if it were centered
+        #but for now it doesn't adapt to screen size (Window.width, Window.height)
+        
+        moveVertical = self.bedHeight/1.4
+        moveHorizontal = self.bedWidth/1.4
+        
+        mat = Matrix().translate(moveHorizontal, moveVertical, 0)
+        self.scatterInstance.apply_transform(mat)
+        
+        #scale it down to fit on the screen
+        self.scatterInstance.apply_transform(Matrix().scale(.3, .3, 1))
+    
     def setInitialZoom(self):
         mat = Matrix().scale(.4, .4, 1)
         self.scatterInstance.apply_transform(mat, (0,0))
