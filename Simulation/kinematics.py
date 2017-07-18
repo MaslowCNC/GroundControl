@@ -26,6 +26,12 @@ class Kinematics():
     Time = 0
     Mirror = 0
 
+    # Definition of angles
+    # Gamma, angle of left chain
+    # Lamda, angle of right chain
+    # Phi, tilt of sled
+    # Theta, angle betwteen chains and bit (corners of triangle formed by l, s, h)
+
     #Calculation tolerances
     MaxError = 0.001
     MaxTries = 10
@@ -38,7 +44,10 @@ class Kinematics():
     TanLambda= 0
     Y1Plus = 0
     Y2Plus = 0
-    Theta = math.atan(2*s/l)
+    if (l < 1.0):
+        Theta = 0
+    else:
+        Theta = math.atan(2*s/l)
     Psi1 = Theta - Phi
     Psi2 = Theta + Phi
     Tries = 0
@@ -267,6 +276,7 @@ class Kinematics():
 
         aChainLength = Chain1
         bChainLength = Chain2
+        #print 'target ({:.2f},{:.2f}) chains {:.3f},{:.3f} chain diff {:.3f} sled angle {:.4f} (degrees{:.4f})'.format(xTarget,yTarget,aChainLength, bChainLength, aChainLength - bChainLength, self.Phi, self.Phi*3.14159)
 
         return aChainLength, bChainLength
 
@@ -290,6 +300,7 @@ class Kinematics():
             aChainError = chainALength - guessLengthA
             bChainError = chainBLength - guessLengthB
 
+            #print 'guess {:7.3f} {:7.3f} error {:7.3f} {:7.3f} guesslength {:7.3f} {:7.3f} '.format(xGuess,yGuess,aChainError,bChainError,guessLengthA, guessLengthB)
 
             #adjust the guess based on the result
             xGuess = xGuess + .1*aChainError - .1*bChainError
@@ -301,7 +312,7 @@ class Kinematics():
             #if we've converged on the point...or it's time to give up, exit the loop
             if((abs(aChainError) < .0000001 and abs(bChainError) < .0000001) or guessCount > 5000):
                 if(guessCount > 5000):
-                    print "Message: Unable to find valid machine position. Please calibrate chain lengths."
+                    print "Message: Unable to find valid machine position. Please calibrate chain lengths.",aChainError,bChainError,xGuess,yGuess
                     return 0, 0
                 else:
                     return xGuess, yGuess
