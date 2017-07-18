@@ -33,9 +33,9 @@ class Kinematics():
     # Theta, angle betwteen chains and bit (corners of triangle formed by l, s, h)
 
     #Calculation tolerances
-    MaxError = 0.001
+    MaxError = 0.01
     MaxTries = 10
-    DeltaPhi = 0.001
+    DeltaPhi = 0.01
     DeltaY = 0.01
 
     #Criterion Computation Variables
@@ -310,7 +310,7 @@ class Kinematics():
 
 
             #if we've converged on the point...or it's time to give up, exit the loop
-            if((abs(aChainError) < .0000001 and abs(bChainError) < .0000001) or guessCount > 5000):
+            if((abs(aChainError) < .01 and abs(bChainError) < .01) or guessCount > 5000):
                 if(guessCount > 5000):
                     print "Message: Unable to find valid machine position. Please calibrate chain lengths.",aChainError,bChainError,xGuess,yGuess
                     return 0, 0
