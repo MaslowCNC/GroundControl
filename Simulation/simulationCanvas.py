@@ -262,7 +262,7 @@ class SimulationCanvas(GridLayout):
         pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2, -200)
 
         print distortedPoint2[0] - distortedPoint1[0]
-        print "Error: " + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0]))
+        print "Error MM: " + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0]))
 
     def onSliderChange(self, *args):
 
