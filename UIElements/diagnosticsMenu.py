@@ -4,6 +4,7 @@ from UIElements.scrollableTextPopup              import    ScrollableTextPopup
 from kivy.uix.popup                              import    Popup
 from UIElements.measureMachinePopup              import    MeasureMachinePopup
 from UIElements.calibrateLengthsPopup            import    CalibrateLengthsPopup
+from Simulation.simulationCanvas                 import SimulationCanvas
 
 class Diagnostics(FloatLayout, MakesmithInitFuncs):
     
@@ -90,6 +91,16 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         '''
         self._popup.dismiss()
     
+    def launchSimulation(self):
+        print "launch simulation"
+        self.popupContent      = SimulationCanvas()
+        self.popupContent.data = self.data
+        self.popupContent.initialize()
+        self._popup = Popup(title="Maslow Calibration Simulation", content=self.popupContent,
+                            size_hint=(0.85, 0.95), auto_dismiss = True)
+        self._popup.open()
+        self.parentWidget.close()
+    
     def advancedOptionsFunctions(self, text):
         
         if   text == "Test Feedback System":
@@ -98,3 +109,5 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
             self.manualCalibrateChainLengths()
         elif text == "Wipe EEPROM":
             self.wipeEEPROM()
+        elif text == "Simulation":
+            self.launchSimulation()
