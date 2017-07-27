@@ -201,6 +201,27 @@ class GroundControlApp(App):
             "desc": "If truncate floating point numbers is enabled, the number of digits after the decimal place to preserve",
             "section": "Advanced Settings",
             "key": "digits"
+        },
+        {
+            "type": "string",
+            "title": "Kp Position",
+            "desc": "The proportional constant for the position PID controller",
+            "section": "Advanced Settings",
+            "key": "KpPos"
+        },
+        {
+            "type": "string",
+            "title": "Ki Position",
+            "desc": "The integral constant for the position PID controller",
+            "section": "Advanced Settings",
+            "key": "KiPos"
+        },
+        {
+            "type": "string",
+            "title": "Kd Position",
+            "desc": "The derivative constant for the position PID controller",
+            "section": "Advanced Settings",
+            "key": "KdPos"
         }
     ]
     '''
