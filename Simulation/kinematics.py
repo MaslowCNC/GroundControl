@@ -17,6 +17,8 @@ class Kinematics():
     machineHeight = 1219.2                              #this is 4 feet in mm
     machineWidth  = 2438.4                              #this is 8 feet in mm
     motorOffsetY  = 463.0                               #vertical distance from the corner of the work area to the sprocket center
+    chain1Offset  = 0                                   #number of links +,- that have slipped
+    chain2Offset  = 0                                   #number of links +,- that have slipped
 
     x = 2708.4
     y = 270
@@ -286,6 +288,11 @@ class Kinematics():
         Take the chain lengths and return an XY position
 
         '''
+
+        # apply any offsets for slipped links
+        chainALength = chainALength + (self.chain1Offset * self.R)
+        chainBLength = chainBLength + (self.chain2Offset * self.R)
+
         xGuess = -10
         yGuess = 0
 
