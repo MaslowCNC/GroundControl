@@ -247,6 +247,10 @@ class GroundControlApp(App):
         Load User Settings
         '''
         
+        self.config.set('Advanced Settings', 'truncate', 0)
+        self.config.set('Advanced Settings', 'digits', 4)
+        self.config.write()
+        
         self.data.comport = self.config.get('Maslow Settings', 'COMport')
         self.data.gcodeFile = self.config.get('Maslow Settings', 'openFile')
         offsetX = float(self.config.get('Advanced Settings', 'homeX'))
@@ -304,8 +308,8 @@ class GroundControlApp(App):
                                                  'zEncoderSteps':7560.0,
                                                  'homeX': 0.0,
                                                  'homeY': 0.0,
-                                                 'truncate': 1,
-                                                 'digits' : 2})
+                                                 'truncate': 0,
+                                                 'digits' : 4})
         
         config.setdefaults('Ground Control Settings', {'zoomIn': "pageup",
                                                  'validExtensions':".nc, .ngc, .text, .gcode",

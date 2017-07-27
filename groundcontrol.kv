@@ -1062,11 +1062,15 @@
     scatterInstance:scatterInstance
     vertBitDist:vertBitDist
     vertCGDist:vertCGDist
+    leftChainOffset:leftChainOffset
+    rightChainOffset:rightChainOffset
     motorSpacingErrorLabel:motorSpacingErrorLabel
     motorVerticalErrorLabel:motorVerticalErrorLabel
     sledMountSpacingErrorLabel:sledMountSpacingErrorLabel
     vertBitDistLabel:vertBitDistLabel
     vertCGDistLabel:vertCGDistLabel
+    leftChainOffsetLabel:leftChainOffsetLabel
+    rightChainOffsetLabel:rightChainOffsetLabel
     machineLabel:machineLabel
     gridSize:gridSize
     gridSizeLabel:gridSizeLabel
@@ -1139,6 +1143,22 @@
                 max:300
                 value: 300
                 id: gridSize
+            Label:
+                text: "Left Chain\nSlipped Links: 0links"
+                id: leftChainOffsetLabel
+            Slider:
+                min: -10
+                max:10
+                value: 0
+                id: leftChainOffset
+            Label:
+                text: "Right Chain\nSlipped Links: 0links"
+                id: rightChainOffsetLabel
+            Slider:
+                min: -10
+                max:10
+                value: 0
+                id: rightChainOffset
 
             Button:
                 text: "Reset All"

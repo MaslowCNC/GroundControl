@@ -32,6 +32,8 @@ class SimulationCanvas(GridLayout):
         self.motorVerticalError.bind(value=self.onSliderChange)
         self.sledMountSpacingError.bind(value=self.onSliderChange)
         self.vertBitDist.bind(value=self.onSliderChange)
+        self.leftChainOffset.bind(value=self.onSliderChange)
+        self.rightChainOffset.bind(value=self.onSliderChange)
 
         self.vertCGDist.bind(value=self.onSliderChange)
         self.gridSize.bind(value=self.onSliderChange)
@@ -69,6 +71,8 @@ class SimulationCanvas(GridLayout):
         self.sledMountSpacingError.value = 0
         self.vertBitDist.value = 0
         self.vertCGDist.value = 0
+        self.leftChainOffset.value = 0
+        self.rightChainOffset.value = 0
         self.gridSize.value=150
 
     def recompute(self):
@@ -91,7 +95,7 @@ class SimulationCanvas(GridLayout):
         self.listOfDistortedPoints = []
         self.pointIndex = 0
         self.verticalPoints   = range(int(int(topBottomBound/self.gridSize.value)*self.gridSize.value), -topBottomBound, -1 * int(self.gridSize.value))
-        self.horizontalPoints = range(0, leftRigthBound, int(self.gridSize.value))
+        self.horizontalPoints = range(int(int(leftRigthBound/self.gridSize.value)*self.gridSize.value), -leftRigthBound, -1 * int(self.gridSize.value))
 
         #self.doSpecificCalculation()
 
@@ -128,26 +132,10 @@ class SimulationCanvas(GridLayout):
         for i in range(0, len(self.verticalPoints)):
             points = []
 
-            for j in range(len(self.horizontalPoints)-1,0,-1):
-                point = self.listOfPointsToPlot[j + i*len(self.horizontalPoints)]
-                points.append(self.bedWidth/2-point[0])
-                points.append(point[1]+self.bedHeight/2)
             for j in range(0,len(self.horizontalPoints)):
                 point = self.listOfPointsToPlot[j + i*len(self.horizontalPoints)]
                 points.append(point[0]+self.bedWidth/2)
                 points.append(point[1]+self.bedHeight/2)
-
-            with self.scatterInstance.canvas:
-                Color(0,0,1)
-                Line(points=points)
-
-        for i in range(len(self.horizontalPoints)-1,0,-1):
-            points = []
-            for j in range(0,len(self.listOfPointsToPlot),len(self.horizontalPoints)):
-                point = self.listOfPointsToPlot[j+i]
-                points.append(self.bedWidth/2-point[0])
-                points.append(point[1]+self.bedHeight/2)
-
 
             with self.scatterInstance.canvas:
                 Color(0,0,1)
@@ -171,26 +159,10 @@ class SimulationCanvas(GridLayout):
         for i in range(0, len(self.verticalPoints)):
             points = []
 
-            for j in range(len(self.horizontalPoints)-1,0,-1):
-                point = self.listOfDistortedPoints[j + i*len(self.horizontalPoints)]
-                points.append(self.bedWidth/2-point[0])
-                points.append(point[1]+self.bedHeight/2)
             for j in range(0,len(self.horizontalPoints)):
                 point = self.listOfDistortedPoints[j + i*len(self.horizontalPoints)]
                 points.append(point[0]+self.bedWidth/2)
                 points.append(point[1]+self.bedHeight/2)
-
-            with self.scatterInstance.canvas:
-                Color(1,0,0)
-                Line(points=points)
-
-        for i in range(len(self.horizontalPoints)-1,0,-1):
-            points = []
-            for j in range(0,len(self.listOfDistortedPoints),len(self.horizontalPoints)):
-                point = self.listOfDistortedPoints[j+i]
-                points.append(self.bedWidth/2-point[0])
-                points.append(point[1]+self.bedHeight/2)
-
 
             with self.scatterInstance.canvas:
                 Color(1,0,0)
@@ -213,10 +185,6 @@ class SimulationCanvas(GridLayout):
         for i in range(0, len(self.verticalPoints)):
             points = []
 
-            for j in range(len(self.horizontalPoints)-1,0,-1):
-                point = self.listOfPointsPlotted[j + i*len(self.horizontalPoints)]
-                points.append(self.bedWidth/2-point[0])
-                points.append(point[1]+self.bedHeight/2)
             for j in range(0,len(self.horizontalPoints)):
                 point = self.listOfPointsPlotted[j + i*len(self.horizontalPoints)]
                 points.append(point[0]+self.bedWidth/2)
@@ -226,17 +194,6 @@ class SimulationCanvas(GridLayout):
                 Color(0,1,0)
                 Line(points=points)
 
-        for i in range(len(self.horizontalPoints)-1,0,-1):
-            points = []
-            for j in range(0,len(self.listOfPointsPlotted),len(self.horizontalPoints)):
-                point = self.listOfPointsPlotted[j+i]
-                points.append(self.bedWidth/2-point[0])
-                points.append(point[1]+self.bedHeight/2)
-
-
-            with self.scatterInstance.canvas:
-                Color(0,1,0)
-                Line(points=points)
 
         for i in range(0, len(self.horizontalPoints)):
             points = []
@@ -280,6 +237,12 @@ class SimulationCanvas(GridLayout):
 
         self.distortedKinematics.h3 = self.correctKinematics.h3 + self.vertCGDist.value
         self.vertCGDistLabel.text = "Vert Dist\nBit to CG Error: " + str(int(self.vertCGDist.value)) + "mm"
+
+        self.distortedKinematics.chain1Offset = int(self.leftChainOffset.value)
+        self.leftChainOffsetLabel.text = "Left Chain\nSlipped Links: " + str(int(self.leftChainOffset.value)) + "links"
+
+        self.distortedKinematics.chain2Offset = int(self.rightChainOffset.value)
+        self.rightChainOffsetLabel.text = "Right Chain\nSlipped Links: " + str(int(self.rightChainOffset.value)) + "links"
 
         self.machineLabel.text = "distance between sled attachments ideal: "+str(self.correctKinematics.l)+" actual: "+str(self.distortedKinematics.l)+"mm\nvertical distance between sled attachments and bit ideal: "+str(self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.s)+"mm\nvertical distance between sled attachments and CG ideal: "+str(self.correctKinematics.h3+self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.h3+self.distortedKinematics.s)+"mm\ndistance between motors ideal: "+str(self.correctKinematics.D)+" actual: "+str(self.distortedKinematics.D)+"mm"
 
