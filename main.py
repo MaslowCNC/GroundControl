@@ -297,6 +297,7 @@ class GroundControlApp(App):
             "title": "Valid File Extensions",
             "desc": "Valid file extensions for Ground Control to open. Comma separated list.",
             "section": "Ground Control Settings",
+            "disabled": "True"
             "key": "validExtensions"
         }
     ]
@@ -360,19 +361,19 @@ class GroundControlApp(App):
         """
         Set the default values for the config sections.
         """
-        config.setdefaults('Maslow Settings', {'COMport': '',
-                                               'zAxis': 0, 
-                                               'zDistPerRot':3.17, 
-                                               'bedWidth':2438.4, 
-                                               'bedHeight':1219.2, 
-                                               'motorOffsetY':463, 
-                                               'motorSpacingX':2978.4, 
-                                               'sledWidth':310, 
-                                               'sledHeight':139, 
-                                               'sledCG':79, 
-                                               'openFile': " ",
-                                               'macro1': "",
-                                               'macro2': ""})
+        config.setdefaults('Maslow Settings', {'COMport'         : '',
+                                                 'zAxis'         : 0, 
+                                                 'zDistPerRot'   : 3.17, 
+                                                 'bedWidth'      : 2438.4, 
+                                                 'bedHeight'     : 1219.2, 
+                                                 'motorOffsetY'  : 463, 
+                                                 'motorSpacingX' : 2978.4, 
+                                                 'sledWidth'     : 310, 
+                                                 'sledHeight'    : 139, 
+                                                 'sledCG'        : 79, 
+                                                 'openFile'      : " ",
+                                                 'macro1'        : "",
+                                                 'macro2'        : ""})
 
         config.setdefaults('Advanced Settings', {'encoderSteps'       : 8148.0,
                                                  'gearTeeth'          : 10, 
@@ -385,12 +386,12 @@ class GroundControlApp(App):
                                                  'kinematicsType'     : 'Quadrilateral',
                                                  'rotationRadius'     : '100',
                                                  'enablePosPIDValues' : 0,
-                                                 'KpPos'              : 0,
-                                                 'KiPos'              : 0,
-                                                 'KdPos'              : 0,
+                                                 'KpPos'              : 400,
+                                                 'KiPos'              : 5,
+                                                 'KdPos'              : 10,
                                                  'enableVPIDValues'   : 0,
-                                                 'KpV'                : 0,
-                                                 'KiV'                : 0,
+                                                 'KpV'                : 20,
+                                                 'KiV'                : 1,
                                                  'KdV'                : 0})
         
         config.setdefaults('Ground Control Settings', {'zoomIn': "pageup",
@@ -411,16 +412,23 @@ class GroundControlApp(App):
         """
         
         if section == "Maslow Settings":
+            
+            self.push_settings_to_machine()
+            
             if key == "COMport":
                 self.data.comport = value
-            self.push_settings_to_machine()
-
+            
             if (key == "bedHeight" or key == "bedWidth"):
                 self.frontpage.gcodecanvas.drawWorkspace()
 
         if section == "Advanced Settings":
+            
+            self.push_settings_to_machine()
+            
             if (key == "truncate") or (key == "digits"):
                 self.frontpage.gcodecanvas.reloadGcode()
+                
+            
 
     def close_settings(self, settings):
         """
@@ -444,6 +452,36 @@ class GroundControlApp(App):
             +" M" + str(self.data.config.get('Advanced Settings', 'chainPitch'))
             +" N" + str(self.data.config.get('Maslow Settings'  , 'zDistPerRot'))
             +" P" + str(self.data.config.get('Advanced Settings', 'zEncoderSteps'))
+            + " "
+        )
+        
+        self.data.gcode_queue.put(cmdString)
+        
+        #Split the settings push into two so that it doesn't exceed the maximum line length
+        
+        KpPos = 400
+        KiPos = 5
+        KdPos = 10
+        KpV = 20
+        KiV = 1
+        KdV = 0
+        
+        if self.data.config.get('Advanced Settings', 'kinematicsType') == 'Quadrilateral':
+            kinematicsType = 1
+            print "quadrilateral recognized"
+        else:
+            kinematicsType = 2
+            print "triangular kinematics recognized"
+        
+        cmdString = ("B03" 
+            +" S" + str(KpPos)
+            +" T" + str(KiPos)
+            +" U" + str(KdPos)
+            +" V" + str(KpV)
+            +" W" + str(KiV)
+            +" X" + str(KdV)
+            +" Y" + str(kinematicsType)
+            +" Z" + str(self.data.config.get('Advanced Settings', 'rotationRadius'))
             + " "
         )
         
