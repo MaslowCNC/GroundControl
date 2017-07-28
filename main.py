@@ -321,7 +321,6 @@ class GroundControlApp(App):
         
         self.config.set('Advanced Settings', 'truncate', 0)
         self.config.set('Advanced Settings', 'digits', 4)
-        self.config.set('Advanced Settings', 'KpPos', 4)
         self.config.write()
         
         self.data.comport = self.config.get('Maslow Settings', 'COMport')
@@ -459,12 +458,24 @@ class GroundControlApp(App):
         
         #Split the settings push into two so that it doesn't exceed the maximum line length
         
-        KpPos = 400
-        KiPos = 5
-        KdPos = 10
-        KpV = 20
-        KiV = 1
-        KdV = 0
+        
+        if int(self.data.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
+            KpPos = float(self.data.config.get('Advanced Settings', 'KpPos'))
+            KiPos = float(self.data.config.get('Advanced Settings', 'KiPos'))
+            KdPos = float(self.data.config.get('Advanced Settings', 'KdPos'))
+        else:
+            KpPos = 400
+            KiPos = 5
+            KdPos = 10
+        
+        if int(self.data.config.get('Advanced Settings', 'enableVPIDValues')) == 1:
+            KpV = float(self.data.config.get('Advanced Settings', 'KpV'))
+            KiV = float(self.data.config.get('Advanced Settings', 'KiV'))
+            KdV = float(self.data.config.get('Advanced Settings', 'KdV'))
+        else:
+            KpV = 20
+            KiV = 1
+            KdV = 0
         
         if self.data.config.get('Advanced Settings', 'kinematicsType') == 'Quadrilateral':
             kinematicsType = 1
