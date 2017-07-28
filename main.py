@@ -203,6 +203,28 @@ class GroundControlApp(App):
             "key": "digits"
         },
         {
+            "type": "options",
+            "title": "Kinematics Type",
+            "desc": "Switch between trapezoidal and triangular kinematics",
+            "options": ["Quadrilateral", "Triangular"],
+            "section": "Advanced Settings",
+            "key": "kinematicsType"
+        },
+        {
+            "type": "string",
+            "title": "Rotation Radius for Triangular Kinematics",
+            "desc": "The distance between where the chains attach and the center of the router bit in mm",
+            "section": "Advanced Settings",
+            "key": "rotationRadius"
+        },
+        {
+            "type": "bool",
+            "title": "Enable Custom Positional PID Values",
+            "desc": "Enable using custom values for the positional PID controller. Turning this off will return to the default values",
+            "section": "Advanced Settings",
+            "key": "enablePosPIDValues"
+        },
+        {
             "type": "string",
             "title": "Kp Position",
             "desc": "The proportional constant for the position PID controller",
@@ -222,6 +244,34 @@ class GroundControlApp(App):
             "desc": "The derivative constant for the position PID controller",
             "section": "Advanced Settings",
             "key": "KdPos"
+        },
+        {
+            "type": "bool",
+            "title": "Enable Custom Velocity PID Values",
+            "desc": "Enable using custom values for the Velocity PID controller. Turning this off will return to the default values",
+            "section": "Advanced Settings",
+            "key": "enableVPIDValues"
+        },
+        {
+            "type": "string",
+            "title": "Kp Velocity",
+            "desc": "The proportional constant for the velocity PID controller",
+            "section": "Advanced Settings",
+            "key": "KpV"
+        },
+        {
+            "type": "string",
+            "title": "Ki Velocity",
+            "desc": "The integral constant for the velocity PID controller",
+            "section": "Advanced Settings",
+            "key": "KiV"
+        },
+        {
+            "type": "string",
+            "title": "Kd Velocity",
+            "desc": "The derivative constant for the velocity PID controller",
+            "section": "Advanced Settings",
+            "key": "KdV"
         }
     ]
     '''
@@ -270,6 +320,7 @@ class GroundControlApp(App):
         
         self.config.set('Advanced Settings', 'truncate', 0)
         self.config.set('Advanced Settings', 'digits', 4)
+        self.config.set('Advanced Settings', 'KpPos', 4)
         self.config.write()
         
         self.data.comport = self.config.get('Maslow Settings', 'COMport')
@@ -323,14 +374,24 @@ class GroundControlApp(App):
                                                'macro1': "",
                                                'macro2': ""})
 
-        config.setdefaults('Advanced Settings', {'encoderSteps': 8148.0,
-                                                 'gearTeeth': 10, 
-                                                 'chainPitch':6.35,
-                                                 'zEncoderSteps':7560.0,
-                                                 'homeX': 0.0,
-                                                 'homeY': 0.0,
-                                                 'truncate': 0,
-                                                 'digits' : 4})
+        config.setdefaults('Advanced Settings', {'encoderSteps'       : 8148.0,
+                                                 'gearTeeth'          : 10, 
+                                                 'chainPitch'         : 6.35,
+                                                 'zEncoderSteps'      : 7560.0,
+                                                 'homeX'              : 0.0,
+                                                 'homeY'              : 0.0,
+                                                 'truncate'           : 0,
+                                                 'digits'             : 4,
+                                                 'kinematicsType'     : 'Quadrilateral',
+                                                 'rotationRadius'     : '100',
+                                                 'enablePosPIDValues' : 0,
+                                                 'KpPos'              : 0,
+                                                 'KiPos'              : 0,
+                                                 'KdPos'              : 0,
+                                                 'enableVPIDValues'   : 0,
+                                                 'KpV'                : 0,
+                                                 'KiV'                : 0,
+                                                 'KdV'                : 0})
         
         config.setdefaults('Ground Control Settings', {'zoomIn': "pageup",
                                                  'validExtensions':".nc, .ngc, .text, .gcode",
@@ -524,7 +585,7 @@ class GroundControlApp(App):
             
             
         except:
-            print "One Machine Position Report Command Misread"
+            print "Machine Position Report Command Misread Happened Once"
         
         
     
