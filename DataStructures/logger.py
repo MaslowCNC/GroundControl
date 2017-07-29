@@ -30,7 +30,10 @@ class Logger(MakesmithInitFuncs):
         
         '''
         
-        self.messageBuffer = self.messageBuffer + message
+        try:
+            self.messageBuffer = self.messageBuffer + message
+        except:
+            pass
         
         if len(self.messageBuffer) > 500:
             
