@@ -1075,6 +1075,7 @@
     gridSize:gridSize
     gridSizeLabel:gridSizeLabel
     rotationRadiusOffset:rotationRadiusOffset
+    kinematicsSelect:kinematicsSelect
 
     rows: 3
     Label:
@@ -1096,7 +1097,11 @@
         GridLayout:
             cols: 1
             size_hint_x: .1
-
+            Spinner:
+                id: kinematicsSelect
+                text: "Kinematics Type"
+                values: "Quadrilateral", "Triangular"
+                on_text: root.setKinematics(kinematicsSelect.text)
             Label:
                 text: "Motor Spacing\nError: 0mm"
                 text_size: self.width, self.height

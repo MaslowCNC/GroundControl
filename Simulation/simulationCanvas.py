@@ -220,7 +220,10 @@ class SimulationCanvas(GridLayout):
 
         print distortedPoint2[0] - distortedPoint1[0]
         print "Error MM: " + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0]))
-
+    
+    def setKinematics(self, kinematicsType):
+        print "would set" + kinematicsType
+    
     def onSliderChange(self, *args):
 
         self.distortedKinematics.motorOffsetY = self.correctKinematics.motorOffsetY + self.motorVerticalError.value
