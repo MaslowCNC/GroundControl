@@ -201,6 +201,77 @@ class GroundControlApp(App):
             "desc": "If truncate floating point numbers is enabled, the number of digits after the decimal place to preserve",
             "section": "Advanced Settings",
             "key": "digits"
+        },
+        {
+            "type": "options",
+            "title": "Kinematics Type",
+            "desc": "Switch between trapezoidal and triangular kinematics",
+            "options": ["Quadrilateral", "Triangular"],
+            "section": "Advanced Settings",
+            "key": "kinematicsType"
+        },
+        {
+            "type": "string",
+            "title": "Rotation Radius for Triangular Kinematics",
+            "desc": "The distance between where the chains attach and the center of the router bit in mm",
+            "section": "Advanced Settings",
+            "key": "rotationRadius"
+        },
+        {
+            "type": "bool",
+            "title": "Enable Custom Positional PID Values",
+            "desc": "Enable using custom values for the positional PID controller. Turning this off will return to the default values",
+            "section": "Advanced Settings",
+            "key": "enablePosPIDValues"
+        },
+        {
+            "type": "string",
+            "title": "Kp Position",
+            "desc": "The proportional constant for the position PID controller",
+            "section": "Advanced Settings",
+            "key": "KpPos"
+        },
+        {
+            "type": "string",
+            "title": "Ki Position",
+            "desc": "The integral constant for the position PID controller",
+            "section": "Advanced Settings",
+            "key": "KiPos"
+        },
+        {
+            "type": "string",
+            "title": "Kd Position",
+            "desc": "The derivative constant for the position PID controller",
+            "section": "Advanced Settings",
+            "key": "KdPos"
+        },
+        {
+            "type": "bool",
+            "title": "Enable Custom Velocity PID Values",
+            "desc": "Enable using custom values for the Velocity PID controller. Turning this off will return to the default values",
+            "section": "Advanced Settings",
+            "key": "enableVPIDValues"
+        },
+        {
+            "type": "string",
+            "title": "Kp Velocity",
+            "desc": "The proportional constant for the velocity PID controller",
+            "section": "Advanced Settings",
+            "key": "KpV"
+        },
+        {
+            "type": "string",
+            "title": "Ki Velocity",
+            "desc": "The integral constant for the velocity PID controller",
+            "section": "Advanced Settings",
+            "key": "KiV"
+        },
+        {
+            "type": "string",
+            "title": "Kd Velocity",
+            "desc": "The derivative constant for the velocity PID controller",
+            "section": "Advanced Settings",
+            "key": "KdV"
         }
     ]
     '''
@@ -226,6 +297,7 @@ class GroundControlApp(App):
             "title": "Valid File Extensions",
             "desc": "Valid file extensions for Ground Control to open. Comma separated list.",
             "section": "Ground Control Settings",
+            "disabled": "True",
             "key": "validExtensions"
         }
     ]
@@ -288,28 +360,38 @@ class GroundControlApp(App):
         """
         Set the default values for the config sections.
         """
-        config.setdefaults('Maslow Settings', {'COMport': '',
-                                               'zAxis': 0, 
-                                               'zDistPerRot':3.17, 
-                                               'bedWidth':2438.4, 
-                                               'bedHeight':1219.2, 
-                                               'motorOffsetY':463, 
-                                               'motorSpacingX':2978.4, 
-                                               'sledWidth':310, 
-                                               'sledHeight':139, 
-                                               'sledCG':79, 
-                                               'openFile': " ",
-                                               'macro1': "",
-                                               'macro2': ""})
+        config.setdefaults('Maslow Settings', {'COMport'         : '',
+                                                 'zAxis'         : 0, 
+                                                 'zDistPerRot'   : 3.17, 
+                                                 'bedWidth'      : 2438.4, 
+                                                 'bedHeight'     : 1219.2, 
+                                                 'motorOffsetY'  : 463, 
+                                                 'motorSpacingX' : 2978.4, 
+                                                 'sledWidth'     : 310, 
+                                                 'sledHeight'    : 139, 
+                                                 'sledCG'        : 79, 
+                                                 'openFile'      : " ",
+                                                 'macro1'        : "",
+                                                 'macro2'        : ""})
 
-        config.setdefaults('Advanced Settings', {'encoderSteps': 8148.0,
-                                                 'gearTeeth': 10, 
-                                                 'chainPitch':6.35,
-                                                 'zEncoderSteps':7560.0,
-                                                 'homeX': 0.0,
-                                                 'homeY': 0.0,
-                                                 'truncate': 0,
-                                                 'digits' : 4})
+        config.setdefaults('Advanced Settings', {'encoderSteps'       : 8148.0,
+                                                 'gearTeeth'          : 10, 
+                                                 'chainPitch'         : 6.35,
+                                                 'zEncoderSteps'      : 7560.0,
+                                                 'homeX'              : 0.0,
+                                                 'homeY'              : 0.0,
+                                                 'truncate'           : 0,
+                                                 'digits'             : 4,
+                                                 'kinematicsType'     : 'Quadrilateral',
+                                                 'rotationRadius'     : '100',
+                                                 'enablePosPIDValues' : 0,
+                                                 'KpPos'              : 400,
+                                                 'KiPos'              : 5,
+                                                 'KdPos'              : 10,
+                                                 'enableVPIDValues'   : 0,
+                                                 'KpV'                : 20,
+                                                 'KiV'                : 1,
+                                                 'KdV'                : 0})
         
         config.setdefaults('Ground Control Settings', {'zoomIn': "pageup",
                                                  'validExtensions':".nc, .ngc, .text, .gcode",
@@ -329,16 +411,23 @@ class GroundControlApp(App):
         """
         
         if section == "Maslow Settings":
+            
+            self.push_settings_to_machine()
+            
             if key == "COMport":
                 self.data.comport = value
-            self.push_settings_to_machine()
-
+            
             if (key == "bedHeight" or key == "bedWidth"):
                 self.frontpage.gcodecanvas.drawWorkspace()
 
         if section == "Advanced Settings":
+            
+            self.push_settings_to_machine()
+            
             if (key == "truncate") or (key == "digits"):
                 self.frontpage.gcodecanvas.reloadGcode()
+                
+            
 
     def close_settings(self, settings):
         """
@@ -362,6 +451,48 @@ class GroundControlApp(App):
             +" M" + str(self.data.config.get('Advanced Settings', 'chainPitch'))
             +" N" + str(self.data.config.get('Maslow Settings'  , 'zDistPerRot'))
             +" P" + str(self.data.config.get('Advanced Settings', 'zEncoderSteps'))
+            + " "
+        )
+        
+        self.data.gcode_queue.put(cmdString)
+        
+        #Split the settings push into two so that it doesn't exceed the maximum line length
+        
+        
+        if int(self.data.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
+            KpPos = float(self.data.config.get('Advanced Settings', 'KpPos'))
+            KiPos = float(self.data.config.get('Advanced Settings', 'KiPos'))
+            KdPos = float(self.data.config.get('Advanced Settings', 'KdPos'))
+        else:
+            KpPos = 400
+            KiPos = 5
+            KdPos = 10
+        
+        if int(self.data.config.get('Advanced Settings', 'enableVPIDValues')) == 1:
+            KpV = float(self.data.config.get('Advanced Settings', 'KpV'))
+            KiV = float(self.data.config.get('Advanced Settings', 'KiV'))
+            KdV = float(self.data.config.get('Advanced Settings', 'KdV'))
+        else:
+            KpV = 20
+            KiV = 1
+            KdV = 0
+        
+        if self.data.config.get('Advanced Settings', 'kinematicsType') == 'Quadrilateral':
+            kinematicsType = 1
+            print "quadrilateral recognized"
+        else:
+            kinematicsType = 2
+            print "triangular kinematics recognized"
+        
+        cmdString = ("B03" 
+            +" S" + str(KpPos)
+            +" T" + str(KiPos)
+            +" U" + str(KdPos)
+            +" V" + str(KpV)
+            +" W" + str(KiV)
+            +" X" + str(KdV)
+            +" Y" + str(kinematicsType)
+            +" Z" + str(self.data.config.get('Advanced Settings', 'rotationRadius'))
             + " "
         )
         
@@ -503,7 +634,7 @@ class GroundControlApp(App):
             
             
         except:
-            print "One Machine Position Report Command Misread"
+            print "Machine Position Report Command Misread Happened Once"
         
         
     

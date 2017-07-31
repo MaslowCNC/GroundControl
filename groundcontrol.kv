@@ -1074,6 +1074,9 @@
     machineLabel:machineLabel
     gridSize:gridSize
     gridSizeLabel:gridSizeLabel
+    rotationRadiusOffset:rotationRadiusOffset
+    rotationRadiusLabel:rotationRadiusLabel
+    kinematicsSelect:kinematicsSelect
 
     rows: 3
     Label:
@@ -1082,6 +1085,7 @@
     Label:
         text: "Machine Specs will appear here"
         id: machineLabel
+        font_size: 10
         size_hint_y:.1
     GridLayout:
         cols: 2
@@ -1094,9 +1098,15 @@
         GridLayout:
             cols: 1
             size_hint_x: .1
-
+            Spinner:
+                id: kinematicsSelect
+                text: "Kinematics Type"
+                values: "Quadrilateral", "Triangular"
+                on_text: root.setKinematics(kinematicsSelect.text)
             Label:
                 text: "Motor Spacing\nError: 0mm"
+                text_size: self.width, self.height
+                font_size: (self.height - 6)/2
                 id: motorSpacingErrorLabel
             Slider:
                 min: -50
@@ -1105,6 +1115,8 @@
                 id: motorSpacingError
             Label:
                 text: "Motor Vertical\nError: 0mm"
+                text_size: self.width, self.height
+                font_size: (self.height - 6)/2
                 id: motorVerticalErrorLabel
             Slider:
                 min: -50
@@ -1113,38 +1125,44 @@
                 id: motorVerticalError
             Label:
                 text: "Sled Mount\nSpacing Error: 0mm"
+                text_size: self.width, self.height
+                font_size: (self.height - 6)/2
                 id: sledMountSpacingErrorLabel
+                disabled: not root.isQuadKinematics
             Slider:
                 min: -50
                 max:50
                 value: 0
                 id: sledMountSpacingError
+                disabled: not root.isQuadKinematics
             Label:
                 text: "Vert Dist To\nBit Error: 0mm"
+                text_size: self.width, self.height
+                font_size: (self.height - 6)/2
                 id: vertBitDistLabel
+                disabled: not root.isQuadKinematics
             Slider:
                 min: -50
                 max:50
                 value: 0
                 id: vertBitDist
+                disabled: not root.isQuadKinematics
             Label:
                 text: "Vert Dist\nBit to CG Error: 0mm"
+                text_size: self.width, self.height
+                font_size: (self.height - 6)/2
+                disabled: not root.isQuadKinematics
                 id: vertCGDistLabel
             Slider:
                 min: -50
                 max:50
                 value: 0
                 id: vertCGDist
-            Label:
-                text: "Grid Size: 150mm"
-                id: gridSizeLabel
-            Slider:
-                min: 25
-                max:300
-                value: 300
-                id: gridSize
+                disabled: not root.isQuadKinematics
             Label:
                 text: "Left Chain\nSlipped Links: 0links"
+                text_size: self.width, self.height
+                font_size: (self.height - 6)/2
                 id: leftChainOffsetLabel
             Slider:
                 min: -10
@@ -1153,12 +1171,36 @@
                 id: leftChainOffset
             Label:
                 text: "Right Chain\nSlipped Links: 0links"
+                text_size: self.width, self.height
+                font_size: (self.height - 6)/2
                 id: rightChainOffsetLabel
             Slider:
                 min: -10
                 max:10
                 value: 0
                 id: rightChainOffset
+            Label:
+                text: "Rotation Radius"
+                text_size: self.width, self.height
+                font_size: (self.height - 6)/2
+                disabled: root.isQuadKinematics
+                id: rotationRadiusLabel
+            Slider:
+                min: -10
+                max:10
+                value: 0
+                disabled: root.isQuadKinematics
+                id: rotationRadiusOffset
+            Label:
+                text: "Grid Size: 150mm"
+                text_size: self.width, self.height
+                font_size: (self.height - 6)/2
+                id: gridSizeLabel
+            Slider:
+                min: 25
+                max:300
+                value: 300
+                id: gridSize
 
             Button:
                 text: "Reset All"
