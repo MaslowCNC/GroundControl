@@ -1,5 +1,4 @@
 import math
-from kivy.properties                         import BooleanProperty
 
 class Kinematics():
 
