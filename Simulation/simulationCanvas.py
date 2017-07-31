@@ -227,11 +227,14 @@ class SimulationCanvas(GridLayout):
     
     def setKinematics(self, kinematicsType):
         
-        
         if kinematicsType == "Quadrilateral":
             self.isQuadKinematics = True
+            self.distortedKinematics.isQuadKinematics = True
+            self.correctKinematics.isQuadKinematics = True
         else:
             self.isQuadKinematics = False
+            self.distortedKinematics.isQuadKinematics = False
+            self.correctKinematics.isQuadKinematics = False
     
     def onSliderChange(self, *args):
 

@@ -1,4 +1,5 @@
 import math
+from kivy.properties                         import BooleanProperty
 
 class Kinematics():
 
@@ -80,6 +81,8 @@ class Kinematics():
     Chain2  = 0#right chain length
 
     i = 0
+    
+    isQuadKinematics    = True
 
     def _verifyValidTarget(self, xTarget, yTarget):
         #If the target point is beyond one of the edges of the board, the machine stops at the edge
@@ -107,6 +110,17 @@ class Kinematics():
         self.Psi2 = self.Theta + self.Phi
 
     def inverse(self, xTarget, yTarget):
+        '''
+        
+        Compute the lengths of chain needed to reach a target XY position
+        
+        '''
+        if self.isQuadKinematics:
+            return self.quadrilateralInverse(xTarget, yTarget)
+        else:
+            return 500, 500
+        
+    def quadrilateralInverse(self, xTarget, yTarget):
 
         '''
 
