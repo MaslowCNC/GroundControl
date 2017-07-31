@@ -1,5 +1,5 @@
 from kivy.uix.gridlayout                     import GridLayout
-from kivy.properties                         import NumericProperty, ObjectProperty
+from kivy.properties                         import NumericProperty, ObjectProperty, BooleanProperty
 from kivy.graphics                           import Color, Ellipse, Line
 from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
@@ -25,6 +25,8 @@ class SimulationCanvas(GridLayout):
 
     correctKinematics   = Kinematics()
     distortedKinematics = Kinematics()
+    
+    isQuadKinematics    = BooleanProperty(True)
 
     def initialize(self):
         print "canvas initialized"
@@ -39,6 +41,8 @@ class SimulationCanvas(GridLayout):
         self.gridSize.bind(value=self.onSliderChange)
         
         Clock.schedule_once(self.moveToCenter, 3)
+        
+        self.kinematicsSelect.text = "Quadrilateral"
         
         self.recompute()
     
@@ -222,7 +226,12 @@ class SimulationCanvas(GridLayout):
         print "Error MM: " + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0]))
     
     def setKinematics(self, kinematicsType):
-        print "would set" + kinematicsType
+        
+        
+        if kinematicsType == "Quadrilateral":
+            self.isQuadKinematics = True
+        else:
+            self.isQuadKinematics = False
     
     def onSliderChange(self, *args):
 
