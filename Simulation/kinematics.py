@@ -32,7 +32,7 @@ class Kinematics():
     # Gamma, angle of left chain
     # Lamda, angle of right chain
     # Phi, tilt of sled
-    # Theta, angle betwteen chains and bit (corners of triangle formed by l, s, h)
+    # Theta, angle between chains and bit (corners of triangle formed by l, s, h)
 
     #Calculation tolerances
     MaxError = 0.01
