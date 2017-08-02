@@ -1,5 +1,5 @@
 from kivy.uix.gridlayout                     import GridLayout
-from kivy.properties                         import NumericProperty, ObjectProperty
+from kivy.properties                         import NumericProperty, ObjectProperty, BooleanProperty
 from kivy.graphics                           import Color, Ellipse, Line
 from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
@@ -25,6 +25,8 @@ class SimulationCanvas(GridLayout):
 
     correctKinematics   = Kinematics()
     distortedKinematics = Kinematics()
+    
+    isQuadKinematics    = BooleanProperty(True)
 
     def initialize(self):
         print "canvas initialized"
@@ -34,11 +36,14 @@ class SimulationCanvas(GridLayout):
         self.vertBitDist.bind(value=self.onSliderChange)
         self.leftChainOffset.bind(value=self.onSliderChange)
         self.rightChainOffset.bind(value=self.onSliderChange)
+        self.rotationRadiusOffset.bind(value=self.onSliderChange)
 
         self.vertCGDist.bind(value=self.onSliderChange)
         self.gridSize.bind(value=self.onSliderChange)
         
         Clock.schedule_once(self.moveToCenter, 3)
+        
+        self.kinematicsSelect.text = "Quadrilateral"
         
         self.recompute()
     
@@ -73,7 +78,8 @@ class SimulationCanvas(GridLayout):
         self.vertCGDist.value = 0
         self.leftChainOffset.value = 0
         self.rightChainOffset.value = 0
-        self.gridSize.value=150
+        self.rotationRadiusOffset.value = 0
+        self.gridSize.value=300
 
     def recompute(self):
         print "recompute"
@@ -220,7 +226,18 @@ class SimulationCanvas(GridLayout):
 
         print distortedPoint2[0] - distortedPoint1[0]
         print "Error MM: " + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0]))
-
+    
+    def setKinematics(self, kinematicsType):
+        
+        if kinematicsType == "Quadrilateral":
+            self.isQuadKinematics = True
+            self.distortedKinematics.isQuadKinematics = True
+            self.correctKinematics.isQuadKinematics = True
+        else:
+            self.isQuadKinematics = False
+            self.distortedKinematics.isQuadKinematics = False
+            self.correctKinematics.isQuadKinematics = False
+    
     def onSliderChange(self, *args):
 
         self.distortedKinematics.motorOffsetY = self.correctKinematics.motorOffsetY + self.motorVerticalError.value
@@ -243,7 +260,10 @@ class SimulationCanvas(GridLayout):
 
         self.distortedKinematics.chain2Offset = int(self.rightChainOffset.value)
         self.rightChainOffsetLabel.text = "Right Chain\nSlipped Links: " + str(int(self.rightChainOffset.value)) + "links"
-
+        
+        self.distortedKinematics.rotationDiskRadius = self.correctKinematics.rotationDiskRadius + self.rotationRadiusOffset.value
+        self.rotationRadiusLabel.text = "Rotation Radius\nSpacing Error: " + str(int(self.rotationRadiusOffset.value)) + "mm"
+        
         self.machineLabel.text = "distance between sled attachments ideal: "+str(self.correctKinematics.l)+" actual: "+str(self.distortedKinematics.l)+"mm\nvertical distance between sled attachments and bit ideal: "+str(self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.s)+"mm\nvertical distance between sled attachments and CG ideal: "+str(self.correctKinematics.h3+self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.h3+self.distortedKinematics.s)+"mm\ndistance between motors ideal: "+str(self.correctKinematics.D)+" actual: "+str(self.distortedKinematics.D)+"mm"
 
         self.gridSizeLabel.text = "Grid Size: "+str(int(self.gridSize.value))+"mm"

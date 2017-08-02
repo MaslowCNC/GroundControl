@@ -32,7 +32,7 @@ class Kinematics():
     # Gamma, angle of left chain
     # Lamda, angle of right chain
     # Phi, tilt of sled
-    # Theta, angle betwteen chains and bit (corners of triangle formed by l, s, h)
+    # Theta, angle between chains and bit (corners of triangle formed by l, s, h)
 
     #Calculation tolerances
     MaxError = 0.01
@@ -80,6 +80,11 @@ class Kinematics():
     Chain2  = 0#right chain length
 
     i = 0
+    
+    rotationDiskRadius = 100
+    _xCordOfMotor = D/2
+    _yCordOfMotor = machineHeight/2 + motorOffsetY
+    isQuadKinematics    = True
 
     def _verifyValidTarget(self, xTarget, yTarget):
         #If the target point is beyond one of the edges of the board, the machine stops at the edge
@@ -105,8 +110,43 @@ class Kinematics():
         self.Theta = math.atan(2*self.s/self.l)
         self.Psi1 = self.Theta - self.Phi
         self.Psi2 = self.Theta + self.Phi
+        
+        self._xCordOfMotor = self.D/2
+        self._yCordOfMotor = self.machineHeight/2 + self.motorOffsetY
 
     def inverse(self, xTarget, yTarget):
+        '''
+        
+        Compute the lengths of chain needed to reach a target XY position
+        
+        '''
+        if self.isQuadKinematics:
+            return self.quadrilateralInverse(xTarget, yTarget)
+        else:
+            return self.triangularInverse(xTarget, yTarget)
+    
+    def triangularInverse(self, xTarget, yTarget):
+        '''
+    
+        The inverse kinematics (relating an xy coordinate pair to the required chain lengths to hit that point)
+        function for a triangular set up where the chains meet at a point, or are arranged so that they simulate 
+        meeting at a point.
+        
+        '''
+    
+        #Confirm that the coordinates are on the wood
+        self._verifyValidTarget(xTarget, yTarget)
+        
+        Chain1 = math.sqrt(math.pow((-1*self._xCordOfMotor - xTarget),2)+math.pow((self._yCordOfMotor - yTarget),2))
+        Chain2 = math.sqrt(math.pow((self._xCordOfMotor - xTarget),2)+math.pow((self._yCordOfMotor - yTarget),2))
+        
+        #Subtract of the virtual length which is added to the chain by the rotation mechanism
+        Chain1 = Chain1 - self.rotationDiskRadius
+        Chain2 = Chain2 - self.rotationDiskRadius
+        
+        return Chain1, Chain2
+    
+    def quadrilateralInverse(self, xTarget, yTarget):
 
         '''
 
@@ -538,18 +578,6 @@ class Kinematics():
         self.CosPsi1D = 0.1369*Psi1delcu - 0.6799*Psi1delsq + 0.1077*Psi1del + 0.9756#cosPsi1
         self.SinPsi2D = -0.1460*Psi2delcu - 0.0197*Psi2delsq + 1.0068*Psi2del - 0.0008#sinPsi2
         self.CosPsi2D = 0.0792*Psi2delcu - 0.5559*Psi2delsq + 0.0171*Psi2del +0.9981#cosPsi2
-
-        #print "block 2"
-        #print "self.MySinPhi " + str(self.MySinPhi*1000)
-        #print "self.MySinPhiDelta " + str(self.MySinPhiDelta*1000)
-        #print "self.SinPsi1 " + str(self.SinPsi1*1000)
-        #print "self.CosPsi1 " + str(self.CosPsi1*1000)
-        #print "self.SinPsi2 " + str(self.SinPsi2*1000)
-        #print "self.CosPsi2 " + str(self.CosPsi2*1000)
-        #print "self.SinPsi1D " + str(self.SinPsi1D*1000)
-        #print "self.CosPsi1D " + str(self.CosPsi1D*1000)
-        #print "self.SinPsi2D " + str(self.SinPsi2D*1000)
-        #print "self.CosPsi2D " + str(self.CosPsi2D*1000)
 
     def _YOffsetEqn(self, YPlus, Denominator, Psi):
 
