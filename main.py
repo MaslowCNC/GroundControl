@@ -538,7 +538,7 @@ class GroundControlApp(App):
                     self._popup.dismiss()                                           #close any open popup
                 except:
                     pass                                                            #there wasn't a popup to close
-                content = NotificationPopup(continueOn = self.dismiss_popup_continue, hold=self.dismiss_popup_hold , text = message[9:])
+                content = NotificationPopup(continueOn = self.dismiss_popup_continue, text = message[9:])
                 self._popup = Popup(title="Notification: ", content=content,
                             auto_dismiss=False, size_hint=(0.35, 0.35))
                 self._popup.open()
