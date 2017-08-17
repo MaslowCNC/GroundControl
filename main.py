@@ -438,27 +438,6 @@ class GroundControlApp(App):
     def push_settings_to_machine(self, *args):
         
         
-        #Push kinematics settings to machine
-        if self.data.config.get('Advanced Settings', 'kinematicsType') == 'Quadrilateral':
-            kinematicsType = 1
-        else:
-            kinematicsType = 2
-        
-        cmdString = ("B03" 
-            +" A" + str(self.data.config.get('Maslow Settings', 'bedWidth'))
-            +" C" + str(self.data.config.get('Maslow Settings', 'bedHeight'))
-            +" Q" + str(self.data.config.get('Maslow Settings', 'motorSpacingX'))
-            +" E" + str(self.data.config.get('Maslow Settings', 'motorOffsetY'))
-            +" F" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
-            +" R" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
-            +" H" + str(self.data.config.get('Maslow Settings', 'sledCG'))
-            +" Y" + str(kinematicsType)
-            +" Z" + str(self.data.config.get('Advanced Settings', 'rotationRadius'))
-            + " "
-        )
-        
-        self.data.gcode_queue.put(cmdString)
-        
         #Push motor configuration settings to machine
         
         
@@ -500,7 +479,28 @@ class GroundControlApp(App):
         
         self.data.gcode_queue.put(cmdString)
         
-    
+        #Push kinematics settings to machine
+        if self.data.config.get('Advanced Settings', 'kinematicsType') == 'Quadrilateral':
+            kinematicsType = 1
+        else:
+            kinematicsType = 2
+        
+        cmdString = ("B03" 
+            +" A" + str(self.data.config.get('Maslow Settings', 'bedWidth'))
+            +" C" + str(self.data.config.get('Maslow Settings', 'bedHeight'))
+            +" Q" + str(self.data.config.get('Maslow Settings', 'motorSpacingX'))
+            +" E" + str(self.data.config.get('Maslow Settings', 'motorOffsetY'))
+            +" F" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
+            +" R" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
+            +" H" + str(self.data.config.get('Maslow Settings', 'sledCG'))
+            +" Y" + str(kinematicsType)
+            +" Z" + str(self.data.config.get('Advanced Settings', 'rotationRadius'))
+            + " "
+        )
+        
+        self.data.gcode_queue.put(cmdString)
+        
+        
     '''
     
     Update Functions
@@ -611,7 +611,7 @@ class GroundControlApp(App):
         
     
     def setErrorOnScreen(self, message):
-        
+        print message
         try:
             startpt = message.find(':')+1 
             endpt = message.find(',', startpt)
