@@ -437,26 +437,8 @@ class GroundControlApp(App):
     
     def push_settings_to_machine(self, *args):
         
-        cmdString = ("B03" 
-            +" A" + str(self.data.config.get('Maslow Settings', 'bedWidth'))
-            +" C" + str(self.data.config.get('Maslow Settings', 'bedHeight'))
-            +" Q" + str(self.data.config.get('Maslow Settings', 'motorSpacingX'))
-            +" E" + str(self.data.config.get('Maslow Settings', 'motorOffsetY'))
-            +" F" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
-            +" R" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
-            +" H" + str(self.data.config.get('Maslow Settings', 'sledCG'))
-            +" I" + str(self.data.config.get('Maslow Settings', 'zAxis'))
-            +" J" + str(self.data.config.get('Advanced Settings', 'encoderSteps'))
-            +" K" + str(self.data.config.get('Advanced Settings', 'gearTeeth'))
-            +" M" + str(self.data.config.get('Advanced Settings', 'chainPitch'))
-            +" N" + str(self.data.config.get('Maslow Settings'  , 'zDistPerRot'))
-            +" P" + str(self.data.config.get('Advanced Settings', 'zEncoderSteps'))
-            + " "
-        )
         
-        self.data.gcode_queue.put(cmdString)
-        
-        #Split the settings push into two so that it doesn't exceed the maximum line length
+        #Push motor configuration settings to machine
         
         
         if int(self.data.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
@@ -477,27 +459,48 @@ class GroundControlApp(App):
             KiV = 1
             KdV = 0
         
-        if self.data.config.get('Advanced Settings', 'kinematicsType') == 'Quadrilateral':
-            kinematicsType = 1
-            print "quadrilateral recognized"
-        else:
-            kinematicsType = 2
-            print "triangular kinematics recognized"
         
-        cmdString = ("B03" 
+        
+        cmdString = ("B12" 
+            +" I" + str(self.data.config.get('Maslow Settings', 'zAxis'))
+            +" J" + str(self.data.config.get('Advanced Settings', 'encoderSteps'))
+            +" K" + str(self.data.config.get('Advanced Settings', 'gearTeeth'))
+            +" M" + str(self.data.config.get('Advanced Settings', 'chainPitch'))
+            +" N" + str(self.data.config.get('Maslow Settings'  , 'zDistPerRot'))
+            +" P" + str(self.data.config.get('Advanced Settings', 'zEncoderSteps'))
             +" S" + str(KpPos)
             +" T" + str(KiPos)
             +" U" + str(KdPos)
             +" V" + str(KpV)
             +" W" + str(KiV)
             +" X" + str(KdV)
+            + " "
+        )
+        
+        self.data.gcode_queue.put(cmdString)
+        
+        #Push kinematics settings to machine
+        if self.data.config.get('Advanced Settings', 'kinematicsType') == 'Quadrilateral':
+            kinematicsType = 1
+        else:
+            kinematicsType = 2
+        
+        cmdString = ("B03" 
+            +" A" + str(self.data.config.get('Maslow Settings', 'bedWidth'))
+            +" C" + str(self.data.config.get('Maslow Settings', 'bedHeight'))
+            +" Q" + str(self.data.config.get('Maslow Settings', 'motorSpacingX'))
+            +" E" + str(self.data.config.get('Maslow Settings', 'motorOffsetY'))
+            +" F" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
+            +" R" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
+            +" H" + str(self.data.config.get('Maslow Settings', 'sledCG'))
             +" Y" + str(kinematicsType)
             +" Z" + str(self.data.config.get('Advanced Settings', 'rotationRadius'))
             + " "
         )
         
         self.data.gcode_queue.put(cmdString)
-    
+        
+        
     '''
     
     Update Functions
@@ -538,7 +541,7 @@ class GroundControlApp(App):
                     self._popup.dismiss()                                           #close any open popup
                 except:
                     pass                                                            #there wasn't a popup to close
-                content = NotificationPopup(continueOn = self.dismiss_popup_continue, hold=self.dismiss_popup_hold , text = message[9:])
+                content = NotificationPopup(continueOn = self.dismiss_popup_continue, text = message[9:])
                 self._popup = Popup(title="Notification: ", content=content,
                             auto_dismiss=False, size_hint=(0.35, 0.35))
                 self._popup.open()
@@ -604,8 +607,6 @@ class GroundControlApp(App):
         except:
             print "One Machine Position Report Command Misread"
             return
-        
-        
     
     def setErrorOnScreen(self, message):
         
