@@ -103,7 +103,7 @@ class SimulationCanvas(GridLayout):
         self.verticalPoints   = range(int(int(topBottomBound/self.gridSize.value)*self.gridSize.value), -topBottomBound, -1 * int(self.gridSize.value))
         self.horizontalPoints = range(int(int(leftRigthBound/self.gridSize.value)*self.gridSize.value), -leftRigthBound, -1 * int(self.gridSize.value))
 
-        #self.doSpecificCalculation()
+        self.doSpecificCalculation()
 
         for j in self.verticalPoints:
             for i in self.horizontalPoints:

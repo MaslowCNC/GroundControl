@@ -13,5 +13,4 @@ class NotificationPopup(FloatLayout):
     
     '''
     continueOn = ObjectProperty(None)
-    hold = ObjectProperty(None)
     text = StringProperty("")
