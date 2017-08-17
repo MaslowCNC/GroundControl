@@ -607,11 +607,9 @@ class GroundControlApp(App):
         except:
             print "One Machine Position Report Command Misread"
             return
-        
-        
     
     def setErrorOnScreen(self, message):
-        print message
+        
         try:
             startpt = message.find(':')+1 
             endpt = message.find(',', startpt)
