@@ -37,6 +37,16 @@
             id: positionIndicator
         PositionIndicator:
             id: targetIndicator
+        MenuSpawner:
+            timeout: 1
+            menu_args:
+                dict(
+                creation_direction=1,
+                radius=10,
+                creation_timeout=.4,
+                choices=[
+                dict(text='Move Here', index=1, callback=root.updateGcode),
+                dict(text='Mark', index=2, callback=root.updateGcode)])
     
 <FrontPage>:
     textconsole:textconsole
@@ -125,6 +135,7 @@
             Button:
                 text: 'Define\nHome'
                 on_release: root.moveOrigin()
+        
         GridLayout:
             cols: 3
             size_hint: None, None
@@ -1207,3 +1218,59 @@
                 on_release: root.recompute()
 
 <TestPoint>
+
+#:import pi math.pi
+#:import cos math.cos
+#:import sin math.sin
+#:import V kivy.vector.Vector
+<ModernMenu>:
+    canvas.before:
+        Color:
+            rgba: 1, 0, 0, .4
+        Ellipse:
+            pos: self.center_x - self.radius, self.center_y - self.radius
+            size: self.radius * 2, self.radius * 2
+            angle_start: 0
+            angle_end: self.circle_progress * 360 * self.creation_direction
+        Color:
+            rgba: self.color
+        Line:
+            circle:
+                (
+                self.center_x, self.center_y,
+                self.radius, 0, self.circle_progress * 360 * self.creation_direction
+                )
+            width: self.line_width
+    on_touch_down:
+        V(args[1].pos).distance(self.center) < self.radius and (
+        self.back() if self.choices_history else self.dismiss())
+
+<ModernMenuLabel>:
+    size: self.texture_size
+    padding: 5, 5
+    on_press: self.callback and self.callback(self)
+    canvas.before:
+        Color:
+            rgba: .1, .4, .4, .9
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Line:
+            points:
+                (
+                self.center_x, self.center_y,
+                self.parent.center_x + cos(
+                self.opacity * self.index * 2 * pi / self.siblings
+                ) * self.parent.radius,
+                self.parent.center_y + sin(
+                self.opacity * self.index * 2 * pi / self.siblings
+                ) * self.parent.radius
+                ) if self.parent else []
+            width: self.parent.line_width if self.parent else 1
+    center:
+        (
+        self.parent.center_x +
+        cos(self.opacity * self.index * 2 * pi / self.siblings) * self.radius,
+        self.parent.center_y +
+        sin(self.opacity * self.index * 2 * pi / self.siblings) * self.radius
+        ) if (self.size and self.parent and self.parent.children) else (0, 0)

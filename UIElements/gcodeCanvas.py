@@ -14,6 +14,7 @@ from UIElements.positionIndicator            import PositionIndicator
 from UIElements.viewMenu                     import ViewMenu
 from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
+from UIElements.modernMenu                   import ModernMenu
 
 import re
 import math
