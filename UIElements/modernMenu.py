@@ -1,17 +1,17 @@
 '''A round menu that appears on a long touch
 '''
-from kivy.uix.widget import Widget
-from kivy.uix.label import Label
-from kivy.uix.behaviors import ButtonBehavior
-from kivy.lang import Builder
-from kivy.clock import Clock
-from kivy.animation import Animation
-from kivy.properties import (
+from kivy.uix.widget                             import Widget
+from kivy.uix.label                              import Label
+from kivy.uix.behaviors                          import ButtonBehavior
+from kivy.lang                                   import Builder
+from kivy.clock                                  import Clock
+from kivy.animation                              import Animation
+from kivy.properties                             import (
     NumericProperty, ListProperty, ObjectProperty, DictProperty)
-from kivy.app import App
+from kivy.app                                    import App
 
-from functools import partial
-from copy import copy
+from functools                                   import partial
+from copy                                        import copy
 
 
 def dist((x1, y1), (x2, y2)):
@@ -111,11 +111,10 @@ class MenuSpawner(Widget):
     menu_args = DictProperty({})
 
     def on_touch_down(self, touch, *args):
-        print "touch: "
-        print touch
-        print touch.button
+        
         if touch.button == 'scrolldown' or touch.button == 'scrollup':
-            print "scroll seen"
+            #Ignore scroll button
+            pass
         else:
             t = partial(self.display_menu, touch)
             touch.ud['menu_timeout'] = t
@@ -136,6 +135,12 @@ class MenuSpawner(Widget):
         return super(MenuSpawner, self).on_touch_up(touch, *args)
 
     def display_menu(self, touch, dt):
-        menu = self.menu_cls(center=touch.pos, **self.menu_args)
+        print "touch pos:"
+        print touch.pos
+        self.width
+        
+        shiftedPos = (touch.pos[0] - 681, touch.pos[1] - 352)
+        
+        menu = self.menu_cls(center=shiftedPos, **self.menu_args)
         self.add_widget(menu)
         menu.start_display(touch)

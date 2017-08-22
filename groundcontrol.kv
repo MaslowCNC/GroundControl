@@ -46,7 +46,8 @@
                 creation_timeout=.4,
                 choices=[
                 dict(text='Move Here', index=1, callback=root.updateGcode),
-                dict(text='Mark', index=2, callback=root.updateGcode)])
+                dict(text='X: 0.0\nY: 0.0', index=2, callback=root.updateGcode),
+                dict(text='Mark', index=3, callback=root.updateGcode)])
     
 <FrontPage>:
     textconsole:textconsole
@@ -1226,7 +1227,7 @@
 <ModernMenu>:
     canvas.before:
         Color:
-            rgba: 1, 0, 0, .4
+            rgba: 1, 1, 1, 1
         Ellipse:
             pos: self.center_x - self.radius, self.center_y - self.radius
             size: self.radius * 2, self.radius * 2
@@ -1251,7 +1252,7 @@
     on_press: self.callback and self.callback(self)
     canvas.before:
         Color:
-            rgba: .1, .4, .4, .9
+            rgba: 1, 1, 1, 1
         Rectangle:
             pos: self.pos
             size: self.size
