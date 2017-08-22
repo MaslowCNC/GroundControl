@@ -111,10 +111,16 @@ class MenuSpawner(Widget):
     menu_args = DictProperty({})
 
     def on_touch_down(self, touch, *args):
-        t = partial(self.display_menu, touch)
-        touch.ud['menu_timeout'] = t
-        Clock.schedule_once(t, self.timeout)
-        return super(MenuSpawner, self).on_touch_down(touch, *args)
+        print "touch: "
+        print touch
+        print touch.button
+        if touch.button == 'scrolldown' or touch.button == 'scrollup':
+            print "scroll seen"
+        else:
+            t = partial(self.display_menu, touch)
+            touch.ud['menu_timeout'] = t
+            Clock.schedule_once(t, self.timeout)
+            return super(MenuSpawner, self).on_touch_down(touch, *args)
 
     def on_touch_move(self, touch, *args):
         if (
