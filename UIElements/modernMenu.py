@@ -137,9 +137,11 @@ class MenuSpawner(Widget):
     def display_menu(self, touch, dt):
         print "touch pos:"
         print touch.pos
-        self.width
+        print self.parent.width
+        print self.parent.scale
+        print self.to_local(touch.pos[0], touch.pos[1], relative=True)
         
-        shiftedPos = (touch.pos[0] - 681, touch.pos[1] - 352)
+        shiftedPos = ((touch.pos[0] - self.parent.pos[0])/self.parent.scale, (touch.pos[1] - self.parent.pos[1])/self.parent.scale)
         
         menu = self.menu_cls(center=shiftedPos, **self.menu_args)
         self.add_widget(menu)
