@@ -8,3 +8,7 @@ rmdir .\dist\GroundControl\DataStructures /s /Q
 rmdir .\dist\GroundControl\Documentation /s /Q
 rmdir .\dist\GroundControl\Simulation /s /Q
 rmdir .\dist\GroundControl\UIElements /s /Q
+robocopy /E ./Documentation ./dist/GroundControl/Documentation
+copy "./Launch Ground Control.bat" "./dist/Launch Ground Control.bat"
+robocopy /E ./dist ./GroundControl-Windows.Portable.v0.
+rmdir .\dist /s /Q
