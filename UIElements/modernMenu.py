@@ -47,13 +47,15 @@ class ModernMenu(Widget):
     circle_progress = NumericProperty(0)
     creation_direction = NumericProperty(1)
     creation_timeout = NumericProperty(1)
-    close_After_Timeout = NumericProperty(5)
+    close_After_Timeout = NumericProperty(10)
     choices = ListProperty([])
     item_cls = ObjectProperty(ModernMenuLabel)
     item_args = DictProperty({'opacity': 0})
     animation = ObjectProperty(Animation(opacity=1, d=.5))
     choices_history = ListProperty([])
-
+    xPosition = 32
+    yPosition = 32
+    
     def start_display(self, touch):
         touch.grab(self)
         a = Animation(circle_progress=1, d=self.creation_timeout)
@@ -62,13 +64,19 @@ class ModernMenu(Widget):
         a.start(self)
 
     def open_menu(self, *args):
+        print "within menu:"
+        print self.pos
+        
         self.clear_widgets()
         for i in self.choices:
             kwargs = copy(self.item_args)
             kwargs.update(i)
             ml = self.item_cls(**kwargs)
+            if ml.text == 'Position Text Placeholder':
+                ml.text = '[color=3333ff]X: ' + str(self.xPosition) + 'mm\nY: ' + str(self.yPosition) + 'mm [/color]'
             self.animation.start(ml)
             self.add_widget(ml)
+            
         
         Clock.schedule_once(self.dismiss, self.close_After_Timeout) #close the menu if not used for close_After_Timeout seconds
 
@@ -93,7 +101,7 @@ class ModernMenu(Widget):
         return super(ModernMenu, self).on_touch_move(touch, *args)
 
     def on_touch_up(self, touch, *args):
-        print "touch up 1"
+        
         if (
             touch.grab_current == self and
             self.parent and
@@ -111,12 +119,13 @@ class ModernMenu(Widget):
         if self.parent:
             self.parent.remove_widget(self)
 
-
 class MenuSpawner(Widget):
     timeout = NumericProperty(0.1)
     menu_cls = ObjectProperty(ModernMenu)
     cancel_distance = NumericProperty(10)
     menu_args = DictProperty({})
+    xPosition = NumericProperty(0)
+    yPosition = NumericProperty(0)
 
     def on_touch_down(self, touch, *args):
         
@@ -138,20 +147,24 @@ class MenuSpawner(Widget):
         return super(MenuSpawner, self).on_touch_move(touch, *args)
 
     def on_touch_up(self, touch, *args):
-        print "touch up 2"
+        
         if touch.ud.get('menu_timeout'):
             Clock.unschedule(touch.ud['menu_timeout'])
         return super(MenuSpawner, self).on_touch_up(touch, *args)
 
     def display_menu(self, touch, dt):
-        print "touch pos:"
-        print touch.pos
-        print self.parent.width
-        print self.parent.scale
-        print self.to_local(touch.pos[0], touch.pos[1], relative=True)
         
-        shiftedPos = ((touch.pos[0] - self.parent.pos[0])/self.parent.scale, (touch.pos[1] - self.parent.pos[1])/self.parent.scale)
+        self.xPosition = (touch.pos[0] - self.parent.pos[0])/self.parent.scale
+        self.yPosition = (touch.pos[1] - self.parent.pos[1])/self.parent.scale
+        
+        shiftedPos = (self.xPosition, self.yPosition) 
+        
+        print "within display menu:"
+        print shiftedPos
+        
         
         menu = self.menu_cls(center=shiftedPos, **self.menu_args)
+        menu.xPosition = self.xPosition
+        menu.yPosition = self.yPosition
         self.add_widget(menu)
         menu.start_display(touch)

@@ -334,6 +334,17 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         self.drawWorkspace()
     
+    def createMark(self):
+        pass
+    
+    def doNothing(self):
+        '''
+        
+        A placeholder function which does nothing
+        
+        '''
+        pass
+    
     def moveLine(self, gCodeLine):
         
         originalLine = gCodeLine
