@@ -33,6 +33,10 @@ class ModernMenuLabel(ButtonBehavior, Label):
             self.siblings = max(0, len(self.parent.children))
         else:
             self.siblings = 1
+    
+    def dismiss(self, *args):
+        
+        self.parent.dismiss()
 
 
 class ModernMenu(Widget):
@@ -86,6 +90,7 @@ class ModernMenu(Widget):
         return super(ModernMenu, self).on_touch_move(touch, *args)
 
     def on_touch_up(self, touch, *args):
+        print "touch up 1"
         if (
             touch.grab_current == self and
             self.parent and
@@ -130,6 +135,7 @@ class MenuSpawner(Widget):
         return super(MenuSpawner, self).on_touch_move(touch, *args)
 
     def on_touch_up(self, touch, *args):
+        print "touch up 2"
         if touch.ud.get('menu_timeout'):
             Clock.unschedule(touch.ud['menu_timeout'])
         return super(MenuSpawner, self).on_touch_up(touch, *args)

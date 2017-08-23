@@ -45,9 +45,9 @@
                 radius=10,
                 creation_timeout=.4,
                 choices=[
-                dict(text='Move Here', index=1, callback=root.updateGcode),
-                dict(text='X: 0.0\nY: 0.0', index=2, callback=root.updateGcode),
-                dict(text='Mark', index=3, callback=root.updateGcode)])
+                dict(text='[color=3333ff]Move Here[/color]', markup = True, index=1, callback=root.updateGcode),
+                dict(text='[color=3333ff]X: 0.0\nY: 0.0[/color]', markup = True, index=2, callback=root.updateGcode),
+                dict(text='[color=3333ff]Mark[/color]', markup = True, index=3, callback=root.updateGcode)])
     
 <FrontPage>:
     textconsole:textconsole
@@ -1250,6 +1250,7 @@
     size: self.texture_size
     padding: 5, 5
     on_press: self.callback and self.callback(self)
+    on_release: root.dismiss()
     canvas.before:
         Color:
             rgba: 1, 1, 1, 1
