@@ -47,6 +47,7 @@ class ModernMenu(Widget):
     circle_progress = NumericProperty(0)
     creation_direction = NumericProperty(1)
     creation_timeout = NumericProperty(1)
+    close_After_Timeout = NumericProperty(5)
     choices = ListProperty([])
     item_cls = ObjectProperty(ModernMenuLabel)
     item_args = DictProperty({'opacity': 0})
@@ -68,6 +69,8 @@ class ModernMenu(Widget):
             ml = self.item_cls(**kwargs)
             self.animation.start(ml)
             self.add_widget(ml)
+        
+        Clock.schedule_once(self.dismiss, self.close_After_Timeout) #close the menu if not used for close_After_Timeout seconds
 
     def open_submenu(self, choices, *args):
         self.choices_history.append(self.choices)
@@ -99,7 +102,7 @@ class ModernMenu(Widget):
             self.parent.remove_widget(self)
         return super(ModernMenu, self).on_touch_up(touch, *args)
 
-    def dismiss(self):
+    def dismiss(self, *args):
         a = Animation(opacity=0)
         a.bind(on_complete=self._remove)
         a.start(self)
