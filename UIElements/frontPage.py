@@ -176,7 +176,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         except:
             pass
     
-    def test(self):
+    def test(self, *args):
         print "test has no current function"
     
     def upLeft(self):
@@ -342,4 +342,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         Execute user defined macro
         '''
         self.data.gcode_queue.put(self.data.config.get('Maslow Settings', 'macro' + str(index))) 
-
+    
+    def on_touch_up(self, touch, *args):
+        print "front page touch up"

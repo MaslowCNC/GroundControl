@@ -86,6 +86,7 @@ class ModernMenu(Widget):
         return super(ModernMenu, self).on_touch_move(touch, *args)
 
     def on_touch_up(self, touch, *args):
+        print "other on touch up"
         if (
             touch.grab_current == self and
             self.parent and
@@ -111,7 +112,7 @@ class MenuSpawner(Widget):
     menu_args = DictProperty({})
 
     def on_touch_down(self, touch, *args):
-        
+        print "touch down"
         if touch.button == 'scrolldown' or touch.button == 'scrollup':
             #Ignore scroll button
             pass
@@ -130,16 +131,12 @@ class MenuSpawner(Widget):
         return super(MenuSpawner, self).on_touch_move(touch, *args)
 
     def on_touch_up(self, touch, *args):
+        print "on touch up"
         if touch.ud.get('menu_timeout'):
             Clock.unschedule(touch.ud['menu_timeout'])
         return super(MenuSpawner, self).on_touch_up(touch, *args)
 
     def display_menu(self, touch, dt):
-        print "touch pos:"
-        print touch.pos
-        print self.parent.width
-        print self.parent.scale
-        print self.to_local(touch.pos[0], touch.pos[1], relative=True)
         
         shiftedPos = ((touch.pos[0] - self.parent.pos[0])/self.parent.scale, (touch.pos[1] - self.parent.pos[1])/self.parent.scale)
         
