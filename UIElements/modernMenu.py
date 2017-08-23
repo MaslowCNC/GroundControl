@@ -14,6 +14,7 @@ from functools                                   import partial
 from copy                                        import copy
 
 
+
 def dist((x1, y1), (x2, y2)):
     return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 5
 
@@ -73,7 +74,9 @@ class ModernMenu(Widget):
             kwargs.update(i)
             ml = self.item_cls(**kwargs)
             if ml.text == 'Position Text Placeholder':
-                ml.text = '[color=3333ff]X: ' + str(self.xPosition) + 'mm\nY: ' + str(self.yPosition) + 'mm [/color]'
+                ml.text = '[color=3333ff]X: ' + str('%.3f'%(self.xPosition)) + 'mm\nY: ' + str('%.3f'%(self.yPosition)) + 'mm [/color]'
+            if ml.text == '[color=3333ff]Move Here[/color]':
+                ml.callback = partial(self.parent.parent.parent.moveToPos, self.xPosition, self.yPosition)
             self.animation.start(ml)
             self.add_widget(ml)
             

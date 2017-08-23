@@ -334,10 +334,21 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         self.drawWorkspace()
     
-    def createMark(self):
-        pass
+    def moveToPos(self, xPosition, yPosition, *args):
+        print "would move to pos:"
+        print self.data.units
+        xTarget = '%.3f'%(xPosition/self.canvasScaleFactor)
+        yTarget = '%.3f'%(yPosition/self.canvasScaleFactor)
+        commandString = 'G0 X' + str(xTarget) + ' Y' + str(yTarget) + " \n"
+        print commandString
+        
+        self.data.gcode_queue.put(commandString)
     
-    def doNothing(self):
+    def createMark(self, *args):
+        print "Would create mark"
+        print args
+    
+    def doNothing(self, *args):
         '''
         
         A placeholder function which does nothing

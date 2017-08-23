@@ -46,8 +46,8 @@
                 creation_timeout=.4,
                 choices=[
                 dict(text='[color=3333ff]Move Here[/color]', markup = True, index=1, callback=root.updateGcode),
-                dict(text='Position Text Placeholder' , markup = True, index=2, callback=root.updateGcode),
-                dict(text='[color=3333ff]Mark[/color]', markup = True, index=3, callback=root.updateGcode)])
+                dict(text='Position Text Placeholder' , markup = True, index=2, callback=root.doNothing),
+                dict(text='[color=3333ff]Mark Here[/color]', markup = True, index=3, callback=root.updateGcode)])
     
 <FrontPage>:
     textconsole:textconsole
