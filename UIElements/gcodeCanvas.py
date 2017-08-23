@@ -335,8 +335,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.drawWorkspace()
     
     def moveToPos(self, xPosition, yPosition, *args):
-        print "would move to pos:"
-        print self.data.units
+        '''
+        
+        Move the machine to a point selected on the screen
+        
+        '''
         xTarget = '%.3f'%(xPosition/self.canvasScaleFactor)
         yTarget = '%.3f'%(yPosition/self.canvasScaleFactor)
         commandString = 'G0 X' + str(xTarget) + ' Y' + str(yTarget) + " \n"
@@ -344,9 +347,19 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         self.data.gcode_queue.put(commandString)
     
-    def createMark(self, *args):
+    def createMark(self, xPosition, yPosition, *args):
+        '''
+        
+        Create a mark at a point selected on the screen
+        
+        '''
         print "Would create mark"
-        print args
+        xTarget = xPosition/self.canvasScaleFactor
+        yTarget = yPosition/self.canvasScaleFactor
+        marker = PositionIndicator()
+        marker.setPos(xTarget, yTarget, self.data.units)
+        marker.color = (0,1,0)
+        self.scatterInstance.add_widget(marker)
     
     def doNothing(self, *args):
         '''

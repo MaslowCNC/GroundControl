@@ -73,10 +73,15 @@ class ModernMenu(Widget):
             kwargs = copy(self.item_args)
             kwargs.update(i)
             ml = self.item_cls(**kwargs)
-            if ml.text == 'Position Text Placeholder':
-                ml.text = '[color=3333ff]X: ' + str('%.3f'%(self.xPosition)) + 'mm\nY: ' + str('%.3f'%(self.yPosition)) + 'mm [/color]'
-            if ml.text == '[color=3333ff]Move Here[/color]':
-                ml.callback = partial(self.parent.parent.parent.moveToPos, self.xPosition, self.yPosition)
+            try:
+                if ml.text == 'Position Text Placeholder':
+                    ml.text = '[color=3333ff]X: ' + str('%.3f'%(self.xPosition)) + 'mm\nY: ' + str('%.3f'%(self.yPosition)) + 'mm [/color]'
+                if ml.text == '[color=3333ff]Move Here[/color]':
+                    ml.callback = partial(self.parent.parent.parent.moveToPos, self.xPosition, self.yPosition)
+                if ml.text == '[color=3333ff]Mark Here[/color]':
+                    ml.callback = partial(self.parent.parent.parent.createMark, self.xPosition, self.yPosition)
+            except:
+                print "unable to link circular menu functions"
             self.animation.start(ml)
             self.add_widget(ml)
             
