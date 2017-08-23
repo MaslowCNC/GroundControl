@@ -65,8 +65,6 @@ class ModernMenu(Widget):
         a.start(self)
 
     def open_menu(self, *args):
-        print "within menu:"
-        print self.pos
         
         self.clear_widgets()
         for i in self.choices:
@@ -166,10 +164,6 @@ class MenuSpawner(Widget):
         self.yPosition = (touch.pos[1] - self.parent.pos[1])/self.parent.scale
         
         shiftedPos = (self.xPosition, self.yPosition) 
-        
-        print "within display menu:"
-        print shiftedPos
-        
         
         menu = self.menu_cls(center=shiftedPos, **self.menu_args)
         menu.xPosition = self.xPosition

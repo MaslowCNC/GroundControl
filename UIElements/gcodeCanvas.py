@@ -342,8 +342,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         '''
         xTarget = '%.3f'%(xPosition/self.canvasScaleFactor)
         yTarget = '%.3f'%(yPosition/self.canvasScaleFactor)
-        commandString = 'G0 X' + str(xTarget) + ' Y' + str(yTarget) + " \n"
-        print commandString
+        commandString = 'G0 X' + str(xTarget) + ' Y' + str(yTarget) + " "
         
         self.data.gcode_queue.put(commandString)
     
@@ -353,7 +352,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         Create a mark at a point selected on the screen
         
         '''
-        print "Would create mark"
+        
         xTarget = xPosition/self.canvasScaleFactor
         yTarget = yPosition/self.canvasScaleFactor
         marker = PositionIndicator()
