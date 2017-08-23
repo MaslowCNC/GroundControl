@@ -14,6 +14,7 @@ from UIElements.positionIndicator            import PositionIndicator
 from UIElements.viewMenu                     import ViewMenu
 from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
+from UIElements.modernMenu                   import ModernMenu
 
 import re
 import math
@@ -153,10 +154,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         mat = Matrix().scale(.45, .45, 1)
         self.scatterInstance.apply_transform(mat, anchor)
 
-    def on_touch_up(self, touch):
+    def on_touch_up(self, touch, *args):
         
         if touch.is_mouse_scrolling:
             self.zoomCanvas(touch)
+        
+        return super(GcodeCanvas, self).on_touch_up(touch, *args)
     
     def zoomCanvas(self, touch):
         if touch.is_mouse_scrolling:
@@ -330,6 +333,40 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.scatterObject.canvas.clear()#remove_group('gcode')
         
         self.drawWorkspace()
+    
+    def moveToPos(self, xPosition, yPosition, *args):
+        '''
+        
+        Move the machine to a point selected on the screen
+        
+        '''
+        xTarget = '%.3f'%(xPosition/self.canvasScaleFactor)
+        yTarget = '%.3f'%(yPosition/self.canvasScaleFactor)
+        commandString = 'G0 X' + str(xTarget) + ' Y' + str(yTarget) + " "
+        
+        self.data.gcode_queue.put(commandString)
+    
+    def createMark(self, xPosition, yPosition, *args):
+        '''
+        
+        Create a mark at a point selected on the screen
+        
+        '''
+        
+        xTarget = xPosition/self.canvasScaleFactor
+        yTarget = yPosition/self.canvasScaleFactor
+        marker = PositionIndicator()
+        marker.setPos(xTarget, yTarget, self.data.units)
+        marker.color = (0,1,0)
+        self.scatterInstance.add_widget(marker)
+    
+    def doNothing(self, *args):
+        '''
+        
+        A placeholder function which does nothing
+        
+        '''
+        pass
     
     def moveLine(self, gCodeLine):
         
