@@ -39,7 +39,6 @@ class ModernMenuLabel(ButtonBehavior, Label):
         
         self.parent.dismiss()
 
-
 class ModernMenu(Widget):
     radius = NumericProperty(50)
     circle_width = NumericProperty(5)
@@ -135,7 +134,7 @@ class MenuSpawner(Widget):
 
     def on_touch_down(self, touch, *args):
         
-        if touch.button == 'scrolldown' or touch.button == 'scrollup':
+        if touch.is_mouse_scrolling:
             #Ignore scroll button
             pass
         else:
