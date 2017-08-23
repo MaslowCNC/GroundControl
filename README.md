@@ -1,118 +1,171 @@
-GroundControl
+Maslow CNC - Ground Control
 ======================
 
+## Overview
 
+Ground Control is the program which allows you to control the [Maslow CNC machine](http://www.maslowcnc.com/).
 
+From within Ground Control, you can move the machine to where you want to begin a cut, calibrate the machine, open and run a [g-code](/wiki/G-Code-and-MaslowCNC) file, or monitor the progress of an ongoing cut.
 
-##Overview
+At present, the UI looks like this:
 
-Ground Control is the program which allows you to control the Maslow machine.
+![UI](/Documentation/GroundControl.JPG)
 
-From within Ground Control, you can move the machine to where you want to begin a cut,
- calibrate the machine, open and run a g-code file, or monitor the progress of an ongoing
- cut.
+Ground Control is written in [Python](https://www.python.org/). It was chosen because it has good cross platform support and is relatively simple to work with.
 
- At present, the UI looks like this:
- ![UI](/Documentation/GroundControl.JPG)
- 
-Ground Control is written in the python programing language. Python was chosen because it
-is a language with good cross platform support and is relatively simple to start working with.
-Two of the goals of Ground Control are that it run on as many platforms as possible, and 
-that it is as easy as possible for members of the community to contribute to making the 
-program better.
+Two of the goals of Ground Control are:
 
-##Setup
-Ground Control is built using the 2.7.x version of the python language. 2.7 was chosen 
-instead of 3.x because the support for compiling binaries for the 3.x version is not 
-good enough yet. Maslow uses the Kivy framework for the UI (https://kivy.org/#home) and
-the pyserial module for USB communication (https://pythonhosted.org/pyserial/).
+1) It runs on as many platforms as possible.
+2) It is as easy as possible for members of the community to contribute to making the program better.
 
-###Installing Python
-To setup your computer to run Ground Control from the source code, first install python
-version 2.7.x, available for free here: https://www.python.org/downloads/
+### Index
 
-Once you have installed python 2.7.x open the command prompt and type 
+* [Installation](#installation)
+* [Documentation](#documentation)
+* [Development Setup](#development-setup)
+* [Support](#support)
+* [How To Contribute](#how-to-contribute)
+* [Program Data Flow](#program-data-flow)
 
-```
->python --version
+----
+## Installation
+
+For Windows and OS X binaries, see the [releases](releases) page.
+
+For help installing binaries, see the [installation guides](https://github.com/MaslowCNC/GroundControl/wiki#gc-installation-guides).
+
+## Documentation
+
+Ground control documentation is available on the [project wiki](/wiki).
+
+For help in using Ground Control, see the [users guide](/wiki/Ground-Control-Users-Guide).
+
+## Development Setup
+
+Ground Control is built using the 2.7.x version of the Python language. 2.7 was chosen instead of 3.x because the support for compiling binaries for the 3.x version is not good enough yet.
+
+Maslow uses the [Kivy framework](https://kivy.org/#home) for the UI  and the [pyserial](https://pythonhosted.org/pyserial/) module for USB communication.
+
+You might also consider taking a look at [Virtual Environments](http://docs.python-guide.org/en/latest/dev/virtualenvs/) to save you from python version headaches later on. This is not a prerequisite for installation on any platform.
+
+### Windows
+
+To setup your computer to run Ground Control from the source code, first download and install [Python version 2.7.x](https://www.python.org/downloads/).
+
+Once you have installed Python 2.7.x, open the command prompt and type
+
+```bat
+python --version
 ```
 
 You should then see something similar to this:
 
-```
+```bat
 Python 2.7.11
 ```
 
-If python does not open, it is most likely an issue with needing to add python to you PATH.
-You can find out more information about that here: http://superuser.com/questions/143119/how-to-add-python-to-the-windows-path
+If python does not open, it is most likely an issue with the `PATH` environment variable.
 
-Next, you need to install Kivy and Pyserial. Fortunately, python comes with a built in
-package manager which will install both of them for you. The python package manager is 
-called pip.
+For more information about configuring the `PATH` in Windows, see [superuser: How to add python to the windows path](http://superuser.com/questions/143119/how-to-add-python-to-the-windows-path).
 
-The details below will work well for Windows users.  Here are instructions for [Linux](./README_LINUX.md)
+Next, you need to install Kivy and Pyserial. Fortunately, python comes with a built in package manager, `pip` which will install both of them for you.
 
-###Installing pyserial
+#### Installing pyserial
 
 To install pyserial, type:
-```
->python -m pip install pyserial
-```
 
-and let pip do it's magic.
-
-###Installing Kivy
-
-Installing Kivy is a little more complicated. First, check to make sure your version of
-pip is up to date by running:
-
-```
->python -m pip install --upgrade pip wheel setuptools
+```bat
+python -m pip install pyserial
 ```
 
-Then install dependencies by running:
+#### Installing Kivy
+
+Installing Kivy is a little more complicated. First, check to make sure your version of `pip` is up to date by running:
+
+```bat
+python -m pip install --upgrade pip wheel setuptools
 ```
+
+then install dependencies:
+
+```bat
 python -m pip install docutils pygments pypiwin32 kivy.deps.sdl2 kivy.deps.glew
 ```
 
-and finally install Kivy by running:
+and finally install Kivy:
 
-```
+```bat
 python -m pip install kivy
 ```
 
-If you have any questions or issues with this process please get in touch through
-the forums at http://www.maslowcnc.com/forums/#!/dev . If you had any issues which you
-were able to resolve, please consider editing this README file to correct the parts which
-were unclear.
+### OS X
 
-##How To Run Ground Control
+To install Python on OS X, first install [Homebrew](https://brew.sh/)
 
-Ground Control can be run from the command line using the command 
-
-```
->python main.py
+```bash
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
-run from within the folder where main.py is located.
+then install Python:
 
-If you are looking for a binary version of the software, check the releases on this page
-or visit our website at www.maslowcnc.com. As of this writing, no binaries or installers
-for the newest version of Ground Control are available because the software is still 
-evolving so rapidly.
+```bash
+brew install python
+```
 
+Install required dependencies:
 
-##How To Contribute
-Maslow is an open source project, get involved.
+```bash
+pip install -r requirements_osx.txt
+```
 
-If you find a bug in the software, report it here through GitHub! 
+### Linux
 
-If you have an idea for a new feature, let us know in the forums at http://www.maslowcnc.com/forums/#!/dev
+Python is bundled with all major linux distributions.  You can confirm the version of python you have installed with:
 
-If you want to get involved, say hi in the forums http://www.maslowcnc.com/forums/#!/dev or
-if you've already jumped in and started making the software better, feel free to submit a 
-pull request! You can learn more about how to do that here: https://help.github.com/articles/creating-a-pull-request/
+```bash
+python --version
+```
 
-##Current Program Data Flow
+See documentation for your linux distro on how to install Python 2.7.x if it is not installed.
+
+Once Python 2.7.x is installed, install required dependencies:
+
+```bash
+pip install -r requirements_linux.txt
+```
+
+### Running Ground Control
+
+Ground Control can be run from the command line. From within the project folder, run the following:
+
+```bash
+python main.py
+```
+
+## Support
+
+If you have any questions or issues with this process please get in touch through the [Maslow forums](http://www.maslowcnc.com/forums/#!/dev).
+
+If you had any issues which you were able to resolve, please consider raising a Pull Request on this `README.md` file with corrections or additions.  For more information, see [How To Contribute](#how-to-contribute) below.
+
+## How To Contribute
+
+Maslow is an open source project, get involved!
+
+### Bugs
+
+If you find a bug in the software, report it on the [issues page](/issues).
+
+### Feature requests
+
+If you have an idea for a new feature, let us know in the [Maslow forums](http://www.maslowcnc.com/forums/#!/dev).
+
+### Contributing
+
+If you want to get involved, say hi in the [Maslow forums](http://www.maslowcnc.com/forums/#!/dev).
+
+If you've already jumped in and started making the software better, feel free to submit a pull request! You can learn more about how to do that here [Github Help: Creating a pull request](https://help.github.com/articles/creating-a-pull-request/)
+
+## Program Data Flow
 
 ![Program Data Flow](/Documentation/GroundControlDataFlow.png)
