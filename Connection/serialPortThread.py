@@ -90,6 +90,7 @@ class SerialPortThread(MakesmithInitFuncs):
             #print "port open?:"
             #print self.serialInstance.isOpen()
             self.lastMessageTime = time.time()
+            self.data.gcode_queue.put(' ') # send a blank line on startup
             self.data.connectionStatus = 1
             
             self._getFirmwareVersion()
