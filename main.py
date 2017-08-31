@@ -438,6 +438,8 @@ class GroundControlApp(App):
         
         #Push motor configuration settings to machine
         
+        if self.data.connectionStatus != 1:
+            return # only run on connection true
         
         if int(self.data.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
             KpPos = float(self.data.config.get('Advanced Settings', 'KpPos'))
