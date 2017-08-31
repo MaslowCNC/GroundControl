@@ -352,8 +352,6 @@ class GroundControlApp(App):
         self.data.bind(connectionStatus = self.push_settings_to_machine)
         self.data.pushSettings = self.push_settings_to_machine
         
-        self.push_settings_to_machine()
-        
         return interface
         
     def build_config(self, config):
