@@ -325,7 +325,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         '''
         try:
-            line = int(self.popupContent.textInput.text)
+            line = int(float(self.popupContent.textInput.text))
             if line < 0:
                 self.data.gcodeIndex = 0
             elif line > len(self.data.gcode):
