@@ -345,8 +345,8 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         '''
         try:
-            float(self.popupContent.textInput.text)
-            self.targetWidget.text = self.popupContent.textInput.text
+            tempfloat = float(self.popupContent.textInput.text)
+            self.targetWidget.text = str(tempfloat)  # Update displayed text using standard numeric format
         except:
             pass                                                             #If what was entered cannot be converted to a number, leave the value the same
         self._popup.dismiss()
