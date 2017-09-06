@@ -30,7 +30,7 @@ Two of the goals of Ground Control are:
 ----
 ## Installation
 
-For Windows and OS X binaries, see the [releases](releases) page.
+For Windows and OS X binaries, see the [releases](https://github.com/MaslowCNC/GroundControl/releases) page.
 
 For help installing binaries, see the [installation guides](https://github.com/MaslowCNC/GroundControl/wiki#gc-installation-guides).
 

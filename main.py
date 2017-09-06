@@ -14,6 +14,7 @@ from kivy.uix.button            import Button
 from kivy.clock                 import Clock
 from kivy.uix.popup             import Popup
 import math
+import global_variables
 
 
 '''
@@ -352,8 +353,6 @@ class GroundControlApp(App):
         self.data.bind(connectionStatus = self.push_settings_to_machine)
         self.data.pushSettings = self.push_settings_to_machine
         
-        self.push_settings_to_machine()
-        
         return interface
         
     def build_config(self, config):
@@ -440,6 +439,8 @@ class GroundControlApp(App):
         
         #Push motor configuration settings to machine
         
+        if self.data.connectionStatus != 1:
+            return # only run on connection true
         
         if int(self.data.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
             KpPos = float(self.data.config.get('Advanced Settings', 'KpPos'))
@@ -545,12 +546,25 @@ class GroundControlApp(App):
                 self._popup = Popup(title="Notification: ", content=content,
                             auto_dismiss=False, size_hint=(0.35, 0.35))
                 self._popup.open()
+                if global_variables._keyboard:
+                    global_variables._keyboard.bind(on_key_down=self.keydown_popup)
+                    self._popup.bind(on_dismiss=self.ondismiss_popup)
             elif message[0:8] == "Firmware":
                  self.writeToTextConsole("Ground Control " + str(self.data.version) + "\r\n" + message + "\r\n")
             elif message == "ok\r\n":
                 pass #displaying all the 'ok' messages clutters up the display
             else:
                 self.writeToTextConsole(message)
+
+    def ondismiss_popup(self, event):
+        if global_variables._keyboard:
+            global_variables._keyboard.unbind(on_key_down=self.keydown_popup)
+
+    def keydown_popup(self, keyboard, keycode, text, modifiers):
+        if (keycode[1] == 'enter') or (keycode[1] =='numpadenter') or (keycode[1] == 'escape'):
+            self.dismiss_popup_continue()
+        return True     # always swallow keypresses since this is a modal dialog
+        
     
     def dismiss_popup_continue(self):
         '''
