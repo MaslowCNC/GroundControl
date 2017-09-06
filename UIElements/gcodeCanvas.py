@@ -18,6 +18,7 @@ from UIElements.modernMenu                   import ModernMenu
 
 import re
 import math
+import global_variables
 
 class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
@@ -49,8 +50,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.data.bind(gcodeShift = self.reloadGcode)
         self.data.bind(gcodeFile = self.reloadGcode)
         
-        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        global_variables._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        global_variables._keyboard.bind(on_key_down=self._on_keyboard_down)
         
         self.reloadGcode()
     
@@ -69,8 +70,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         If the window looses focus.
         
         '''
-        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
-        self._keyboard = None
+        global_variables._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        global_variables._keyboard = None
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         '''
@@ -84,9 +85,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if keycode[1] == self.data.config.get('Ground Control Settings', 'zoomIn'):
             mat = Matrix().scale(1-scaleFactor, 1-scaleFactor, 1)
             self.scatterInstance.apply_transform(mat, anchor)
-        if keycode[1] == self.data.config.get('Ground Control Settings', 'zoomOut'):
+        elif keycode[1] == self.data.config.get('Ground Control Settings', 'zoomOut'):
             mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
             self.scatterInstance.apply_transform(mat, anchor)
+        return True
 
     def isClose(self, a, b):
         return abs(a-b) <= self.data.tolerance
