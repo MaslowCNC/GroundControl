@@ -36,7 +36,6 @@ from UIElements.manualControls    import   ManualControl
 from DataStructures.data          import   Data
 from Connection.nonVisibleWidgets import   NonVisibleWidgets
 from UIElements.notificationPopup import   NotificationPopup
-from UIElements.toolChangePopup   import   ToolChangePopup
 '''
 
 Main UI Program
@@ -536,9 +535,6 @@ class GroundControlApp(App):
                     print message
                     measuredDist = float(message[9:len(message)-3])
                     self.data.measureRequest(measuredDist)
-            elif message[0:13] == "Maslow Paused":
-                self.data.uploadFlag = 0
-                self.writeToTextConsole(message)
             elif message[0:8] == "Message:":
                 self.previousUploadStatus = self.data.uploadFlag 
                 self.data.uploadFlag = 0
@@ -546,26 +542,13 @@ class GroundControlApp(App):
                     self._popup.dismiss()                                           #close any open popup
                 except:
                     pass                                                            #there wasn't a popup to close
-                content = NotificationPopup(continueOn = self.dismiss_popup_notification, text = message[9:])
+                content = NotificationPopup(continueOn = self.dismiss_popup_continue, text = message[9:])
                 self._popup = Popup(title="Notification: ", content=content,
                             auto_dismiss=False, size_hint=(0.35, 0.35))
                 self._popup.open()
                 if global_variables._keyboard:
-                    global_variables._keyboard.bind(on_key_down=self.keydown_popup_notification)
-                    self._popup.bind(on_dismiss=self.ondismiss_popup_notification)
-            elif message[0:12] == "Tool Change:":
-                self.data.uploadFlag = 0 # stop sending commands
-                try:
-                    self._popup.dismiss()                                           #close any open popup
-                except:
-                    pass                                                            #there wasn't a popup to close
-                content = ToolChangePopup(continueOn = self.dismiss_popup_toolchange, text = message[13:])
-                self._popup = Popup(title="Tool Change: ", content=content,
-                            auto_dismiss=False, size_hint=(0.35, 0.35))
-                self._popup.open()
-                if global_variables._keyboard:
-                    global_variables._keyboard.bind(on_key_down=self.keydown_popup_toolchange)
-                    self._popup.bind(on_dismiss=self.ondismiss_popup_toolchange)
+                    global_variables._keyboard.bind(on_key_down=self.keydown_popup)
+                    self._popup.bind(on_dismiss=self.ondismiss_popup)
             elif message[0:8] == "Firmware":
                  self.writeToTextConsole("Ground Control " + str(self.data.version) + "\r\n" + message + "\r\n")
             elif message == "ok\r\n":
@@ -573,27 +556,17 @@ class GroundControlApp(App):
             else:
                 self.writeToTextConsole(message)
 
-    def ondismiss_popup_notification(self, event):
+    def ondismiss_popup(self, event):
         if global_variables._keyboard:
-            global_variables._keyboard.unbind(on_key_down=self.keydown_popup_notification)
+            global_variables._keyboard.unbind(on_key_down=self.keydown_popup)
 
-    def ondismiss_popup_toolchange(self, event):
-        if global_variables._keyboard:
-            global_variables._keyboard.unbind(on_key_down=self.keydown_popup_toolchange)
-
-    def keydown_popup_notification(self, keyboard, keycode, text, modifiers):
+    def keydown_popup(self, keyboard, keycode, text, modifiers):
         if (keycode[1] == 'enter') or (keycode[1] =='numpadenter') or (keycode[1] == 'escape'):
-            self.dismiss_popup_notification()
+            self.dismiss_popup_continue()
         return True     # always swallow keypresses since this is a modal dialog
         
     
-    def keydown_popup_toolchange(self, keyboard, keycode, text, modifiers):
-        if (keycode[1] == 'enter') or (keycode[1] =='numpadenter') or (keycode[1] == 'escape'):
-            self.dismiss_popup_toolchange()
-        return True     # always swallow keypresses since this is a modal dialog
-        
-    
-    def dismiss_popup_notification(self):
+    def dismiss_popup_continue(self):
         '''
         
         Close The Pop-up and continue cut
@@ -602,16 +575,6 @@ class GroundControlApp(App):
         self._popup.dismiss()
         self.data.quick_queue.put("~") #send cycle resume command to unpause the machine
         self.data.uploadFlag = self.previousUploadStatus #resume cutting if the machine was cutting before
-    
-    def dismiss_popup_toolchange(self):
-        '''
-        
-        Close The Pop-up
-        
-        '''
-        self._popup.dismiss()
-        self.data.quick_queue.put("~") #send cycle resume command to unpause the machine to allow for z-axis adjustment
-        self.data.uploadFlag = 0 # but don't resume cutting until the user clicks CONTINUE
     
     def dismiss_popup_hold(self):
         '''
