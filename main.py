@@ -553,7 +553,8 @@ class GroundControlApp(App):
                     global_variables._keyboard.bind(on_key_down=self.keydown_popup)
                     self._popup.bind(on_dismiss=self.ondismiss_popup)
             elif message[0:8] == "Firmware":
-                 self.writeToTextConsole("Ground Control " + str(self.data.version) + "\r\n" + message + "\r\n")
+                self.data.logger.writeToLog("Ground Control Version " + str(self.data.version) + "\n")
+                self.writeToTextConsole("Ground Control " + str(self.data.version) + "\r\n" + message + "\r\n")
             elif message == "ok\r\n":
                 pass #displaying all the 'ok' messages clutters up the display
             else:
