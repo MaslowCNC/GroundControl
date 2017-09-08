@@ -535,6 +535,9 @@ class GroundControlApp(App):
                     print message
                     measuredDist = float(message[9:len(message)-3])
                     self.data.measureRequest(measuredDist)
+            elif message[0:13] == "Maslow Paused":
+                self.data.uploadFlag = 0
+                self.writeToTextConsole(message)
             elif message[0:8] == "Message:":
                 self.previousUploadStatus = self.data.uploadFlag 
                 self.data.uploadFlag = 0
