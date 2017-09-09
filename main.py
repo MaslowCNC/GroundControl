@@ -305,7 +305,6 @@ class GroundControlApp(App):
     '''
     
     def build(self):
-        Window.maximize()
         
         interface       =  FloatLayout()
         self.data       =  Data()

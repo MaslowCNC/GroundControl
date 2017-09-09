@@ -53,6 +53,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         global_variables._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         global_variables._keyboard.bind(on_key_down=self._on_keyboard_down)
         
+        self.centerCanvas()
         self.reloadGcode()
     
     def addPoint(self, x, y):
