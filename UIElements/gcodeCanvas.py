@@ -43,18 +43,18 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.targetIndicator.color = (1,0,0)
         
         self.drawWorkspace()
-            
-        Window.bind(on_resize = self.centerCanvas)
+
+        if self.data.config.getint('Ground Control Settings', 'centerCanvasOnResize'):
+            Window.bind(on_resize = self.centerCanvas)
 
         self.data.bind(gcode = self.updateGcode)
         self.data.bind(gcodeShift = self.reloadGcode)
-        self.data.bind(gcodeFile = self.reloadGcode)
+        self.data.bind(gcodeFile = self.centerCanvasAndReloadGcode)
         
         global_variables._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         global_variables._keyboard.bind(on_key_down=self._on_keyboard_down)
         
-        self.centerCanvas()
-        self.reloadGcode()
+        self.centerCanvasAndReloadGcode()
     
     def addPoint(self, x, y):
         '''
@@ -93,7 +93,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
 
     def isClose(self, a, b):
         return abs(a-b) <= self.data.tolerance
-    
+
+    def centerCanvasAndReloadGcode(self, *args):
+        self.centerCanvas()
+        self.reloadGcode()
+        
     def reloadGcode(self, *args):
         '''
         
