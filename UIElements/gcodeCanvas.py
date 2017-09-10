@@ -44,7 +44,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         self.drawWorkspace()
 
-        if self.data.config.getint('Ground Control Settings', 'centerCanvasOnResize'):
+        if self.data.config.getboolean('Ground Control Settings', 'centerCanvasOnResize'):
             Window.bind(on_resize = self.centerCanvas)
 
         self.data.bind(gcode = self.updateGcode)
