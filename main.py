@@ -5,6 +5,7 @@ Kivy Imports
 '''
 from kivy.config                import Config
 Config.set('input', 'mouse', 'mouse,disable_multitouch')
+Config.set('kivy', 'exit_on_escape', '0')
 from kivy.app                   import App
 from kivy.uix.gridlayout        import GridLayout
 from kivy.uix.floatlayout       import FloatLayout
@@ -426,13 +427,6 @@ class GroundControlApp(App):
             if (key == "truncate") or (key == "digits"):
                 self.frontpage.gcodecanvas.reloadGcode()
                 
-            
-
-    def close_settings(self, settings):
-        """
-        Close settings panel
-        """
-        super(GroundControlApp, self).close_settings(settings)
     
     def push_settings_to_machine(self, *args):
         
