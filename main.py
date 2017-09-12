@@ -7,6 +7,7 @@ from kivy.config                import Config
 Config.set('input', 'mouse', 'mouse,disable_multitouch')
 Config.set('graphics', 'minimum_width', '620')
 Config.set('graphics', 'minimum_height', '440')
+Config.set('kivy', 'exit_on_escape', '0')
 from kivy.app                   import App
 from kivy.uix.gridlayout        import GridLayout
 from kivy.uix.floatlayout       import FloatLayout
@@ -435,13 +436,6 @@ class GroundControlApp(App):
             if (key == "truncate") or (key == "digits"):
                 self.frontpage.gcodecanvas.reloadGcode()
                 
-            
-
-    def close_settings(self, settings):
-        """
-        Close settings panel
-        """
-        super(GroundControlApp, self).close_settings(settings)
     
     def push_settings_to_machine(self, *args):
         
@@ -562,7 +556,8 @@ class GroundControlApp(App):
                     global_variables._keyboard.bind(on_key_down=self.keydown_popup)
                     self._popup.bind(on_dismiss=self.ondismiss_popup)
             elif message[0:8] == "Firmware":
-                 self.writeToTextConsole("Ground Control " + str(self.data.version) + "\r\n" + message + "\r\n")
+                self.data.logger.writeToLog("Ground Control Version " + str(self.data.version) + "\n")
+                self.writeToTextConsole("Ground Control " + str(self.data.version) + "\r\n" + message + "\r\n")
             elif message == "ok\r\n":
                 pass #displaying all the 'ok' messages clutters up the display
             else:
