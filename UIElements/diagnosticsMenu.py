@@ -29,7 +29,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
                     'along with the Maslow Control Software. If not, see <http://www.gnu.org/licenses/>.'
                 
         content = ScrollableTextPopup(cancel = self.dismiss_popup, text = popupText, markup = True)
-        self._popup = Popup(title="About GroundControl", content=content, size_hint=(0.5, 0.5))
+        self._popup = Popup(title="About GroundControl", content=content, size=(520,400), size_hint=(None, None))
         self._popup.open()
     
     def dismiss_popup(self):
