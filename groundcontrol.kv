@@ -182,11 +182,17 @@
             height: dp(70)
             #disabled: not app.data.connectionStatus
             GridLayout:
-                cols: 1
+                cols: 2
+                Label:
+                    text: '                   X :'
                 Label:
                     text: root.xReadoutPos
                 Label:
+                    text: '                   Y : '
+                Label:
                     text: root.yReadoutPos
+                Label:
+                    text: '                   Z : '
                 Label:
                     text: root.zReadoutPos
             GridLayout:
