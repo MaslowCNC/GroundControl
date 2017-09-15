@@ -46,16 +46,18 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.data = data
     
     def buildReadoutString(self, value):
+        '''
+        
+        Generate the string for the the digital position readout
+        
+        '''
+        
         targetStringLength = 8
         string = '%.2f'%(value)
         
         numberOfSpacesToPad = int(1.5*(targetStringLength - len(string)))
-        print string + ": " + str(numberOfSpacesToPad)
-        
         
         string = ' '*numberOfSpacesToPad + string
-        
-        print string + "|"
         
         return string
     
