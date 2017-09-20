@@ -32,6 +32,11 @@ class MeasureMachinePopup(GridLayout):
         if self.carousel.index == 4:
             #review calculations
             self.updateReviewValuesText()
+        if self.carousel.index == 7:
+            if int(self.data.config.get('Maslow Settings', 'zAxis')) == 1:
+                self.zAxisActiveSwitch.active = True
+            else:
+                self.zAxisActiveSwitch.active = False
         if self.carousel.index == 8:
             #Cut test shape
             self.goFwdBtn.disabled = False
@@ -137,7 +142,16 @@ class MeasureMachinePopup(GridLayout):
     def calibrateChainLengths(self):
         print "calibrating"
         self.data.gcode_queue.put("B02 ")
+    
+    def enableZaxis(self, *args):
+        '''
         
+        Triggered when the switch to enable the z-axis is touched
+        
+        '''
+        self.data.config.set('Maslow Settings', 'zAxis', int(self.zAxisActiveSwitch.active))
+        self.data.config.write()
+    
     def enterTestPaternValues(self):
         
         dif = 0

@@ -11,8 +11,9 @@
 <ScreenControls>
     BoxLayout:
         orientation: 'horizontal'
-        pos: (0, root.height - .05*root.height)
-        size_hint: (.6,.05)
+        pos: (0, root.height - 60)
+        size_hint: (.5,None)
+        height: dp(60)
         
         Button: 
             text: "Actions"
@@ -181,11 +182,17 @@
             height: dp(70)
             #disabled: not app.data.connectionStatus
             GridLayout:
-                cols: 1
+                cols: 2
+                Label:
+                    text: '                   X :'
                 Label:
                     text: root.xReadoutPos
                 Label:
+                    text: '                   Y : '
+                Label:
                     text: root.yReadoutPos
+                Label:
+                    text: '                   Z : '
                 Label:
                     text: root.zReadoutPos
             GridLayout:
@@ -526,7 +533,8 @@
             text: root.text
             
         BoxLayout:
-            #size_hint_y: 1
+            size_hint_y: None
+            height: dp(60)
             Button:
                 text: "Continue"
                 on_release: root.continueOn()
@@ -542,7 +550,7 @@
             
         BoxLayout:
             size_hint_y: None
-            height: dp(30)
+            height: dp(60)
             Button:
                 text: "Close"
                 on_release: root.cancel()
@@ -684,6 +692,7 @@
     vertMeasure:vertMeasure
     unitsBtn:unitsBtn
     enterValues:enterValues
+    zAxisActiveSwitch:zAxisActiveSwitch
     
     cols: 1
     size: root.size
@@ -909,7 +918,7 @@
                 cols: 1
                 size_hint_x: leftCol
                 Label:
-                    text: "Next, we are going to define the home position for the z-axis\n\nIf you have an automatic z-axis installed use the buttons to adjust the z-axis until the router bit\nbarely touches the surface of the wood. Then press Define Zero\n\nIf you do not have the z-axis installed, adjust your router until the router bit just barely\ntouches the surface of the wood, then press Define Zero"
+                    text: "Next, we are going to define the home position for the z-axis\n\nIf you have an automatic z-axis installed use the buttons to enable it and adjust the z-axis until the router bit\nbarely touches the surface of the wood. Then press Define Zero\n\nIf you do not have the z-axis installed, adjust your router until the router bit just barely\ntouches the surface of the wood, then press Define Zero"
                     size_hint_x: leftCol
                 GridLayout:
                     cols: 2
@@ -919,6 +928,13 @@
                 cols: 1
                 size_hint_x: rightCol
                 Label:
+                GridLayout:
+                    cols: 2
+                    Label:
+                        text: 'Enable\nAutomatic Z-Aixs:'
+                    Switch:
+                        on_active: root.enableZaxis()
+                        id: zAxisActiveSwitch
                 Button:
                     text: 'Raise Z-Axis 1mm'
                     on_release: root.moveZ(1)
