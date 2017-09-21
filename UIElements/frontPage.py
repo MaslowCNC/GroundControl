@@ -45,10 +45,26 @@ class FrontPage(Screen, MakesmithInitFuncs):
         super(FrontPage, self).__init__(**kwargs)
         self.data = data
     
+    def buildReadoutString(self, value):
+        '''
+        
+        Generate the string for the the digital position readout
+        
+        '''
+        
+        targetStringLength = 8
+        string = '%.2f'%(value)
+        
+        numberOfSpacesToPad = int(1.5*(targetStringLength - len(string)))
+        
+        string = ' '*numberOfSpacesToPad + string
+        
+        return string
+    
     def setPosReadout(self, xPos, yPos, zPos):
-        self.xReadoutPos    = "X: " + str(xPos)
-        self.yReadoutPos    = "Y: " + str(yPos)
-        self.zReadoutPos    = "Z: " + str(zPos)
+        self.xReadoutPos    = self.buildReadoutString(xPos)
+        self.yReadoutPos    = self.buildReadoutString(yPos)
+        self.zReadoutPos    = self.buildReadoutString(zPos)
         self.numericalPosX  = xPos
         self.numericalPosY  = yPos
     

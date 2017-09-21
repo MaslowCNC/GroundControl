@@ -5,6 +5,8 @@ Kivy Imports
 '''
 from kivy.config                import Config
 Config.set('input', 'mouse', 'mouse,disable_multitouch')
+Config.set('graphics', 'minimum_width', '620')
+Config.set('graphics', 'minimum_height', '440')
 Config.set('kivy', 'exit_on_escape', '0')
 from kivy.app                   import App
 from kivy.uix.gridlayout        import GridLayout
@@ -281,6 +283,13 @@ class GroundControlApp(App):
     gcsettings = '''
     [
         {
+            "type": "bool",
+            "title": "Center Canvas on Window Resize",
+            "desc": "When resizing the window, automatically reset the Gcode canvas to be centered and zoomed out. Program must be restarted to take effect.",
+            "section": "Ground Control Settings",
+            "key": "centerCanvasOnResize"
+        },
+        {
             "type": "string",
             "title": "Zoom In",
             "desc": "Pressing this key will zoom in. Note combinations of keys like \'shift\' + \'=\' may not work as expected. Program must be restarted to take effect.",
@@ -306,7 +315,6 @@ class GroundControlApp(App):
     '''
     
     def build(self):
-        Window.maximize()
         
         interface       =  FloatLayout()
         self.data       =  Data()
@@ -393,9 +401,10 @@ class GroundControlApp(App):
                                                  'KiV'                : 1,
                                                  'KdV'                : 0})
         
-        config.setdefaults('Ground Control Settings', {'zoomIn': "pageup",
-                                                 'validExtensions':".nc, .ngc, .text, .gcode",
-                                                 'zoomOut': "pagedown"})
+        config.setdefaults('Ground Control Settings', {'centerCanvasOnResize': 0,
+                                                 'zoomIn': "pageup",
+                                                 'zoomOut': "pagedown",
+                                                 'validExtensions': ".nc, .ngc, .text, .gcode"})
 
     def build_settings(self, settings):
         """
@@ -541,7 +550,7 @@ class GroundControlApp(App):
                     pass                                                            #there wasn't a popup to close
                 content = NotificationPopup(continueOn = self.dismiss_popup_continue, text = message[9:])
                 self._popup = Popup(title="Notification: ", content=content,
-                            auto_dismiss=False, size_hint=(0.35, 0.35))
+                            auto_dismiss=False, size=(360,240), size_hint=(None, None))
                 self._popup.open()
                 if global_variables._keyboard:
                     global_variables._keyboard.bind(on_key_down=self.keydown_popup)
