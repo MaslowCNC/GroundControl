@@ -315,6 +315,7 @@ class GroundControlApp(App):
     '''
     
     def build(self):
+        Window.maximize()
         
         interface       =  FloatLayout()
         self.data       =  Data()
@@ -435,7 +436,6 @@ class GroundControlApp(App):
             
             if (key == "truncate") or (key == "digits"):
                 self.frontpage.gcodecanvas.reloadGcode()
-                
     
     def push_settings_to_machine(self, *args):
         
@@ -503,7 +503,6 @@ class GroundControlApp(App):
         )
         
         self.data.gcode_queue.put(cmdString)
-        
         
     '''
     
