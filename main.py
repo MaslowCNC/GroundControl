@@ -250,6 +250,13 @@ class GroundControlApp(App):
             "key": "KdPos"
         },
         {
+            "type": "string",
+            "title": "Proportional Weighting",
+            "desc": "The ratio of Proportional on Error (1) to Proportional on Measure (0)",
+            "section": "Advanced Settings",
+            "key": "propWeight"
+        },
+        {
             "type": "bool",
             "title": "Enable Custom Velocity PID Values",
             "desc": "Enable using custom values for the Velocity PID controller. Turning this off will return to the default values",
@@ -396,6 +403,7 @@ class GroundControlApp(App):
                                                  'KpPos'              : 400,
                                                  'KiPos'              : 5,
                                                  'KdPos'              : 10,
+                                                 'propWeight'         : 1,
                                                  'enableVPIDValues'   : 0,
                                                  'KpV'                : 20,
                                                  'KiV'                : 1,
@@ -449,10 +457,12 @@ class GroundControlApp(App):
             KpPos = float(self.data.config.get('Advanced Settings', 'KpPos'))
             KiPos = float(self.data.config.get('Advanced Settings', 'KiPos'))
             KdPos = float(self.data.config.get('Advanced Settings', 'KdPos'))
+            propWeight = float(self.data.config.get('Advanced Settings', 'propWeight'))
         else:
             KpPos = 400
             KiPos = 5
             KdPos = 10
+            propWeight = 1
         
         if int(self.data.config.get('Advanced Settings', 'enableVPIDValues')) == 1:
             KpV = float(self.data.config.get('Advanced Settings', 'KpV'))
@@ -472,6 +482,7 @@ class GroundControlApp(App):
             +" M" + str(self.data.config.get('Advanced Settings', 'chainPitch'))
             +" N" + str(self.data.config.get('Maslow Settings'  , 'zDistPerRot'))
             +" P" + str(self.data.config.get('Advanced Settings', 'zEncoderSteps'))
+            +" R" + str(propWeight)
             +" S" + str(KpPos)
             +" T" + str(KiPos)
             +" U" + str(KdPos)
