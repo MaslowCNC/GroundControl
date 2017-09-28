@@ -571,9 +571,9 @@ class GroundControlApp(App):
                 
                 #Check that version numbers match
                 if float(message[-7:]) < float(self.data.version):
-                    self.data.message_queue.put("Message: Warning, our firmware is out of date and may not work correctly with this version of Ground Control")
+                    self.data.message_queue.put("Message: Warning, your firmware is out of date and may not work correctly with this version of Ground Control\n\n" + "Ground Control Version " + str(self.data.version) + "\r\n" + message)
                 if float(message[-7:]) > float(self.data.version):
-                    self.data.message_queue.put("Message: Warning, your version of Ground Control is out of date and may not work with this firmware version")
+                    self.data.message_queue.put("Message: Warning, your version of Ground Control is out of date and may not work with this firmware version\n\n" + "Ground Control Version " + str(self.data.version) + "\r\n" + message)
             elif message == "ok\r\n":
                 pass #displaying all the 'ok' messages clutters up the display
             else:
