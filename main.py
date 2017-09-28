@@ -401,13 +401,13 @@ class GroundControlApp(App):
                                                  'kinematicsType'     : 'Quadrilateral',
                                                  'rotationRadius'     : '100',
                                                  'enablePosPIDValues' : 0,
-                                                 'KpPos'              : 400,
-                                                 'KiPos'              : 5,
-                                                 'KdPos'              : 10,
+                                                 'KpPos'              : 1100,
+                                                 'KiPos'              : 0,
+                                                 'KdPos'              : 0,
                                                  'propWeight'         : 1,
                                                  'enableVPIDValues'   : 0,
-                                                 'KpV'                : 20,
-                                                 'KiV'                : 1,
+                                                 'KpV'                : 52,
+                                                 'KiV'                : 0,
                                                  'KdV'                : 0})
         
         config.setdefaults('Ground Control Settings', {'centerCanvasOnResize': 0,
@@ -459,9 +459,9 @@ class GroundControlApp(App):
             KdPos = float(self.data.config.get('Advanced Settings', 'KdPos'))
             propWeight = float(self.data.config.get('Advanced Settings', 'propWeight'))
         else:
-            KpPos = 400
-            KiPos = 5
-            KdPos = 10
+            KpPos = 1100
+            KiPos = 0
+            KdPos = 0
             propWeight = 1
         
         if int(self.data.config.get('Advanced Settings', 'enableVPIDValues')) == 1:
@@ -469,8 +469,8 @@ class GroundControlApp(App):
             KiV = float(self.data.config.get('Advanced Settings', 'KiV'))
             KdV = float(self.data.config.get('Advanced Settings', 'KdV'))
         else:
-            KpV = 20
-            KiV = 1
+            KpV = 52
+            KiV = 0
             KdV = 0
         
         
