@@ -568,6 +568,12 @@ class GroundControlApp(App):
             elif message[0:8] == "Firmware":
                 self.data.logger.writeToLog("Ground Control Version " + str(self.data.version) + "\n")
                 self.writeToTextConsole("Ground Control " + str(self.data.version) + "\r\n" + message + "\r\n")
+                
+                #Check that version numbers match
+                if float(message[-7:]) < float(self.data.version):
+                    self.data.message_queue.put("Message: Warning, our firmware is out of date and may not work correctly with this version of Ground Control")
+                if float(message[-7:]) > float(self.data.version):
+                    self.data.message_queue.put("Message: Warning, your version of Ground Control is out of date and may not work with this firmware version")
             elif message == "ok\r\n":
                 pass #displaying all the 'ok' messages clutters up the display
             else:
