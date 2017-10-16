@@ -114,6 +114,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             rawfilters = filterfile.read()
             filtersparsed = re.sub(r'\(([^)]*)\)','',rawfilters) #removes mach3 style gcode comments
             filtersparsed = re.sub(r';([^\n]*)\n','',filtersparsed) #removes standard ; initiated gcode comments
+            filtersparsed = re.sub(r'  +',' ',filtersparsed) #condense space runs
 
             if self.data.config.getint('Advanced Settings','truncate'):
                 digits = self.data.config.get('Advanced Settings','digits')
