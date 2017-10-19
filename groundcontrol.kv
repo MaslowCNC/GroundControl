@@ -694,6 +694,7 @@
     enterValues:enterValues
     zAxisActiveSwitch:zAxisActiveSwitch
     chooseKinematicsType:chooseKinematicsType
+    TriangularMeasure:TriangularMeasure
 
     cols: 1
     size: root.size
@@ -1005,7 +1006,7 @@
                 Label:
                     text: "Measurement:"
                 TextInput:
-                    id:horizMeasure
+                    id:TriangularMeasure
                     disabled: True
                 Button:
                     text: "MM"
@@ -1020,7 +1021,7 @@
                 Button:
                     text: "Cut Test\nPattern"
                     id: cutBtn
-                    on_release: root.cutTestPatern()
+                    on_release: root.cutTestPaternTriangular()
                 Button:
                     text: "Stop\nCut"
                     on_release: root.stopCut()

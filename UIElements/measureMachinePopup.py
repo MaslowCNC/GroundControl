@@ -152,33 +152,6 @@ class MeasureMachinePopup(GridLayout):
         self.data.config.set('Maslow Settings', 'zAxis', int(self.zAxisActiveSwitch.active))
         self.data.config.write()
     
-    def enterTestPaternValues(self):
-        
-        dif = 0
-        
-        try:
-            dif = float(self.horizMeasure.text) - float(self.vertMeasure.text)
-        except:
-            self.data.message_queue.put("Message: Couldn't make that into a number")
-            return
-        
-        if self.unitsBtn.text == 'Inches':
-            print "inches seen"
-            dif = dif*25.4
-        
-        acceptableTolerance = .5
-        
-        if abs(dif) < acceptableTolerance:               #if we're fully calibrated
-            self.carousel.load_next()
-        else:
-            amtToChange = .9*dif
-            newSledSpacing = float(self.data.config.get('Maslow Settings', 'sledWidth')) + amtToChange
-            print "Now trying spacing: " + str(newSledSpacing)
-            self.data.config.set('Maslow Settings', 'sledWidth', str(newSledSpacing))
-            self.data.config.write()
-            self.cutBtn.disabled = False
-            self.data.pushSettings()
-    
     def pullChainTight(self):
         #pull the left chain tight
         self.data.gcode_queue.put("B11 S50 T3 ")
@@ -205,6 +178,42 @@ class MeasureMachinePopup(GridLayout):
         self.data.config.write()
         
         self.carousel.load_next()
+    
+    def cutTestPaternTriangular(self):
+        
+        #Credit for this test pattern to DavidLang
+        self.data.units = "MM"
+        self.data.gcode_queue.put("G21 ")
+        self.data.gcode_queue.put("G90  ")
+        self.data.gcode_queue.put("G40 ")
+
+        self.data.gcode_queue.put("G0 Z5 ")
+        self.data.gcode_queue.put("G0 X0 Y0  ")
+        self.data.gcode_queue.put("G17 ")
+
+        #(defines the center)
+        self.data.gcode_queue.put("G0 X" + str(18*self.numberOfTimesTestCutRun) + " Y" + str(-18*self.numberOfTimesTestCutRun) + "  ")
+        self.data.gcode_queue.put("G91 ")
+
+        self.data.gcode_queue.put("G0 X-902.5 ")
+        self.data.gcode_queue.put("G1 Z-7 F500 ")
+        self.data.gcode_queue.put("G1 Y-20 ")
+        self.data.gcode_queue.put("G1 Z7 ")
+        self.data.gcode_queue.put("G0 X1905 Y20 ")
+        self.data.gcode_queue.put("G1 Z-7 ")
+        self.data.gcode_queue.put("G1 Y-20 ")
+        self.data.gcode_queue.put("G1 Z5 ")
+        
+        
+        self.data.gcode_queue.put("G90  ")
+        
+        self.numberOfTimesTestCutRun = self.numberOfTimesTestCutRun + 1
+        self.cutBtn.text = "Re-Cut Test\nPattern"
+        self.cutBtn.disabled         = True
+        self.horizMeasure.disabled   = False
+        self.vertMeasure.disabled    = False
+        self.unitsBtn.disabled       = False
+        self.enterValues.disabled    = False
     
     def cutTestPatern(self):
         
@@ -245,6 +254,60 @@ class MeasureMachinePopup(GridLayout):
         self.vertMeasure.disabled    = False
         self.unitsBtn.disabled       = False
         self.enterValues.disabled    = False
+    
+    def enterTestPaternValues(self):
+        
+        dif = 0
+        
+        try:
+            dif = float(self.horizMeasure.text) - float(self.vertMeasure.text)
+        except:
+            self.data.message_queue.put("Message: Couldn't make that into a number")
+            return
+        
+        if self.unitsBtn.text == 'Inches':
+            print "inches seen"
+            dif = dif*25.4
+        
+        acceptableTolerance = .5
+        
+        if abs(dif) < acceptableTolerance:               #if we're fully calibrated
+            self.carousel.load_next()
+        else:
+            amtToChange = .9*dif
+            newSledSpacing = float(self.data.config.get('Maslow Settings', 'sledWidth')) + amtToChange
+            print "Now trying spacing: " + str(newSledSpacing)
+            self.data.config.set('Maslow Settings', 'sledWidth', str(newSledSpacing))
+            self.data.config.write()
+            self.cutBtn.disabled = False
+            self.data.pushSettings()
+    
+    def enterTestPaternValuesTriangular(self):
+        
+        dist = 0
+        
+        try:
+            dist = float(self.TriangularMeasure.text)
+        except:
+            self.data.message_queue.put("Message: Couldn't make that into a number")
+            return
+        
+        if self.unitsBtn.text == 'Inches':
+            print "inches seen"
+            dist = dist*25.4
+        
+        acceptableTolerance = .5
+        
+        if abs(dist) < acceptableTolerance:               #if we're fully calibrated
+            self.carousel.load_next()
+        else:
+            amtToChange = .9*dist
+            newSledSpacing = float(self.data.config.get('Maslow Settings', 'sledWidth')) + amtToChange
+            print "Now trying spacing: " + str(newSledSpacing)
+            self.data.config.set('Maslow Settings', 'sledWidth', str(newSledSpacing))
+            self.data.config.write()
+            self.cutBtn.disabled = False
+            self.data.pushSettings()
     
     def stopCut(self):
         self.data.quick_queue.put("!") 
