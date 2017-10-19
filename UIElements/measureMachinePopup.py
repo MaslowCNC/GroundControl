@@ -41,7 +41,7 @@ class MeasureMachinePopup(GridLayout):
             #Cut test shape
             self.goFwdBtn.disabled = False
             self.data.pushSettings()
-        if self.carousel.index == 9:
+        if self.carousel.index == 10:
             #Final finish step
             self.goFwdBtn.disabled = True
     
@@ -178,7 +178,7 @@ class MeasureMachinePopup(GridLayout):
             self.data.config.write()
             self.cutBtn.disabled = False
             self.data.pushSettings()
-        
+    
     def pullChainTight(self):
         #pull the left chain tight
         self.data.gcode_queue.put("B11 S50 T3 ")
@@ -191,6 +191,20 @@ class MeasureMachinePopup(GridLayout):
         '''
         self.reviewNumbers.text = "Let's review the measurements we've made so far to make sure they look correct\n\nMotor Spacing: " + str(self.data.config.get('Maslow Settings', 'motorSpacingX')) + "mm\nSled Mount Spacing: " + str(self.data.config.get('Maslow Settings', 'sledWidth')) + "mm\nVertical Offset: " + str(self.data.config.get('Maslow Settings', 'motorOffsetY')) + "mm\n\nYou can go back and re-do any of these numbers if you would like"
         print "updating text"
+    
+    def setKinematicsType(self, *args):
+        '''
+        
+        Update kinematics to the value shown in the drop down and move to the next step
+        
+        '''
+        print "Kinematics set to: "
+        print self.chooseKinematicsType.text
+        
+        self.data.config.set('Maslow Settings', 'kinematicsType', self.chooseKinematicsType.text)
+        self.data.config.write()
+        
+        self.carousel.load_next()
     
     def cutTestPatern(self):
         

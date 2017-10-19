@@ -693,6 +693,7 @@
     unitsBtn:unitsBtn
     enterValues:enterValues
     zAxisActiveSwitch:zAxisActiveSwitch
+    chooseKinematicsType:chooseKinematicsType
 
     cols: 1
     size: root.size
@@ -961,12 +962,12 @@
                 cols: 1
                 size_hint_x: leftCol
                 Label:
-                    text: "Now we're going to select the way the chains attach to the sled. There are currently two options. \n\nThe \"Quadrilateral\" system attaches the chains to the two stationary metal L brackets as shown in the left picture.\nThis is currently the default option. \n\nThe \"Triangular\" system attaches the chains to a system of either linkages or bearings which let the ends of the chains\nrotate around the router bit as shown in the picture on the right."
+                    text: "Now we're going to select the way the chains attach to the sled. There are currently two options. \n\nThe \"Quadrilateral\" system attaches the chains to the two stationary metal L brackets as shown in the left picture.\nThis is currently the default option. \n\nThe \"Triangular\" system attaches the chains to a system of either linkages or bearings which let the ends of the chains\nrotate around the router bit as shown in the picture on the right.\n\n Please choose an option from the drop down on the right, then press Next"
                     size_hint_x: leftCol
                 GridLayout:
                     cols: 2
                     Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
+                        source: "./Documentation/Calibrate Machine Dimensions/Quadrilateral Kinematics.JPG"
                     Image:
                         source: "./Documentation/Calibrate Machine Dimensions/Triangular Kinematics.JPG"
             GridLayout:
@@ -974,16 +975,57 @@
                 size_hint_x: rightCol
                 Label:
                 Label:
-                    text: "Type: "
-                Spinner:
                     text: "Please Choose\nAn Option"
+                Spinner:
+                    text: 'Quadrilateral' 
                     values: ('Quadrilateral', 'Triangular')
-                    on_values: root.breakself()
+                    id: chooseKinematicsType
                 Button:
                     text: 'Next'
                     on_release: root.setKinematicsType()
                 Label:
-        #cut test shape
+        #cut test shape Triangular
+        GridLayout:
+            cols: 2
+            GridLayout:
+                cols: 1
+                size_hint_x: leftCol
+                Label:
+                    text: "To refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short vertical cuts a known distance apart\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe size of bit used is not critical\nMeasure from the left side of one mark to the left side of the other mark\n\nThe process will repeat until the spacing is accurate to within .5mm\nThe more accurate your measurements, the more accurate your machine will be\n\nPress Cut Test Pattern to begin"
+                GridLayout:
+                    cols: 2
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview Triangular.JPG"
+                    Image:
+                        source: "./Documentation/Calibrate Machine Dimensions/Measure Test Shape Horizontal.jpg"
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Label:
+                    text: "Measurement:"
+                TextInput:
+                    id:horizMeasure
+                    disabled: True
+                Button:
+                    text: "MM"
+                    on_release: root.switchUnits()
+                    id: unitsBtn
+                    disabled: True
+                Button:
+                    text: "Enter Values"
+                    on_release: root.enterTestPaternValues()
+                    id: enterValues
+                    disabled: True
+                Button:
+                    text: "Cut Test\nPattern"
+                    id: cutBtn
+                    on_release: root.cutTestPatern()
+                Button:
+                    text: "Stop\nCut"
+                    on_release: root.stopCut()
+                Label:
+        #cut test shape Quadrilateral
         GridLayout:
             cols: 2
             GridLayout:
