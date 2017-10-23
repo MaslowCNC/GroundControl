@@ -181,7 +181,7 @@ class MeasureMachinePopup(GridLayout):
     
     def cutTestPaternTriangular(self):
         
-        #Credit for this test pattern to DavidLang
+        #Credit for this test pattern to David Lang
         self.data.units = "MM"
         self.data.gcode_queue.put("G21 ")
         self.data.gcode_queue.put("G90  ")
@@ -192,7 +192,7 @@ class MeasureMachinePopup(GridLayout):
         self.data.gcode_queue.put("G17 ")
 
         #(defines the center)
-        self.data.gcode_queue.put("G0 X" + str(18*self.numberOfTimesTestCutRun) + " Y" + str(-18*self.numberOfTimesTestCutRun) + "  ")
+        self.data.gcode_queue.put("G0 X" + str(18*self.numberOfTimesTestCutRun) + " Y" + str(-400 - 18*self.numberOfTimesTestCutRun) + "  ")
         self.data.gcode_queue.put("G91 ")
 
         self.data.gcode_queue.put("G0 X-902.5 ")
@@ -208,12 +208,11 @@ class MeasureMachinePopup(GridLayout):
         self.data.gcode_queue.put("G90  ")
         
         self.numberOfTimesTestCutRun = self.numberOfTimesTestCutRun + 1
-        self.cutBtn.text = "Re-Cut Test\nPattern"
-        self.cutBtn.disabled         = True
-        self.horizMeasure.disabled   = False
-        self.vertMeasure.disabled    = False
-        self.unitsBtn.disabled       = False
-        self.enterValues.disabled    = False
+        self.cutBtnT.text = "Re-Cut Test\nPattern"
+        self.cutBtnT.disabled         = True
+        self.triangleMeasure.disabled = False
+        self.unitsBtnT.disabled       = False
+        self.enterValuesT.disabled    = False
     
     def cutTestPatern(self):
         
@@ -266,7 +265,6 @@ class MeasureMachinePopup(GridLayout):
             return
         
         if self.unitsBtn.text == 'Inches':
-            print "inches seen"
             dif = dif*25.4
         
         acceptableTolerance = .5
@@ -284,29 +282,32 @@ class MeasureMachinePopup(GridLayout):
     
     def enterTestPaternValuesTriangular(self):
         
+        print "got to enter test values"
+        
         dist = 0
         
         try:
-            dist = float(self.TriangularMeasure.text)
+            dist = float(self.triangleMeasure.text)
         except:
             self.data.message_queue.put("Message: Couldn't make that into a number")
             return
         
         if self.unitsBtn.text == 'Inches':
-            print "inches seen"
             dist = dist*25.4
+        
+        dist = 1805 - dist #1805 is expected test spacing in mm. dist is greater than zero if the length is too long, less than zero if if is too short
         
         acceptableTolerance = .5
         
         if abs(dist) < acceptableTolerance:               #if we're fully calibrated
             self.carousel.load_next()
         else:
-            amtToChange = .9*dist
-            newSledSpacing = float(self.data.config.get('Maslow Settings', 'sledWidth')) + amtToChange
+            amtToChange = -.9*dist
+            newSledSpacing = float(self.data.config.get('Advanced Settings', 'rotationRadius')) + amtToChange
             print "Now trying spacing: " + str(newSledSpacing)
-            self.data.config.set('Maslow Settings', 'sledWidth', str(newSledSpacing))
+            self.data.config.set('Advanced Settings', 'rotationRadius', str(newSledSpacing))
             self.data.config.write()
-            self.cutBtn.disabled = False
+            self.cutBtnT.disabled = False
             self.data.pushSettings()
     
     def stopCut(self):

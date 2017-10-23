@@ -694,8 +694,11 @@
     enterValues:enterValues
     zAxisActiveSwitch:zAxisActiveSwitch
     chooseKinematicsType:chooseKinematicsType
-    TriangularMeasure:TriangularMeasure
-
+    triangleMeasure: triangleMeasure
+    unitsBtnT:unitsBtnT
+    enterValuesT:enterValuesT
+    cutBtnT:cutBtnT
+    
     cols: 1
     size: root.size
     pos: root.pos
@@ -721,6 +724,7 @@
         on_index: root.slideJustChanged()
         #:set leftCol .8
         #:set rightCol .2
+        #intro
         GridLayout:
             cols: 2
             Label:
@@ -736,6 +740,7 @@
                     text: "Begin"
                     on_release: root.defineInitialState()
                 Label:
+        #Set sprockets to 12 o'clock
         GridLayout:
             cols: 2
             GridLayout:
@@ -765,6 +770,7 @@
                     text: 'Set Zero'
                     on_release: root.setZero()
                 Label:
+        #Measure spacing between motors
         GridLayout:
             cols: 2
             GridLayout:
@@ -806,12 +812,13 @@
                     text: "Stop\nMotors"
                     on_release: root.stopCut()
                 Label:
+        #Measure sled spacing
         GridLayout:
             cols: 2
             GridLayout:
                 cols: 1
                 Label:
-                    text: "Detach the end of the chain from the right sprocket\n\nFeed the free end through the sled mounting brackets and hold it in place with cotter pins\n\nCount the holes between the two pins and enter the number in the box to the right, then press Enter\nWe will refine this measurement later, it is only an initial guess."
+                    text: "Detach the end of the chain from the right sprocket\n\nFeed the free end through the sled mounting brackets and hold it in place with cotter pins\n\nCount the holes between the two pins and enter the number in the box to the right, then press Enter\nWe will refine this measurement later, it is only an initial guess.\n\nSkip this step if you are using a linkage kit"
                     size_hint_x: leftCol
                 Image:
                     source: "./Documentation/Calibrate Machine Dimensions/Chain Between Sled Mounts.jpg"
@@ -832,6 +839,7 @@
                     text: "Enter # of\nLinks"
                     on_release: root.countLinks()
                 Label:
+        #Measure to the top of the sheet
         GridLayout:
             cols: 2
             GridLayout:
@@ -1006,26 +1014,36 @@
                 Label:
                     text: "Measurement:"
                 TextInput:
-                    id:TriangularMeasure
+                    id:triangleMeasure
                     disabled: True
                 Button:
                     text: "MM"
                     on_release: root.switchUnits()
-                    id: unitsBtn
+                    id: unitsBtnT
                     disabled: True
                 Button:
-                    text: "Enter Values"
-                    on_release: root.enterTestPaternValues()
-                    id: enterValues
+                    text: "Enter Value"
+                    on_release: root.enterTestPaternValuesTriangular()
+                    id: enterValuesT
                     disabled: True
                 Button:
                     text: "Cut Test\nPattern"
-                    id: cutBtn
+                    id: cutBtnT
                     on_release: root.cutTestPaternTriangular()
                 Button:
                     text: "Stop\nCut"
                     on_release: root.stopCut()
                 Label:
+        #finished!
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Your machine is now calibrated!\n\nCongratulations! "
+                size_hint_x: leftCol
+            Button:
+                text: 'Finish'
+                on_release: root.done()
+                size_hint_x: rightCol
         #cut test shape Quadrilateral
         GridLayout:
             cols: 2
@@ -1074,17 +1092,7 @@
                     text: "Stop\nCut"
                     on_release: root.stopCut()
                 Label:
-        #finished!
-        GridLayout:
-            cols: 2
-            Label:
-                text: "Your machine is now calibrated!\n\nCongratulations! "
-                size_hint_x: leftCol
-            Button:
-                text: 'Finish'
-                on_release: root.done()
-                size_hint_x: rightCol
-
+        
 <CalibrateLengthsPopup>:
     carousel:carousel
 
