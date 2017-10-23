@@ -184,16 +184,16 @@ class MeasureMachinePopup(GridLayout):
         #Credit for this test pattern to David Lang
         self.data.units = "MM"
         self.data.gcode_queue.put("G21 ")
-        self.data.gcode_queue.put("G90  ")
+        self.data.gcode_queue.put("G90  ") #Switch to absolute mode
         self.data.gcode_queue.put("G40 ")
 
         self.data.gcode_queue.put("G0 Z5 ")
         self.data.gcode_queue.put("G0 X0 Y0  ")
         self.data.gcode_queue.put("G17 ")
 
-        #(defines the center)
-        self.data.gcode_queue.put("G0 X" + str(18*self.numberOfTimesTestCutRun) + " Y" + str(-400 - 18*self.numberOfTimesTestCutRun) + "  ")
-        self.data.gcode_queue.put("G91 ")
+        #(defines the center). Moves up with each attempt
+        self.data.gcode_queue.put("G0 X" +  str(18*self.numberOfTimesTestCutRun) + " Y" + str(-400 + 18*self.numberOfTimesTestCutRun) + "  ")
+        self.data.gcode_queue.put("G91 ")   #Switch to relative mode
 
         self.data.gcode_queue.put("G0 X-902.5 ")
         self.data.gcode_queue.put("G1 Z-7 F500 ")
@@ -203,9 +203,10 @@ class MeasureMachinePopup(GridLayout):
         self.data.gcode_queue.put("G1 Z-7 ")
         self.data.gcode_queue.put("G1 Y-20 ")
         self.data.gcode_queue.put("G1 Z5 ")
+        self.data.gcode_queue.put("G0 X-900 Y500 ")
         
         
-        self.data.gcode_queue.put("G90  ")
+        self.data.gcode_queue.put("G90  ") #Switch back to absolute mode
         
         self.numberOfTimesTestCutRun = self.numberOfTimesTestCutRun + 1
         self.cutBtnT.text = "Re-Cut Test\nPattern"
@@ -295,7 +296,10 @@ class MeasureMachinePopup(GridLayout):
         if self.unitsBtn.text == 'Inches':
             dist = dist*25.4
         
-        dist = 1805 - dist #1805 is expected test spacing in mm. dist is greater than zero if the length is too long, less than zero if if is too short
+        dist = 1905 - dist #1905 is expected test spacing in mm. dist is greater than zero if the length is too long, less than zero if if is too short
+        
+        print "The error is: "
+        print dist
         
         acceptableTolerance = .5
         
@@ -303,6 +307,10 @@ class MeasureMachinePopup(GridLayout):
             self.carousel.load_next()
         else:
             amtToChange = -.9*dist
+            
+            print "so we are going to adjust the motor spacing by: "
+            print amtToChange
+            
             newSledSpacing = float(self.data.config.get('Advanced Settings', 'rotationRadius')) + amtToChange
             print "Now trying spacing: " + str(newSledSpacing)
             self.data.config.set('Advanced Settings', 'rotationRadius', str(newSledSpacing))
