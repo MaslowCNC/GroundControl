@@ -37,11 +37,14 @@ class MeasureMachinePopup(GridLayout):
                 self.zAxisActiveSwitch.active = True
             else:
                 self.zAxisActiveSwitch.active = False
-        if self.carousel.index == 8:
-            #Cut test shape
-            self.goFwdBtn.disabled = False
+        if self.carousel.index == 9:
+            #Cut test shape triangular
             self.data.pushSettings()
         if self.carousel.index == 10:
+            #Cut test shape quadratic
+            self.data.pushSettings()
+            self.goFwdBtn.disabled = False
+        if self.carousel.index == 11:
             #Final finish step
             self.goFwdBtn.disabled = True
     
@@ -177,7 +180,15 @@ class MeasureMachinePopup(GridLayout):
         self.data.config.set('Maslow Settings', 'kinematicsType', self.chooseKinematicsType.text)
         self.data.config.write()
         
-        self.carousel.load_next()
+        if self.chooseKinematicsType.text == 'Triangular':
+            #Set up a good initial guess for the radius
+            print "Rotation radius set to 260"
+            self.data.config.set('Advanced Settings', 'rotationRadius', 260)
+            self.data.config.write()
+            self.carousel.load_next()
+        else:
+            
+            self.carousel.load_slide(self.carousel.slides[10])
     
     def cutTestPaternTriangular(self):
         
@@ -193,6 +204,7 @@ class MeasureMachinePopup(GridLayout):
 
         #(defines the center). Moves up with each attempt
         self.data.gcode_queue.put("G0 X" +  str(18*self.numberOfTimesTestCutRun) + " Y" + str(-400 + 18*self.numberOfTimesTestCutRun) + "  ")
+        
         self.data.gcode_queue.put("G91 ")   #Switch to relative mode
 
         self.data.gcode_queue.put("G0 X-902.5 ")

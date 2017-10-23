@@ -1034,16 +1034,6 @@
                     text: "Stop\nCut"
                     on_release: root.stopCut()
                 Label:
-        #finished!
-        GridLayout:
-            cols: 2
-            Label:
-                text: "Your machine is now calibrated!\n\nCongratulations! "
-                size_hint_x: leftCol
-            Button:
-                text: 'Finish'
-                on_release: root.done()
-                size_hint_x: rightCol
         #cut test shape Quadrilateral
         GridLayout:
             cols: 2
@@ -1092,7 +1082,17 @@
                     text: "Stop\nCut"
                     on_release: root.stopCut()
                 Label:
-        
+        #finished!
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Your machine is now calibrated!\n\nCongratulations! "
+                size_hint_x: leftCol
+            Button:
+                text: 'Finish'
+                on_release: root.done()
+                size_hint_x: rightCol
+    
 <CalibrateLengthsPopup>:
     carousel:carousel
 
