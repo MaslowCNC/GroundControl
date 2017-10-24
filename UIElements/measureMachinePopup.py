@@ -316,7 +316,7 @@ class MeasureMachinePopup(GridLayout):
         acceptableTolerance = .5
         
         if abs(dist) < acceptableTolerance:               #if we're fully calibrated
-            self.carousel.load_next()
+            self.carousel.load_slide(self.carousel.slides[11])
         else:
             amtToChange = -.9*dist
             
