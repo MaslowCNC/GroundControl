@@ -104,6 +104,7 @@ class SimulationCanvas(GridLayout):
         self.horizontalPoints = range(int(int(leftRigthBound/self.gridSize.value)*self.gridSize.value), -leftRigthBound, -1 * int(self.gridSize.value))
 
         self.doSpecificCalculation()
+        self.scatterInstance.canvas.clear()
 
         for j in self.verticalPoints:
             for i in self.horizontalPoints:
@@ -218,7 +219,7 @@ class SimulationCanvas(GridLayout):
 
     def doSpecificCalculation(self):
         
-        lengthMM = 600
+        lengthMM = 800
 
         #horizontal measurement 
         pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, 0)
@@ -228,7 +229,7 @@ class SimulationCanvas(GridLayout):
         pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(0, lengthMM/2)
         pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(0, -lengthMM/2)
         
-        printString = "A 600mm square centered on the sheet is distorted\n" + str(lengthMM - (distortedPoint3[1] - distortedPoint4[1])) + "mm horizontally, and " + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0])) + "mm vertically."
+        printString = "An 800mm square centered on the sheet is distorted\n" + str(lengthMM - (distortedPoint3[1] - distortedPoint4[1])) + "mm horizontally, and " + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0])) + "mm vertically."
         
         self.machineLabel.text = printString
     
