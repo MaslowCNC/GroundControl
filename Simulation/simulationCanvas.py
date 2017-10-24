@@ -29,7 +29,7 @@ class SimulationCanvas(GridLayout):
     isQuadKinematics    = BooleanProperty(True)
 
     def initialize(self):
-        print "canvas initialized"
+        
         self.motorSpacingError.bind(value=self.onSliderChange)
         self.motorVerticalError.bind(value=self.onSliderChange)
         self.sledMountSpacingError.bind(value=self.onSliderChange)
@@ -70,7 +70,7 @@ class SimulationCanvas(GridLayout):
         self.scatterInstance.apply_transform(mat)
 
     def resetSliders(self):
-        print "connection made"
+        
         self.motorSpacingError.value = 0
         self.motorVerticalError.value = 0
         self.sledMountSpacingError.value = 0
@@ -82,7 +82,7 @@ class SimulationCanvas(GridLayout):
         self.gridSize.value=300
 
     def recompute(self):
-        print "recompute"
+        
 
         #clear the canvas to redraw
         self.scatterInstance.canvas.clear()
@@ -217,15 +217,20 @@ class SimulationCanvas(GridLayout):
         pass
 
     def doSpecificCalculation(self):
-        print "The horizontal measurement of a centered 48 inch long part cut low down on the sheet is: "
+        
+        lengthMM = 600
 
-        lengthMM = 1219.2
-
-        pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, -200)
-        pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2, -200)
-
-        print distortedPoint2[0] - distortedPoint1[0]
-        print "Error MM: " + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0]))
+        #horizontal measurement 
+        pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, 0)
+        pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2,  0)
+        
+        #vertical measurement
+        pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(0, lengthMM/2)
+        pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(0, -lengthMM/2)
+        
+        printString = "A 600mm square centered on the sheet is distorted\n" + str(lengthMM - (distortedPoint3[1] - distortedPoint4[1])) + "mm horizontally, and " + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0])) + "mm vertically."
+        
+        self.machineLabel.text = printString
     
     def setKinematics(self, kinematicsType):
         
@@ -241,7 +246,7 @@ class SimulationCanvas(GridLayout):
     def onSliderChange(self, *args):
 
         self.distortedKinematics.motorOffsetY = self.correctKinematics.motorOffsetY + self.motorVerticalError.value
-        self.motorVerticalErrorLabel.text = "Motor Vertical\nError: " + str(int(self.motorVerticalError.value)) + "mm"
+        #self.motorVerticalErrorLabel.text = "Motor Vertical\nError: " + str(int(self.motorVerticalError.value)) + "mm"
 
         self.distortedKinematics.l = self.correctKinematics.l + self.sledMountSpacingError.value
         self.sledMountSpacingErrorLabel.text = "Sled Mount\nSpacing Error: " + str(int(self.sledMountSpacingError.value)) + "mm"
@@ -264,7 +269,7 @@ class SimulationCanvas(GridLayout):
         self.distortedKinematics.rotationDiskRadius = self.correctKinematics.rotationDiskRadius + self.rotationRadiusOffset.value
         self.rotationRadiusLabel.text = "Rotation Radius\nSpacing Error: " + str(int(self.rotationRadiusOffset.value)) + "mm"
         
-        self.machineLabel.text = "distance between sled attachments ideal: "+str(self.correctKinematics.l)+" actual: "+str(self.distortedKinematics.l)+"mm\nvertical distance between sled attachments and bit ideal: "+str(self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.s)+"mm\nvertical distance between sled attachments and CG ideal: "+str(self.correctKinematics.h3+self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.h3+self.distortedKinematics.s)+"mm\ndistance between motors ideal: "+str(self.correctKinematics.D)+" actual: "+str(self.distortedKinematics.D)+"mm"
+        #self.machineLabel.text = "distance between sled attachments ideal: "+str(self.correctKinematics.l)+" actual: "+str(self.distortedKinematics.l)+"mm\nvertical distance between sled attachments and bit ideal: "+str(self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.s)+"mm\nvertical distance between sled attachments and CG ideal: "+str(self.correctKinematics.h3+self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.h3+self.distortedKinematics.s)+"mm\ndistance between motors ideal: "+str(self.correctKinematics.D)+" actual: "+str(self.distortedKinematics.D)+"mm"
 
         self.gridSizeLabel.text = "Grid Size: "+str(int(self.gridSize.value))+"mm"
 
