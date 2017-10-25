@@ -161,10 +161,6 @@ class Kinematics():
         self.x = (self.D/2.0) + xTarget
         self.y = (self.machineHeight/2.0) + self.motorOffsetY  - yTarget
 
-        #print "begin inverse: "
-        #print "x: " + str(self.x)
-        #print "y: " + str(self.y)
-
         #Coordinates definition:
         #         x -->, y |
         #                  v
@@ -179,21 +175,10 @@ class Kinematics():
         else:
             self.Mirror = False
 
-        #print "after mirror: "
-        #print "Mirror: " + str(self.Mirror)
-        #print "x: " + str(self.x)
-
         self.TanGamma = self.y/self.x
         self.TanLambda = self.y/(self.D-self.x)
         self.Y1Plus = self.R * math.sqrt(1 + self.TanGamma * self.TanGamma)
         self.Y2Plus = self.R * math.sqrt(1 + self.TanLambda * self.TanLambda)
-        #self.Phi = -0.2 * (-8.202e-4 * x + 1.22) - 0.03
-
-        #print "after TanGamma thing: "
-        #print "self.TanGamma " + str(self.TanGamma)
-        #print "self.TanLambda " + str(self.TanLambda)
-        #print "self.Y1Plus " + str(self.Y1Plus)
-        #print "self.Y2Plus " + str(self.Y2Plus)
 
         self._MyTrig()
         #self.Psi1 = self.Theta - self.Phi
@@ -204,12 +189,6 @@ class Kinematics():
         self.Crit[0] = - self._moment(self.Y1Plus, self.Y2Plus, self.Phi, self.MySinPhi, self.SinPsi1, self.CosPsi1, self.SinPsi2, self.CosPsi2)
         self.Crit[1] = - self._YOffsetEqn(self.Y1Plus, self.x - self.h * self.CosPsi1, self.SinPsi1)
         self.Crit[2] = - self._YOffsetEqn(self.Y2Plus, self.D - (self.x + self.h * self.CosPsi2), self.SinPsi2)
-
-
-        #print "\n\n block zebra: "
-        #print "self.Crit[0] " + str(self.Crit[0]*1000)
-        #print "self.Crit[1] " + str(self.Crit[1]*1000)
-        #print "self.Crit[2] " + str(self.Crit[2]*1000)
 
         while (Tries <= self.MaxTries):
             if (abs(self.Crit[0]) < self.MaxError):
@@ -237,24 +216,11 @@ class Kinematics():
 
             buildOutJac  =  self._moment( self.Y1Plus + self.DeltaY, self.Y2Plus, self.Phi, self.MySinPhi, self.SinPsi1, self.CosPsi1, self.SinPsi2, self.CosPsi2) + self.Crit[0]
 
-            #print "\n\n++++++++++++++++++++++++++++++++++"
-            #print "build out Jac[1]: " + str(buildOutJac*1000.0)
-            #print "Crit[0] " + str(self.Crit[0]*1000)
-            #print "self.Jac[0] " + str(self.Jac[0]*1000.0)
-            #print "self.Jac[1] " + str(self.Jac[1]*1000.0)
-            #print "self.Jac[2] " + str(self.Jac[2]*1000.0)
-            #print "self.Jac[3] " + str(self.Jac[3]*1000.0)
-            #print "self.Jac[4] " + str(self.Jac[4]*1000.0)
-            #print "self.Jac[5] " + str(self.Jac[5]*1000.0)
-            #print "self.Jac[6] " + str(self.Jac[6]*1000.0)
-            #print "self.Jac[7] " + str(self.Jac[7]*1000.0)
-            #print "self.Jac[8] " + str(self.Jac[8]*1000.0)
 
             self._MatSolv()     # solves the matrix equation Jx=-Criterion
 
             # update the variables with the new estimate
 
-            #print "\n\n@@@@@@@@@@@@@@@@@@@@@"
 
             self.Phi = self.Phi + self.Solution[0]
             self.Y1Plus = self.Y1Plus + self.Solution[1]                         #don't allow the anchor points to be inside a sprocket
@@ -269,11 +235,6 @@ class Kinematics():
             self.Psi1 = self.Theta - self.Phi
             self.Psi2 = self.Theta + self.Phi
 
-            #print "self.Phi " + str(self.Phi*1000.0)
-            #print "self.Y1Plus " + str(self.Y1Plus*1000.0)
-            #print "self.Y2Plus " + str(self.Y2Plus*1000.0)
-            #print "self.Psi1 " + str(self.Psi1*1000.0)
-            #print "self.Psi2 " + str(self.Psi2*1000.0)
                                                                  #evaluate the
                                                                  #three criterion equations
             self._MyTrig()
@@ -309,12 +270,6 @@ class Kinematics():
             Chain2 = math.sqrt((self.D - (self.x + self.Offsetx2))*(self.D - (self.x + self.Offsetx2))+(self.y + self.Y2Plus - self.Offsety2)*(self.y + self.Y2Plus - self.Offsety2)) - self.R * self.TanLambda + self.R * self.Lambda   #right chain length
 
 
-        #print "\n\n++++++++++++++"
-        #print "Returning Lengths: "
-        #print "Chain1: " + str(Chain1)
-        #print "Chain2: " + str(Chain2)
-        #print "self.Gamma: " + str(self.Gamma)
-        #print "self.Lambda: " + str(self.Lambda)
 
         aChainLength = Chain1
         bChainLength = Chain2
@@ -379,43 +334,26 @@ class Kinematics():
 
         fact = 0
 
-        #print "test loop"
         b = 0
         while b < 5 :
-            #print b
             b = b + 1
-        #print b
 
         # gaus elimination, no pivot
 
-        #print "\n\ngaus elimination"
-        #print "Jac: "
-        #print self.Jac[0]
-
-        #print("Crits at begin: ")
-        #print "self.Crit[0] " + str(self.Crit[0]*1000)
-        #print "self.Crit[1] " + str(self.Crit[1]*1000)
-        #print "self.Crit[2] " + str(self.Crit[2]*1000)
 
         N = 3
         NN = N-1
         i = 1
         while (i<=NN):
-            #print "for loop #1";
-            #print "i = " + str(i)
             J = (N+1-i)
             JJ = (J-1) * N-1
             L = J-1
             KK = -1
             K = 0
             while (K<L):
-                #print "for loop #2"
-                #print "K = " + str(K)
                 fact = self.Jac[KK+J]/self.Jac[JJ+J];
                 M = 1
                 while (M<=J):
-                    #print "for loop #3"
-                    #print "M = " + str(M)
                     self.Jac[KK + M]= self.Jac[KK + M] -fact * self.Jac[JJ+M]
                     M = M + 1
                 KK = KK + N;
@@ -425,31 +363,17 @@ class Kinematics():
 
     #Lower triangular matrix solver
 
-        #print "\n\nLower triangular matrix solver";
-
         self.Solution[0] =  self.Crit[0]/self.Jac[0]
         ii = N-1
 
-        #print "self.Solution[0] " + str(self.Solution[0]*1000)
-        #print "self.Crit[0] " + str(self.Crit[0]*1000)
-        #print "self.Crit[1] " + str(self.Crit[1]*1000)
-        #print "self.Crit[2] " + str(self.Crit[2]*1000)
-        #print "ii " + str(ii)
-        #print "N " + str(N)
-
         i = 2
         while (i<=N):
-            #print "Loop #1"
-            #print "i = " + str(i)
             M = i -1;
             Sum = self.Crit[i-1];
 
             J = 1
             while (J<=M):
-                #print "loop #2"
-                #print "J = " + str(J)
                 Sum = Sum-self.Jac[ii+J]*self.Solution[J-1];
-                #print "Sum = " + str(Sum*1000)
                 J = J + 1
 
             self.Solution[i-1] = Sum/self.Jac[ii+i];
@@ -468,27 +392,10 @@ class Kinematics():
         TanGamma
         TanLambda'''
 
-        #print "\n begin _moment"
-
-        #print "Called with:"
-        #print "Y1Plus " + str(Y1Plus*1000)
-        #print "Y2Plus " + str(Y2Plus*1000)
-        #print "Phi " + str(Phi*1000)
-        #print "MSinPhi " + str(MSinPhi*1000)
-        #print "MSinPsi1 " + str(MSinPsi1*1000)
-        #print "MCosPsi1 " + str(MCosPsi1*1000)
-        #print "MSinPsi2 " + str(MSinPsi2*1000)
-        #print "MCosPsi2 " + str(MCosPsi2*1000)
 
         self.Psi1 = self.Theta - Phi
         self.Psi2 = self.Theta + Phi
 
-        #print "internal variables"
-        #print "self.Psi1 " + str(self.Psi1*1000)
-        #print "self.Psi2 " + str(self.Psi2*1000)
-
-
-        #print "--->Y1Plus " + str(Y1Plus*1000)
 
         self.Offsetx1 = self.h * MCosPsi1
         self.Offsetx2 = self.h * MCosPsi2
@@ -497,31 +404,9 @@ class Kinematics():
         self.TanGamma = (self.y - self.Offsety1 + Y1Plus)/(self.x - self.Offsetx1)
         self.TanLambda = (self.y - self.Offsety2 + Y2Plus)/(self.D -(self.x + self.Offsetx2))
 
-        #print "--->Y1Plus " + str(Y1Plus*1000)
-
-        #print "self.x " + str(self.x)
-        #print "self.y " + str(self.y)
-        #print "--->Y1Plus " + str(Y1Plus*1000)
-        #print "Y1Plus " + str(Y1Plus*1000)
-
-        #print "self.Offsetx1 " + str(self.Offsetx1*1000)
-        #print "self.Offsetx2 " + str(self.Offsetx2*1000)
-        #print "self.Offsety1 " + str(self.Offsety1*1000)
-        #print "self.Offsety2 " + str(self.Offsety2*1000)
-        #print "TanGamma " + str(self.TanGamma*1000)
-        #print "TanLambda " + str(self.TanLambda*1000)
-
-        #print "\n\n\n moment buildout:"
-        #print (self.h3*MSinPhi)*1000 #(MSinPsi2 - MSinPsi1 +(self.TanGamma*MCosPsi1 - self.TanLambda * MCosPsi2))*10000.0
-
-        #print "Moment returns: "
-        #print (self.h3*MSinPhi + (self.h/(self.TanLambda+self.TanGamma))*(MSinPsi2 - MSinPsi1 + (self.TanGamma*MCosPsi1 - self.TanLambda * MCosPsi2)))*1000.0
-
         return self.h3*MSinPhi + (self.h/(self.TanLambda+self.TanGamma))*(MSinPsi2 - MSinPsi1 + (self.TanGamma*MCosPsi1 - self.TanLambda * MCosPsi2))
 
     def _MyTrig(self):
-
-        #print "\n\nbegin my trig: "
 
         Phisq = self.Phi * self.Phi
         Phicu = self.Phi * Phisq
@@ -538,33 +423,6 @@ class Kinematics():
         Psi2del = self.Psi2 + self.DeltaPhi
         Psi2delsq = Psi2del * Psi2del
         Psi2delcu = Psi2del * Psi2delsq
-
-        #print "Phisq " + str(Phisq*1000.0)
-        #print "Phicu " + str(Phicu*1000.0)
-        #print "Phidel " + str(Phidel*1000.0)
-        #print "Phidelsq " + str(Phidelsq*1000.0)
-        #print "Phidelcu " + str(Phidelcu*1000.0)
-        #print "Psi1sq " + str(Psi1sq*1000.0)
-        #print "Psi1cu " + str(Psi1cu*1000.0)
-        #print "Psi2sq " + str(Psi2sq*1000.0)
-        #print "Psi2cu " + str(Psi2cu*1000.0)
-        #print "Psi1del " + str(Psi1del*1000.0)
-        #print "Psi1delsq " + str(Psi1delsq*1000.0)
-        #print "Psi1delcu " + str(Psi1delcu*1000.0)
-        #print "Psi2del " + str(Psi2del*1000.0)
-        #print "Psi2delsq " + str(Psi2delsq*1000.0)
-        #print "Psi2delcu " + str(Psi2delcu*1000.0)
-        #print "\n\n\n"
-
-        # Phirange is 0 to -27 degrees
-        # sin -0.1616   -0.0021    1.0002   -0.0000 (error < 6e-6)
-        # cos(phi): 0.0388   -0.5117    0.0012    1.0000 (error < 3e-5)
-        # Psi1 range is 42 to  69 degrees,
-        # sin(Psi1):  -0.0942   -0.1368    1.0965   -0.0241 (error < 2.5 e-5)
-        # cos(Psi1):  0.1369   -0.6799    0.1077    0.9756  (error < 1.75e-5)
-        # Psi2 range is 15 to 42 degrees
-        # sin(Psi2): -0.1460   -0.0197    1.0068   -0.0008 (error < 1.5e-5)
-        # cos(Psi2):  0.0792   -0.5559    0.0171    0.9981 (error < 2.5e-5)
 
         self.MySinPhi = -0.1616*Phicu - 0.0021*Phisq + 1.0002*self.Phi
         self.MySinPhiDelta = -0.1616*Phidelcu - 0.0021*Phidelsq + 1.0002*Phidel
