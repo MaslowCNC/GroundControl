@@ -238,7 +238,42 @@ class SimulationCanvas(GridLayout):
         
         printString = printString + "\n\nThe triangular calibration test is off by " + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0])) + "mm"
         
-        self.machineLabel.text = printString
+        self.machineLabel1.text = printString
+        
+        
+        
+        
+        lengthMM = 800
+        xOffset = 1100 - lengthMM/2
+        yOffset = 500  - lengthMM/2
+        
+        #horizontal measurement 
+        pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, yOffset)
+        pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2,  yOffset)
+        
+        #vertical measurement
+        pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(xOffset, lengthMM/2)
+        pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(xOffset, -lengthMM/2)
+        
+        printString = "An 800mm square in the top corner on the sheet is distorted\n" + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0])) + "mm horizontally, and " + str(lengthMM - (distortedPoint3[1] - distortedPoint4[1])) + "mm vertically."
+        
+        lengthMM = 800
+        xOffset = 1100 - lengthMM/2
+        yOffset = 500  - lengthMM/2
+        
+        #horizontal measurement 
+        pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, -yOffset)
+        pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2,  -yOffset)
+        
+        #vertical measurement
+        pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(xOffset, lengthMM/2)
+        pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(xOffset, -lengthMM/2)
+        
+        printString = printString + "\n\nAn 800mm square in the top corner on the sheet is distorted\n" + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0])) + "mm horizontally, and " + str(lengthMM - (distortedPoint3[1] - distortedPoint4[1])) + "mm vertically."
+        
+        
+        self.machineLabel2.text = printString
+        
     
     def setKinematics(self, kinematicsType):
         

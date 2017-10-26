@@ -1181,7 +1181,8 @@
     vertCGDistLabel:vertCGDistLabel
     leftChainOffsetLabel:leftChainOffsetLabel
     rightChainOffsetLabel:rightChainOffsetLabel
-    machineLabel:machineLabel
+    machineLabel1:machineLabel1
+    machineLabel2:machineLabel2
     gridSize:gridSize
     gridSizeLabel:gridSizeLabel
     rotationRadiusOffset:rotationRadiusOffset
@@ -1192,11 +1193,17 @@
     Label:
         text: "This simulation is designed to help us understand how the math behind Maslow is affected by errors in the computed machine dimensions\nTry adding error to any measurement, then press Recompute to see the affect\nThe path computed with the correct values is shown in green, the path with error added is shown in red"
         size_hint_y:.1
-    Label:
-        text: "Machine Specs will appear here"
-        id: machineLabel
-        font_size: 10
-        size_hint_y:.1
+    GridLayout:
+        cols: 2
+        size_hint_y: .1
+        Label:
+            text: "Not yet computed"
+            id: machineLabel1
+            font_size: 10
+        Label:
+            text: "Not yet computed"
+            id: machineLabel2
+            font_size: 10
     GridLayout:
         cols: 2
         size_hint_y: .9
