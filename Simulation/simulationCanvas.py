@@ -229,7 +229,14 @@ class SimulationCanvas(GridLayout):
         pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(0, lengthMM/2)
         pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(0, -lengthMM/2)
         
-        printString = "An 800mm square centered on the sheet is distorted\n" + str(lengthMM - (distortedPoint3[1] - distortedPoint4[1])) + "mm horizontally, and " + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0])) + "mm vertically."
+        printString = "An 800mm square centered on the sheet is distorted\n" + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0])) + "mm horizontally, and " + str(lengthMM - (distortedPoint3[1] - distortedPoint4[1])) + "mm vertically."
+        
+        lengthMM = 1905/2
+        
+        pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, -400)
+        pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2,  -400)
+        
+        printString = printString + "\n\nThe triangular calibration test is off by " + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0])) + "mm"
         
         self.machineLabel.text = printString
     
