@@ -86,7 +86,7 @@ class MeasureMachinePopup(GridLayout):
             self.goFwdBtn.disabled = True
     
     def begin(self):
-        print "begin fcn ran"
+        
         self.carousel.load_next()
     
     def defineInitialState(self):
