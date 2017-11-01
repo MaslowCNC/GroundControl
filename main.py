@@ -18,6 +18,7 @@ from kivy.clock                 import Clock
 from kivy.uix.popup             import Popup
 import math
 import global_variables
+import sys
 
 
 '''
@@ -559,7 +560,11 @@ class GroundControlApp(App):
                 except:
                     pass                                                            #there wasn't a popup to close
                 content = NotificationPopup(continueOn = self.dismiss_popup_continue, text = message[9:])
-                self._popup = Popup(title="Notification: ", content=content,
+                if sys.platform.startswith('darwin'):
+                    self._popup = Popup(title="Notification: ", content=content,
+                            auto_dismiss=False, size=(360,240), size_hint=(.3, .3))
+                else:
+                    self._popup = Popup(title="Notification: ", content=content,
                             auto_dismiss=False, size=(360,240), size_hint=(None, None))
                 self._popup.open()
                 if global_variables._keyboard:

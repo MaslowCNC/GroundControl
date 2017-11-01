@@ -5,6 +5,7 @@ from kivy.uix.popup                              import    Popup
 from UIElements.measureMachinePopup              import    MeasureMachinePopup
 from UIElements.calibrateLengthsPopup            import    CalibrateLengthsPopup
 from Simulation.simulationCanvas                 import SimulationCanvas
+import sys
 
 class Diagnostics(FloatLayout, MakesmithInitFuncs):
     
@@ -29,7 +30,10 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
                     'along with the Maslow Control Software. If not, see <http://www.gnu.org/licenses/>.'
                 
         content = ScrollableTextPopup(cancel = self.dismiss_popup, text = popupText, markup = True)
-        self._popup = Popup(title="About GroundControl", content=content, size=(520,400), size_hint=(None, None))
+        if sys.platform.startswith('darwin'):
+            self._popup = Popup(title="About GroundControl", content=content, size=(520,400), size_hint=(.6, .6))
+        else:
+            self._popup = Popup(title="About GroundControl", content=content, size=(520,400), size_hint=(None, None))
         self._popup.open()
     
     def dismiss_popup(self):

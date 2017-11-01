@@ -11,46 +11,83 @@ from   kivy.uix.popup                            import   Popup
 
 class MeasureMachinePopup(GridLayout):
     done   = ObjectProperty(None)
+    stepText = StringProperty("Step 1 of 10")
     numberOfTimesTestCutRun = -2
     
     def slideJustChanged(self):
+        
         if self.carousel.index == 0:
             #begin notes
             self.goBackBtn.disabled = True
+            self.stepText = "Step 1 of 10"
+        
         if self.carousel.index == 1:
             #pointing one sprocket up
             self.goBackBtn.disabled = False
+            self.stepText = "Step 2 of 10"
+        
         if self.carousel.index == 2:
             #measuring distance between motors
             self.data.measureRequest = self.readMotorSpacing
+            self.stepText = "Step 3 of 10"
+        
         if self.carousel.index == 3:
             #measure sled spacing
+            self.stepText = "Step 4 of 10"
             pass
+        
         if self.carousel.index == 4:
             #measure vertical distance to wood
             self.data.measureRequest = self.readVerticalOffset
-        if self.carousel.index == 4:
+            self.stepText = "Step 5 of 10"
+        
+        if self.carousel.index == 5:
             #review calculations
             self.updateReviewValuesText()
+            self.stepText = "Step 6 of 10"
+        
+        if self.carousel.index == 6:
+            #Calibrate chain lengths
+            self.stepText = "Step 7 of 10"
+        
         if self.carousel.index == 7:
+            #set up z-axis
             if int(self.data.config.get('Maslow Settings', 'zAxis')) == 1:
                 self.zAxisActiveSwitch.active = True
             else:
                 self.zAxisActiveSwitch.active = False
+            self.stepText = "Step 8 of 10"
+        
+        if self.carousel.index == 8:
+            #Choose kinematics type
+            self.stepText = "Step 9 of 10"
+        
         if self.carousel.index == 9:
             #Cut test shape triangular
             self.data.pushSettings()
+            self.stepText = "Step 10 of 10"
+            
+            #if we're not supposed to be in triangular calibration go to the next page
+            if self.chooseKinematicsType.text != 'Triangular':
+                self.carousel.load_next()
+        
         if self.carousel.index == 10:
             #Cut test shape quadratic
             self.data.pushSettings()
             self.goFwdBtn.disabled = False
+            self.stepText = "Step 10 of 10"
+            
+            #if we're not supposed to be in quadratic calibration go to finished
+            if self.chooseKinematicsType.text == 'Triangular':
+                self.carousel.load_next()
+        
         if self.carousel.index == 11:
             #Final finish step
             self.goFwdBtn.disabled = True
     
-	def begin(self):
-		print "begin fcn ran"
-		self.carousel.load_next()
+    def begin(self):
+        
+        self.carousel.load_next()
     
     def defineInitialState(self):
         '''
@@ -166,7 +203,11 @@ class MeasureMachinePopup(GridLayout):
         
         '''
         self.reviewNumbers.text = "Let's review the measurements we've made so far to make sure they look correct\n\nMotor Spacing: " + str(self.data.config.get('Maslow Settings', 'motorSpacingX')) + "mm\nSled Mount Spacing: " + str(self.data.config.get('Maslow Settings', 'sledWidth')) + "mm\nVertical Offset: " + str(self.data.config.get('Maslow Settings', 'motorOffsetY')) + "mm\n\nYou can go back and re-do any of these numbers if you would like"
-        print "updating text"
+    
+    def finishChainCalibration(self, *args):
+        #adjust chain lengths to put the sled in the center
+        self.data.gcode_queue.put("B15 ")
+        self.carousel.load_next()
     
     def setKinematicsType(self, *args):
         '''
