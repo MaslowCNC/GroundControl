@@ -151,7 +151,7 @@ class MeasureMachinePopup(GridLayout):
         self.data.config.set('Maslow Settings', 'motorSpacingX', str(dist))
         self.data.config.write()
         
-        self.extendLeft(10);
+        self.extendLeft(15);
         
         self.carousel.load_next()
     
