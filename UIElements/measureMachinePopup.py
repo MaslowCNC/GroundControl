@@ -150,6 +150,9 @@ class MeasureMachinePopup(GridLayout):
         print "Read motor spacing: " + str(dist)
         self.data.config.set('Maslow Settings', 'motorSpacingX', str(dist))
         self.data.config.write()
+        
+        self.extendLeft(15);
+        
         self.carousel.load_next()
     
     def readVerticalOffset(self, dist):
