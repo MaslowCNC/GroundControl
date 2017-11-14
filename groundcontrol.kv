@@ -708,7 +708,7 @@
         size_hint_y: .1
         Button:
             text: "<Go Back"
-            on_release: carousel.load_previous()
+            on_release: root.backBtn()#carousel.load_previous()
             id: goBackBtn
             disabled: True
         Label:
@@ -716,7 +716,7 @@
         Button:
             text: "Skip>"
             id: goFwdBtn
-            on_release: carousel.load_next()
+            on_release: root.fwdBtn()#carousel.load_next()
     Carousel:
         id: carousel
         direction: "right"

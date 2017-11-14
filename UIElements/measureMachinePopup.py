@@ -14,6 +14,24 @@ class MeasureMachinePopup(GridLayout):
     stepText = StringProperty("Step 1 of 10")
     numberOfTimesTestCutRun = -2
     
+    def backBtn(self, *args):
+        '''
+        
+        Runs when the back button is pressed
+        
+        '''
+        
+        self.carousel.load_previous()
+    
+    def fwdBtn(self, *args):
+        '''
+        
+        Runs when the skip button is pressed
+        
+        '''
+        
+        self.carousel.load_next()
+    
     def slideJustChanged(self):
         
         if self.carousel.index == 0:
