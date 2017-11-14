@@ -23,7 +23,7 @@ class MeasureMachinePopup(GridLayout):
         
         print "back btn ran"
         
-        if self.carousel.index == 10 and self.chooseKinematicsType.text != 'Triangular':                                        #if we're at the test cut for quadrilateral and we want to go back to choosing kinematics type
+        if self.carousel.index == 10 and self.chooseKinematicsType.text == 'Quadrilateral':                                        #if we're at the test cut for quadrilateral and we want to go back to choosing kinematics type
             self.carousel.load_slide(self.carousel.slides[8])
         elif self.carousel.index == 11 and self.chooseKinematicsType.text == 'Triangular':                                      #if we're at the last step and need to go back but but we want to go back to the triangular kinematics test cut
             self.carousel.load_slide(self.carousel.slides[9])
@@ -37,7 +37,7 @@ class MeasureMachinePopup(GridLayout):
         
         '''
         
-        if self.carousel.index == 8 and self.chooseKinematicsType.text != 'Triangular':                                         #If the kinematics type is quadrilateral skip to the quadrilateral test
+        if self.carousel.index == 8 and self.chooseKinematicsType.text == 'Quadrilateral':                                         #If the kinematics type is quadrilateral skip to the quadrilateral test
             self.carousel.load_slide(self.carousel.slides[10])
         elif self.carousel.index == 9 and self.chooseKinematicsType.text == 'Triangular':                                       #If we're in the cut test shape triangular and we want to skip to the end
             self.carousel.load_slide(self.carousel.slides[11])
