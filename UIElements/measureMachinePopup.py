@@ -21,7 +21,15 @@ class MeasureMachinePopup(GridLayout):
         
         '''
         
-        self.carousel.load_previous()
+        print "back btn ran"
+        
+        if self.carousel.index == 10 and self.chooseKinematicsType.text != 'Triangular': #if we're at the test cut for quadrilateral and we want to go back to choosing kinematics type
+            self.carousel.load_slide(self.carousel.slides[8])
+        elif self.carousel.index == 11 and self.chooseKinematicsType.text == 'Triangular':                                      #if we're at the last step and need to go back but but we want to go back to the triangular kinematics test cut
+            self.carousel.load_slide(self.carousel.slides[9]
+        else:
+            self.carousel.load_previous()
+            print "else ran"
     
     def fwdBtn(self, *args):
         '''
@@ -84,13 +92,14 @@ class MeasureMachinePopup(GridLayout):
             #Cut test shape triangular
             self.data.pushSettings()
             self.stepText = "Step 10 of 10"
+            self.goFwdBtn.disabled = False
             
             #if we're not supposed to be in triangular calibration go to the next page
             if self.chooseKinematicsType.text != 'Triangular':
                 self.carousel.load_next()
         
         if self.carousel.index == 10:
-            #Cut test shape quadratic
+            #Cut test shape quadrilateral
             self.data.pushSettings()
             self.goFwdBtn.disabled = False
             self.stepText = "Step 10 of 10"
