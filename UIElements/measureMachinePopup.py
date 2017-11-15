@@ -21,8 +21,6 @@ class MeasureMachinePopup(GridLayout):
         
         '''
         
-        print "back btn ran"
-        
         if self.carousel.index == 10 and self.chooseKinematicsType.text == 'Quadrilateral':                                        #if we're at the test cut for quadrilateral and we want to go back to choosing kinematics type
             self.carousel.load_slide(self.carousel.slides[8])
         elif self.carousel.index == 11 and self.chooseKinematicsType.text == 'Triangular':                                      #if we're at the last step and need to go back but but we want to go back to the triangular kinematics test cut
