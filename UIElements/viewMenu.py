@@ -91,8 +91,9 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         '''
         
         popupText = ""
+        titleString = "Gcode File"
         if len(self.data.gcode) is 0:
-            popupText =  "No gcode to display"
+            popupText = "No gcode to display"
         else:
             if self.page<=1:
                 line = 0
@@ -110,12 +111,13 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
                     popupText = popupText + "...\n...\n...\n"
                     break
                 
+            titleString += ': ' + self.data.gcodeFile +'\nLines: '+str(line+1)+' - '+str(lineNum)+' of '+str(len(self.data.gcode))
+
         content = PageableTextPopup(cancel = self.dismiss_popup,
                                       prev = self.show_gcode_prev,
                                       next = self.show_gcode_next,
                                       text = popupText)
 
-        titleString = 'Gcode File: ' + self.data.gcodeFile +'\nLines: '+str(line+1)+' - '+str(lineNum)+' of '+str(len(self.data.gcode))
         self._popup = Popup(title=titleString, content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
