@@ -45,4 +45,7 @@ class CalibrateLengthsPopup(GridLayout):
     def calibrateChainLengths(self):
         self.data.gcode_queue.put("B02 ")
         
-    
+    def finishChainCalibration(self, *args):
+        #adjust chain lengths to put the sled in the center
+        self.data.gcode_queue.put("B15 ")
+   

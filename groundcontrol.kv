@@ -1162,7 +1162,9 @@
                     on_release: root.stop()
                 Button:
                     text: 'Finish'
-                    on_release: root.done()
+                    on_release: 
+                        root.finishChainCalibration()
+                        root.done()
                 Label:
 
 <SimulationCanvas>:
