@@ -307,7 +307,7 @@ class MeasureMachinePopup(GridLayout):
         print "Kinematics set to: "
         print self.chooseKinematicsType.text
         
-        self.data.config.set('Maslow Settings', 'kinematicsType', self.chooseKinematicsType.text)
+        self.data.config.set('Advanced Settings', 'kinematicsType', self.chooseKinematicsType.text)
         self.data.config.write()
         
         if self.chooseKinematicsType.text == 'Triangular':
