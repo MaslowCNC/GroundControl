@@ -175,7 +175,7 @@ class MeasureMachinePopup(GridLayout):
     
     def readMotorSpacing(self, dist):
         
-        dist = dist - 2*6.35                                #subtract off the extra two links
+        dist = dist - 2*6.25                                #subtract off the extra two links
         
         print "Read motor spacing: " + str(dist)
         self.data.config.set('Maslow Settings', 'motorSpacingX', str(dist))
@@ -259,9 +259,11 @@ class MeasureMachinePopup(GridLayout):
     def countLinks(self):
         print "counting links, dist: "
         
-        dist =  float(self.linksTextInput.text)*6.35
-        
-        print dist
+        try:
+            dist =  float(self.linksTextInput.text)*6.25
+        except:
+            self.carousel.load_next()
+            return
         
         self.data.config.set('Maslow Settings', 'sledWidth', str(dist))
         self.data.config.write()
