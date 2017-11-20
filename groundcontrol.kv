@@ -57,6 +57,8 @@
     gcodecanvas:gcodecanvas
     screenControls:screenControls
     holdBtn:holdBtn
+    macro1Btn:macro1Btn
+    macro2Btn:macro2Btn
 
 
     GcodeCanvas:
@@ -86,7 +88,8 @@
                     Triangle:
                         points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/2,
             Button:
-                text: 'Macro 1'
+                id: macro1Btn
+                text: "Macro 1"
                 on_press: root.macro(1)
             Button:
                 on_press: root.left()
@@ -102,7 +105,8 @@
                     Triangle:
                         points: self.x+2*self.width/3,self.y+self.height/2,self.x+self.width/3,self.y+self.height/3,self.x+self.width/3,self.y+2*self.height/3,
             Button:
-                text: 'Macro 2'
+                id: macro2Btn
+                text: "Macro 2"
                 on_press: root.macro(2)
             Button:
                 on_press: root.downLeft()

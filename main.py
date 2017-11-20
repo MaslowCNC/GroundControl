@@ -141,10 +141,24 @@ class GroundControlApp(App):
         },
         {
             "type": "string",
+            "title": "Macro 1 Title",
+            "desc": "User defined title for the Macro 1 button",
+            "section": "Maslow Settings",
+            "key": "macro1_title"
+        },
+        {
+            "type": "string",
             "title": "Macro 2",
             "desc": "User defined gcode bound to the Macro 2 button",
             "section": "Maslow Settings",
             "key": "macro2"
+        },
+        {
+            "type": "string",
+            "title": "Macro 2 Title",
+            "desc": "User defined title for the Macro 2 button",
+            "section": "Maslow Settings",
+            "key": "macro2_title"
         }
     ]
     '''
@@ -358,7 +372,6 @@ class GroundControlApp(App):
         self.nonVisibleWidgets.setUpData(self.data)
         self.frontpage.gcodecanvas.initialize()
         
-        
         '''
         Scheduling
         '''
@@ -389,7 +402,9 @@ class GroundControlApp(App):
                                                  'sledCG'        : 79, 
                                                  'openFile'      : " ",
                                                  'macro1'        : "",
-                                                 'macro2'        : ""})
+                                                 'macro1_title'  : "Macro 1",
+                                                 'macro2'        : "",
+                                                 'macro2_title'  : "Macro 2"})
 
         config.setdefaults('Advanced Settings', {'encoderSteps'       : 8148.0,
                                                  'gearTeeth'          : 10, 
@@ -438,6 +453,9 @@ class GroundControlApp(App):
             
             if (key == "bedHeight" or key == "bedWidth"):
                 self.frontpage.gcodecanvas.drawWorkspace()
+
+            if (key == "macro1_title") or (key == "macro2_title"):
+                self.frontpage.update_macro_titles()
 
         if section == "Advanced Settings":
             
@@ -678,8 +696,6 @@ class GroundControlApp(App):
             
         except:
             print "Machine Position Report Command Misread Happened Once"
-        
-        
     
 if __name__ == '__main__':
     GroundControlApp().run()
