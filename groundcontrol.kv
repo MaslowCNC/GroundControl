@@ -57,6 +57,8 @@
     gcodecanvas:gcodecanvas
     screenControls:screenControls
     holdBtn:holdBtn
+    macro1Btn:macro1Btn
+    macro2Btn:macro2Btn
 
 
     GcodeCanvas:
@@ -86,7 +88,8 @@
                     Triangle:
                         points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/2,
             Button:
-                text: 'Macro 1'
+                id: macro1Btn
+                text: "Macro 1"
                 on_press: root.macro(1)
             Button:
                 on_press: root.left()
@@ -102,7 +105,8 @@
                     Triangle:
                         points: self.x+2*self.width/3,self.y+self.height/2,self.x+self.width/3,self.y+self.height/3,self.x+self.width/3,self.y+2*self.height/3,
             Button:
-                text: 'Macro 2'
+                id: macro2Btn
+                text: "Macro 2"
                 on_press: root.macro(2)
             Button:
                 on_press: root.downLeft()
@@ -739,6 +743,9 @@
                 Button:
                     text: "Begin"
                     on_release: root.defineInitialState()
+                Button:
+                    text: "Close"
+                    on_release: root.done()
                 Label:
         #Set sprockets to 12 o'clock
         GridLayout:
@@ -818,7 +825,7 @@
             GridLayout:
                 cols: 1
                 Label:
-                    text: "Detach the end of the chain from the right sprocket\n\nFeed the free end through the sled mounting brackets and hold it in place with cotter pins\n\nCount the holes between the two pins and enter the number in the box to the right, then press Enter\nWe will refine this measurement later, it is only an initial guess.\n\nSkip this step if you are using a linkage kit"
+                    text: "Detach the end of the chain from the right sprocket\n\nFeed the free end through the sled mounting brackets and hold it in place with cotter pins\n\nCount the holes between the two pins and enter the number in the box to the right, then click Continue\nWe will refine this measurement later, it is only an initial guess.\n\nSkip this step if you are using a linkage kit"
                     size_hint_x: leftCol
                 Image:
                     source: "./Documentation/Calibrate Machine Dimensions/Chain Between Sled Mounts.jpg"
@@ -832,11 +839,13 @@
                 Button:
                     text: 'Retract Left Chain 10mm'
                     on_release: root.retractLeft(10)
-                TextInput:
-                    text: "0"
-                    id: linksTextInput
                 Button:
-                    text: "Enter # of\nLinks"
+                    id: linksTextInput
+                    text: "0"
+                    multiline: False
+                    on_press: root.textInputPopup(self)
+                Button:
+                    text: "Continue"
                     on_release: root.countLinks()
                 Label:
         #Measure to the top of the sheet
@@ -1133,6 +1142,9 @@
                 Button:
                     text: 'Set Zero'
                     on_release: root.setZero()
+                Button:
+                    text: 'Close'
+                    on_release: root.done()
                 Label:
         GridLayout:
             cols: 2
