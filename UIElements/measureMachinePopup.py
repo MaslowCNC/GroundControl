@@ -259,9 +259,11 @@ class MeasureMachinePopup(GridLayout):
     def countLinks(self):
         print "counting links, dist: "
         
-        dist =  float(self.linksTextInput.text)*6.35
-        
-        print dist
+        try:
+            dist =  float(self.linksTextInput.text)*6.35
+        except:
+            self.carousel.load_next()
+            return
         
         self.data.config.set('Maslow Settings', 'sledWidth', str(dist))
         self.data.config.write()
@@ -307,7 +309,7 @@ class MeasureMachinePopup(GridLayout):
         print "Kinematics set to: "
         print self.chooseKinematicsType.text
         
-        self.data.config.set('Maslow Settings', 'kinematicsType', self.chooseKinematicsType.text)
+        self.data.config.set('Advanced Settings', 'kinematicsType', self.chooseKinematicsType.text)
         self.data.config.write()
         
         if self.chooseKinematicsType.text == 'Triangular':
