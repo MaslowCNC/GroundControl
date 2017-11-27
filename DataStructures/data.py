@@ -67,7 +67,7 @@ class Data(EventDispatcher):
     Colors
     
     '''
-    FourDirectionalPurple, DefineHomePurple, GoToPurple   =  (147, 123, 183, 1) #937bb7
+    FourDirectionalPurple                                 =  (147, 123, 183, 1) #937bb7
     EightDirectionalPurple                                =  (174, 149, 198, 1) #ae95c6
     RunGreen                                              =  (56, 160, 83, 1)   #38a053
     HoldYellow                                            =  (239, 178, 47, 1)  #efb22f

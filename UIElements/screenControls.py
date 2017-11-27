@@ -2,6 +2,7 @@ from kivy.uix.floatlayout                      import   FloatLayout
 from kivy.uix.popup                            import   Popup
 from UIElements.otherFeatures                  import   OtherFeatures
 from DataStructures.makesmithInitFuncs         import   MakesmithInitFuncs
+from UIElements.buttonTemplate                 import   ButtonTemplate
 
 
 class ScreenControls(FloatLayout, MakesmithInitFuncs):

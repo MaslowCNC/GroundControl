@@ -8,7 +8,20 @@
 #            dash_offset: 5
 #            dash_length: 3
 
-<ScreenControls>
+<ButtonTemplate>:
+    GridLayout:
+        cols: 1
+        size: root.size
+        pos: root.pos
+        Button:
+            text: "test"
+            background_normal: './Images/Icons/RightArrow.png'  # Eg. A red button
+            background_down: 'images/button_down.png'  # Eg. A green button
+            border: (2, 2, 2, 2)  # Don't stretch the outer two pixels on each edge when resizing.
+            
+
+    
+<ScreenControls>:
     BoxLayout:
         orientation: 'horizontal'
         pos: (0, root.height - 60)
@@ -21,6 +34,7 @@
         Button:
             text: "Settings"
             on_press: app.open_settings()
+        ButtonTemplate:
 
 <GcodeCanvas>:
     scatterObject:scatterObject
