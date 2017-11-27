@@ -14,12 +14,14 @@
         size: root.size
         pos: root.pos
         Button:
+            border: (1, 1, 1, 1)
             background_normal: root.btnBackground      # The background when the button is not pressed
             background_down:   root.btnBackgroundDown  # The background when the button is pressed
             on_press: root.internal_on_press()
             on_release: root.internal_on_release()
             Label:
-                text: ""
+                text: '[color=7a7a7a]' + root.text + '[/color]'
+                markup: True
                 pos: root.pos
 
     
@@ -33,11 +35,10 @@
         Button:
             text: "Actions"
             on_press: root.show_actions()
-        Button:
-            text: "Settings"
-            on_press: app.open_settings()
         ButtonTemplate:
-            btnBackground: './Images/Icons/RightArrow.png'
+            text: "Settings"
+            btnBackground: './Images/Icons/ButtonBackground.JPG'
+            funcToCallOnPress: app.open_settings
 
 <GcodeCanvas>:
     scatterObject:scatterObject
@@ -89,56 +90,41 @@
             width:dp(300)
             height: dp(60*4)
             #disabled: not app.data.connectionStatus
-            Button:
-                on_press: root.upLeft()
-                canvas.after:
-                    Triangle:
-                        points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+3*self.width/4,self.y+self.width/2,
-            Button:
-                on_press: root.up()
-                canvas.after:
-                    Triangle:
-                        points: self.x+self.width/3,self.y+self.height/3,self.x+2*self.width/3,self.y+self.height/3,self.x+self.width/2,self.y+2*self.height/3,
-            Button:
-                on_press: root.upRight()
-                canvas.after:
-                    Triangle:
-                        points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/2,
+            ButtonTemplate:
+                btnBackground: './Images/Icons/UpLeftArrow.png'
+                funcToCallOnPress: root.upLeft
+            ButtonTemplate:
+                btnBackground: './Images/Icons/UpArrow.png'
+                funcToCallOnPress: root.up
+            ButtonTemplate:
+                btnBackground: './Images/Icons/UpRightArrow.png'
+                funcToCallOnPress: root.upRight
             Button:
                 id: macro1Btn
                 text: "Macro 1"
                 on_press: root.macro(1)
-            Button:
-                on_press: root.left()
-                canvas.after:
-                    Triangle:
-                        points: self.x+self.width/3,self.y+self.height/2,self.x+2*self.width/3,self.y+self.height/3,self.x+2*self.width/3,self.y+2*self.height/3,
+            ButtonTemplate:
+                btnBackground: './Images/Icons/LeftArrow.png'
+                funcToCallOnPress: root.left
             ButtonTemplate:
                 btnBackground: './Images/Icons/HomeArrow.png'
                 funcToCallOnPress: root.home
             ButtonTemplate:
                 btnBackground: './Images/Icons/RightArrow.png'
                 funcToCallOnPress: root.right
-                text: "this text"
             Button:
                 id: macro2Btn
                 text: "Macro 2"
                 on_press: root.macro(2)
-            Button:
-                on_press: root.downLeft()
-                canvas.after:
-                    Triangle:
-                        points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+3*self.width/4,self.y+self.width/4,
-            Button:
-                on_press: root.down()
-                canvas.after:
-                    Triangle:
-                        points: self.x+self.width/3,self.y+2*self.height/3,self.x+2*self.width/3,self.y+2*self.height/3,self.x+self.width/2,self.y+self.height/3,
-            Button:
-                on_press: root.downRight()
-                canvas.after:
-                    Triangle:
-                        points: self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/4,self.x+self.width/2,self.y+self.width/2,
+            ButtonTemplate:
+                btnBackground: './Images/Icons/DownLeftArrow.png'
+                funcToCallOnPress: root.downLeft
+            ButtonTemplate:
+                btnBackground: './Images/Icons/DownArrow.png'
+                funcToCallOnPress: root.down
+            ButtonTemplate:
+                btnBackground: './Images/Icons/DownRightArrow.png'
+                funcToCallOnPress: root.downRight
             Button:
                 text: 'Z-Axis'
                 on_press: root.zAxisPopup()
@@ -164,16 +150,16 @@
             width: dp(300)
             height: dp(60)
             #disabled: not app.data.connectionStatus
-            Button:
-                text: 'RUN'
-                on_press: root.startRun()
+            ButtonTemplate:
+                btnBackground: './Images/Icons/RunGreen.png'
+                funcToCallOnPress: root.startRun
             Button:
                 id: holdBtn
                 text: "HOLD"
                 on_press: root.pause()
-            Button:
-                text: 'STOP'
-                on_press: root.stopRun()
+            ButtonTemplate:
+                btnBackground: './Images/Icons/StopRed.png'
+                funcToCallOnPress: root.stopRun
         GridLayout:
             cols: 5
             size_hint: None, None
@@ -186,9 +172,9 @@
             Button:
                 text: "<1"
                 on_press: root.moveGcodeIndex(-1)
-            Button:
-                text: "Goto"
-                on_press: root.gotoLinePopup()
+            ButtonTemplate:
+                btnBackground: './Images/Icons/GoTo.png'
+                funcToCallOnPress: root.gotoLinePopup
             Button:
                 text: "1>"
                 on_press: root.moveGcodeIndex(1)
