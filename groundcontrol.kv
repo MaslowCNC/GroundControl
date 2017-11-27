@@ -16,6 +16,8 @@
         Button:
             background_normal: root.btnBackground      # The background when the button is not pressed
             background_down:   root.btnBackgroundDown  # The background when the button is pressed
+            on_press: root.internal_on_press()
+            on_release: root.internal_on_release()
             Label:
                 text: ""
                 pos: root.pos
@@ -113,10 +115,11 @@
                         points: self.x+self.width/3,self.y+self.height/2,self.x+2*self.width/3,self.y+self.height/3,self.x+2*self.width/3,self.y+2*self.height/3,
             ButtonTemplate:
                 btnBackground: './Images/Icons/HomeArrow.png'
-                on_press: root.home()
+                funcToCallOnPress: root.home
             ButtonTemplate:
                 btnBackground: './Images/Icons/RightArrow.png'
-                on_press: root.right()
+                funcToCallOnPress: root.right
+                text: "this text"
             Button:
                 id: macro2Btn
                 text: "Macro 2"
