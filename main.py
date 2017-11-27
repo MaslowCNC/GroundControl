@@ -119,13 +119,6 @@ class GroundControlApp(App):
             "key": "zAxis"
         },
         {
-            "type": "bool",
-            "title": "Spindle Automation",
-            "desc": "Should the spindle start and stop automatically based on gcode? Leave off for default stepper control.",
-            "section": "Maslow Settings",
-            "key": "zAxisAuto"
-        },
-        {
             "type": "string",
             "title": "Z-Axis Pitch",
             "desc": "The number of mm moved per rotation of the z-axis",
@@ -199,6 +192,13 @@ class GroundControlApp(App):
             "desc": "The number of encoder steps per revolution of the z-axis",
             "section": "Advanced Settings",
             "key": "zEncoderSteps"
+        },
+        {
+            "type": "bool",
+            "title": "Spindle Automation",
+            "desc": "Should the spindle start and stop automatically based on gcode? Leave off for default stepper control.",
+            "section": "Advanced Settings",
+            "key": "zAxisAuto"
         },
         {
             "type": "string",
@@ -399,7 +399,6 @@ class GroundControlApp(App):
         """
         config.setdefaults('Maslow Settings', {'COMport'         : '',
                                                  'zAxis'         : 0,
-                                                 'zAxisAuto'     : 0,
                                                  'zDistPerRot'   : 3.17, 
                                                  'bedWidth'      : 2438.4, 
                                                  'bedHeight'     : 1219.2, 
@@ -418,6 +417,7 @@ class GroundControlApp(App):
                                                  'gearTeeth'          : 10, 
                                                  'chainPitch'         : 6.35,
                                                  'zEncoderSteps'      : 7560.0,
+                                                 'zAxisAuto'          : 0,
                                                  'homeX'              : 0.0,
                                                  'homeY'              : 0.0,
                                                  'truncate'           : 0,
@@ -516,7 +516,7 @@ class GroundControlApp(App):
             +" V" + str(KpV)
             +" W" + str(KiV)
             +" X" + str(KdV)
-            +" Y" + str(self.data.config.get('Maslow Settings', 'zAxisAuto'))
+            +" Y" + str(self.data.config.get('Advanced Settings', 'zAxisAuto'))
             + " "
         )
         
