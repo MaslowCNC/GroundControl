@@ -1,4 +1,7 @@
-from kivy.uix.floatlayout import FloatLayout
+from kivy.properties      import StringProperty
+from kivy.uix.button          import Button
 
-class ButtonTemplate(FloatLayout):
-    pass
+class ButtonTemplate(Button):
+    btnBackground     = StringProperty('atlas://data/images/defaulttheme/button')
+    btnBackgroundDown = StringProperty('atlas://data/images/defaulttheme/button_pressed')
+    

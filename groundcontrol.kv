@@ -14,11 +14,11 @@
         size: root.size
         pos: root.pos
         Button:
-            text: "test"
-            background_normal: './Images/Icons/RightArrow.png'  # Eg. A red button
-            background_down: 'images/button_down.png'  # Eg. A green button
-            border: (2, 2, 2, 2)  # Don't stretch the outer two pixels on each edge when resizing.
-            
+            background_normal: root.btnBackground      # The background when the button is not pressed
+            background_down:   root.btnBackgroundDown  # The background when the button is pressed
+            Label:
+                text: ""
+                pos: root.pos
 
     
 <ScreenControls>:
@@ -35,6 +35,7 @@
             text: "Settings"
             on_press: app.open_settings()
         ButtonTemplate:
+            btnBackground: './Images/Icons/RightArrow.png'
 
 <GcodeCanvas>:
     scatterObject:scatterObject
@@ -110,14 +111,12 @@
                 canvas.after:
                     Triangle:
                         points: self.x+self.width/3,self.y+self.height/2,self.x+2*self.width/3,self.y+self.height/3,self.x+2*self.width/3,self.y+2*self.height/3,
-            Button:
-                text: 'HOME'
+            ButtonTemplate:
+                btnBackground: './Images/Icons/HomeArrow.png'
                 on_press: root.home()
-            Button:
+            ButtonTemplate:
+                btnBackground: './Images/Icons/RightArrow.png'
                 on_press: root.right()
-                canvas.after:
-                    Triangle:
-                        points: self.x+2*self.width/3,self.y+self.height/2,self.x+self.width/3,self.y+self.height/3,self.x+self.width/3,self.y+2*self.height/3,
             Button:
                 id: macro2Btn
                 text: "Macro 2"
@@ -339,124 +338,6 @@
                 text: "Advanced"
                 values: ["Calibrate Chain Length - Manual", "Test Feedback System", "Wipe EEPROM", "Simulation"]
                 on_text: root.advancedOptionsFunctions(advancedOptions.text)
-
-<ManualControl>:
-    GridLayout:
-        rows: 2
-        size: root.size
-        pos: root.pos
-        Label:
-            text: "Manual Control"
-        GridLayout:
-            cols: 12
-            #disabled: not app.data.connectionStatus
-            Label:
-                text: "X:"
-            Button:
-                text: '-5'
-                disabled: True
-            Button:
-                text: '-4'
-                disabled: True
-            Button:
-                text: '-3'
-                disabled: True
-            Button:
-                text: '-2'
-                disabled: True
-            Button:
-                text: '-1'
-                disabled: True
-            Button:
-                text: '0'
-                disabled: True
-            Button:
-                text: '1'
-                disabled: True
-            Button:
-                text: '2'
-                disabled: True
-            Button:
-                text: '3'
-                disabled: True
-            Button:
-                text: '4'
-                disabled: True
-            Button:
-                disabled: True
-                text: '5'
-
-            Label:
-                text: "Y:"
-            Button:
-                disabled: True
-                text: '-5'
-            Button:
-                disabled: True
-                text: '-4'
-            Button:
-                disabled: True
-                text: '-3'
-            Button:
-                disabled: True
-                text: '-2'
-            Button:
-                disabled: True
-                text: '-1'
-            Button:
-                disabled: True
-                text: '0'
-            Button:
-                disabled: True
-                text: '1'
-            Button:
-                disabled: True
-                text: '2'
-            Button:
-                disabled: True
-                text: '3'
-            Button:
-                disabled: True
-                text: '4'
-            Button:
-                disabled: True
-                text: '5'
-
-            Label:
-                text: "Z:"
-            Button:
-                disabled: True
-                text: '-5'
-            Button:
-                disabled: True
-                text: '-4'
-            Button:
-                disabled: True
-                text: '-3'
-            Button:
-                disabled: True
-                text: '-2'
-            Button:
-                disabled: True
-                text: '-1'
-            Button:
-                disabled: True
-                text: '0'
-            Button:
-                disabled: True
-                text: '1'
-            Button:
-                disabled: True
-                text: '2'
-            Button:
-                disabled: True
-                text: '3'
-            Button:
-                disabled: True
-                text: '4'
-            Button:
-                disabled: True
-                text: '5'
 
 <OtherFeatures>:
     connectmenu:connectmenu
