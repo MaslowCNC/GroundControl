@@ -67,13 +67,7 @@ class Data(EventDispatcher):
     Colors
     
     '''
-    FourDirectionalPurple                                 =  (147, 123, 183, 1) #937bb7
-    EightDirectionalPurple                                =  (174, 149, 198, 1) #ae95c6
-    RunGreen                                              =  (56, 160, 83, 1)   #38a053
-    HoldYellow                                            =  (239, 178, 47, 1)  #efb22f
-    StopRed                                               =  (204, 87, 68, 1)   #cc5744
-    VariousButtonLightGray                                =  (240, 238, 225, 1) #f0eee1
-    FontDarkGray                                          =  (122, 122, 122, 1) #7a7a7a
+    FontDarkGray                                          =  (.476, .476, .476) #7a7a7a
     
     
     '''

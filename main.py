@@ -345,6 +345,7 @@ class GroundControlApp(App):
     
     def build(self):
         Window.maximize()
+        Window.clearcolor = (1, 1, 1, 1)
         
         interface       =  FloatLayout()
         self.data       =  Data()

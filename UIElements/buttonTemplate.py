@@ -12,14 +12,22 @@ class ButtonTemplate(FloatLayout, ButtonBehavior):
     
     
     def internal_on_press(self, *args):
-        print "internal on_press ran" 
+        '''
+        
+        Runs when the button is pressed
+        
+        '''
         
         if self.funcToCallOnPress is not None:
             self.funcToCallOnPress()
         
         
     def internal_on_release(self, *args):
-        print "internal on_release ran"
+        '''
+        
+        Runs when the button is released
+        
+        '''
         
         if self.funcToCallOnRelease is not None:
             self.funcToCallOnRelease()
