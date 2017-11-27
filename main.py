@@ -119,6 +119,13 @@ class GroundControlApp(App):
             "key": "zAxis"
         },
         {
+            "type": "bool",
+            "title": "Spindle Automation",
+            "desc": "Should the spindle start and stop automatically based on gcode? Leave off for default stepper control.",
+            "section": "Maslow Settings",
+            "key": "zAxisAuto"
+        },
+        {
             "type": "string",
             "title": "Z-Axis Pitch",
             "desc": "The number of mm moved per rotation of the z-axis",
@@ -391,7 +398,8 @@ class GroundControlApp(App):
         Set the default values for the config sections.
         """
         config.setdefaults('Maslow Settings', {'COMport'         : '',
-                                                 'zAxis'         : 0, 
+                                                 'zAxis'         : 0,
+                                                 'zAxisAuto'     : 0,
                                                  'zDistPerRot'   : 3.17, 
                                                  'bedWidth'      : 2438.4, 
                                                  'bedHeight'     : 1219.2, 
@@ -508,6 +516,7 @@ class GroundControlApp(App):
             +" V" + str(KpV)
             +" W" + str(KiV)
             +" X" + str(KdV)
+            +" Y" + str(self.data.config.get('Maslow Settings', 'zAxisAuto'))
             + " "
         )
         
