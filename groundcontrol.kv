@@ -22,19 +22,21 @@
             Label:
                 text: '[color=7a7a7a]' + root.text + '[/color]'
                 markup: True
-                pos: root.pos
+                pos: (root.pos[0] + 2*self.width, root.pos[1])
+                text_size:root.size
 
     
 <ScreenControls>:
     BoxLayout:
         orientation: 'horizontal'
         pos: (0, root.height - 60)
-        size_hint: (.5,None)
+        size_hint: (.4,None)
         height: dp(60)
 
-        Button:
+        ButtonTemplate:
             text: "Actions"
-            on_press: root.show_actions()
+            funcToCallOnPress: root.show_actions
+            btnBackground: './Images/Icons/ButtonBackground.JPG'
         ButtonTemplate:
             text: "Settings"
             btnBackground: './Images/Icons/ButtonBackground.JPG'
