@@ -76,6 +76,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.data.bind(gcodeIndex       = self.onIndexMove)
         self.data.bind(gcodeFile        = self.onGcodeFileChange)
         self.data.bind(uploadFlag       = self.onUploadFlagChange)
+        self.update_macro_titles()
     
     def updateConnectionStatus(self, callback, connected):
         
@@ -401,4 +402,8 @@ class FrontPage(Screen, MakesmithInitFuncs):
         Execute user defined macro
         '''
         self.data.gcode_queue.put(self.data.config.get('Maslow Settings', 'macro' + str(index))) 
+
+    def update_macro_titles(self):
+        self.macro1Btn.text = self.data.config.get('Maslow Settings', 'macro1_title')
+        self.macro2Btn.text = self.data.config.get('Maslow Settings', 'macro2_title')
 

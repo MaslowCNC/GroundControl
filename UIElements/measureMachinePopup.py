@@ -8,11 +8,40 @@ from   kivy.properties                           import   ObjectProperty
 from   kivy.properties                           import   StringProperty
 from   UIElements.touchNumberInput               import   TouchNumberInput
 from   kivy.uix.popup                            import   Popup
+import global_variables
 
 class MeasureMachinePopup(GridLayout):
     done   = ObjectProperty(None)
     stepText = StringProperty("Step 1 of 10")
     numberOfTimesTestCutRun = -2
+    
+    def backBtn(self, *args):
+        '''
+        
+        Runs when the back button is pressed
+        
+        '''
+        
+        if self.carousel.index == 10 and self.chooseKinematicsType.text == 'Quadrilateral':                                        #if we're at the test cut for quadrilateral and we want to go back to choosing kinematics type
+            self.carousel.load_slide(self.carousel.slides[8])
+        elif self.carousel.index == 11 and self.chooseKinematicsType.text == 'Triangular':                                      #if we're at the last step and need to go back but but we want to go back to the triangular kinematics test cut
+            self.carousel.load_slide(self.carousel.slides[9])
+        else:
+            self.carousel.load_previous()
+    
+    def fwdBtn(self, *args):
+        '''
+        
+        Runs when the skip button is pressed
+        
+        '''
+        
+        if self.carousel.index == 8 and self.chooseKinematicsType.text == 'Quadrilateral':                                         #If the kinematics type is quadrilateral skip to the quadrilateral test
+            self.carousel.load_slide(self.carousel.slides[10])
+        elif self.carousel.index == 9 and self.chooseKinematicsType.text == 'Triangular':                                       #If we're in the cut test shape triangular and we want to skip to the end
+            self.carousel.load_slide(self.carousel.slides[11])
+        else:
+            self.carousel.load_next()
     
     def slideJustChanged(self):
         
@@ -66,13 +95,14 @@ class MeasureMachinePopup(GridLayout):
             #Cut test shape triangular
             self.data.pushSettings()
             self.stepText = "Step 10 of 10"
+            self.goFwdBtn.disabled = False
             
             #if we're not supposed to be in triangular calibration go to the next page
             if self.chooseKinematicsType.text != 'Triangular':
                 self.carousel.load_next()
         
         if self.carousel.index == 10:
-            #Cut test shape quadratic
+            #Cut test shape quadrilateral
             self.data.pushSettings()
             self.goFwdBtn.disabled = False
             self.stepText = "Step 10 of 10"
@@ -169,13 +199,71 @@ class MeasureMachinePopup(GridLayout):
         Clock.schedule_once(self.updateReviewValuesText, .4)
         
         self.carousel.load_next()
-    
+
+    def textInputPopup(self, target):
+        self.targetWidget = target
+
+        self.popupContent = TouchNumberInput(done=self.dismiss_popup)
+        self._popup = Popup(title="Number of links", content=self.popupContent,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
+        if global_variables._keyboard:
+            global_variables._keyboard.bind(on_key_down=self.keydown_popup)
+            self._popup.bind(on_dismiss=self.ondismiss_popup)
+
+    def dismiss_popup(self):
+        try:
+            tempfloat = float(self.popupContent.textInput.text)
+            self.targetWidget.text = str(tempfloat)  # Update displayed text using standard numeric format
+        except:
+            pass  # If what was entered cannot be converted to a number, leave the value the same
+        self._popup.dismiss()
+
+    def ondismiss_popup(self, event):
+       if global_variables._keyboard:
+           global_variables._keyboard.unbind(on_key_down=self.keydown_popup)
+
+
+    def keydown_popup(self, keyboard, keycode, text, modifiers):
+        if (keycode[1] == '0') or (keycode[1] =='numpad0'):
+            self.popupContent.addText('0')
+        elif (keycode[1] == '1') or (keycode[1] =='numpad1'):
+            self.popupContent.addText('1')
+        elif (keycode[1] == '2') or (keycode[1] =='numpad2'):
+            self.popupContent.addText('2')
+        elif (keycode[1] == '3') or (keycode[1] =='numpad3'):
+            self.popupContent.addText('3')
+        elif (keycode[1] == '4') or (keycode[1] =='numpad4'):
+            self.popupContent.addText('4')
+        elif (keycode[1] == '5') or (keycode[1] =='numpad5'):
+            self.popupContent.addText('5')
+        elif (keycode[1] == '6') or (keycode[1] =='numpad6'):
+            self.popupContent.addText('6')
+        elif (keycode[1] == '7') or (keycode[1] =='numpad7'):
+            self.popupContent.addText('7')
+        elif (keycode[1] == '8') or (keycode[1] =='numpad8'):
+            self.popupContent.addText('8')
+        elif (keycode[1] == '9') or (keycode[1] =='numpad9'):
+            self.popupContent.addText('9')
+        elif (keycode[1] == '.') or (keycode[1] =='numpaddecimal'):
+            self.popupContent.addText('.')
+        elif (keycode[1] == 'backspace'):
+            self.popupContent.textInput.text = self.popupContent.textInput.text[:-1]
+        elif (keycode[1] == 'enter') or (keycode[1] =='numpadenter'):
+            self.popupContent.done()
+        elif (keycode[1] == 'escape'):     # abort entering a number, keep the old number
+            self.popupContent.textInput.text = ''    # clear text so it isn't converted to a number
+            self.popupContent.done()
+        return True     # always swallow keypresses since this is a modal dialog
+
     def countLinks(self):
         print "counting links, dist: "
         
-        dist =  float(self.linksTextInput.text)*6.35
-        
-        print dist
+        try:
+            dist =  float(self.linksTextInput.text)*6.35
+        except:
+            self.carousel.load_next()
+            return
         
         self.data.config.set('Maslow Settings', 'sledWidth', str(dist))
         self.data.config.write()
@@ -221,7 +309,7 @@ class MeasureMachinePopup(GridLayout):
         print "Kinematics set to: "
         print self.chooseKinematicsType.text
         
-        self.data.config.set('Maslow Settings', 'kinematicsType', self.chooseKinematicsType.text)
+        self.data.config.set('Advanced Settings', 'kinematicsType', self.chooseKinematicsType.text)
         self.data.config.write()
         
         if self.chooseKinematicsType.text == 'Triangular':
@@ -403,3 +491,4 @@ class MeasureMachinePopup(GridLayout):
         '''
         self.data.gcode_queue.put("G10 Z0 ")
         self.carousel.load_next()
+

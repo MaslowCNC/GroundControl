@@ -141,10 +141,24 @@ class GroundControlApp(App):
         },
         {
             "type": "string",
+            "title": "Macro 1 Title",
+            "desc": "User defined title for the Macro 1 button",
+            "section": "Maslow Settings",
+            "key": "macro1_title"
+        },
+        {
+            "type": "string",
             "title": "Macro 2",
             "desc": "User defined gcode bound to the Macro 2 button",
             "section": "Maslow Settings",
             "key": "macro2"
+        },
+        {
+            "type": "string",
+            "title": "Macro 2 Title",
+            "desc": "User defined title for the Macro 2 button",
+            "section": "Maslow Settings",
+            "key": "macro2_title"
         }
     ]
     '''
@@ -178,6 +192,13 @@ class GroundControlApp(App):
             "desc": "The number of encoder steps per revolution of the z-axis",
             "section": "Advanced Settings",
             "key": "zEncoderSteps"
+        },
+        {
+            "type": "bool",
+            "title": "Spindle Automation",
+            "desc": "Should the spindle start and stop automatically based on gcode? Leave off for default stepper control.",
+            "section": "Advanced Settings",
+            "key": "zAxisAuto"
         },
         {
             "type": "string",
@@ -358,7 +379,6 @@ class GroundControlApp(App):
         self.nonVisibleWidgets.setUpData(self.data)
         self.frontpage.gcodecanvas.initialize()
         
-        
         '''
         Scheduling
         '''
@@ -378,7 +398,7 @@ class GroundControlApp(App):
         Set the default values for the config sections.
         """
         config.setdefaults('Maslow Settings', {'COMport'         : '',
-                                                 'zAxis'         : 0, 
+                                                 'zAxis'         : 0,
                                                  'zDistPerRot'   : 3.17, 
                                                  'bedWidth'      : 2438.4, 
                                                  'bedHeight'     : 1219.2, 
@@ -389,12 +409,15 @@ class GroundControlApp(App):
                                                  'sledCG'        : 79, 
                                                  'openFile'      : " ",
                                                  'macro1'        : "",
-                                                 'macro2'        : ""})
+                                                 'macro1_title'  : "Macro 1",
+                                                 'macro2'        : "",
+                                                 'macro2_title'  : "Macro 2"})
 
         config.setdefaults('Advanced Settings', {'encoderSteps'       : 8148.0,
                                                  'gearTeeth'          : 10, 
                                                  'chainPitch'         : 6.35,
                                                  'zEncoderSteps'      : 7560.0,
+                                                 'zAxisAuto'          : 0,
                                                  'homeX'              : 0.0,
                                                  'homeY'              : 0.0,
                                                  'truncate'           : 0,
@@ -438,6 +461,9 @@ class GroundControlApp(App):
             
             if (key == "bedHeight" or key == "bedWidth"):
                 self.frontpage.gcodecanvas.drawWorkspace()
+
+            if (key == "macro1_title") or (key == "macro2_title"):
+                self.frontpage.update_macro_titles()
 
         if section == "Advanced Settings":
             
@@ -490,6 +516,7 @@ class GroundControlApp(App):
             +" V" + str(KpV)
             +" W" + str(KiV)
             +" X" + str(KdV)
+            +" Y" + str(self.data.config.get('Advanced Settings', 'zAxisAuto'))
             + " "
         )
         
@@ -678,8 +705,6 @@ class GroundControlApp(App):
             
         except:
             print "Machine Position Report Command Misread Happened Once"
-        
-        
     
 if __name__ == '__main__':
     GroundControlApp().run()
