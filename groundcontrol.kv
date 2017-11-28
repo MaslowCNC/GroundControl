@@ -25,7 +25,6 @@
                 pos: (root.pos[0] + 2*self.width, root.pos[1])
                 text_size:root.size
 
-    
 <ScreenControls>:
     BoxLayout:
         orientation: 'horizontal'
@@ -36,10 +35,8 @@
         ButtonTemplate:
             text: "Actions"
             funcToCallOnPress: root.show_actions
-            btnBackground: './Images/Icons/ButtonBackground.JPG'
         ButtonTemplate:
             text: "Settings"
-            btnBackground: './Images/Icons/ButtonBackground.JPG'
             funcToCallOnPress: app.open_settings
 
 <GcodeCanvas>:
@@ -127,24 +124,24 @@
             ButtonTemplate:
                 btnBackground: './Images/Icons/DownRightArrow.png'
                 funcToCallOnPress: root.downRight
-            Button:
+            ButtonTemplate:
                 text: 'Z-Axis'
-                on_press: root.zAxisPopup()
+                funcToCallOnPress: root.zAxisPopup
             Label:
                 id: moveSpeedInput
-                text: "Dist To \nMove:"
+                text: '[color=7a7a7a]Dist To \nMove:[/color]'
                 multiline: False
             Button:
                 id: moveDistInput
                 text: '100'
                 multiline: False
                 on_press: root.textInputPopup(self)
-            Button:
+            ButtonTemplate:
                 text: root.units
-                on_press: root.switchUnits()
-            Button:
+                funcToCallOnPress: root.switchUnits
+            ButtonTemplate:
                 text: 'Define\nHome'
-                on_release: root.moveOrigin()
+                funcToCallOnPress: root.moveOrigin
 
         GridLayout:
             cols: 3
