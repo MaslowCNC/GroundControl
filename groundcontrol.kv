@@ -97,10 +97,10 @@
             ButtonTemplate:
                 btnBackground: './Images/Icons/UpRightArrow.png'
                 funcToCallOnPress: root.upRight
-            Button:
+            ButtonTemplate:
                 id: macro1Btn
                 text: "Macro 1"
-                on_press: root.macro(1)
+                funcToCallOnPress: lambda:root.macro(1)
             ButtonTemplate:
                 btnBackground: './Images/Icons/LeftArrow.png'
                 funcToCallOnPress: root.left
@@ -110,10 +110,10 @@
             ButtonTemplate:
                 btnBackground: './Images/Icons/RightArrow.png'
                 funcToCallOnPress: root.right
-            Button:
+            ButtonTemplate:
                 id: macro2Btn
                 text: "Macro 2"
-                on_press: root.macro(2)
+                funcToCallOnPress: lambda:root.macro(2)
             ButtonTemplate:
                 btnBackground: './Images/Icons/DownLeftArrow.png'
                 funcToCallOnPress: root.downLeft
@@ -131,11 +131,11 @@
                 color: .476, .476, .476,1
                 text: 'Dist To \nMove:'
                 multiline: False
-            Button:
+            ButtonTemplate:
                 id: moveDistInput
                 text: '100'
                 multiline: False
-                on_press: root.textInputPopup(self)
+                funcToCallOnPress: lambda:root.textInputPopup(self)
             ButtonTemplate:
                 text: root.units
                 funcToCallOnPress: root.switchUnits
@@ -152,10 +152,11 @@
             ButtonTemplate:
                 btnBackground: './Images/Icons/RunGreen.png'
                 funcToCallOnPress: root.startRun
-            Button:
+            ButtonTemplate:
                 id: holdBtn
+                btnBackground: './Images/Icons/HoldYellow.png'
                 text: "HOLD"
-                on_press: root.pause()
+                funcToCallOnPress: root.pause
             ButtonTemplate:
                 btnBackground: './Images/Icons/StopRed.png'
                 funcToCallOnPress: root.stopRun
@@ -165,21 +166,21 @@
             width: dp(300)
             height: dp(30)
             #disabled: not app.data.connectionStatus
-            Button:
+            ButtonTemplate:
                 text: "<Z"
-                on_press: root.moveGcodeZ(-1)
-            Button:
+                funcToCallOnPress: lambda:root.moveGcodeZ(-1)
+            ButtonTemplate:
                 text: "<1"
-                on_press: root.moveGcodeIndex(-1)
+                funcToCallOnPress: lambda:root.moveGcodeIndex(-1)
             ButtonTemplate:
                 btnBackground: './Images/Icons/GoTo.png'
                 funcToCallOnPress: root.gotoLinePopup
-            Button:
+            ButtonTemplate:
                 text: "1>"
-                on_press: root.moveGcodeIndex(1)
-            Button:
+                funcToCallOnPress: lambda:root.moveGcodeIndex(1)
+            ButtonTemplate:
                 text: "Z>"
-                on_press: root.moveGcodeZ(1)
+                funcToCallOnPress: lambda:root.moveGcodeZ(1)
         BoxLayout:
             orentation: 'horizontal'
             size_hint: None, None
