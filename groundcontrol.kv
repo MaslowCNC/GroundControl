@@ -689,7 +689,6 @@
     #Set sprockets to 12 o'clock
     GridLayout:
         cols: 2
-        size_hint: [1,1]
         width: root.width
         height: root.height
         GridLayout:
@@ -720,6 +719,40 @@
                 on_release: root.setZero()
             Label:
     
+<MeasureOutChains>:
+    GridLayout:
+        cols: 2
+        width: root.width
+        height: root.height
+        GridLayout:
+            cols: 1
+            size_hint_x: leftCol
+            Label:
+                text: "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of the right chain on the vertical tooth of the right sprocket\n as shown in the picture below\n\nThe left chain does not need to be moved, it can be left partly extended\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Next\nPressing Next will move the sled to the center of the sheet.\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way"
+                size_hint_x: leftCol
+            GridLayout:
+                cols: 2
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Ready To Calibrate Right Sprocket.jpg"
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Sled Attached.jpg"
+        GridLayout:
+            cols: 1
+            size_hint_x: rightCol
+            Label:
+            Button:
+                text: 'Extend\nLeft Chain'
+                on_release: root.calibrateChainLengths('L')
+            Button:
+                text: 'Extend\nRight Chain'
+                on_release: root.calibrateChainLengths('R')
+            Button:
+                text: 'Stop'
+                on_release: root.stop()
+            Button:
+                text: 'Next'
+                on_release: root.done()
+            Label:
 
 <MeasureMachinePopup>:
     carousel:carousel
@@ -915,36 +948,8 @@
                 Label:
         #measure out chains
         GridLayout:
-            cols: 2
-            GridLayout:
-                cols: 1
-                size_hint_x: leftCol
-                Label:
-                    text: "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of the right chain on the vertical tooth of the right sprocket\n as shown in the picture below\n\nThe left chain does not need to be moved, it can be left partly extended\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Next\nPressing Next will move the sled to the center of the sheet.\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way"
-                    size_hint_x: leftCol
-                GridLayout:
-                    cols: 2
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Ready To Calibrate Right Sprocket.jpg"
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Sled Attached.jpg"
-            GridLayout:
-                cols: 1
-                size_hint_x: rightCol
-                Label:
-                Button:
-                    text: 'Extend\nLeft Chain'
-                    on_release: root.calibrateChainLengths('L')
-                Button:
-                    text: 'Extend\nRight Chain'
-                    on_release: root.calibrateChainLengths('R')
-                Button:
-                    text: 'Stop'
-                    on_release: root.stopCut()
-                Button:
-                    text: 'Next'
-                    on_release: root.finishChainCalibration()
-                Label:
+            cols: 1
+            
         #set z-axis depth
         GridLayout:
             cols: 2
@@ -1117,6 +1122,7 @@
 <CalibrateLengthsPopup>:
     carousel:carousel
     setSprocketsVertical:setSprocketsVertical
+    measureOutChains:measureOutChains
 
     cols: 1
     size: root.size
@@ -1132,35 +1138,9 @@
             SetSprocketsVertical:
                 id: setSprocketsVertical
         GridLayout:
-            cols: 2
-            GridLayout:
-                cols: 1
-                size_hint_x: leftCol
-                Label:
-                    text: "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of each chain on the vertical tooth of each sprocket\n as shown in the picture below. Then press Calibrate Chain Lengths\n\nThe correct length of first the left and then the right chain will be measured out\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way\n\nOnce both chains are finished attach the sled, then press Finish"
-                    size_hint_x: leftCol
-                GridLayout:
-                    cols: 3
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Chain On Left Sprocket.jpg"
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Ready To Calibrate Right Sprocket.jpg"
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Sled Attached.jpg"
-            GridLayout:
-                cols: 1
-                size_hint_x: rightCol
-                Label:
-                Button:
-                    text: 'Calibrate\nChain Lengths'
-                    on_release: root.calibrateChainLengths()
-                Button:
-                    text: 'Stop Motor'
-                    on_release: root.stop()
-                Button:
-                    text: 'Finish'
-                    on_release: root.done()
-                Label:
+            cols: 1
+            MeasureOutChains:
+                id: measureOutChains
 
 <SimulationCanvas>:
     motorSpacingError:motorSpacingError

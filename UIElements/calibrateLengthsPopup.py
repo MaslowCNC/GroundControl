@@ -8,6 +8,7 @@ from   kivy.properties                           import   ObjectProperty
 from   kivy.properties                           import   StringProperty
 from   kivy.uix.popup                            import   Popup
 from   UIElements.setSprocketsVertical           import   SetSprocketsVertical
+from   UIElements.measureOutChains               import   MeasureOutChains
 
 class CalibrateLengthsPopup(GridLayout):
     done   = ObjectProperty(None)
@@ -20,15 +21,8 @@ class CalibrateLengthsPopup(GridLayout):
         
         '''
         self.data = data
-        self.setSprocketsVertical.data = data
-        self.setSprocketsVertical.carousel = self.carousel
-    
-    def stop(self):
-        self.data.quick_queue.put("!") 
-        with self.data.gcode_queue.mutex:
-            self.data.gcode_queue.queue.clear()
-    
-    def calibrateChainLengths(self):
-        self.data.gcode_queue.put("B02 ")
-        
+        self.setSprocketsVertical.data      =  data
+        self.measureOutChains.data          =  data
+        self.setSprocketsVertical.carousel  =  self.carousel
+        self.measureOutChains.done          =  self.done
     
