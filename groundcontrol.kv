@@ -22,8 +22,7 @@
             Label:
                 text: '[color=7a7a7a]' + root.text + '[/color]'
                 markup: True
-                pos: (root.pos[0], root.pos[1])
-                text_size:root.size
+                pos: (root.pos[0] + (root.width - self.width)/2, root.pos[1] + (root.height-self.height)/2)
 
 <ScreenControls>:
     BoxLayout:
@@ -34,10 +33,10 @@
 
         ButtonTemplate:
             text: "Actions"
-            funcToCallOnPress: root.show_actions
+            funcToCallOnRelease: root.show_actions
         ButtonTemplate:
             text: "Settings"
-            funcToCallOnPress: app.open_settings
+            funcToCallOnRelease: app.open_settings
 
 <GcodeCanvas>:
     scatterObject:scatterObject
