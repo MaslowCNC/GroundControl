@@ -116,6 +116,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             filtersparsed = re.sub(r'\(([^)]*)\)','\n',rawfilters) #replace mach3 style gcode comments with newline
             filtersparsed = re.sub(r';([^\n]*)\n','\n',filtersparsed) #replace standard ; initiated gcode comments with newline
             filtersparsed = re.sub(r'\n\n','\n',filtersparsed) #removes blank lines
+            filtersparsed = re.sub(r'([0-9])([GXYZIJFTM]) *','$1 $2',filtersparsed) #condense space runs
             filtersparsed = re.sub(r'  +',' ',filtersparsed) #condense space runs
 
             if self.data.config.getint('Advanced Settings','truncate'):
