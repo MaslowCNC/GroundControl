@@ -129,7 +129,8 @@
                 funcToCallOnPress: root.zAxisPopup
             Label:
                 id: moveSpeedInput
-                text: '[color=7a7a7a]Dist To \nMove:[/color]'
+                color: .476, .476, .476,1
+                text: 'Dist To \nMove:'
                 multiline: False
             Button:
                 id: moveDistInput
@@ -190,31 +191,41 @@
                 cols: 2
                 Label:
                     text: '                   X :'
+                    color: .476, .476, .476,1
                 Label:
                     text: root.xReadoutPos
+                    color: .476, .476, .476,1
                 Label:
                     text: '                   Y : '
+                    color: .476, .476, .476,1
                 Label:
                     text: root.yReadoutPos
+                    color: .476, .476, .476,1
                 Label:
                     text: '                   Z : '
+                    color: .476, .476, .476,1
                 Label:
                     text: root.zReadoutPos
+                    color: .476, .476, .476,1
             GridLayout:
                 cols: 1
                 Label:
                     text: "Percent Complete/Line:"
                     font_size: '11sp'
+                    color: .476, .476, .476,1
                 Label:
                     text: root.percentComplete
+                    color: .476, .476, .476,1
                 Label:
                     text: root.gcodeLineNumber
+                    color: .476, .476, .476,1
         Label:
             text: root.connectionStatus
             size_hint: None, None
             width: dp(300)
             height: dp(30)
             disabled: False
+            color: .476, .476, .476,1
         ScrollableLabel:
             id: textconsole
             size: dp(300), dp(200)
@@ -274,6 +285,7 @@
         height: self.texture_size[1]
         text_size: self.width, None
         text: root.text
+        color: .476, .476, .476,1
 
 <ConnectMenu>:
     GridLayout:
