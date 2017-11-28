@@ -741,11 +741,11 @@
             size_hint_x: rightCol
             Label:
             Button:
-                text: 'Extend\nLeft Chain'
+                text: 'Extend\nChains'
                 on_release: root.calibrateChainLengths('L')
-            Button:
-                text: 'Extend\nRight Chain'
-                on_release: root.calibrateChainLengths('R')
+            #Button:
+            #    text: 'Extend\nRight Chain'
+            #    on_release: root.calibrateChainLengths('R')
             Button:
                 text: 'Stop'
                 on_release: root.stop()
