@@ -685,6 +685,42 @@
             text: "Raise"
             on_release: root.zOut()
 
+<SetSprocketsVertical>:
+    #Set sprockets to 12 o'clock
+    GridLayout:
+        cols: 2
+        size_hint: [1,1]
+        width: root.width
+        height: root.height
+        GridLayout:
+            cols: 1
+            Label:
+                text: "Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up.\nWhen you are ready, press Set Zero"
+                size_hint_x: leftCol
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.jpg"
+        GridLayout:
+            cols: 1
+            size_hint_x: rightCol
+            Label:
+            Button:
+                text: 'Turn Left Sprocket\n1 degree CCW'
+                on_release: root.LeftCCW()
+            Button:
+                text: 'Turn Left Sprocket\n1 degree CW'
+                on_release: root.LeftCW()
+            Button:
+                text: 'Turn Right Sprocket\n1 degree CCW'
+                on_release: root.RightCCW()
+            Button:
+                text: 'Turn Right Sprocket\n1 degree CW'
+                on_release: root.RightCW()
+            Button:
+                text: 'Set Zero'
+                on_release: root.setZero()
+            Label:
+    
+
 <MeasureMachinePopup>:
     carousel:carousel
     linksTextInput:linksTextInput
@@ -749,35 +785,8 @@
                 Label:
         #Set sprockets to 12 o'clock
         GridLayout:
-            cols: 2
-            GridLayout:
-                cols: 1
-                Label:
-                    text: "Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up.\nWhen you are ready, press Set Zero"
-                    size_hint_x: leftCol
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.jpg"
-            GridLayout:
-                cols: 1
-                size_hint_x: rightCol
-                Label:
-                Button:
-                    text: 'Turn Left Sprocket\n1 degree CCW'
-                    on_release: root.LeftCCW()
-                Button:
-                    text: 'Turn Left Sprocket\n1 degree CW'
-                    on_release: root.LeftCW()
-                Button:
-                    text: 'Turn Right Sprocket\n1 degree CCW'
-                    on_release: root.RightCCW()
-                Button:
-                    text: 'Turn Right Sprocket\n1 degree CW'
-                    on_release: root.RightCW()
-                Button:
-                    text: 'Set Zero'
-                    on_release: root.setZero()
-                Label:
-        #Measure spacing between motors
+            cols: 1
+            SetSprocketsVertical:
         GridLayout:
             cols: 2
             GridLayout:
@@ -924,8 +933,11 @@
                 size_hint_x: rightCol
                 Label:
                 Button:
-                    text: 'Calibrate\nChain Lengths'
-                    on_release: root.calibrateChainLengths()
+                    text: 'Extend\nLeft Chain'
+                    on_release: root.calibrateChainLengths('L')
+                Button:
+                    text: 'Extend\nRight Chain'
+                    on_release: root.calibrateChainLengths('R')
                 Button:
                     text: 'Stop'
                     on_release: root.stopCut()
@@ -1104,6 +1116,7 @@
     
 <CalibrateLengthsPopup>:
     carousel:carousel
+    setSprocketsVertical:setSprocketsVertical
 
     cols: 1
     size: root.size
@@ -1115,37 +1128,9 @@
         #:set leftCol .8
         #:set rightCol .2
         GridLayout:
-            cols: 2
-            GridLayout:
-                cols: 1
-                Label:
-                    text: "Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up.\nWhen you are ready, press Set Zero"
-                    size_hint_x: leftCol
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.jpg"
-            GridLayout:
-                cols: 1
-                size_hint_x: rightCol
-                Label:
-                Button:
-                    text: 'Turn Left Sprocket\n1 degree CCW'
-                    on_release: root.LeftCCW()
-                Button:
-                    text: 'Turn Left Sprocket\n1 degree CW'
-                    on_release: root.LeftCW()
-                Button:
-                    text: 'Turn Right Sprocket\n1 degree CCW'
-                    on_release: root.RightCCW()
-                Button:
-                    text: 'Turn Right Sprocket\n1 degree CW'
-                    on_release: root.RightCW()
-                Button:
-                    text: 'Set Zero'
-                    on_release: root.setZero()
-                Button:
-                    text: 'Close'
-                    on_release: root.done()
-                Label:
+            cols: 1
+            SetSprocketsVertical:
+                id: setSprocketsVertical
         GridLayout:
             cols: 2
             GridLayout:
