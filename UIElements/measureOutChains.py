@@ -8,7 +8,6 @@ class MeasureOutChains(Widget):
     
     '''
     data              =  ObjectProperty(None) #set externally
-    done              =  ObjectProperty(None) #set externally
     
     def stop(self):
         self.data.quick_queue.put("!") 
@@ -18,3 +17,7 @@ class MeasureOutChains(Widget):
     def calibrateChainLengths(self, direction):
         print direction
         self.data.gcode_queue.put("B02 ")
+    
+    def next(self):
+        self.data.gcode_queue.put("B15 ")
+        self.carousel.load_next()

@@ -751,7 +751,7 @@
                 on_release: root.stop()
             Button:
                 text: 'Next'
-                on_release: root.done()
+                on_release: root.next()
             Label:
 
 <MeasureMachinePopup>:
@@ -1141,6 +1141,24 @@
             cols: 1
             MeasureOutChains:
                 id: measureOutChains
+        #finish
+        GridLayout:
+            cols: 2
+            width: root.width
+            height: root.height
+            GridLayout:
+                cols: 1
+                Label:
+                    text: "The machine now has an accurate reading of the lengths of the chains.\n\nPress finish to close the popup"
+                    size_hint_x: leftCol
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Finish'
+                    on_release: root.done()
+                Label:
 
 <SimulationCanvas>:
     motorSpacingError:motorSpacingError

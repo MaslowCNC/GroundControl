@@ -21,8 +21,10 @@ class CalibrateLengthsPopup(GridLayout):
         
         '''
         self.data = data
+        
         self.setSprocketsVertical.data      =  data
-        self.measureOutChains.data          =  data
         self.setSprocketsVertical.carousel  =  self.carousel
-        self.measureOutChains.done          =  self.done
+        
+        self.measureOutChains.data          =  data
+        self.measureOutChains.carousel      =  self.carousel
     
