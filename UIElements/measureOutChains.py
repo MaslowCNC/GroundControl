@@ -16,6 +16,7 @@ class MeasureOutChains(Widget):
             self.data.gcode_queue.queue.clear()
     
     def calibrateChainLengths(self, direction):
+        cmdString = "B02 " + str(direction) + " "
         self.data.gcode_queue.put("B02 ")
     
     def next(self):
