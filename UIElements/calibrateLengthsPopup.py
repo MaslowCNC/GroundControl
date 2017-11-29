@@ -27,4 +27,5 @@ class CalibrateLengthsPopup(GridLayout):
         
         self.measureOutChains.data          =  data
         self.measureOutChains.carousel      =  self.carousel
+        self.measureOutChains.text          = "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of each chain on the vertical tooth of each sprocket\n as shown in the picture below. Then press Calibrate Chain Lengths\n\nThe correct length of first the left and then the right chain will be measured out\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way\n\nOnce both chains are finished attach the sled, then press Next\n\nPressing Next will move the sled to the center of the work area"
     

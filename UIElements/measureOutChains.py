@@ -1,5 +1,5 @@
 from kivy.uix.widget                      import   Widget
-from kivy.properties                      import   ObjectProperty
+from kivy.properties                      import   ObjectProperty, StringProperty
 
 class MeasureOutChains(Widget):
     '''
@@ -8,6 +8,7 @@ class MeasureOutChains(Widget):
     
     '''
     data              =  ObjectProperty(None) #set externally
+    text              =  StringProperty("")
     
     def stop(self):
         self.data.quick_queue.put("!") 
