@@ -4,7 +4,7 @@ from kivy.properties                      import   ObjectProperty, StringPropert
 class MeasureOutChains(Widget):
     '''
     
-    Provides a standard interface for making both sprockets point vertically
+    Provides a standard interface for measuring out a known length of both chains
     
     '''
     data              =  ObjectProperty(None) #set externally
@@ -16,7 +16,6 @@ class MeasureOutChains(Widget):
             self.data.gcode_queue.queue.clear()
     
     def calibrateChainLengths(self, direction):
-        print direction
         self.data.gcode_queue.put("B02 ")
     
     def next(self):

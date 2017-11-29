@@ -22,8 +22,6 @@ class MeasureMachinePopup(GridLayout):
         
         '''
         
-        print "THIS BIT RAN"
-        
         self.data = data
         
         self.setSprocketsVertical.data      =  data
