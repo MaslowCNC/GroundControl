@@ -776,6 +776,7 @@
     cutBtnT:cutBtnT
     setSprocketsVertical:setSprocketsVertical
     measureOutChains:measureOutChains
+    testCutPosSlider:testCutPosSlider
     
     cols: 1
     size: root.size
@@ -1040,30 +1041,42 @@
             GridLayout:
                 cols: 1
                 size_hint_x: rightCol
-                Label:
-                Label:
-                    text: "Measurement:"
-                TextInput:
-                    id:triangleMeasure
-                    disabled: True
-                Button:
-                    text: "MM"
-                    on_release: root.switchUnits()
-                    id: unitsBtnT
-                    disabled: True
-                Button:
-                    text: "Enter Value"
-                    on_release: root.enterTestPaternValuesTriangular()
-                    id: enterValuesT
-                    disabled: True
-                Button:
-                    text: "Cut Test\nPattern"
-                    id: cutBtnT
-                    on_release: root.cutTestPaternTriangular()
-                Button:
-                    text: "Stop\nCut"
-                    on_release: root.stopCut()
-                Label:
+                GridLayout:
+                    cols: 2
+                    GridLayout:
+                        cols: 1
+                        size_hint_x: .8
+                        Label:
+                        Label:
+                            text: "Measurement:"
+                        TextInput:
+                            id:triangleMeasure
+                            disabled: True
+                        Button:
+                            text: "MM"
+                            on_release: root.switchUnits()
+                            id: unitsBtnT
+                            disabled: True
+                        Button:
+                            text: "Enter Value"
+                            on_release: root.enterTestPaternValuesTriangular()
+                            id: enterValuesT
+                            disabled: True
+                        Button:
+                            text: "Cut Test\nPattern"
+                            id: cutBtnT
+                            on_release: root.cutTestPaternTriangular()
+                        Button:
+                            text: "Stop\nCut"
+                            on_release: root.stopCut()
+                        Label:
+                    Slider:
+                        orientation: 'vertical'
+                        min: -400
+                        max:  400
+                        value: -400
+                        id: testCutPosSlider
+                        size_hint_x: .2
         #cut test shape Quadrilateral
         GridLayout:
             cols: 2

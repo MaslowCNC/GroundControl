@@ -353,7 +353,9 @@ class MeasureMachinePopup(GridLayout):
         self.data.gcode_queue.put("G17 ")
 
         #(defines the center). Moves up with each attempt
-        self.data.gcode_queue.put("G0 X" +  str(18*self.numberOfTimesTestCutRun) + " Y" + str(-400 + 18*self.numberOfTimesTestCutRun) + "  ")
+        self.data.gcode_queue.put("G0 X0 Y" + str(self.testCutPosSlider.value) + "  ")
+        
+        self.testCutPosSlider.value = self.testCutPosSlider.value + 18 #increment the starting spot
         
         self.data.gcode_queue.put("G91 ")   #Switch to relative mode
 
