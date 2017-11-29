@@ -15,6 +15,23 @@ class MeasureMachinePopup(GridLayout):
     stepText = StringProperty("Step 1 of 10")
     numberOfTimesTestCutRun = -2
     
+    def establishDataConnection(self, data):
+        '''
+        
+        Sets up the data connection between this popup and the shared data object
+        
+        '''
+        
+        print "THIS BIT RAN"
+        
+        self.data = data
+        
+        self.setSprocketsVertical.data      =  data
+        self.setSprocketsVertical.carousel  =  self.carousel
+        
+        self.measureOutChains.data          =  data
+        self.measureOutChains.carousel      =  self.carousel
+    
     def backBtn(self, *args):
         '''
         
@@ -222,7 +239,6 @@ class MeasureMachinePopup(GridLayout):
     def ondismiss_popup(self, event):
        if global_variables._keyboard:
            global_variables._keyboard.unbind(on_key_down=self.keydown_popup)
-
 
     def keydown_popup(self, keyboard, keycode, text, modifiers):
         if (keycode[1] == '0') or (keycode[1] =='numpad0'):

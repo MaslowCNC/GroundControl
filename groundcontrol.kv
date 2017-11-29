@@ -771,6 +771,8 @@
     unitsBtnT:unitsBtnT
     enterValuesT:enterValuesT
     cutBtnT:cutBtnT
+    setSprocketsVertical:setSprocketsVertical
+    measureOutChains:measureOutChains
     
     cols: 1
     size: root.size
@@ -820,6 +822,7 @@
         GridLayout:
             cols: 1
             SetSprocketsVertical:
+                id: setSprocketsVertical
         GridLayout:
             cols: 2
             GridLayout:
@@ -949,7 +952,8 @@
         #measure out chains
         GridLayout:
             cols: 1
-            
+            MeasureOutChains:
+                id: measureOutChains
         #set z-axis depth
         GridLayout:
             cols: 2
