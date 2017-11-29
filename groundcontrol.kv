@@ -720,6 +720,8 @@
             Label:
     
 <MeasureOutChains>:
+    leftChainBtn:leftChainBtn
+    rightChainBtn:rightChainBtn
     GridLayout:
         cols: 2
         width: root.width
@@ -741,11 +743,13 @@
             size_hint_x: rightCol
             Label:
             Button:
-                text: 'Extend\nChains'
-                on_release: root.calibrateChainLengths('L')
-            #Button:
-            #    text: 'Extend\nRight Chain'
-            #    on_release: root.calibrateChainLengths('R')
+                text: '   Extend\nLeft Chain'
+                on_release: root.startCountDownL()
+                id: leftChainBtn
+            Button:
+                text: '   Extend\nRight Chain'
+                on_release: root.startCountDownR()
+                id: rightChainBtn
             Button:
                 text: 'Stop'
                 on_release: root.stop()
