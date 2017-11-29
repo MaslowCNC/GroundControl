@@ -15,6 +15,22 @@ class MeasureMachinePopup(GridLayout):
     stepText = StringProperty("Step 1 of 10")
     numberOfTimesTestCutRun = -2
     
+    def establishDataConnection(self, data):
+        '''
+        
+        Sets up the data connection between this popup and the shared data object
+        
+        '''
+        
+        self.data = data
+        
+        self.setSprocketsVertical.data      =  data
+        self.setSprocketsVertical.carousel  =  self.carousel
+        
+        self.measureOutChains.data          =  data
+        self.measureOutChains.carousel      =  self.carousel
+        self.measureOutChains.text          =  "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of the right chain on the vertical tooth of the right sprocket\n as shown in the picture below\n\nThe left chain does not need to be moved, it can be left partly extended\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Next\nPressing Next will move the sled to the center of the sheet.\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way"
+    
     def backBtn(self, *args):
         '''
         
@@ -222,7 +238,6 @@ class MeasureMachinePopup(GridLayout):
     def ondismiss_popup(self, event):
        if global_variables._keyboard:
            global_variables._keyboard.unbind(on_key_down=self.keydown_popup)
-
 
     def keydown_popup(self, keyboard, keycode, text, modifiers):
         if (keycode[1] == '0') or (keycode[1] =='numpad0'):
