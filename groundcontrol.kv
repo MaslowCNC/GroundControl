@@ -770,7 +770,6 @@
     unitsBtn:unitsBtn
     enterValues:enterValues
     zAxisActiveSwitch:zAxisActiveSwitch
-    chooseKinematicsType:chooseKinematicsType
     triangleMeasure: triangleMeasure
     unitsBtnT:unitsBtnT
     enterValuesT:enterValuesT
@@ -1017,15 +1016,12 @@
                 cols: 1
                 size_hint_x: rightCol
                 Label:
-                Label:
-                    text: "Please Choose\nAn Option"
-                Spinner:
-                    text: 'Quadrilateral' 
-                    values: ('Quadrilateral', 'Triangular')
-                    id: chooseKinematicsType
                 Button:
-                    text: 'Next'
-                    on_release: root.setKinematicsType()
+                    text: 'Quadrilateral'
+                    on_release: root.setKinematicsType('Quadrilateral')
+                Button:
+                    text: 'Triangular'
+                    on_release: root.setKinematicsType('Triangular')
                 Label:
         #cut test shape Triangular
         GridLayout:

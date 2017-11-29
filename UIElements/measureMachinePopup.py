@@ -11,9 +11,10 @@ from   kivy.uix.popup                            import   Popup
 import global_variables
 
 class MeasureMachinePopup(GridLayout):
-    done   = ObjectProperty(None)
-    stepText = StringProperty("Step 1 of 10")
-    numberOfTimesTestCutRun = -2
+    done                         = ObjectProperty(None)
+    stepText                     = StringProperty("Step 1 of 10")
+    numberOfTimesTestCutRun      = -2
+    kinematicsType               = 'Quadrilateral'
     
     def establishDataConnection(self, data):
         '''
@@ -38,9 +39,9 @@ class MeasureMachinePopup(GridLayout):
         
         '''
         
-        if self.carousel.index == 10 and self.chooseKinematicsType.text == 'Quadrilateral':                                        #if we're at the test cut for quadrilateral and we want to go back to choosing kinematics type
+        if self.carousel.index == 10 and self.kinematicsType == 'Quadrilateral':                                        #if we're at the test cut for quadrilateral and we want to go back to choosing kinematics type
             self.carousel.load_slide(self.carousel.slides[8])
-        elif self.carousel.index == 11 and self.chooseKinematicsType.text == 'Triangular':                                      #if we're at the last step and need to go back but but we want to go back to the triangular kinematics test cut
+        elif self.carousel.index == 11 and self.kinematicsType == 'Triangular':                                      #if we're at the last step and need to go back but but we want to go back to the triangular kinematics test cut
             self.carousel.load_slide(self.carousel.slides[9])
         else:
             self.carousel.load_previous()
@@ -52,9 +53,9 @@ class MeasureMachinePopup(GridLayout):
         
         '''
         
-        if self.carousel.index == 8 and self.chooseKinematicsType.text == 'Quadrilateral':                                         #If the kinematics type is quadrilateral skip to the quadrilateral test
+        if self.carousel.index == 8 and self.kinematicsType == 'Quadrilateral':                                         #If the kinematics type is quadrilateral skip to the quadrilateral test
             self.carousel.load_slide(self.carousel.slides[10])
-        elif self.carousel.index == 9 and self.chooseKinematicsType.text == 'Triangular':                                       #If we're in the cut test shape triangular and we want to skip to the end
+        elif self.carousel.index == 9 and self.kinematicsType == 'Triangular':                                       #If we're in the cut test shape triangular and we want to skip to the end
             self.carousel.load_slide(self.carousel.slides[11])
         else:
             self.carousel.load_next()
@@ -114,7 +115,7 @@ class MeasureMachinePopup(GridLayout):
             self.goFwdBtn.disabled = False
             
             #if we're not supposed to be in triangular calibration go to the next page
-            if self.chooseKinematicsType.text != 'Triangular':
+            if self.kinematicsType != 'Triangular':
                 self.carousel.load_next()
         
         if self.carousel.index == 10:
@@ -124,7 +125,7 @@ class MeasureMachinePopup(GridLayout):
             self.stepText = "Step 10 of 10"
             
             #if we're not supposed to be in quadratic calibration go to finished
-            if self.chooseKinematicsType.text == 'Triangular':
+            if self.kinematicsType == 'Triangular':
                 self.carousel.load_next()
         
         if self.carousel.index == 11:
@@ -315,19 +316,21 @@ class MeasureMachinePopup(GridLayout):
         self.data.gcode_queue.put("B15 ")
         self.carousel.load_next()
     
-    def setKinematicsType(self, *args):
+    def setKinematicsType(self, kinematicsType, *args):
         '''
         
         Update kinematics to the value shown in the drop down and move to the next step
         
         '''
-        print "Kinematics set to: "
-        print self.chooseKinematicsType.text
+        self.kinematicsType = kinematicsType
         
-        self.data.config.set('Advanced Settings', 'kinematicsType', self.chooseKinematicsType.text)
+        print "Kinematics set to: "
+        print self.kinematicsType
+        
+        self.data.config.set('Advanced Settings', 'kinematicsType', self.kinematicsType)
         self.data.config.write()
         
-        if self.chooseKinematicsType.text == 'Triangular':
+        if self.kinematicsType == 'Triangular':
             #Set up a good initial guess for the radius
             print "Rotation radius set to 260"
             self.data.config.set('Advanced Settings', 'rotationRadius', 260)
