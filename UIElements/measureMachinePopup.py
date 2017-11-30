@@ -331,10 +331,15 @@ class MeasureMachinePopup(GridLayout):
         self.data.config.write()
         
         if self.kinematicsType == 'Triangular':
-            #Set up a good initial guess for the radius
-            print "Rotation radius set to 260"
-            self.data.config.set('Advanced Settings', 'rotationRadius', 260)
-            self.data.config.write()
+             try:
+             	#Get the value if it's already there...
+                 rotationRadius = self.data.config.get('Advanced Settings', 'rotationRadius')
+                 print "Rotation radius is " + str(rotationRadius)
+            except:
+                #Set up a good initial guess for the radius
+                print "Rotation radius set to 260"
+                self.data.config.set('Advanced Settings', 'rotationRadius', 260)
+                self.data.config.write()
             self.carousel.load_next()
         else:
             
