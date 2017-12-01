@@ -427,12 +427,12 @@ class GroundControlApp(App):
                                                  'enablePosPIDValues' : 0,
                                                  'KpPos'              : 1300,
                                                  'KiPos'              : 0,
-                                                 'KdPos'              : 30,
+                                                 'KdPos'              : 34,
                                                  'propWeight'         : 1,
                                                  'enableVPIDValues'   : 0,
-                                                 'KpV'                : 8,
+                                                 'KpV'                : 7,
                                                  'KiV'                : 0,
-                                                 'KdV'                : .3})
+                                                 'KdV'                : .28})
         
         config.setdefaults('Ground Control Settings', {'centerCanvasOnResize': 0,
                                                  'zoomIn': "pageup",
@@ -488,7 +488,7 @@ class GroundControlApp(App):
         else:
             KpPos = 1300
             KiPos = 0
-            KdPos = 30
+            KdPos = 34
             propWeight = 1
         
         if int(self.data.config.get('Advanced Settings', 'enableVPIDValues')) == 1:
@@ -496,9 +496,9 @@ class GroundControlApp(App):
             KiV = float(self.data.config.get('Advanced Settings', 'KiV'))
             KdV = float(self.data.config.get('Advanced Settings', 'KdV'))
         else:
-            KpV = 8
+            KpV = 7
             KiV = 0
-            KdV = .3
+            KdV = .28
         
         
         
