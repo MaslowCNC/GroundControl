@@ -39,7 +39,7 @@ class MeasureOutChains(Widget):
             Clock.schedule_once(self.countingDownL, 1)
         else:
             self.leftChainBtn.text = '   Extend\nLeft Chain'
-            self.data.gcode_queue.put("B02 L ")
+            self.data.gcode_queue.put("B02 L1 R0 ")
     
     '''
     Right Chain
@@ -60,4 +60,4 @@ class MeasureOutChains(Widget):
             Clock.schedule_once(self.countingDownR, 1)
         else:
             self.rightChainBtn.text = '   Extend\nRight Chain'
-            self.data.gcode_queue.put("B02 R ")
+            self.data.gcode_queue.put("B02 L0 R1 ")
