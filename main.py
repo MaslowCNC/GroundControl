@@ -126,6 +126,14 @@ class GroundControlApp(App):
             "key": "zDistPerRot"
         },
         {
+            "type": "options",
+            "title": "Color Scheme",
+            "desc": "Switch between the traditional color scheme and the high visibility color scheme. Restarting GC is needed for this change to take effect",
+            "options": ["Normal", "High Vis"],
+            "section": "Maslow Settings",
+            "key": "colorScheme"
+        },
+        {
             "type": "string",
             "title": "Open File",
             "desc": "The path to the open file",
@@ -408,6 +416,7 @@ class GroundControlApp(App):
                                                  'sledWidth'     : 310, 
                                                  'sledHeight'    : 139, 
                                                  'sledCG'        : 79, 
+                                                 'colorScheme'   : "Normal",
                                                  'openFile'      : " ",
                                                  'macro1'        : "",
                                                  'macro1_title'  : "Macro 1",
