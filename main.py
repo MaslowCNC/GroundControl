@@ -425,14 +425,14 @@ class GroundControlApp(App):
                                                  'kinematicsType'     : 'Quadrilateral',
                                                  'rotationRadius'     : '100',
                                                  'enablePosPIDValues' : 0,
-                                                 'KpPos'              : 1100,
+                                                 'KpPos'              : 1300,
                                                  'KiPos'              : 0,
-                                                 'KdPos'              : 0,
+                                                 'KdPos'              : 34,
                                                  'propWeight'         : 1,
                                                  'enableVPIDValues'   : 0,
-                                                 'KpV'                : 52,
+                                                 'KpV'                : 7,
                                                  'KiV'                : 0,
-                                                 'KdV'                : 0})
+                                                 'KdV'                : .28})
         
         config.setdefaults('Ground Control Settings', {'centerCanvasOnResize': 0,
                                                  'zoomIn': "pageup",
@@ -486,9 +486,9 @@ class GroundControlApp(App):
             KdPos = float(self.data.config.get('Advanced Settings', 'KdPos'))
             propWeight = float(self.data.config.get('Advanced Settings', 'propWeight'))
         else:
-            KpPos = 1100
+            KpPos = 1300
             KiPos = 0
-            KdPos = 0
+            KdPos = 34
             propWeight = 1
         
         if int(self.data.config.get('Advanced Settings', 'enableVPIDValues')) == 1:
@@ -496,9 +496,9 @@ class GroundControlApp(App):
             KiV = float(self.data.config.get('Advanced Settings', 'KiV'))
             KdV = float(self.data.config.get('Advanced Settings', 'KdV'))
         else:
-            KpV = 52
+            KpV = 7
             KiV = 0
-            KdV = 0
+            KdV = .28
         
         
         
