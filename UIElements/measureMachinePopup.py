@@ -331,8 +331,8 @@ class MeasureMachinePopup(GridLayout):
         self.data.config.write()
         
         if self.kinematicsType == 'Triangular':
-             try:
-             	#Get the value if it's already there...
+            try:
+                #Get the value if it's already there...
                  rotationRadius = self.data.config.get('Advanced Settings', 'rotationRadius')
                  print "Rotation radius is " + str(rotationRadius)
             except:
