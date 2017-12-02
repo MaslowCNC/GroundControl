@@ -12,6 +12,7 @@ from DataStructures.makesmithInitFuncs         import MakesmithInitFuncs
 from kivy.uix.popup                            import Popup
 from UIElements.touchNumberInput               import TouchNumberInput
 from UIElements.zAxisPopupContent              import ZAxisPopupContent
+from DataStructures.data                       import Data
 import re
 import global_variables
 
@@ -38,15 +39,34 @@ class FrontPage(Screen, MakesmithInitFuncs):
     stepsizeval  = 0
     zStepSizeVal = .1
     
-    consoleText = StringProperty(" ")
+    consoleText  = StringProperty(" ")
     
     units = StringProperty("MM")
     gcodeLineNumber = StringProperty('0')
+    
+    data         = Data()
     
     
     def __init__(self, data, **kwargs):
         super(FrontPage, self).__init__(**kwargs)
         self.data = data
+        
+        self.upLeftArrow.btnBackground          = self.data.iconPath + 'UpLeftArrow.png'
+        self.upArrow.btnBackground              = self.data.iconPath + 'UpArrow.png'
+        self.upRightArrow.btnBackground         = self.data.iconPath + 'UpRightArrow.png'
+        self.leftArrow.btnBackground            = self.data.iconPath + 'LeftArrow.png'
+        self.home.btnBackground                 = self.data.iconPath + 'Home.png'
+        self.rightArrow.btnBackground           = self.data.iconPath + 'RightArrow.png'
+        self.downLeftArrow.btnBackground        = self.data.iconPath + 'DownLeftArrow.png'
+        self.downArrow.btnBackground            = self.data.iconPath + 'DownArrow.png'
+        self.downRightArrow.btnBackground       = self.data.iconPath + 'DownRightArrow.png'
+        
+        
+        self.run.btnBackground                  = self.data.iconPath + 'HoldYellow.png'
+        self.holdBtn.btnBackground              = self.data.iconPath + 'RunGreen.png'
+        self.stopBtn.btnBackground              = self.data.iconPath + 'StopRed.png'
+        
+        self.goTo.btnBackground                 = self.data.iconPath + 'GoTo.png'
     
     def buildReadoutString(self, value):
         '''

@@ -129,7 +129,7 @@ class GroundControlApp(App):
             "type": "options",
             "title": "Color Scheme",
             "desc": "Switch between the traditional color scheme and the high visibility color scheme. Restarting GC is needed for this change to take effect",
-            "options": ["Normal", "High Vis"],
+            "options": ["Normal", "HighVis"],
             "section": "Maslow Settings",
             "key": "colorScheme"
         },
@@ -352,11 +352,20 @@ class GroundControlApp(App):
     '''
     
     def build(self):
-        Window.maximize()
-        Window.clearcolor = (1, 1, 1, 1)
         
         interface       =  FloatLayout()
         self.data       =  Data()
+        
+        if self.config.get('Maslow Settings', 'colorScheme') == 'Normal':
+            self.data.iconPath = './Images/Icons/normal/'
+            Window.clearcolor = (1, 1, 1, 1)
+        elif self.config.get('Maslow Settings', 'colorScheme') == 'HighVis':
+            self.data.iconPath = './Images/Icons/highvis/'
+            Window.clearcolor = (0, 0, 0, 1)
+        
+        
+        Window.maximize()
+        
         
         self.frontpage = FrontPage(self.data, name='FrontPage')
         interface.add_widget(self.frontpage)
@@ -378,7 +387,6 @@ class GroundControlApp(App):
         offsetY = float(self.config.get('Advanced Settings', 'homeY'))
         self.data.gcodeShift = [offsetX,offsetY]
         self.data.config  = self.config
-        
         
         '''
         Initializations

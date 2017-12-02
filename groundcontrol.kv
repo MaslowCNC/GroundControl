@@ -75,6 +75,21 @@
     holdBtn:holdBtn
     macro1Btn:macro1Btn
     macro2Btn:macro2Btn
+    
+    upLeftArrow:upLeftArrow
+    upArrow:upArrow
+    upRightArrow:upRightArrow
+    leftArrow:leftArrow
+    home:home
+    rightArrow:rightArrow
+    downLeftArrow:downLeftArrow
+    downArrow:downArrow
+    downRightArrow:downRightArrow
+    
+    run:run
+    stopBtn:stopBtn
+    
+    goTo:goTo
 
 
     GcodeCanvas:
@@ -89,39 +104,39 @@
             height: dp(60*4)
             #disabled: not app.data.connectionStatus
             ButtonTemplate:
-                btnBackground: './Images/Icons/UpLeftArrow.png'
+                id: upLeftArrow 
                 funcToCallOnPress: root.upLeft
             ButtonTemplate:
-                btnBackground: './Images/Icons/UpArrow.png'
+                id: upArrow
                 funcToCallOnPress: root.up
             ButtonTemplate:
-                btnBackground: './Images/Icons/UpRightArrow.png'
+                id: upRightArrow
                 funcToCallOnPress: root.upRight
             ButtonTemplate:
                 id: macro1Btn
                 text: "Macro 1"
                 funcToCallOnPress: lambda:root.macro(1)
             ButtonTemplate:
-                btnBackground: './Images/Icons/LeftArrow.png'
+                id: leftArrow
                 funcToCallOnPress: root.left
             ButtonTemplate:
-                btnBackground: './Images/Icons/HomeArrow.png'
+                id: home
                 funcToCallOnPress: root.home
             ButtonTemplate:
-                btnBackground: './Images/Icons/RightArrow.png'
+                id: rightArrow
                 funcToCallOnPress: root.right
             ButtonTemplate:
                 id: macro2Btn
                 text: "Macro 2"
                 funcToCallOnPress: lambda:root.macro(2)
             ButtonTemplate:
-                btnBackground: './Images/Icons/DownLeftArrow.png'
+                id: downLeftArrow
                 funcToCallOnPress: root.downLeft
             ButtonTemplate:
-                btnBackground: './Images/Icons/DownArrow.png'
+                id: downArrow
                 funcToCallOnPress: root.down
             ButtonTemplate:
-                btnBackground: './Images/Icons/DownRightArrow.png'
+                id: downRightArrow
                 funcToCallOnPress: root.downRight
             ButtonTemplate:
                 text: 'Z-Axis'
@@ -150,15 +165,14 @@
             height: dp(60)
             #disabled: not app.data.connectionStatus
             ButtonTemplate:
-                btnBackground: './Images/Icons/RunGreen.png'
+                id: run
                 funcToCallOnPress: root.startRun
             ButtonTemplate:
                 id: holdBtn
-                btnBackground: './Images/Icons/HoldYellow.png'
                 text: "HOLD"
                 funcToCallOnPress: root.pause
             ButtonTemplate:
-                btnBackground: './Images/Icons/StopRed.png'
+                id: stopBtn
                 funcToCallOnPress: root.stopRun
         GridLayout:
             cols: 5
@@ -173,7 +187,8 @@
                 text: "<1"
                 funcToCallOnPress: lambda:root.moveGcodeIndex(-1)
             ButtonTemplate:
-                btnBackground: './Images/Icons/GoTo.png'
+                id: goTo
+                text: 'GoTo'
                 funcToCallOnPress: root.gotoLinePopup
             ButtonTemplate:
                 text: "1>"
