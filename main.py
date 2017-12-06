@@ -194,6 +194,13 @@ class GroundControlApp(App):
             "key": "zEncoderSteps"
         },
         {
+            "type": "bool",
+            "title": "Spindle Automation",
+            "desc": "Should the spindle start and stop automatically based on gcode? Leave off for default stepper control.",
+            "section": "Advanced Settings",
+            "key": "zAxisAuto"
+        },
+        {
             "type": "string",
             "title": "Home Position X Coordinate",
             "desc": "The X coordinate of the home position",
@@ -391,7 +398,7 @@ class GroundControlApp(App):
         Set the default values for the config sections.
         """
         config.setdefaults('Maslow Settings', {'COMport'         : '',
-                                                 'zAxis'         : 0, 
+                                                 'zAxis'         : 0,
                                                  'zDistPerRot'   : 3.17, 
                                                  'bedWidth'      : 2438.4, 
                                                  'bedHeight'     : 1219.2, 
@@ -410,6 +417,7 @@ class GroundControlApp(App):
                                                  'gearTeeth'          : 10, 
                                                  'chainPitch'         : 6.35,
                                                  'zEncoderSteps'      : 7560.0,
+                                                 'zAxisAuto'          : 0,
                                                  'homeX'              : 0.0,
                                                  'homeY'              : 0.0,
                                                  'truncate'           : 0,
@@ -417,14 +425,14 @@ class GroundControlApp(App):
                                                  'kinematicsType'     : 'Quadrilateral',
                                                  'rotationRadius'     : '100',
                                                  'enablePosPIDValues' : 0,
-                                                 'KpPos'              : 1100,
+                                                 'KpPos'              : 1300,
                                                  'KiPos'              : 0,
-                                                 'KdPos'              : 0,
+                                                 'KdPos'              : 34,
                                                  'propWeight'         : 1,
                                                  'enableVPIDValues'   : 0,
-                                                 'KpV'                : 52,
+                                                 'KpV'                : 7,
                                                  'KiV'                : 0,
-                                                 'KdV'                : 0})
+                                                 'KdV'                : .28})
         
         config.setdefaults('Ground Control Settings', {'centerCanvasOnResize': 0,
                                                  'zoomIn': "pageup",
@@ -478,9 +486,9 @@ class GroundControlApp(App):
             KdPos = float(self.data.config.get('Advanced Settings', 'KdPos'))
             propWeight = float(self.data.config.get('Advanced Settings', 'propWeight'))
         else:
-            KpPos = 1100
+            KpPos = 1300
             KiPos = 0
-            KdPos = 0
+            KdPos = 34
             propWeight = 1
         
         if int(self.data.config.get('Advanced Settings', 'enableVPIDValues')) == 1:
@@ -488,9 +496,9 @@ class GroundControlApp(App):
             KiV = float(self.data.config.get('Advanced Settings', 'KiV'))
             KdV = float(self.data.config.get('Advanced Settings', 'KdV'))
         else:
-            KpV = 52
+            KpV = 7
             KiV = 0
-            KdV = 0
+            KdV = .28
         
         
         
@@ -508,6 +516,7 @@ class GroundControlApp(App):
             +" V" + str(KpV)
             +" W" + str(KiV)
             +" X" + str(KdV)
+            +" Y" + str(self.data.config.get('Advanced Settings', 'zAxisAuto'))
             + " "
         )
         

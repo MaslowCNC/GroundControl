@@ -31,6 +31,9 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     numericalPosX  = 0.0
     numericalPosY  = 0.0
+
+    previousPosX = 0.0
+    previousPosY = 0.0    
     
     stepsizeval  = 0
     zStepSizeVal = .1
@@ -160,20 +163,16 @@ class FrontPage(Screen, MakesmithInitFuncs):
             x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if x:
                 xTarget = float(x.groups()[0])
+                self.previousPosX = xTarget
             else:
-                if self.data.units == "INCHES":
-                    xTarget = self.gcodecanvas.positionIndicator.pos[0] / 25.4
-                else:
-                    xTarget = self.gcodecanvas.positionIndicator.pos[0]              
+            	xTarget = self.previousPosX
             
             y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if y:
                 yTarget = float(y.groups()[0])
+                self.previousPosY = yTarget
             else:
-                if self.data.units == "INCHES":
-                    yTarget = self.gcodecanvas.positionIndicator.pos[1] / 25.4
-                else:
-                    yTarget = self.gcodecanvas.positionIndicator.pos[1] 
+            	yTarget = self.previousPosY
             
             self.gcodecanvas.positionIndicator.setPos(xTarget,yTarget,self.data.units)
         except:
