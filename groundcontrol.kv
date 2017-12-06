@@ -685,6 +685,79 @@
             text: "Raise"
             on_release: root.zOut()
 
+<SetSprocketsVertical>:
+    #Set sprockets to 12 o'clock
+    GridLayout:
+        cols: 2
+        width: root.width
+        height: root.height
+        GridLayout:
+            cols: 1
+            Label:
+                text: "Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up.\nWhen you are ready, press Set Zero"
+                size_hint_x: leftCol
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.jpg"
+        GridLayout:
+            cols: 1
+            size_hint_x: rightCol
+            Label:
+            Button:
+                text: 'Turn Left Sprocket\n1 degree CCW'
+                on_release: root.LeftCCW()
+            Button:
+                text: 'Turn Left Sprocket\n1 degree CW'
+                on_release: root.LeftCW()
+            Button:
+                text: 'Turn Right Sprocket\n1 degree CCW'
+                on_release: root.RightCCW()
+            Button:
+                text: 'Turn Right Sprocket\n1 degree CW'
+                on_release: root.RightCW()
+            Button:
+                text: 'Set Zero'
+                on_release: root.setZero()
+            Label:
+    
+<MeasureOutChains>:
+    leftChainBtn:leftChainBtn
+    rightChainBtn:rightChainBtn
+    GridLayout:
+        cols: 2
+        width: root.width
+        height: root.height
+        GridLayout:
+            cols: 1
+            size_hint_x: leftCol
+            Label:
+                text: root.text
+                size_hint_x: leftCol
+            GridLayout:
+                cols: 2
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Ready To Calibrate Right Sprocket.jpg"
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Sled Attached.jpg"
+        GridLayout:
+            cols: 1
+            size_hint_x: rightCol
+            Label:
+            Button:
+                text: '   Extend\nLeft Chain'
+                on_release: root.startCountDownL()
+                id: leftChainBtn
+            Button:
+                text: '   Extend\nRight Chain'
+                on_release: root.startCountDownR()
+                id: rightChainBtn
+            Button:
+                text: 'Stop'
+                on_release: root.stop()
+            Button:
+                text: 'Next'
+                on_release: root.next()
+            Label:
+
 <MeasureMachinePopup>:
     carousel:carousel
     linksTextInput:linksTextInput
@@ -697,11 +770,13 @@
     unitsBtn:unitsBtn
     enterValues:enterValues
     zAxisActiveSwitch:zAxisActiveSwitch
-    chooseKinematicsType:chooseKinematicsType
     triangleMeasure: triangleMeasure
     unitsBtnT:unitsBtnT
     enterValuesT:enterValuesT
     cutBtnT:cutBtnT
+    setSprocketsVertical:setSprocketsVertical
+    measureOutChains:measureOutChains
+    testCutPosSlider:testCutPosSlider
     
     cols: 1
     size: root.size
@@ -749,35 +824,9 @@
                 Label:
         #Set sprockets to 12 o'clock
         GridLayout:
-            cols: 2
-            GridLayout:
-                cols: 1
-                Label:
-                    text: "Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up.\nWhen you are ready, press Set Zero"
-                    size_hint_x: leftCol
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.jpg"
-            GridLayout:
-                cols: 1
-                size_hint_x: rightCol
-                Label:
-                Button:
-                    text: 'Turn Left Sprocket\n1 degree CCW'
-                    on_release: root.LeftCCW()
-                Button:
-                    text: 'Turn Left Sprocket\n1 degree CW'
-                    on_release: root.LeftCW()
-                Button:
-                    text: 'Turn Right Sprocket\n1 degree CCW'
-                    on_release: root.RightCCW()
-                Button:
-                    text: 'Turn Right Sprocket\n1 degree CW'
-                    on_release: root.RightCW()
-                Button:
-                    text: 'Set Zero'
-                    on_release: root.setZero()
-                Label:
-        #Measure spacing between motors
+            cols: 1
+            SetSprocketsVertical:
+                id: setSprocketsVertical
         GridLayout:
             cols: 2
             GridLayout:
@@ -906,33 +955,9 @@
                 Label:
         #measure out chains
         GridLayout:
-            cols: 2
-            GridLayout:
-                cols: 1
-                size_hint_x: leftCol
-                Label:
-                    text: "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of the right chain on the vertical tooth of the right sprocket\n as shown in the picture below\n\nThe left chain does not need to be moved, it can be left partly extended\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Next\nPressing Next will move the sled to the center of the sheet.\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way"
-                    size_hint_x: leftCol
-                GridLayout:
-                    cols: 2
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Ready To Calibrate Right Sprocket.jpg"
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Sled Attached.jpg"
-            GridLayout:
-                cols: 1
-                size_hint_x: rightCol
-                Label:
-                Button:
-                    text: 'Calibrate\nChain Lengths'
-                    on_release: root.calibrateChainLengths()
-                Button:
-                    text: 'Stop'
-                    on_release: root.stopCut()
-                Button:
-                    text: 'Next'
-                    on_release: root.finishChainCalibration()
-                Label:
+            cols: 1
+            MeasureOutChains:
+                id: measureOutChains
         #set z-axis depth
         GridLayout:
             cols: 2
@@ -953,7 +978,7 @@
                 GridLayout:
                     cols: 2
                     Label:
-                        text: 'Enable\nAutomatic Z-Aixs:'
+                        text: 'Enable\nAutomatic Z-Axis:'
                     Switch:
                         on_active: root.enableZaxis()
                         id: zAxisActiveSwitch
@@ -992,15 +1017,12 @@
                 cols: 1
                 size_hint_x: rightCol
                 Label:
-                Label:
-                    text: "Please Choose\nAn Option"
-                Spinner:
-                    text: 'Quadrilateral' 
-                    values: ('Quadrilateral', 'Triangular')
-                    id: chooseKinematicsType
                 Button:
-                    text: 'Next'
-                    on_release: root.setKinematicsType()
+                    text: 'Quadrilateral'
+                    on_release: root.setKinematicsType('Quadrilateral')
+                Button:
+                    text: 'Triangular'
+                    on_release: root.setKinematicsType('Triangular')
                 Label:
         #cut test shape Triangular
         GridLayout:
@@ -1009,7 +1031,7 @@
                 cols: 1
                 size_hint_x: leftCol
                 Label:
-                    text: "To refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short vertical cuts a known distance apart\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe size of bit used is not critical\nMeasure from the left side of one mark to the left side of the other mark\n\nThe process will repeat until the spacing is accurate to within .5mm\nThe more accurate your measurements, the more accurate your machine will be\n\nPress Cut Test Pattern to begin"
+                    text: "To refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short vertical cuts a known distance apart\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe slider to the right of the buttons can be used to vertically adjust where the test cut is done\n\nThe size of bit used is not critical\nMeasure from the left side of one mark to the left side of the other mark\n\nThe process will repeat until the spacing is accurate to within .5mm\nThe more accurate your measurements, the more accurate your machine will be\n\nPress Cut Test Pattern to begin"
                 GridLayout:
                     cols: 2
                     Image:
@@ -1019,30 +1041,42 @@
             GridLayout:
                 cols: 1
                 size_hint_x: rightCol
-                Label:
-                Label:
-                    text: "Measurement:"
-                TextInput:
-                    id:triangleMeasure
-                    disabled: True
-                Button:
-                    text: "MM"
-                    on_release: root.switchUnits()
-                    id: unitsBtnT
-                    disabled: True
-                Button:
-                    text: "Enter Value"
-                    on_release: root.enterTestPaternValuesTriangular()
-                    id: enterValuesT
-                    disabled: True
-                Button:
-                    text: "Cut Test\nPattern"
-                    id: cutBtnT
-                    on_release: root.cutTestPaternTriangular()
-                Button:
-                    text: "Stop\nCut"
-                    on_release: root.stopCut()
-                Label:
+                GridLayout:
+                    cols: 2
+                    GridLayout:
+                        cols: 1
+                        size_hint_x: .8
+                        Label:
+                        Label:
+                            text: "Measurement:"
+                        TextInput:
+                            id:triangleMeasure
+                            disabled: True
+                        Button:
+                            text: "MM"
+                            on_release: root.switchUnits()
+                            id: unitsBtnT
+                            disabled: True
+                        Button:
+                            text: "Enter Value"
+                            on_release: root.enterTestPaternValuesTriangular()
+                            id: enterValuesT
+                            disabled: True
+                        Button:
+                            text: "Cut Test\nPattern"
+                            id: cutBtnT
+                            on_release: root.cutTestPaternTriangular()
+                        Button:
+                            text: "Stop\nCut"
+                            on_release: root.stopCut()
+                        Label:
+                    Slider:
+                        orientation: 'vertical'
+                        min: -400
+                        max:  400
+                        value: -400
+                        id: testCutPosSlider
+                        size_hint_x: .2
         #cut test shape Quadrilateral
         GridLayout:
             cols: 2
@@ -1104,6 +1138,8 @@
     
 <CalibrateLengthsPopup>:
     carousel:carousel
+    setSprocketsVertical:setSprocketsVertical
+    measureOutChains:measureOutChains
 
     cols: 1
     size: root.size
@@ -1115,63 +1151,27 @@
         #:set leftCol .8
         #:set rightCol .2
         GridLayout:
-            cols: 2
-            GridLayout:
-                cols: 1
-                Label:
-                    text: "Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up.\nWhen you are ready, press Set Zero"
-                    size_hint_x: leftCol
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.jpg"
-            GridLayout:
-                cols: 1
-                size_hint_x: rightCol
-                Label:
-                Button:
-                    text: 'Turn Left Sprocket\n1 degree CCW'
-                    on_release: root.LeftCCW()
-                Button:
-                    text: 'Turn Left Sprocket\n1 degree CW'
-                    on_release: root.LeftCW()
-                Button:
-                    text: 'Turn Right Sprocket\n1 degree CCW'
-                    on_release: root.RightCCW()
-                Button:
-                    text: 'Turn Right Sprocket\n1 degree CW'
-                    on_release: root.RightCW()
-                Button:
-                    text: 'Set Zero'
-                    on_release: root.setZero()
-                Button:
-                    text: 'Close'
-                    on_release: root.done()
-                Label:
+            cols: 1
+            SetSprocketsVertical:
+                id: setSprocketsVertical
+        GridLayout:
+            cols: 1
+            MeasureOutChains:
+                id: measureOutChains
+        #finish
         GridLayout:
             cols: 2
+            width: root.width
+            height: root.height
             GridLayout:
                 cols: 1
-                size_hint_x: leftCol
                 Label:
-                    text: "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of each chain on the vertical tooth of each sprocket\n as shown in the picture below. Then press Calibrate Chain Lengths\n\nThe correct length of first the left and then the right chain will be measured out\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way\n\nOnce both chains are finished attach the sled, then press Finish"
+                    text: "The machine now has an accurate reading of the lengths of the chains.\n\nPress finish to close the popup"
                     size_hint_x: leftCol
-                GridLayout:
-                    cols: 3
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Chain On Left Sprocket.jpg"
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Ready To Calibrate Right Sprocket.jpg"
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Sled Attached.jpg"
             GridLayout:
                 cols: 1
                 size_hint_x: rightCol
                 Label:
-                Button:
-                    text: 'Calibrate\nChain Lengths'
-                    on_release: root.calibrateChainLengths()
-                Button:
-                    text: 'Stop Motor'
-                    on_release: root.stop()
                 Button:
                     text: 'Finish'
                     on_release: root.done()
