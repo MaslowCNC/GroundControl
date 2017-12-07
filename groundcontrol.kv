@@ -663,27 +663,41 @@
     size: root.size
     pos: root.pos
     GridLayout:
-        cols: 3
-        Button:
-            text: ".1"
-            id: distBtn
-            on_release: root.setDist()
-        Button:
-            text: "MM"
-            on_release: root.units()
-            id: unitsBtn
-        Button:
-            text: "Lower"
-            on_release: root.zIn()
-        Button:
-            text: "Done"
-            on_release: root.done()
-        Button:
-            text: "Define Zero"
-            on_release: root.zero()
-        Button:
-            text: "Raise"
-            on_release: root.zOut()
+        cols: 2
+        GridLayout:
+            size_hint_x: ".75sp"
+            cols: 3
+            rosw: 2
+            Button:
+                text: ".1"
+                id: distBtn
+                on_release: root.setDist()
+            Button:
+                text: "MM"
+                on_release: root.units()
+                id: unitsBtn
+            Button:
+                text: "Raise"
+                on_release: root.zOut()
+            Button:
+                text: "Done"
+                on_release: root.done()
+            Button:
+                text: "Define Zero"
+                on_release: root.zero()
+            Button:
+                text: "Lower"
+                on_release: root.zIn()
+        GridLayout:
+            size_hint_x: ".25sp"
+            cols: 1
+            rosw: 1
+            Button:
+                text: "Stop!"
+                # font_size: '48sp'
+                # color: [1,0,0,1]
+                on_release: root.stopZMove()
+
 
 <SetSprocketsVertical>:
     #Set sprockets to 12 o'clock
