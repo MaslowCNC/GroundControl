@@ -304,7 +304,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         with self.data.gcode_queue.mutex:
             self.data.gcode_queue.queue.clear()
         self.onUploadFlagChange(self.stopRun, 0)
-        print("Gode Stopped")
+        print("Gcode Stopped")
     
     def textInputPopup(self, target):
         
