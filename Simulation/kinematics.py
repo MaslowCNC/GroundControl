@@ -144,8 +144,8 @@ class Kinematics():
         Motor1Distance = math.sqrt(math.pow((-1*self._xCordOfMotor - xTarget),2)+math.pow((self._yCordOfMotor - yTarget),2))
         Motor2Distance = math.sqrt(math.pow((self._xCordOfMotor - xTarget),2)+math.pow((self._yCordOfMotor - yTarget),2))
         
-        Chain1 = (self.R * (3.14159 - math.acos(self.R / self.Motor1Distance) - math.acos((self._yCordOfMotor - yTarget) / self.Motor1Distance))) + math.sqrt(math.pow(self.Motor1Distance,2) - math.pow(self.R,2))
-        Chain2 = (self.R * (3.14159 - math.acos(self.R / self.Motor2Distance) - math.acos((self._yCordOfMotor - yTarget) / self.Motor2Distance))) + math.sqrt(math.pow(self.Motor2Distance,2) - math.pow(self.R,2))
+        Chain1 = (self.R * (3.14159 - math.acos(self.R / Motor1Distance) - math.acos((self._yCordOfMotor - yTarget) / Motor1Distance))) + math.sqrt(math.pow(Motor1Distance,2) - math.pow(self.R,2))
+        Chain2 = (self.R * (3.14159 - math.acos(self.R / Motor2Distance) - math.acos((self._yCordOfMotor - yTarget) / Motor2Distance))) + math.sqrt(math.pow(Motor2Distance,2) - math.pow(self.R,2))
         
         #Subtract of the virtual length which is added to the chain by the rotation mechanism
         Chain1 = Chain1 - self.rotationDiskRadius
