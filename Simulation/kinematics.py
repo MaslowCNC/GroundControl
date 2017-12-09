@@ -75,6 +75,10 @@ class Kinematics():
     Lambda = 0
     Gamma = 0
 
+    # Motor axes length to the bit for triangular kinematics
+    Motor1Distance = 0#left motor axis distance to sled
+    Motor2Distance = 0#right motor axis distance to sled
+
     # output = chain lengths measured from 12 o'clock
     Chain1  = 0#left chain length
     Chain2  = 0#right chain length
@@ -137,8 +141,11 @@ class Kinematics():
         #Confirm that the coordinates are on the wood
         self._verifyValidTarget(xTarget, yTarget)
         
-        Chain1 = math.sqrt(math.pow((-1*self._xCordOfMotor - xTarget),2)+math.pow((self._yCordOfMotor - yTarget),2))
-        Chain2 = math.sqrt(math.pow((self._xCordOfMotor - xTarget),2)+math.pow((self._yCordOfMotor - yTarget),2))
+        Motor1Distance = math.sqrt(math.pow((-1*self._xCordOfMotor - xTarget),2)+math.pow((self._yCordOfMotor - yTarget),2))
+        Motor2Distance = math.sqrt(math.pow((self._xCordOfMotor - xTarget),2)+math.pow((self._yCordOfMotor - yTarget),2))
+        
+        Chain1 = (self.R * (3.14159 - math.acos(self.R / self.Motor1Distance) - math.acos((self._yCordOfMotor - yTarget) / self.Motor1Distance))) + math.sqrt(math.pow(self.Motor1Distance,2) - math.pow(self.R,2))
+        Chain2 = (self.R * (3.14159 - math.acos(self.R / self.Motor2Distance) - math.acos((self._yCordOfMotor - yTarget) / self.Motor2Distance))) + math.sqrt(math.pow(self.Motor2Distance,2) - math.pow(self.R,2))
         
         #Subtract of the virtual length which is added to the chain by the rotation mechanism
         Chain1 = Chain1 - self.rotationDiskRadius
