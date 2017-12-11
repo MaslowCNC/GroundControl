@@ -107,6 +107,17 @@ class ZAxisPopupContent(GridLayout):
         '''
         self.data.gcode_queue.put("G10 Z0 ")
     
+    def stopZMove(self):
+        '''
+        
+        Send the imediate stop command
+        
+        '''
+        print("z-axis Stopped")
+        self.data.quick_queue.put("!")
+        with self.data.gcode_queue.mutex:
+            self.data.gcode_queue.queue.clear()
+    
     def dismiss_popup(self):
         '''
         
