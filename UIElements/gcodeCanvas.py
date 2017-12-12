@@ -239,7 +239,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             
             #Draw lines for G1 and G0
             with self.scatterObject.canvas:
-                Color(self.data.FontDarkGray[0], self.data.FontDarkGray[1], self.data.FontDarkGray[2])
+                Color(self.data.drawingColor[0], self.data.drawingColor[1], self.data.drawingColor[2])
                 
                 if command == 'G00':
                     #draw a dashed line
