@@ -62,15 +62,25 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.downRightArrow.btnBackground       = self.data.iconPath + 'DownRightArrow.png'
         
         self.macro1Btn.btnBackground            = self.data.iconPath + 'Generic.png'
+        self.macro1Btn.textColor                = self.data.fontColor
         self.macro2Btn.btnBackground            = self.data.iconPath + 'Generic.png'
+        self.macro2Btn.textColor                = self.data.fontColor
         self.zAxisBtn.btnBackground             = self.data.iconPath + 'Generic.png'
+        self.zAxisBtn.textColor                 = self.data.fontColor
         self.moveDistInput.btnBackground        = self.data.iconPath + 'Generic.png'
+        self.moveDistInput.textColor            = self.data.fontColor
         self.unitsBtn.btnBackground             = self.data.iconPath + 'Generic.png'
+        self.unitsBtn.textColor                 = self.data.fontColor
         self.defHomeBtn.btnBackground           = self.data.iconPath + 'Generic.png'
+        self.defHomeBtn.textColor               = self.data.fontColor
         self.zRight.btnBackground               = self.data.iconPath + 'Generic.png'
+        self.zRight.textColor                   = self.data.fontColor
         self.zLeft.btnBackground                = self.data.iconPath + 'Generic.png'
+        self.zLeft.textColor                    = self.data.fontColor
         self.oneLeft.btnBackground              = self.data.iconPath + 'Generic.png'
+        self.oneLeft.textColor                  = self.data.fontColor
         self.oneRight.btnBackground             = self.data.iconPath + 'Generic.png'
+        self.oneRight.textColor                 = self.data.fontColor
         
         self.run.btnBackground                  = self.data.iconPath + 'RunGreen.png'
         self.holdBtn.btnBackground              = self.data.iconPath + 'HoldYellow.png'

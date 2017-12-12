@@ -67,7 +67,7 @@ class Data(EventDispatcher):
     Colors
     
     '''
-    FontDarkGray                                          =  (.476, .476, .476) #7a7a7a
+    fontColor                                             =  StringProperty('[color=7a7a7a]')
     iconPath                                              =  StringProperty('./Images/Icons/normal/')
     
     

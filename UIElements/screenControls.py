@@ -15,7 +15,9 @@ class ScreenControls(FloatLayout, MakesmithInitFuncs):
         
         '''
         self.actionsBtn.btnBackground            = self.data.iconPath + 'Generic.png'
+        self.actionsBtn.textColor                = self.data.fontColor
         self.settingsBtn.btnBackground           = self.data.iconPath + 'Generic.png'
+        self.settingsBtn.textColor               = self.data.fontColor
     
     def show_actions(self):
         '''
