@@ -128,8 +128,8 @@ class GroundControlApp(App):
         {
             "type": "options",
             "title": "Color Scheme",
-            "desc": "Switch between the traditional color scheme and the high visibility color scheme. Restarting GC is needed for this change to take effect",
-            "options": ["Normal", "HighVis"],
+            "desc": "Switch between the light and dark color schemes. Restarting GC is needed for this change to take effect",
+            "options": ["Light", "Dark"],
             "section": "Maslow Settings",
             "key": "colorScheme"
         },
@@ -356,12 +356,12 @@ class GroundControlApp(App):
         interface       =  FloatLayout()
         self.data       =  Data()
         
-        if self.config.get('Maslow Settings', 'colorScheme') == 'Normal':
+        if self.config.get('Maslow Settings', 'colorScheme') == 'Light':
             self.data.iconPath        = './Images/Icons/normal/'
             self.data.fontColor       = '[color=7a7a7a]'
             self.data.drawingColor    = [.47,.47,.47]
             Window.clearcolor         = (1, 1, 1, 1)
-        elif self.config.get('Maslow Settings', 'colorScheme') == 'HighVis':
+        elif self.config.get('Maslow Settings', 'colorScheme') == 'Dark':
             self.data.iconPath        = './Images/Icons/highvis/'
             self.data.fontColor       = '[color=000000]'
             self.data.drawingColor    = [1,1,1]
@@ -428,7 +428,7 @@ class GroundControlApp(App):
                                                  'sledWidth'     : 310, 
                                                  'sledHeight'    : 139, 
                                                  'sledCG'        : 79, 
-                                                 'colorScheme'   : "Normal",
+                                                 'colorScheme'   : "Light",
                                                  'openFile'      : " ",
                                                  'macro1'        : "",
                                                  'macro1_title'  : "Macro 1",
