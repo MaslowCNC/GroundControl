@@ -14,7 +14,7 @@
         size: root.size
         pos: root.pos
         Button:
-            border: (1, 1, 1, 1)
+            border: (2, 2, 2, 2)
             background_normal: root.btnBackground      # The background when the button is not pressed
             background_down:   root.btnBackgroundDown  # The background when the button is pressed
             on_press: root.internal_on_press()
@@ -25,6 +25,9 @@
                 pos: (root.pos[0] + (root.width - self.width)/2, root.pos[1] + (root.height-self.height)/2)
 
 <ScreenControls>:
+    actionsBtn:actionsBtn
+    settingsBtn:settingsBtn
+    
     BoxLayout:
         orientation: 'horizontal'
         pos: (0, root.height - 60)
@@ -34,9 +37,11 @@
         ButtonTemplate:
             text: "Actions"
             funcToCallOnRelease: root.show_actions
+            id: actionsBtn
         ButtonTemplate:
             text: "Settings"
             funcToCallOnRelease: app.open_settings
+            id: settingsBtn
 
 <GcodeCanvas>:
     scatterObject:scatterObject
@@ -85,6 +90,14 @@
     downLeftArrow:downLeftArrow
     downArrow:downArrow
     downRightArrow:downRightArrow
+    
+    zAxisBtn:zAxisBtn
+    unitsBtn:unitsBtn
+    defHomeBtn:defHomeBtn
+    zLeft:zLeft
+    zRight:zRight
+    oneLeft:oneLeft
+    oneRight:oneRight
     
     run:run
     stopBtn:stopBtn
@@ -139,6 +152,7 @@
                 id: downRightArrow
                 funcToCallOnPress: root.downRight
             ButtonTemplate:
+                id: zAxisBtn
                 text: 'Z-Axis'
                 funcToCallOnPress: root.zAxisPopup
             Label:
@@ -154,9 +168,11 @@
             ButtonTemplate:
                 text: root.units
                 funcToCallOnPress: root.switchUnits
+                id: unitsBtn
             ButtonTemplate:
                 text: 'Define\nHome'
                 funcToCallOnPress: root.moveOrigin
+                id: defHomeBtn
 
         GridLayout:
             cols: 3
@@ -183,19 +199,23 @@
             ButtonTemplate:
                 text: "<Z"
                 funcToCallOnPress: lambda:root.moveGcodeZ(-1)
+                id: zLeft
             ButtonTemplate:
                 text: "<1"
                 funcToCallOnPress: lambda:root.moveGcodeIndex(-1)
+                id: oneLeft
             ButtonTemplate:
                 id: goTo
-                text: 'GoTo'
+                #text: 'GoTo'
                 funcToCallOnPress: root.gotoLinePopup
             ButtonTemplate:
                 text: "1>"
                 funcToCallOnPress: lambda:root.moveGcodeIndex(1)
+                id: oneRight
             ButtonTemplate:
                 text: "Z>"
                 funcToCallOnPress: lambda:root.moveGcodeZ(1)
+                id: zRight
         BoxLayout:
             orentation: 'horizontal'
             size_hint: None, None

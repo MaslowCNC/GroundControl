@@ -7,6 +7,16 @@ from UIElements.buttonTemplate                 import   ButtonTemplate
 
 class ScreenControls(FloatLayout, MakesmithInitFuncs):
     
+    
+    def setButtonAppearance(self):
+        '''
+        
+        Called on creation to set up links to button background textures
+        
+        '''
+        self.actionsBtn.btnBackground            = self.data.iconPath + 'Generic.png'
+        self.settingsBtn.btnBackground           = self.data.iconPath + 'Generic.png'
+    
     def show_actions(self):
         '''
         

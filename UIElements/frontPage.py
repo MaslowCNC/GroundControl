@@ -61,6 +61,16 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.downArrow.btnBackground            = self.data.iconPath + 'DownArrow.png'
         self.downRightArrow.btnBackground       = self.data.iconPath + 'DownRightArrow.png'
         
+        self.macro1Btn.btnBackground            = self.data.iconPath + 'Generic.png'
+        self.macro2Btn.btnBackground            = self.data.iconPath + 'Generic.png'
+        self.zAxisBtn.btnBackground             = self.data.iconPath + 'Generic.png'
+        self.moveDistInput.btnBackground        = self.data.iconPath + 'Generic.png'
+        self.unitsBtn.btnBackground             = self.data.iconPath + 'Generic.png'
+        self.defHomeBtn.btnBackground           = self.data.iconPath + 'Generic.png'
+        self.zRight.btnBackground               = self.data.iconPath + 'Generic.png'
+        self.zLeft.btnBackground                = self.data.iconPath + 'Generic.png'
+        self.oneLeft.btnBackground              = self.data.iconPath + 'Generic.png'
+        self.oneRight.btnBackground             = self.data.iconPath + 'Generic.png'
         
         self.run.btnBackground                  = self.data.iconPath + 'RunGreen.png'
         self.holdBtn.btnBackground              = self.data.iconPath + 'HoldYellow.png'
@@ -94,6 +104,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def setUpData(self, data):
         self.gcodecanvas.setUpData(data)
         self.screenControls.setUpData(data)
+        self.screenControls.setButtonAppearance()
         self.data.bind(connectionStatus = self.updateConnectionStatus)
         self.data.bind(units            = self.onUnitsSwitch)
         self.data.bind(gcodeIndex       = self.onIndexMove)

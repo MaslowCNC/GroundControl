@@ -4,7 +4,7 @@ from kivy.uix.behaviors       import ButtonBehavior
 from kivy.uix.floatlayout     import FloatLayout
 
 class ButtonTemplate(FloatLayout, ButtonBehavior):
-    btnBackground        = StringProperty('./Images/Icons/normal/VariousSmall.png')
+    btnBackground        = StringProperty('atlas://data/images/defaulttheme/button')
     btnBackgroundDown    = StringProperty('atlas://data/images/defaulttheme/button_pressed')
     funcToCallOnPress    = ObjectProperty(None)
     funcToCallOnRelease  = ObjectProperty(None)
