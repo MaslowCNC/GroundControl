@@ -9,6 +9,7 @@ class ButtonTemplate(FloatLayout, ButtonBehavior):
     funcToCallOnPress    = ObjectProperty(None)
     funcToCallOnRelease  = ObjectProperty(None)
     text                 = StringProperty("")
+    textColor            = StringProperty('[color=7a7a7a]')
     
     
     def internal_on_press(self, *args):

@@ -20,7 +20,7 @@
             on_press: root.internal_on_press()
             on_release: root.internal_on_release()
             Label:
-                text: '[color=7a7a7a]' + root.text + '[/color]'
+                text: root.textColor + root.text + '[/color]'
                 markup: True
                 pos: (root.pos[0] + (root.width - self.width)/2, root.pos[1] + (root.height-self.height)/2)
 
