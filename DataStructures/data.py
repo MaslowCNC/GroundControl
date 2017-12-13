@@ -63,6 +63,16 @@ class Data(EventDispatcher):
     serialPort = None #this is a pointer to the program serial port object
     
     '''
+    
+    Colors
+    
+    '''
+    fontColor                                             =  StringProperty('[color=7a7a7a]')
+    drawingColor                                          =  ObjectProperty([.47,.47,.47])
+    iconPath                                              =  StringProperty('./Images/Icons/normal/')
+    
+    
+    '''
     Queues
     '''
     message_queue   =  Queue.Queue()

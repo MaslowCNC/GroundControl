@@ -126,6 +126,14 @@ class GroundControlApp(App):
             "key": "zDistPerRot"
         },
         {
+            "type": "options",
+            "title": "Color Scheme",
+            "desc": "Switch between the light and dark color schemes. Restarting GC is needed for this change to take effect",
+            "options": ["Light", "Dark"],
+            "section": "Maslow Settings",
+            "key": "colorScheme"
+        },
+        {
             "type": "string",
             "title": "Open File",
             "desc": "The path to the open file",
@@ -344,10 +352,24 @@ class GroundControlApp(App):
     '''
     
     def build(self):
-        Window.maximize()
         
         interface       =  FloatLayout()
         self.data       =  Data()
+        
+        if self.config.get('Maslow Settings', 'colorScheme') == 'Light':
+            self.data.iconPath        = './Images/Icons/normal/'
+            self.data.fontColor       = '[color=7a7a7a]'
+            self.data.drawingColor    = [.47,.47,.47]
+            Window.clearcolor         = (1, 1, 1, 1)
+        elif self.config.get('Maslow Settings', 'colorScheme') == 'Dark':
+            self.data.iconPath        = './Images/Icons/highvis/'
+            self.data.fontColor       = '[color=000000]'
+            self.data.drawingColor    = [1,1,1]
+            Window.clearcolor         = (0, 0, 0, 1)
+        
+        
+        Window.maximize()
+        
         
         self.frontpage = FrontPage(self.data, name='FrontPage')
         interface.add_widget(self.frontpage)
@@ -369,7 +391,6 @@ class GroundControlApp(App):
         offsetY = float(self.config.get('Advanced Settings', 'homeY'))
         self.data.gcodeShift = [offsetX,offsetY]
         self.data.config  = self.config
-        
         
         '''
         Initializations
@@ -407,6 +428,7 @@ class GroundControlApp(App):
                                                  'sledWidth'     : 310, 
                                                  'sledHeight'    : 139, 
                                                  'sledCG'        : 79, 
+                                                 'colorScheme'   : "Light",
                                                  'openFile'      : " ",
                                                  'macro1'        : "",
                                                  'macro1_title'  : "Macro 1",
