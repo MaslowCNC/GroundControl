@@ -12,6 +12,7 @@ from DataStructures.makesmithInitFuncs         import MakesmithInitFuncs
 from kivy.uix.popup                            import Popup
 from UIElements.touchNumberInput               import TouchNumberInput
 from UIElements.zAxisPopupContent              import ZAxisPopupContent
+from DataStructures.data                       import Data
 import re
 import global_variables
 
@@ -38,15 +39,54 @@ class FrontPage(Screen, MakesmithInitFuncs):
     stepsizeval  = 0
     zStepSizeVal = .1
     
-    consoleText = StringProperty(" ")
+    consoleText  = StringProperty(" ")
     
     units = StringProperty("MM")
     gcodeLineNumber = StringProperty('0')
+    
+    data         = Data()
     
     
     def __init__(self, data, **kwargs):
         super(FrontPage, self).__init__(**kwargs)
         self.data = data
+        
+        self.upLeftArrow.btnBackground          = self.data.iconPath + 'UpLeftArrow.png'
+        self.upArrow.btnBackground              = self.data.iconPath + 'UpArrow.png'
+        self.upRightArrow.btnBackground         = self.data.iconPath + 'UpRightArrow.png'
+        self.leftArrow.btnBackground            = self.data.iconPath + 'LeftArrow.png'
+        self.homeBtn.btnBackground              = self.data.iconPath + 'Home.png'
+        self.rightArrow.btnBackground           = self.data.iconPath + 'RightArrow.png'
+        self.downLeftArrow.btnBackground        = self.data.iconPath + 'DownLeftArrow.png'
+        self.downArrow.btnBackground            = self.data.iconPath + 'DownArrow.png'
+        self.downRightArrow.btnBackground       = self.data.iconPath + 'DownRightArrow.png'
+        
+        self.macro1Btn.btnBackground            = self.data.iconPath + 'Generic.png'
+        self.macro1Btn.textColor                = self.data.fontColor
+        self.macro2Btn.btnBackground            = self.data.iconPath + 'Generic.png'
+        self.macro2Btn.textColor                = self.data.fontColor
+        self.zAxisBtn.btnBackground             = self.data.iconPath + 'Generic.png'
+        self.zAxisBtn.textColor                 = self.data.fontColor
+        self.moveDistInput.btnBackground        = self.data.iconPath + 'Generic.png'
+        self.moveDistInput.textColor            = self.data.fontColor
+        self.unitsBtn.btnBackground             = self.data.iconPath + 'Generic.png'
+        self.unitsBtn.textColor                 = self.data.fontColor
+        self.defHomeBtn.btnBackground           = self.data.iconPath + 'Generic.png'
+        self.defHomeBtn.textColor               = self.data.fontColor
+        self.zRight.btnBackground               = self.data.iconPath + 'Generic.png'
+        self.zRight.textColor                   = self.data.fontColor
+        self.zLeft.btnBackground                = self.data.iconPath + 'Generic.png'
+        self.zLeft.textColor                    = self.data.fontColor
+        self.oneLeft.btnBackground              = self.data.iconPath + 'Generic.png'
+        self.oneLeft.textColor                  = self.data.fontColor
+        self.oneRight.btnBackground             = self.data.iconPath + 'Generic.png'
+        self.oneRight.textColor                 = self.data.fontColor
+        
+        self.run.btnBackground                  = self.data.iconPath + 'RunGreen.png'
+        self.holdBtn.btnBackground              = self.data.iconPath + 'HoldYellow.png'
+        self.stopBtn.btnBackground              = self.data.iconPath + 'StopRed.png'
+        
+        self.goTo.btnBackground                 = self.data.iconPath + 'GoTo.png'
     
     def buildReadoutString(self, value):
         '''
@@ -74,6 +114,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def setUpData(self, data):
         self.gcodecanvas.setUpData(data)
         self.screenControls.setUpData(data)
+        self.screenControls.setButtonAppearance()
         self.data.bind(connectionStatus = self.updateConnectionStatus)
         self.data.bind(units            = self.onUnitsSwitch)
         self.data.bind(gcodeIndex       = self.onIndexMove)
@@ -304,7 +345,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         with self.data.gcode_queue.mutex:
             self.data.gcode_queue.queue.clear()
         self.onUploadFlagChange(self.stopRun, 0)
-        print("Gode Stopped")
+        print("Gcode Stopped")
     
     def textInputPopup(self, target):
         

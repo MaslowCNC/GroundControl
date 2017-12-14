@@ -25,7 +25,7 @@ class Data(EventDispatcher):
     
     #Gcodes contains all of the lines of gcode in the opened file
     gcode      = ObjectProperty([])
-    version    = '0.99'
+    version    = '1.00'
     #all of the available COM ports
     comPorts   = []
     #This defines which COM port is used
@@ -61,6 +61,16 @@ class Data(EventDispatcher):
     '''
     config = None #pointer to the program configuration object...used for writing to settings
     serialPort = None #this is a pointer to the program serial port object
+    
+    '''
+    
+    Colors
+    
+    '''
+    fontColor                                             =  StringProperty('[color=7a7a7a]')
+    drawingColor                                          =  ObjectProperty([.47,.47,.47])
+    iconPath                                              =  StringProperty('./Images/Icons/normal/')
+    
     
     '''
     Queues
