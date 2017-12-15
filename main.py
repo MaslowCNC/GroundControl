@@ -381,9 +381,10 @@ class GroundControlApp(App):
         Load User Settings
         '''
         
-        self.config.set('Advanced Settings', 'truncate', 0)
-        self.config.set('Advanced Settings', 'digits', 4)
-        self.config.write()
+        if self.config.get('Advanced Settings', 'encoderSteps') == '8148.0':
+            self.data.message_queue.put("Message: This update will adjust the the number of encoder pulses per rotation from 8,148 to 8,114 in your settings which improves the positional accuracy.\n\nPerforming a calibration will help you get the most out of this update.")
+            self.config.set('Advanced Settings', 'encoderSteps', '8114.0')
+            self.config.write()
         
         self.data.comport = self.config.get('Maslow Settings', 'COMport')
         self.data.gcodeFile = self.config.get('Maslow Settings', 'openFile')
@@ -435,7 +436,7 @@ class GroundControlApp(App):
                                                  'macro2'        : "",
                                                  'macro2_title'  : "Macro 2"})
 
-        config.setdefaults('Advanced Settings', {'encoderSteps'       : 8148.0,
+        config.setdefaults('Advanced Settings', {'encoderSteps'       : 8114.0,
                                                  'gearTeeth'          : 10, 
                                                  'chainPitch'         : 6.35,
                                                  'zEncoderSteps'      : 7560.0,
