@@ -88,6 +88,8 @@ class TriangularCalibration(Widget):
         self.data.quick_queue.put("!") 
         with self.data.gcode_queue.mutex:
             self.data.gcode_queue.queue.clear()
+        
+        self.cutBtnT.disabled = False
     
     def switchUnits(self):
         if self.unitsBtnT.text == 'MM':
