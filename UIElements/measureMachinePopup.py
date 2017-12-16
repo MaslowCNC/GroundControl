@@ -462,7 +462,7 @@ class MeasureMachinePopup(GridLayout):
             self.data.message_queue.put("Message: Couldn't make that into a number")
             return
         
-        if self.unitsBtn.text == 'Inches':
+        if self.unitsBtnT.text == 'Inches':
             dist = dist*25.4
         
         dist = 1905 - dist #1905 is expected test spacing in mm. dist is greater than zero if the length is too long, less than zero if if is too short
@@ -492,11 +492,11 @@ class MeasureMachinePopup(GridLayout):
         with self.data.gcode_queue.mutex:
             self.data.gcode_queue.queue.clear()
     
-    def switchUnits(self):
-        if self.unitsBtn.text == 'MM':
-            self.unitsBtn.text = 'Inches'
+    def switchUnits(self, id):
+        if id.text == 'MM':
+            id.text = 'Inches'
         else:
-            self.unitsBtn.text = 'MM'
+            id.text = 'MM'
     
     def moveZ(self, dist):
         '''
