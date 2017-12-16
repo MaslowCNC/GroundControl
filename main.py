@@ -587,8 +587,6 @@ class GroundControlApp(App):
         while not self.data.message_queue.empty(): #if there is new data to be read
             message = self.data.message_queue.get()
             
-            self.data.logger.writeToLog(message)
-            
             if message[0] == "<":
                 self.setPosOnScreen(message)
             elif message[0] == "[":

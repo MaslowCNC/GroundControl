@@ -6,6 +6,7 @@ from kivy.properties                                  import OptionProperty
 from kivy.properties                                  import NumericProperty
 from kivy.event                                       import EventDispatcher
 from DataStructures.logger                            import   Logger
+from DataStructures.loggingQueue                      import   LoggingQueue
 import Queue
 
 class Data(EventDispatcher):
@@ -75,7 +76,7 @@ class Data(EventDispatcher):
     '''
     Queues
     '''
-    message_queue   =  Queue.Queue()
+    message_queue   =  LoggingQueue(logger)
     gcode_queue     =  Queue.Queue()
     quick_queue     =  Queue.Queue()
     
