@@ -998,9 +998,9 @@
                             disabled: True
                         Button:
                             text: "MM"
-                            on_release: root.switchUnits()
+                            on_release: root.switchUnits(unitsBtnT)
                             id: unitsBtnT
-                            disabled: True
+                            disabled: False
                         Button:
                             text: "Enter Value"
                             on_release: root.enterTestPaternValuesTriangular()
@@ -1053,7 +1053,7 @@
                     disabled: True
                 Button:
                     text: "MM"
-                    on_release: root.switchUnits()
+                    on_release: root.switchUnits(unitsBtn)
                     id: unitsBtn
                     disabled: True
                 Button:
