@@ -62,17 +62,20 @@ class TriangularCalibration(Widget):
         if self.unitsBtnT.text == 'Inches':
             dist = dist*25.4
         
-        dist = 1905 - dist #1905 is expected test spacing in mm. dist is greater than zero if the length is too long, less than zero if if is too short
+        errorAmt = 1905 - dist #1905 is expected test spacing in mm. dist is greater than zero if the length is too long, less than zero if if is too short
         
         print "The error is: "
-        print dist
+        print errorAmt
         
         acceptableTolerance = .5
+        maximumRealisticError = 300
         
-        if abs(dist) < acceptableTolerance:               #if we're fully calibrated
+        if abs(errorAmt) > maximumRealisticError:
+            self.data.message_queue.put('Message: ' + str(dist) + ' is ' + str(errorAmt) + 'away from the target distance of 1905mm which seems too larget to be real.')
+        elif abs(errorAmt) < acceptableTolerance:               #if we're fully calibrated
             self.carousel.load_slide(self.carousel.slides[11])
         else:
-            amtToChange = -.9*dist
+            amtToChange = -.9*errorAmt
             
             print "so we are going to adjust the motor spacing by: "
             print amtToChange
