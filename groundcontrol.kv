@@ -778,6 +778,7 @@
     setSprocketsVertical:setSprocketsVertical
     measureOutChains:measureOutChains
     triangularCalibration:triangularCalibration
+    finishText:finishText
     
     cols: 1
     size: root.size
@@ -1084,6 +1085,7 @@
             Label:
                 text: "Your machine is now calibrated!\n\nCongratulations! "
                 size_hint_x: leftCol
+                id: finishText
             Button:
                 text: 'Finish'
                 on_release: root.done()
