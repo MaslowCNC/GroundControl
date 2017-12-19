@@ -15,7 +15,7 @@ class SerialPortThread(MakesmithInitFuncs):
     
     '''
     
-    machineIsReadyForData      = False
+    machineIsReadyForData      = False # Tracks whether last command was acked
     lastWriteTime              = time.time()
     bufferSpace                = 256
     lengthOfLastLineStack      =  Queue.Queue()
@@ -39,6 +39,7 @@ class SerialPortThread(MakesmithInitFuncs):
         
         self.bufferSpace       = self.bufferSpace - len(message)
         self.lengthOfLastLineStack.put(len(message))
+        self.machineIsReadyForData = False
         
         message = message.encode()
         try:
@@ -90,7 +91,6 @@ class SerialPortThread(MakesmithInitFuncs):
             #print "port open?:"
             #print self.serialInstance.isOpen()
             self.lastMessageTime = time.time()
-            self.data.gcode_queue.put(' ') # send a blank line on startup
             self.data.connectionStatus = 1
             
             self._getFirmwareVersion()
@@ -113,6 +113,7 @@ class SerialPortThread(MakesmithInitFuncs):
                 
                 #Check if a line has been completed
                 if lineFromMachine == "ok\r\n":
+                    self.machineIsReadyForData = True
                     if self.lengthOfLastLineStack.empty() != True:                                     #if we've sent lines to the machine
                         self.bufferSpace = self.bufferSpace + self.lengthOfLastLineStack.get_nowait()    #free up that space in the buffer
                 
@@ -128,14 +129,13 @@ class SerialPortThread(MakesmithInitFuncs):
                     self._write(command)
                 
                 #send regular instructions to the machine if there are any
-                if self.bufferSpace == 256:
-                    
+                if self.bufferSpace == 256 and self.machineIsReadyForData:
                     if self.data.gcode_queue.empty() != True:
                         command = self.data.gcode_queue.get_nowait() + " "
                         self._write(command)
                 
                 #Send the next line of gcode to the machine if we're running a program
-                if self.bufferSpace == 256:#> len(self.data.gcode[self.data.gcodeIndex]):
+                if self.bufferSpace == 256 and self.machineIsReadyForData: #> len(self.data.gcode[self.data.gcodeIndex]):
                     if self.data.uploadFlag:
                         self._write(self.data.gcode[self.data.gcodeIndex])
                         

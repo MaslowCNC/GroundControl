@@ -628,6 +628,67 @@
                 # color: [1,0,0,1]
                 on_release: root.stopZMove()
 
+<TriangularCalibration>:
+    testCutPosSlider:testCutPosSlider
+    triangleMeasure:triangleMeasure
+    unitsBtnT:unitsBtnT
+    cutBtnT:cutBtnT
+    enterValuesT:enterValuesT
+    
+    GridLayout:
+        cols: 2
+        width: root.width
+        height: root.height
+        GridLayout:
+            cols: 1
+            size_hint_x: leftCol
+            Label:
+                text: "To refine these measurements we're going to cut a test shape.\nThe test shape consists of two short vertical cuts a known distance apart\nBased on the distance between these marks we can dial in the machine settings\n\nThe slider to the right of the buttons can be used to vertically adjust where the test cut is done\n\nThe size of bit used is not critical\nMeasure from the left side of one mark to the left side of the other mark\nThe target distance is 1905mm (75in)\nThe process will repeat until the spacing is accurate to within .5mm\nThe more accurate your measurements, the more accurate your machine will be\n\nPress Cut Test Pattern to begin"
+            GridLayout:
+                cols: 2
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview Triangular.JPG"
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Measure Test Shape Horizontal.jpg"
+        GridLayout:
+            cols: 1
+            size_hint_x: rightCol
+            GridLayout:
+                cols: 2
+                GridLayout:
+                    cols: 1
+                    size_hint_x: .8
+                    Label:
+                    Label:
+                        text: "Measurement:"
+                    TextInput:
+                        id:triangleMeasure
+                        disabled: True
+                    Button:
+                        text: "MM"
+                        on_release: root.switchUnits()
+                        id: unitsBtnT
+                        disabled: True
+                    Button:
+                        text: "Enter Value"
+                        on_release: root.enterTestPaternValuesTriangular()
+                        id: enterValuesT
+                        disabled: True
+                    Button:
+                        text: "Cut Test\nPattern"
+                        id: cutBtnT
+                        on_release: root.cutTestPaternTriangular()
+                    Button:
+                        text: "Stop\nCut"
+                        on_release: root.stopCut()
+                    Label:
+                Slider:
+                    orientation: 'vertical'
+                    min: -400
+                    max:  400
+                    value: -400
+                    id: testCutPosSlider
+                    size_hint_x: .2
 
 <SetSprocketsVertical>:
     #Set sprockets to 12 o'clock
@@ -714,13 +775,9 @@
     unitsBtn:unitsBtn
     enterValues:enterValues
     zAxisActiveSwitch:zAxisActiveSwitch
-    triangleMeasure: triangleMeasure
-    unitsBtnT:unitsBtnT
-    enterValuesT:enterValuesT
-    cutBtnT:cutBtnT
     setSprocketsVertical:setSprocketsVertical
     measureOutChains:measureOutChains
-    testCutPosSlider:testCutPosSlider
+    triangularCalibration:triangularCalibration
     
     cols: 1
     size: root.size
@@ -970,57 +1027,9 @@
                 Label:
         #cut test shape Triangular
         GridLayout:
-            cols: 2
-            GridLayout:
-                cols: 1
-                size_hint_x: leftCol
-                Label:
-                    text: "To refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short vertical cuts a known distance apart\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe slider to the right of the buttons can be used to vertically adjust where the test cut is done\n\nThe size of bit used is not critical\nMeasure from the left side of one mark to the left side of the other mark\n\nThe process will repeat until the spacing is accurate to within .5mm\nThe more accurate your measurements, the more accurate your machine will be\n\nPress Cut Test Pattern to begin"
-                GridLayout:
-                    cols: 2
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview Triangular.JPG"
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Measure Test Shape Horizontal.jpg"
-            GridLayout:
-                cols: 1
-                size_hint_x: rightCol
-                GridLayout:
-                    cols: 2
-                    GridLayout:
-                        cols: 1
-                        size_hint_x: .8
-                        Label:
-                        Label:
-                            text: "Measurement:"
-                        TextInput:
-                            id:triangleMeasure
-                            disabled: True
-                        Button:
-                            text: "MM"
-                            on_release: root.switchUnits()
-                            id: unitsBtnT
-                            disabled: True
-                        Button:
-                            text: "Enter Value"
-                            on_release: root.enterTestPaternValuesTriangular()
-                            id: enterValuesT
-                            disabled: True
-                        Button:
-                            text: "Cut Test\nPattern"
-                            id: cutBtnT
-                            on_release: root.cutTestPaternTriangular()
-                        Button:
-                            text: "Stop\nCut"
-                            on_release: root.stopCut()
-                        Label:
-                    Slider:
-                        orientation: 'vertical'
-                        min: -400
-                        max:  400
-                        value: -400
-                        id: testCutPosSlider
-                        size_hint_x: .2
+            cols: 1
+            TriangularCalibration:
+                id: triangularCalibration
         #cut test shape Quadrilateral
         GridLayout:
             cols: 2
