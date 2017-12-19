@@ -351,8 +351,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         self.targetWidget = target
         
-        self.popupContent = TouchNumberInput(done=self.dismiss_popup)
-        self.popupContent.data = self.data
+        self.popupContent = TouchNumberInput(done=self.dismiss_popup, data=self.data)
         self._popup = Popup(title="Change increment size of machine movement", content=self.popupContent,
                             size_hint=(0.9, 0.9))
         self._popup.open()

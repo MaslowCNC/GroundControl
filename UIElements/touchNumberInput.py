@@ -10,6 +10,12 @@ from   kivy.properties                           import   StringProperty
 class TouchNumberInput(GridLayout):
     done   = ObjectProperty(None)
     
+    def __init__(self,**kwargs):
+        self.data = kwargs.get('data')
+        super(TouchNumberInput,self).__init__(**kwargs)
+        
+        self.unitsBtn.text = self.data.units
+    
     def addText(self, text):
         '''
         
