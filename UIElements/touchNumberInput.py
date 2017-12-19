@@ -17,3 +17,16 @@ class TouchNumberInput(GridLayout):
         
         '''
         self.textInput.text = self.textInput.text + text
+    
+    def switchUnits(self):
+        '''
+        
+        Switch the units of the entered number
+        
+        '''
+        if self.data.units == "INCHES":
+            self.data.units = "MM"
+            self.unitsBtn.text = 'MM'
+        else:
+            self.data.units = "INCHES"
+            self.unitsBtn.text = 'INCHES'
