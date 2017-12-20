@@ -71,7 +71,7 @@ class TriangularCalibration(Widget):
         maximumRealisticError = 300
         
         if abs(errorAmt) > maximumRealisticError:
-            self.data.message_queue.put('Message: ' + str(dist) + 'mm is ' + str(errorAmt) + 'mm away from the target distance of 1905mm which seems wrong. This measurement will be ignored.')
+            self.data.message_queue.put('Message: ' + str(dist) + 'mm is ' + str(errorAmt) + 'mm away from the target distance of 1905mm which seems wrong.\nPlease check the number and enter it again.')
         elif abs(errorAmt) < acceptableTolerance:               #if we're fully calibrated
             self.carousel.load_slide(self.carousel.slides[11])
         else:
