@@ -8,19 +8,40 @@
 #            dash_offset: 5
 #            dash_length: 3
 
-<ScreenControls>
+<ButtonTemplate>:
+    GridLayout:
+        cols: 1
+        size: root.size
+        pos: root.pos
+        Button:
+            border: (2, 2, 2, 2)
+            background_normal: root.btnBackground      # The background when the button is not pressed
+            background_down:   root.btnBackgroundDown  # The background when the button is pressed
+            on_press: root.internal_on_press()
+            on_release: root.internal_on_release()
+            Label:
+                text: root.textColor + root.text + '[/color]'
+                markup: True
+                pos: (root.pos[0] + (root.width - self.width)/2, root.pos[1] + (root.height-self.height)/2)
+
+<ScreenControls>:
+    actionsBtn:actionsBtn
+    settingsBtn:settingsBtn
+    
     BoxLayout:
         orientation: 'horizontal'
         pos: (0, root.height - 60)
-        size_hint: (.5,None)
+        size_hint: (.4,None)
         height: dp(60)
 
-        Button:
+        ButtonTemplate:
             text: "Actions"
-            on_press: root.show_actions()
-        Button:
+            funcToCallOnRelease: root.show_actions
+            id: actionsBtn
+        ButtonTemplate:
             text: "Settings"
-            on_press: app.open_settings()
+            funcToCallOnRelease: app.open_settings
+            id: settingsBtn
 
 <GcodeCanvas>:
     scatterObject:scatterObject
@@ -59,6 +80,29 @@
     holdBtn:holdBtn
     macro1Btn:macro1Btn
     macro2Btn:macro2Btn
+    
+    upLeftArrow:upLeftArrow
+    upArrow:upArrow
+    upRightArrow:upRightArrow
+    leftArrow:leftArrow
+    homeBtn:homeBtn
+    rightArrow:rightArrow
+    downLeftArrow:downLeftArrow
+    downArrow:downArrow
+    downRightArrow:downRightArrow
+    
+    zAxisBtn:zAxisBtn
+    unitsBtn:unitsBtn
+    defHomeBtn:defHomeBtn
+    zLeft:zLeft
+    zRight:zRight
+    oneLeft:oneLeft
+    oneRight:oneRight
+    
+    run:run
+    stopBtn:stopBtn
+    
+    goTo:goTo
 
 
     GcodeCanvas:
@@ -72,75 +116,63 @@
             width:dp(300)
             height: dp(60*4)
             #disabled: not app.data.connectionStatus
-            Button:
-                on_press: root.upLeft()
-                canvas.after:
-                    Triangle:
-                        points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+3*self.width/4,self.y+self.width/2,
-            Button:
-                on_press: root.up()
-                canvas.after:
-                    Triangle:
-                        points: self.x+self.width/3,self.y+self.height/3,self.x+2*self.width/3,self.y+self.height/3,self.x+self.width/2,self.y+2*self.height/3,
-            Button:
-                on_press: root.upRight()
-                canvas.after:
-                    Triangle:
-                        points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/2,
-            Button:
+            ButtonTemplate:
+                id: upLeftArrow 
+                funcToCallOnPress: root.upLeft
+            ButtonTemplate:
+                id: upArrow
+                funcToCallOnPress: root.up
+            ButtonTemplate:
+                id: upRightArrow
+                funcToCallOnPress: root.upRight
+            ButtonTemplate:
                 id: macro1Btn
                 text: "Macro 1"
-                on_press: root.macro(1)
-            Button:
-                on_press: root.left()
-                canvas.after:
-                    Triangle:
-                        points: self.x+self.width/3,self.y+self.height/2,self.x+2*self.width/3,self.y+self.height/3,self.x+2*self.width/3,self.y+2*self.height/3,
-            Button:
-                text: 'HOME'
-                on_press: root.home()
-            Button:
-                on_press: root.right()
-                canvas.after:
-                    Triangle:
-                        points: self.x+2*self.width/3,self.y+self.height/2,self.x+self.width/3,self.y+self.height/3,self.x+self.width/3,self.y+2*self.height/3,
-            Button:
+                funcToCallOnPress: lambda:root.macro(1)
+            ButtonTemplate:
+                id: leftArrow
+                funcToCallOnPress: root.left
+            ButtonTemplate:
+                id: homeBtn
+                funcToCallOnPress: root.home
+            ButtonTemplate:
+                id: rightArrow
+                funcToCallOnPress: root.right
+            ButtonTemplate:
                 id: macro2Btn
                 text: "Macro 2"
-                on_press: root.macro(2)
-            Button:
-                on_press: root.downLeft()
-                canvas.after:
-                    Triangle:
-                        points: self.x+self.width/2,self.y+self.width/2,self.x+self.width/2,self.y+self.width/4,self.x+3*self.width/4,self.y+self.width/4,
-            Button:
-                on_press: root.down()
-                canvas.after:
-                    Triangle:
-                        points: self.x+self.width/3,self.y+2*self.height/3,self.x+2*self.width/3,self.y+2*self.height/3,self.x+self.width/2,self.y+self.height/3,
-            Button:
-                on_press: root.downRight()
-                canvas.after:
-                    Triangle:
-                        points: self.x+self.width/2,self.y+self.width/4,self.x+self.width/4,self.y+self.width/4,self.x+self.width/2,self.y+self.width/2,
-            Button:
+                funcToCallOnPress: lambda:root.macro(2)
+            ButtonTemplate:
+                id: downLeftArrow
+                funcToCallOnPress: root.downLeft
+            ButtonTemplate:
+                id: downArrow
+                funcToCallOnPress: root.down
+            ButtonTemplate:
+                id: downRightArrow
+                funcToCallOnPress: root.downRight
+            ButtonTemplate:
+                id: zAxisBtn
                 text: 'Z-Axis'
-                on_press: root.zAxisPopup()
+                funcToCallOnPress: root.zAxisPopup
             Label:
                 id: moveSpeedInput
-                text: "Dist To \nMove:"
+                color: .476, .476, .476,1
+                text: 'Dist To \nMove:'
                 multiline: False
-            Button:
+            ButtonTemplate:
                 id: moveDistInput
                 text: '100'
                 multiline: False
-                on_press: root.textInputPopup(self)
-            Button:
+                funcToCallOnPress: lambda:root.textInputPopup(self)
+            ButtonTemplate:
                 text: root.units
-                on_press: root.switchUnits()
-            Button:
+                funcToCallOnPress: root.switchUnits
+                id: unitsBtn
+            ButtonTemplate:
                 text: 'Define\nHome'
-                on_release: root.moveOrigin()
+                funcToCallOnPress: root.moveOrigin
+                id: defHomeBtn
 
         GridLayout:
             cols: 3
@@ -148,37 +180,42 @@
             width: dp(300)
             height: dp(60)
             #disabled: not app.data.connectionStatus
-            Button:
-                text: 'RUN'
-                on_press: root.startRun()
-            Button:
+            ButtonTemplate:
+                id: run
+                funcToCallOnPress: root.startRun
+            ButtonTemplate:
                 id: holdBtn
                 text: "HOLD"
-                on_press: root.pause()
-            Button:
-                text: 'STOP'
-                on_press: root.stopRun()
+                funcToCallOnPress: root.pause
+            ButtonTemplate:
+                id: stopBtn
+                funcToCallOnPress: root.stopRun
         GridLayout:
             cols: 5
             size_hint: None, None
             width: dp(300)
             height: dp(30)
             #disabled: not app.data.connectionStatus
-            Button:
+            ButtonTemplate:
                 text: "<Z"
-                on_press: root.moveGcodeZ(-1)
-            Button:
+                funcToCallOnPress: lambda:root.moveGcodeZ(-1)
+                id: zLeft
+            ButtonTemplate:
                 text: "<1"
-                on_press: root.moveGcodeIndex(-1)
-            Button:
-                text: "Goto"
-                on_press: root.gotoLinePopup()
-            Button:
+                funcToCallOnPress: lambda:root.moveGcodeIndex(-1)
+                id: oneLeft
+            ButtonTemplate:
+                id: goTo
+                #text: 'GoTo'
+                funcToCallOnPress: root.gotoLinePopup
+            ButtonTemplate:
                 text: "1>"
-                on_press: root.moveGcodeIndex(1)
-            Button:
+                funcToCallOnPress: lambda:root.moveGcodeIndex(1)
+                id: oneRight
+            ButtonTemplate:
                 text: "Z>"
-                on_press: root.moveGcodeZ(1)
+                funcToCallOnPress: lambda:root.moveGcodeZ(1)
+                id: zRight
         BoxLayout:
             orentation: 'horizontal'
             size_hint: None, None
@@ -189,31 +226,41 @@
                 cols: 2
                 Label:
                     text: '                   X :'
+                    color: .476, .476, .476,1
                 Label:
                     text: root.xReadoutPos
+                    color: .476, .476, .476,1
                 Label:
                     text: '                   Y : '
+                    color: .476, .476, .476,1
                 Label:
                     text: root.yReadoutPos
+                    color: .476, .476, .476,1
                 Label:
                     text: '                   Z : '
+                    color: .476, .476, .476,1
                 Label:
                     text: root.zReadoutPos
+                    color: .476, .476, .476,1
             GridLayout:
                 cols: 1
                 Label:
                     text: "Percent Complete/Line:"
                     font_size: '11sp'
+                    color: .476, .476, .476,1
                 Label:
                     text: root.percentComplete
+                    color: .476, .476, .476,1
                 Label:
                     text: root.gcodeLineNumber
+                    color: .476, .476, .476,1
         Label:
             text: root.connectionStatus
             size_hint: None, None
             width: dp(300)
             height: dp(30)
             disabled: False
+            color: .476, .476, .476,1
         ScrollableLabel:
             id: textconsole
             size: dp(300), dp(200)
@@ -273,6 +320,7 @@
         height: self.texture_size[1]
         text_size: self.width, None
         text: root.text
+        color: .476, .476, .476,1
 
 <ConnectMenu>:
     GridLayout:
@@ -325,124 +373,6 @@
                 text: "Advanced"
                 values: ["Calibrate Chain Length - Manual", "Test Feedback System", "Wipe EEPROM", "Simulation"]
                 on_text: root.advancedOptionsFunctions(advancedOptions.text)
-
-<ManualControl>:
-    GridLayout:
-        rows: 2
-        size: root.size
-        pos: root.pos
-        Label:
-            text: "Manual Control"
-        GridLayout:
-            cols: 12
-            #disabled: not app.data.connectionStatus
-            Label:
-                text: "X:"
-            Button:
-                text: '-5'
-                disabled: True
-            Button:
-                text: '-4'
-                disabled: True
-            Button:
-                text: '-3'
-                disabled: True
-            Button:
-                text: '-2'
-                disabled: True
-            Button:
-                text: '-1'
-                disabled: True
-            Button:
-                text: '0'
-                disabled: True
-            Button:
-                text: '1'
-                disabled: True
-            Button:
-                text: '2'
-                disabled: True
-            Button:
-                text: '3'
-                disabled: True
-            Button:
-                text: '4'
-                disabled: True
-            Button:
-                disabled: True
-                text: '5'
-
-            Label:
-                text: "Y:"
-            Button:
-                disabled: True
-                text: '-5'
-            Button:
-                disabled: True
-                text: '-4'
-            Button:
-                disabled: True
-                text: '-3'
-            Button:
-                disabled: True
-                text: '-2'
-            Button:
-                disabled: True
-                text: '-1'
-            Button:
-                disabled: True
-                text: '0'
-            Button:
-                disabled: True
-                text: '1'
-            Button:
-                disabled: True
-                text: '2'
-            Button:
-                disabled: True
-                text: '3'
-            Button:
-                disabled: True
-                text: '4'
-            Button:
-                disabled: True
-                text: '5'
-
-            Label:
-                text: "Z:"
-            Button:
-                disabled: True
-                text: '-5'
-            Button:
-                disabled: True
-                text: '-4'
-            Button:
-                disabled: True
-                text: '-3'
-            Button:
-                disabled: True
-                text: '-2'
-            Button:
-                disabled: True
-                text: '-1'
-            Button:
-                disabled: True
-                text: '0'
-            Button:
-                disabled: True
-                text: '1'
-            Button:
-                disabled: True
-                text: '2'
-            Button:
-                disabled: True
-                text: '3'
-            Button:
-                disabled: True
-                text: '4'
-            Button:
-                disabled: True
-                text: '5'
 
 <OtherFeatures>:
     connectmenu:connectmenu
@@ -663,27 +593,102 @@
     size: root.size
     pos: root.pos
     GridLayout:
-        cols: 3
-        Button:
-            text: ".1"
-            id: distBtn
-            on_release: root.setDist()
-        Button:
-            text: "MM"
-            on_release: root.units()
-            id: unitsBtn
-        Button:
-            text: "Lower"
-            on_release: root.zIn()
-        Button:
-            text: "Done"
-            on_release: root.done()
-        Button:
-            text: "Define Zero"
-            on_release: root.zero()
-        Button:
-            text: "Raise"
-            on_release: root.zOut()
+        cols: 2
+        GridLayout:
+            size_hint_x: ".75sp"
+            cols: 3
+            rosw: 2
+            Button:
+                text: ".1"
+                id: distBtn
+                on_release: root.setDist()
+            Button:
+                text: "MM"
+                on_release: root.units()
+                id: unitsBtn
+            Button:
+                text: "Raise"
+                on_release: root.zOut()
+            Button:
+                text: "Done"
+                on_release: root.done()
+            Button:
+                text: "Define Zero"
+                on_release: root.zero()
+            Button:
+                text: "Lower"
+                on_release: root.zIn()
+        GridLayout:
+            size_hint_x: ".25sp"
+            cols: 1
+            rosw: 1
+            Button:
+                text: "Stop!"
+                # font_size: '48sp'
+                # color: [1,0,0,1]
+                on_release: root.stopZMove()
+
+<TriangularCalibration>:
+    testCutPosSlider:testCutPosSlider
+    triangleMeasure:triangleMeasure
+    unitsBtnT:unitsBtnT
+    cutBtnT:cutBtnT
+    enterValuesT:enterValuesT
+    
+    GridLayout:
+        cols: 2
+        width: root.width
+        height: root.height
+        GridLayout:
+            cols: 1
+            size_hint_x: leftCol
+            Label:
+                text: "To refine these measurements we're going to cut a test shape.\nThe test shape consists of two short vertical cuts a known distance apart\nBased on the distance between these marks we can dial in the machine settings\n\nThe slider to the right of the buttons can be used to vertically adjust where the test cut is done\n\nThe size of bit used is not critical\nMeasure from the left side of one mark to the left side of the other mark\nThe target distance is 1905mm (75in)\nThe process will repeat until the spacing is accurate to within .5mm\nThe more accurate your measurements, the more accurate your machine will be\n\nPress Cut Test Pattern to begin"
+            GridLayout:
+                cols: 2
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview Triangular.JPG"
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Measure Test Shape Horizontal.jpg"
+        GridLayout:
+            cols: 1
+            size_hint_x: rightCol
+            GridLayout:
+                cols: 2
+                GridLayout:
+                    cols: 1
+                    size_hint_x: .8
+                    Label:
+                    Label:
+                        text: "Measurement:"
+                    TextInput:
+                        id:triangleMeasure
+                        disabled: True
+                    Button:
+                        text: "MM"
+                        on_release: root.switchUnits()
+                        id: unitsBtnT
+                        disabled: True
+                    Button:
+                        text: "Enter Value"
+                        on_release: root.enterTestPaternValuesTriangular()
+                        id: enterValuesT
+                        disabled: True
+                    Button:
+                        text: "Cut Test\nPattern"
+                        id: cutBtnT
+                        on_release: root.cutTestPaternTriangular()
+                    Button:
+                        text: "Stop\nCut"
+                        on_release: root.stopCut()
+                    Label:
+                Slider:
+                    orientation: 'vertical'
+                    min: -400
+                    max:  400
+                    value: -400
+                    id: testCutPosSlider
+                    size_hint_x: .2
 
 <SetSprocketsVertical>:
     #Set sprockets to 12 o'clock
@@ -770,13 +775,9 @@
     unitsBtn:unitsBtn
     enterValues:enterValues
     zAxisActiveSwitch:zAxisActiveSwitch
-    triangleMeasure: triangleMeasure
-    unitsBtnT:unitsBtnT
-    enterValuesT:enterValuesT
-    cutBtnT:cutBtnT
     setSprocketsVertical:setSprocketsVertical
     measureOutChains:measureOutChains
-    testCutPosSlider:testCutPosSlider
+    triangularCalibration:triangularCalibration
     
     cols: 1
     size: root.size
@@ -1026,57 +1027,9 @@
                 Label:
         #cut test shape Triangular
         GridLayout:
-            cols: 2
-            GridLayout:
-                cols: 1
-                size_hint_x: leftCol
-                Label:
-                    text: "To refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short vertical cuts a known distance apart\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe slider to the right of the buttons can be used to vertically adjust where the test cut is done\n\nThe size of bit used is not critical\nMeasure from the left side of one mark to the left side of the other mark\n\nThe process will repeat until the spacing is accurate to within .5mm\nThe more accurate your measurements, the more accurate your machine will be\n\nPress Cut Test Pattern to begin"
-                GridLayout:
-                    cols: 2
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview Triangular.JPG"
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Measure Test Shape Horizontal.jpg"
-            GridLayout:
-                cols: 1
-                size_hint_x: rightCol
-                GridLayout:
-                    cols: 2
-                    GridLayout:
-                        cols: 1
-                        size_hint_x: .8
-                        Label:
-                        Label:
-                            text: "Measurement:"
-                        TextInput:
-                            id:triangleMeasure
-                            disabled: True
-                        Button:
-                            text: "MM"
-                            on_release: root.switchUnits()
-                            id: unitsBtnT
-                            disabled: True
-                        Button:
-                            text: "Enter Value"
-                            on_release: root.enterTestPaternValuesTriangular()
-                            id: enterValuesT
-                            disabled: True
-                        Button:
-                            text: "Cut Test\nPattern"
-                            id: cutBtnT
-                            on_release: root.cutTestPaternTriangular()
-                        Button:
-                            text: "Stop\nCut"
-                            on_release: root.stopCut()
-                        Label:
-                    Slider:
-                        orientation: 'vertical'
-                        min: -400
-                        max:  400
-                        value: -400
-                        id: testCutPosSlider
-                        size_hint_x: .2
+            cols: 1
+            TriangularCalibration:
+                id: triangularCalibration
         #cut test shape Quadrilateral
         GridLayout:
             cols: 2

@@ -40,7 +40,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     def initialize(self):
         
-        self.targetIndicator.color = (1,0,0)
+        self.targetIndicator.color   = (1,0,0)
+        self.positionIndicator.color = (0,0,0)
         
         self.drawWorkspace()
 
@@ -191,15 +192,15 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.scatterObject.canvas.remove_group('workspace')
  
         with self.scatterObject.canvas:
-            Color(1, 1, 1)
+            Color(.47, .47, .47)
 
             #create the bounding box
             height = float(self.data.config.get('Maslow Settings', 'bedHeight'))
             width  = float(self.data.config.get('Maslow Settings', 'bedWidth'))
-            Line(points = ( -width/2 , -height/2 ,  width/2 , -height/2), dash_offset = 5, group='workspace')
-            Line(points = ( -width/2 ,  height/2 ,  width/2 ,  height/2), dash_offset = 5, group='workspace')
-            Line(points = ( -width/2 , -height/2 , -width/2 ,  height/2), dash_offset = 5, group='workspace')
-            Line(points = (  width/2 , -height/2 ,  width/2 ,  height/2), dash_offset = 5, group='workspace')
+            Line(points = ( -width/2 , -height/2 ,  width/2 , -height/2), group='workspace')
+            Line(points = ( -width/2 ,  height/2 ,  width/2 ,  height/2), group='workspace')
+            Line(points = ( -width/2 , -height/2 , -width/2 ,  height/2), group='workspace')
+            Line(points = (  width/2 , -height/2 ,  width/2 ,  height/2), group='workspace')
             
             #create the axis lines
             Line(points = (-width/2,0,width/2,0), dash_offset = 5, group='workspace')
@@ -238,7 +239,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             
             #Draw lines for G1 and G0
             with self.scatterObject.canvas:
-                Color(1, 1, 1)
+                Color(self.data.drawingColor[0], self.data.drawingColor[1], self.data.drawingColor[2])
                 
                 if command == 'G00':
                     #draw a dashed line
