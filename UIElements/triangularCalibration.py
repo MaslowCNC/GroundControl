@@ -48,6 +48,8 @@ class TriangularCalibration(Widget):
         self.triangleMeasure.disabled = False
         self.unitsBtnT.disabled       = False
         self.enterValuesT.disabled    = False
+        
+        self.enterValuesT.disabled = False
     
     def enterTestPaternValuesTriangular(self):
         
@@ -86,6 +88,8 @@ class TriangularCalibration(Widget):
             self.data.config.write()
             self.cutBtnT.disabled = False
             self.data.pushSettings()
+            
+            self.enterValuesT.disabled = True              #disable the button so the same number cannot be entered twice
     
     def stopCut(self):
         self.data.quick_queue.put("!") 
