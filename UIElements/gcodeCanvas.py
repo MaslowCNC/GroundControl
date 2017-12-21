@@ -262,7 +262,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                         Color(1, 0, 0)
                         radius = 2
                     Line(circle=(self.xPosition , self.yPosition, radius), group = 'gcode')
-                    Color(1, 1, 1)
+                    Color(self.data.drawingColor[0], self.data.drawingColor[1], self.data.drawingColor[2])
             
             self.xPosition = xTarget
             self.yPosition = yTarget
