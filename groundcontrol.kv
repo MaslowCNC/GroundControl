@@ -540,13 +540,22 @@
 
 <TouchNumberInput>:
     textInput:textInput
+    unitsBtn:unitsBtn
     cols: 1
     size: root.size
     pos: root.pos
-    TextInput:
+    GridLayout:
+        cols: 2
         size_hint_y:.25
-        font_size: self.height - 5
-        id:textInput
+        TextInput:
+            size_hint_x:.8
+            font_size: self.height - 5
+            id:textInput
+        Button:
+            size_hint_x: .2
+            text: 'MM'
+            id: unitsBtn
+            on_release: root.switchUnits()
     GridLayout:
         cols: 3
         Button:
