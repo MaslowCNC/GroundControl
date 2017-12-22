@@ -7,6 +7,7 @@ from   kivy.uix.gridlayout                       import   GridLayout
 from   kivy.properties                           import   ObjectProperty
 from   kivy.properties                           import   StringProperty
 from   UIElements.touchNumberInput               import   TouchNumberInput
+from   UIElements.triangularCalibration          import   TriangularCalibration
 from   kivy.uix.popup                            import   Popup
 import global_variables
 
@@ -31,7 +32,10 @@ class MeasureMachinePopup(GridLayout):
         self.measureOutChains.data          =  data
         self.measureOutChains.carousel      =  self.carousel
         self.measureOutChains.text          =  "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of the right chain on the vertical tooth of the right sprocket\n as shown in the picture below\n\nThe left chain does not need to be moved, it can be left partly extended\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Next\nPressing Next will move the sled to the center of the sheet.\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way"
-    
+        
+        self.triangularCalibration.data          =  data
+        self.triangularCalibration.carousel      =  self.carousel
+        
     def backBtn(self, *args):
         '''
         
@@ -110,7 +114,7 @@ class MeasureMachinePopup(GridLayout):
         
         if self.carousel.index == 9:
             #Cut test shape triangular
-            self.data.pushSettings()
+            self.data.pushSettings()  
             self.stepText = "Step 10 of 10"
             self.goFwdBtn.disabled = False
             
@@ -131,6 +135,16 @@ class MeasureMachinePopup(GridLayout):
         if self.carousel.index == 11:
             #Final finish step
             self.goFwdBtn.disabled = True
+            finishString = "Your machine is now calibrated!\n\nCongratulations!\n\nThe final calibration values are:\n"
+            finishString = finishString + "\nDistance between motors: " + self.data.config.get('Maslow Settings', 'motorSpacingX') + "mm"
+            finishString = finishString + "\nVertical motor offset: " + self.data.config.get('Maslow Settings', 'motorOffsetY') + "mm"
+            finishString = finishString + "\nKinematics type: " + self.data.config.get('Advanced Settings', 'kinematicsType')
+            if self.data.config.get('Advanced Settings', 'kinematicsType') == 'Triangular':
+                finishString = finishString + "\nRotation radius: " + self.data.config.get('Advanced Settings', 'rotationRadius') + "mm"
+            else:
+                finishString = finishString + "\nSled mount spacing: " + self.data.config.get('Maslow Settings', 'sledWidth') + "mm"
+            
+            self.finishText.text = finishString
     
     def begin(self):
         
@@ -144,30 +158,25 @@ class MeasureMachinePopup(GridLayout):
         each sprocket to 12:00
         
         '''
-        print "define initial state"
         self.data.gcode_queue.put("B06 L0 R0 ");
         self.carousel.load_next()
     
     def LeftCW(self):
-        print "left CW"
         self.data.gcode_queue.put("G91 ")
         self.data.gcode_queue.put("B09 L.5 F100 ")
         self.data.gcode_queue.put("G90 ")
     
     def LeftCCW(self):
-        print "left CCW"
         self.data.gcode_queue.put("G91 ")
         self.data.gcode_queue.put("B09 L-.5 F100 ")
         self.data.gcode_queue.put("G90 ")
         
     def RightCW(self):
-        print "right CW"
         self.data.gcode_queue.put("G91 ")
         self.data.gcode_queue.put("B09 R-.5 F100 ")
         self.data.gcode_queue.put("G90 ")
     
     def RightCCW(self):
-        print "right CCW"
         self.data.gcode_queue.put("G91 ")
         self.data.gcode_queue.put("B09 R.5 F100 ")
         self.data.gcode_queue.put("G90 ")
@@ -331,53 +340,19 @@ class MeasureMachinePopup(GridLayout):
         self.data.config.write()
         
         if self.kinematicsType == 'Triangular':
-            #Set up a good initial guess for the radius
-            print "Rotation radius set to 260"
-            self.data.config.set('Advanced Settings', 'rotationRadius', 260)
-            self.data.config.write()
+            try:
+                #Get the value if it's already there...
+                 rotationRadius = self.data.config.get('Advanced Settings', 'rotationRadius')
+                 print "Rotation radius is " + str(rotationRadius)
+            except:
+                #Set up a good initial guess for the radius
+                print "Rotation radius set to 260"
+                self.data.config.set('Advanced Settings', 'rotationRadius', 260)
+                self.data.config.write()
             self.carousel.load_next()
         else:
             
             self.carousel.load_slide(self.carousel.slides[10])
-    
-    def cutTestPaternTriangular(self):
-        
-        #Credit for this test pattern to David Lang
-        self.data.units = "MM"
-        self.data.gcode_queue.put("G21 ")
-        self.data.gcode_queue.put("G90  ") #Switch to absolute mode
-        self.data.gcode_queue.put("G40 ")
-
-        self.data.gcode_queue.put("G0 Z5 ")
-        self.data.gcode_queue.put("G0 X0 Y0  ")
-        self.data.gcode_queue.put("G17 ")
-
-        #(defines the center). Moves up with each attempt
-        self.data.gcode_queue.put("G0 X0 Y" + str(self.testCutPosSlider.value) + "  ")
-        
-        self.testCutPosSlider.value = self.testCutPosSlider.value + 18 #increment the starting spot
-        
-        self.data.gcode_queue.put("G91 ")   #Switch to relative mode
-
-        self.data.gcode_queue.put("G0 X-902.5 ")
-        self.data.gcode_queue.put("G1 Z-7 F500 ")
-        self.data.gcode_queue.put("G1 Y-20 ")
-        self.data.gcode_queue.put("G1 Z7 ")
-        self.data.gcode_queue.put("G0 X1905 Y20 ")
-        self.data.gcode_queue.put("G1 Z-7 ")
-        self.data.gcode_queue.put("G1 Y-20 ")
-        self.data.gcode_queue.put("G1 Z5 ")
-        self.data.gcode_queue.put("G0 X-900 Y500 ")
-        
-        
-        self.data.gcode_queue.put("G90  ") #Switch back to absolute mode
-        
-        self.numberOfTimesTestCutRun = self.numberOfTimesTestCutRun + 1
-        self.cutBtnT.text = "Re-Cut Test\nPattern"
-        self.cutBtnT.disabled         = True
-        self.triangleMeasure.disabled = False
-        self.unitsBtnT.disabled       = False
-        self.enterValuesT.disabled    = False
     
     def cutTestPatern(self):
         
@@ -443,43 +418,6 @@ class MeasureMachinePopup(GridLayout):
             self.data.config.set('Maslow Settings', 'sledWidth', str(newSledSpacing))
             self.data.config.write()
             self.cutBtn.disabled = False
-            self.data.pushSettings()
-    
-    def enterTestPaternValuesTriangular(self):
-        
-        print "got to enter test values"
-        
-        dist = 0
-        
-        try:
-            dist = float(self.triangleMeasure.text)
-        except:
-            self.data.message_queue.put("Message: Couldn't make that into a number")
-            return
-        
-        if self.unitsBtn.text == 'Inches':
-            dist = dist*25.4
-        
-        dist = 1905 - dist #1905 is expected test spacing in mm. dist is greater than zero if the length is too long, less than zero if if is too short
-        
-        print "The error is: "
-        print dist
-        
-        acceptableTolerance = .5
-        
-        if abs(dist) < acceptableTolerance:               #if we're fully calibrated
-            self.carousel.load_slide(self.carousel.slides[11])
-        else:
-            amtToChange = -.9*dist
-            
-            print "so we are going to adjust the motor spacing by: "
-            print amtToChange
-            
-            newSledSpacing = float(self.data.config.get('Advanced Settings', 'rotationRadius')) + amtToChange
-            print "Now trying spacing: " + str(newSledSpacing)
-            self.data.config.set('Advanced Settings', 'rotationRadius', str(newSledSpacing))
-            self.data.config.write()
-            self.cutBtnT.disabled = False
             self.data.pushSettings()
     
     def stopCut(self):

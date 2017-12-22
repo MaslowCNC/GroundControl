@@ -126,6 +126,14 @@ class GroundControlApp(App):
             "key": "zDistPerRot"
         },
         {
+            "type": "options",
+            "title": "Color Scheme",
+            "desc": "Switch between the light and dark color schemes. Restarting GC is needed for this change to take effect",
+            "options": ["Light", "Dark"],
+            "section": "Maslow Settings",
+            "key": "colorScheme"
+        },
+        {
             "type": "string",
             "title": "Open File",
             "desc": "The path to the open file",
@@ -344,10 +352,24 @@ class GroundControlApp(App):
     '''
     
     def build(self):
-        Window.maximize()
         
         interface       =  FloatLayout()
         self.data       =  Data()
+        
+        if self.config.get('Maslow Settings', 'colorScheme') == 'Light':
+            self.data.iconPath        = './Images/Icons/normal/'
+            self.data.fontColor       = '[color=7a7a7a]'
+            self.data.drawingColor    = [.47,.47,.47]
+            Window.clearcolor         = (1, 1, 1, 1)
+        elif self.config.get('Maslow Settings', 'colorScheme') == 'Dark':
+            self.data.iconPath        = './Images/Icons/highvis/'
+            self.data.fontColor       = '[color=000000]'
+            self.data.drawingColor    = [1,1,1]
+            Window.clearcolor         = (0, 0, 0, 1)
+        
+        
+        Window.maximize()
+        
         
         self.frontpage = FrontPage(self.data, name='FrontPage')
         interface.add_widget(self.frontpage)
@@ -359,9 +381,10 @@ class GroundControlApp(App):
         Load User Settings
         '''
         
-        self.config.set('Advanced Settings', 'truncate', 0)
-        self.config.set('Advanced Settings', 'digits', 4)
-        self.config.write()
+        if self.config.get('Advanced Settings', 'encoderSteps') == '8148.0':
+            self.data.message_queue.put("Message: This update will adjust the the number of encoder pulses per rotation from 8,148 to 8,113 in your settings which improves the positional accuracy.\n\nPerforming a calibration will help you get the most out of this update.")
+            self.config.set('Advanced Settings', 'encoderSteps', '8113.73')
+            self.config.write()
         
         self.data.comport = self.config.get('Maslow Settings', 'COMport')
         self.data.gcodeFile = self.config.get('Maslow Settings', 'openFile')
@@ -369,7 +392,6 @@ class GroundControlApp(App):
         offsetY = float(self.config.get('Advanced Settings', 'homeY'))
         self.data.gcodeShift = [offsetX,offsetY]
         self.data.config  = self.config
-        
         
         '''
         Initializations
@@ -407,13 +429,14 @@ class GroundControlApp(App):
                                                  'sledWidth'     : 310, 
                                                  'sledHeight'    : 139, 
                                                  'sledCG'        : 79, 
+                                                 'colorScheme'   : "Light",
                                                  'openFile'      : " ",
                                                  'macro1'        : "",
                                                  'macro1_title'  : "Macro 1",
                                                  'macro2'        : "",
                                                  'macro2_title'  : "Macro 2"})
 
-        config.setdefaults('Advanced Settings', {'encoderSteps'       : 8148.0,
+        config.setdefaults('Advanced Settings', {'encoderSteps'       : 8113.73,
                                                  'gearTeeth'          : 10, 
                                                  'chainPitch'         : 6.35,
                                                  'zEncoderSteps'      : 7560.0,
@@ -425,14 +448,14 @@ class GroundControlApp(App):
                                                  'kinematicsType'     : 'Quadrilateral',
                                                  'rotationRadius'     : '100',
                                                  'enablePosPIDValues' : 0,
-                                                 'KpPos'              : 1100,
+                                                 'KpPos'              : 1300,
                                                  'KiPos'              : 0,
-                                                 'KdPos'              : 0,
+                                                 'KdPos'              : 34,
                                                  'propWeight'         : 1,
                                                  'enableVPIDValues'   : 0,
-                                                 'KpV'                : 52,
+                                                 'KpV'                : 7,
                                                  'KiV'                : 0,
-                                                 'KdV'                : 0})
+                                                 'KdV'                : .28})
         
         config.setdefaults('Ground Control Settings', {'centerCanvasOnResize': 0,
                                                  'zoomIn': "pageup",
@@ -486,9 +509,9 @@ class GroundControlApp(App):
             KdPos = float(self.data.config.get('Advanced Settings', 'KdPos'))
             propWeight = float(self.data.config.get('Advanced Settings', 'propWeight'))
         else:
-            KpPos = 1100
+            KpPos = 1300
             KiPos = 0
-            KdPos = 0
+            KdPos = 34
             propWeight = 1
         
         if int(self.data.config.get('Advanced Settings', 'enableVPIDValues')) == 1:
@@ -496,9 +519,9 @@ class GroundControlApp(App):
             KiV = float(self.data.config.get('Advanced Settings', 'KiV'))
             KdV = float(self.data.config.get('Advanced Settings', 'KdV'))
         else:
-            KpV = 52
+            KpV = 7
             KiV = 0
-            KdV = 0
+            KdV = .28
         
         
         
@@ -563,8 +586,6 @@ class GroundControlApp(App):
         '''
         while not self.data.message_queue.empty(): #if there is new data to be read
             message = self.data.message_queue.get()
-            
-            self.data.logger.writeToLog(message)
             
             if message[0] == "<":
                 self.setPosOnScreen(message)

@@ -6,6 +6,7 @@ from kivy.properties                                  import OptionProperty
 from kivy.properties                                  import NumericProperty
 from kivy.event                                       import EventDispatcher
 from DataStructures.logger                            import   Logger
+from DataStructures.loggingQueue                      import   LoggingQueue
 import Queue
 
 class Data(EventDispatcher):
@@ -25,7 +26,7 @@ class Data(EventDispatcher):
     
     #Gcodes contains all of the lines of gcode in the opened file
     gcode      = ObjectProperty([])
-    version    = '0.99'
+    version    = '1.01'
     #all of the available COM ports
     comPorts   = []
     #This defines which COM port is used
@@ -63,9 +64,19 @@ class Data(EventDispatcher):
     serialPort = None #this is a pointer to the program serial port object
     
     '''
+    
+    Colors
+    
+    '''
+    fontColor                                             =  StringProperty('[color=7a7a7a]')
+    drawingColor                                          =  ObjectProperty([.47,.47,.47])
+    iconPath                                              =  StringProperty('./Images/Icons/normal/')
+    
+    
+    '''
     Queues
     '''
-    message_queue   =  Queue.Queue()
+    message_queue   =  LoggingQueue(logger)
     gcode_queue     =  Queue.Queue()
     quick_queue     =  Queue.Queue()
     

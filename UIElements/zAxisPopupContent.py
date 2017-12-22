@@ -23,7 +23,7 @@ class ZAxisPopupContent(GridLayout):
         self.distBtn.text  = str(zStepSizeVal)
     
     def setDist(self):
-        self.popupContent = TouchNumberInput(done=self.dismiss_popup)
+        self.popupContent = TouchNumberInput(done=self.dismiss_popup, data = self.data)
         self._popup = Popup(title="Change increment size of machine movement", content=self.popupContent,
                             size_hint=(0.9, 0.9))
         self._popup.open()
@@ -106,6 +106,17 @@ class ZAxisPopupContent(GridLayout):
         
         '''
         self.data.gcode_queue.put("G10 Z0 ")
+    
+    def stopZMove(self):
+        '''
+        
+        Send the imediate stop command
+        
+        '''
+        print("z-axis Stopped")
+        self.data.quick_queue.put("!")
+        with self.data.gcode_queue.mutex:
+            self.data.gcode_queue.queue.clear()
     
     def dismiss_popup(self):
         '''
