@@ -640,8 +640,6 @@
 
 <TriangularCalibration>:
     testCutPosSlider:testCutPosSlider
-    triangleMeasure:triangleMeasure
-    unitsBtnT:unitsBtnT
     cutBtnT:cutBtnT
     enterValuesT:enterValuesT
     
@@ -669,19 +667,9 @@
                     cols: 1
                     size_hint_x: .8
                     Label:
-                    Label:
-                        text: "Measurement:"
-                    TextInput:
-                        id:triangleMeasure
-                        disabled: True
-                    Button:
-                        text: "MM"
-                        on_release: root.switchUnits()
-                        id: unitsBtnT
-                        disabled: True
                     Button:
                         text: "Enter Value"
-                        on_release: root.enterTestPaternValuesTriangular()
+                        on_release: root.enterDist()
                         id: enterValuesT
                         disabled: True
                     Button:

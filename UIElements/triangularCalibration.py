@@ -1,5 +1,7 @@
 from kivy.uix.widget                      import   Widget
 from kivy.properties                      import   ObjectProperty
+from   UIElements.touchNumberInput        import   TouchNumberInput
+from   kivy.uix.popup                     import   Popup
 
 class TriangularCalibration(Widget):
     '''
@@ -49,8 +51,6 @@ class TriangularCalibration(Widget):
         self.numberOfTimesTestCutRun = self.numberOfTimesTestCutRun + 1
         self.cutBtnT.text = "Re-Cut Test\nPattern"
         self.cutBtnT.disabled         = True
-        self.triangleMeasure.disabled = False
-        self.unitsBtnT.disabled       = False
         self.enterValuesT.disabled    = False
         
         self.enterValuesT.disabled = False
@@ -107,3 +107,25 @@ class TriangularCalibration(Widget):
             self.unitsBtnT.text = 'Inches'
         else:
             self.unitsBtnT.text = 'MM'
+            
+    def enterDist(self):
+        self.popupContent = TouchNumberInput(done=self.dismiss_popup, data = self.data)
+        self._popup = Popup(title="Enter Measured Distance", content=self.popupContent,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
+    
+    def dismiss_popup(self):
+        '''
+        
+        Close The Pop-up to enter distance information
+        
+        '''
+        try:
+            numberEntered = float(self.popupContent.textInput.text)
+            print "number entered: "
+            print numberEntered
+            print "Units: "
+            print self.data.units
+        except:
+            pass                                                             #If what was entered cannot be converted to a number, leave the value the same
+        self._popup.dismiss()
