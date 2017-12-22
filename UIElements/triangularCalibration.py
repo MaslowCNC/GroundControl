@@ -37,7 +37,11 @@ class TriangularCalibration(Widget):
         self.data.gcode_queue.put("G1 Z-7 ")
         self.data.gcode_queue.put("G1 Y-20 ")
         self.data.gcode_queue.put("G1 Z5 ")
-        self.data.gcode_queue.put("G0 X-900 Y500 ")
+        if self.testCutPosSlider.value <= 0:
+            self.data.gcode_queue.put("G0 X-900 Y400 ")
+        else:
+            self.data.gcode_queue.put("G0 X-900 Y-400 ")
+        
         
         
         self.data.gcode_queue.put("G90  ") #Switch back to absolute mode
