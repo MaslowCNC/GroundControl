@@ -55,17 +55,13 @@ class TriangularCalibration(Widget):
         
         self.enterValuesT.disabled = False
     
-    def enterTestPaternValuesTriangular(self):
+    def enterTestPaternValuesTriangular(self, dist):
+        '''
         
-        dist = 0
+        Takes the measured distance and uses it to determine a new distance to try
         
-        try:
-            dist = float(self.triangleMeasure.text)
-        except:
-            self.data.message_queue.put("Message: Couldn't make that into a number")
-            return
-        
-        if self.unitsBtnT.text == 'Inches':
+        '''
+        if self.data.units == 'INCHES':
             dist = dist*25.4
         
         errorAmt = 1905 - dist #1905 is expected test spacing in mm. dist is greater than zero if the length is too long, less than zero if if is too short
@@ -102,12 +98,7 @@ class TriangularCalibration(Widget):
         
         self.cutBtnT.disabled = False
     
-    def switchUnits(self):
-        if self.unitsBtnT.text == 'MM':
-            self.unitsBtnT.text = 'Inches'
-        else:
-            self.unitsBtnT.text = 'MM'
-            
+    
     def enterDist(self):
         self.popupContent = TouchNumberInput(done=self.dismiss_popup, data = self.data)
         self._popup = Popup(title="Enter Measured Distance", content=self.popupContent,
@@ -122,10 +113,8 @@ class TriangularCalibration(Widget):
         '''
         try:
             numberEntered = float(self.popupContent.textInput.text)
-            print "number entered: "
-            print numberEntered
-            print "Units: "
-            print self.data.units
+            self.enterTestPaternValuesTriangular(numberEntered)
         except:
+            self.data.message_queue.put("Message: Unable to make that into a number")
             pass                                                             #If what was entered cannot be converted to a number, leave the value the same
         self._popup.dismiss()
