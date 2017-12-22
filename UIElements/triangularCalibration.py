@@ -48,6 +48,8 @@ class TriangularCalibration(Widget):
         self.triangleMeasure.disabled = False
         self.unitsBtnT.disabled       = False
         self.enterValuesT.disabled    = False
+        
+        self.enterValuesT.disabled = False
     
     def enterTestPaternValuesTriangular(self):
         
@@ -62,17 +64,20 @@ class TriangularCalibration(Widget):
         if self.unitsBtnT.text == 'Inches':
             dist = dist*25.4
         
-        dist = 1905 - dist #1905 is expected test spacing in mm. dist is greater than zero if the length is too long, less than zero if if is too short
+        errorAmt = 1905 - dist #1905 is expected test spacing in mm. dist is greater than zero if the length is too long, less than zero if if is too short
         
         print "The error is: "
-        print dist
+        print errorAmt
         
         acceptableTolerance = .5
+        maximumRealisticError = 300
         
-        if abs(dist) < acceptableTolerance:               #if we're fully calibrated
+        if abs(errorAmt) > maximumRealisticError:
+            self.data.message_queue.put('Message: ' + str(dist) + 'mm is ' + str(errorAmt) + 'mm away from the target distance of 1905mm which seems wrong.\nPlease check the number and enter it again.')
+        elif abs(errorAmt) < acceptableTolerance:               #if we're fully calibrated
             self.carousel.load_slide(self.carousel.slides[11])
         else:
-            amtToChange = -.9*dist
+            amtToChange = -.9*errorAmt
             
             print "so we are going to adjust the motor spacing by: "
             print amtToChange
@@ -83,6 +88,8 @@ class TriangularCalibration(Widget):
             self.data.config.write()
             self.cutBtnT.disabled = False
             self.data.pushSettings()
+            
+            self.enterValuesT.disabled = True              #disable the button so the same number cannot be entered twice
     
     def stopCut(self):
         self.data.quick_queue.put("!") 
