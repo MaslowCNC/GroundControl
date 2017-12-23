@@ -5,6 +5,7 @@ from Connection.serialPortThread               import  SerialPortThread
 
 import sys
 import serial
+import serial.tools.list_ports
 import threading
 
 class SerialPort(MakesmithInitFuncs):
@@ -88,7 +89,10 @@ class SerialPort(MakesmithInitFuncs):
         #Detects all the devices connected to the computer. Returns them as an array.
         import glob
         if sys.platform.startswith('win'):
-            ports = ['COM' + str(i + 1) for i in range(256)]
+		list = serial.tools.list_ports.comports()
+		ports = []
+		for element in list:
+			ports.append(element.device)	
 
         elif sys.platform.startswith('linux'):
             # this is to exclude your current terminal "/dev/tty"
@@ -105,6 +109,7 @@ class SerialPort(MakesmithInitFuncs):
             try:
                 s = serial.Serial(port)
                 s.close()
+                print ("Port " + port)
                 result.append(port)
             except (OSError, serial.SerialException):
                 pass
