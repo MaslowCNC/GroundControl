@@ -18,7 +18,7 @@ class SerialPort(MakesmithInitFuncs):
     '''
     
     
-    COMports = ListProperty(("Available Ports:", "None"))
+    # COMports = ListProperty(("Available Ports:", "None"))
     
     def __init__(self):
         '''
@@ -48,24 +48,7 @@ class SerialPort(MakesmithInitFuncs):
         '''
         self.data.config.set('Makesmith Settings', 'COMport', str(self.data.comport))
         self.data.config.write()
-    
-    def updatePorts(self, *args):
-        '''
         
-        Talks to the OS and determines which devices are available on which ports.
-        
-        '''
-        
-        portsList = ["Available Ports:"]
-        
-        for port in self.listSerialPorts():
-            portsList.append(port)
-        
-        if len(portsList) == 1:
-            portsList.append("None")
-        
-        self.COMports = portsList
-    
     '''
     
     Serial Connection Functions
@@ -85,43 +68,3 @@ class SerialPort(MakesmithInitFuncs):
             self.th.daemon = True
             self.th.start()
     
-    def listSerialPorts(self):
-        #Detects all the devices connected to the computer. Returns them as an array.
-        import glob
-        if sys.platform.startswith('win'):
-		list = serial.tools.list_ports.comports()
-		ports = []
-		for element in list:
-			ports.append(element.device)	
-
-        elif sys.platform.startswith('linux'):
-            # this is to exclude your current terminal "/dev/tty"
-            ports = glob.glob('/dev/tty[A-Za-z]*')
-
-        elif sys.platform.startswith('darwin'):
-            ports = glob.glob('/dev/tty.*')
-
-        else:
-            raise EnvironmentError('Unsupported platform')
-
-        result = []
-        for port in ports:
-            try:
-                s = serial.Serial(port)
-                s.close()
-                print ("Port " + port)
-                result.append(port)
-            except (OSError, serial.SerialException):
-                pass
-            except (ValueError):
-                print("Port find error")
-        return result
-    
-    def detectCOMports(self, *args):
-        x = []
-        
-        altPorts = self.listSerialPorts()
-        for z in altPorts:
-            x.append((z,z))
-        
-        self.comPorts = x
