@@ -1,7 +1,8 @@
-from kivy.uix.widget                      import   Widget
-from kivy.properties                      import   ObjectProperty
+from   kivy.uix.widget                    import   Widget
+from   kivy.properties                    import   ObjectProperty
 from   UIElements.touchNumberInput        import   TouchNumberInput
 from   kivy.uix.popup                     import   Popup
+import global_variables
 
 class TriangularCalibration(Widget):
     '''
@@ -100,6 +101,11 @@ class TriangularCalibration(Widget):
     
     
     def enterDist(self):
+        '''
+        
+        Called when the "Enter Measurement" button is pressed
+        
+        '''
         self.popupContent = TouchNumberInput(done=self.dismiss_popup, data = self.data)
         self._popup = Popup(title="Enter Measured Distance", content=self.popupContent,
                             size_hint=(0.9, 0.9))
