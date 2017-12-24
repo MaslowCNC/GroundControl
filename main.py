@@ -345,7 +345,6 @@ class GroundControlApp(App):
             "title": "Valid File Extensions",
             "desc": "Valid file extensions for Ground Control to open. Comma separated list.",
             "section": "Ground Control Settings",
-            "disabled": "True",
             "key": "validExtensions"
         }
     ]
@@ -460,7 +459,7 @@ class GroundControlApp(App):
         config.setdefaults('Ground Control Settings', {'centerCanvasOnResize': 0,
                                                  'zoomIn': "pageup",
                                                  'zoomOut': "pagedown",
-                                                 'validExtensions': ".nc, .ngc, .text, .gcode"})
+                                                 'validExtensions': ".nc, .NC, .ngc, .text, .gcode"})
 
     def build_settings(self, settings):
         """
