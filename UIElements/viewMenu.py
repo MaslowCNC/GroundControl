@@ -3,8 +3,10 @@ from   UIElements.loadDialog                     import   LoadDialog
 from   UIElements.pageableTextPopup              import   PageableTextPopup
 from   kivy.uix.popup                            import   Popup
 import re
-from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
-from os                                          import    path
+from DataStructures.makesmithInitFuncs           import   MakesmithInitFuncs
+from os                                          import   path
+from Tkinter                                     import Tk
+from tkFileDialog                                import   askopenfilename
 
 
 
@@ -22,13 +24,22 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         Creates a new pop-up which can be used to open a file.
         
         '''
-        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
-        content.path = path.dirname(self.data.gcodeFile)
-        if content.path is "": 
-            content.path = path.expanduser('~')
-        self._popup = Popup(title="Load file", content=content,
-                            size_hint=(0.9, 0.9))
-        self._popup.open()
+        
+        Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
+        initialDir = path.dirname(self.data.gcodeFile)
+        if initialDir is "": 
+            initialDir = path.expanduser('~')
+        filename = askopenfilename( initialdir = initialDir) # show an "Open" dialog box and return the path to the selected file
+        
+        self.data.gcodeFile = filename
+        
+        #content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
+        #content.path = path.dirname(self.data.gcodeFile)
+        #if content.path is "": 
+        #    content.path = path.expanduser('~')
+        #self._popup = Popup(title="Load file", content=content,
+        #                    size_hint=(0.9, 0.9))
+        #self._popup.open()
     
     def reloadGcode(self):
         '''
