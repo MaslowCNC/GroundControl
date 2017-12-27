@@ -1,5 +1,8 @@
-from kivy.uix.widget                      import   Widget
-from kivy.properties                      import   ObjectProperty
+from   kivy.uix.widget                    import   Widget
+from   kivy.properties                    import   ObjectProperty
+from   UIElements.touchNumberInput        import   TouchNumberInput
+from   kivy.uix.popup                     import   Popup
+import global_variables
 
 class TriangularCalibration(Widget):
     '''
@@ -49,23 +52,17 @@ class TriangularCalibration(Widget):
         self.numberOfTimesTestCutRun = self.numberOfTimesTestCutRun + 1
         self.cutBtnT.text = "Re-Cut Test\nPattern"
         self.cutBtnT.disabled         = True
-        self.triangleMeasure.disabled = False
-        self.unitsBtnT.disabled       = False
         self.enterValuesT.disabled    = False
         
         self.enterValuesT.disabled = False
     
-    def enterTestPaternValuesTriangular(self):
+    def enterTestPaternValuesTriangular(self, dist):
+        '''
         
-        dist = 0
+        Takes the measured distance and uses it to determine a new distance to try
         
-        try:
-            dist = float(self.triangleMeasure.text)
-        except:
-            self.data.message_queue.put("Message: Couldn't make that into a number")
-            return
-        
-        if self.unitsBtnT.text == 'Inches':
+        '''
+        if self.data.units == 'INCHES':
             dist = dist*25.4
         
         errorAmt = 1905 - dist #1905 is expected test spacing in mm. dist is greater than zero if the length is too long, less than zero if if is too short
@@ -102,8 +99,28 @@ class TriangularCalibration(Widget):
         
         self.cutBtnT.disabled = False
     
-    def switchUnits(self):
-        if self.unitsBtnT.text == 'MM':
-            self.unitsBtnT.text = 'Inches'
-        else:
-            self.unitsBtnT.text = 'MM'
+    
+    def enterDist(self):
+        '''
+        
+        Called when the "Enter Measurement" button is pressed
+        
+        '''
+        self.popupContent = TouchNumberInput(done=self.dismiss_popup, data = self.data)
+        self._popup = Popup(title="Enter Measured Distance", content=self.popupContent,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
+    
+    def dismiss_popup(self):
+        '''
+        
+        Close The Pop-up to enter distance information
+        
+        '''
+        try:
+            numberEntered = float(self.popupContent.textInput.text)
+            self.enterTestPaternValuesTriangular(numberEntered)
+        except:
+            self.data.message_queue.put("Message: Unable to make that into a number")
+            pass                                                             #If what was entered cannot be converted to a number, leave the value the same
+        self._popup.dismiss()
