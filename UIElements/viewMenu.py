@@ -32,7 +32,7 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         validExtensions = self.data.config.get('Ground Control Settings', 'validExtensions').replace(",", "")
         filename = askopenfilename( initialdir = initialDir, filetypes = (("Gcode files", validExtensions),("all files","*.*")), title = "Open Gcode File") # show an "Open" dialog box and return the path to the selected file
         
-        if filename is not None:
+        if filename is not "":
             self.data.gcodeFile = filename
             self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
             self.data.config.write()
