@@ -3,8 +3,10 @@ from   UIElements.loadDialog                     import   LoadDialog
 from   UIElements.pageableTextPopup              import   PageableTextPopup
 from   kivy.uix.popup                            import   Popup
 import re
-from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
-from os                                          import    path
+from DataStructures.makesmithInitFuncs           import   MakesmithInitFuncs
+from os                                          import   path
+from Tkinter                                     import Tk
+from tkFileDialog                                import   askopenfilename
 
 
 
@@ -22,14 +24,22 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         Creates a new pop-up which can be used to open a file.
         
         '''
-        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
-        content.path = path.dirname(self.data.gcodeFile)
-        if content.path is "": 
-            content.path = path.expanduser('~')
-        self._popup = Popup(title="Load file", content=content,
-                            size_hint=(0.9, 0.9))
-        self._popup.open()
-    
+        
+        Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
+        initialDir = path.dirname(self.data.gcodeFile)
+        if initialDir is "": 
+            initialDir = path.expanduser('~')
+        validExtensions = self.data.config.get('Ground Control Settings', 'validExtensions').replace(",", "")
+        filename = askopenfilename( initialdir = initialDir, filetypes = (("Gcode files", validExtensions),("all files","*.*")), title = "Open Gcode File") # show an "Open" dialog box and return the path to the selected file
+        
+        if filename is not "":
+            self.data.gcodeFile = filename
+            self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
+            self.data.config.write()
+        
+        #close the parent popup
+        self.parentWidget.close()
+        
     def reloadGcode(self):
         '''
         
@@ -40,34 +50,6 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         filePath = self.data.gcodeFile
         self.data.gcodeFile = ""
         self.data.gcodeFile = filePath
-        
-        #close the parent popup
-        self.parentWidget.close()
-    
-    def load(self, filePath, filename):
-        '''
-        
-        Load A File (Any Type)
-        
-        Takes in a file path (from pop-up) and handles the file appropriately for the given file-type.
-        
-        '''
-        
-        #close the open file popup
-        self.dismiss_popup()
-        
-        #locate the file
-        filename = filename[0]
-        fileExtension = path.splitext(filename)[1]
-        
-        validExtensions = self.data.config.get('Ground Control Settings', 'validExtensions').replace(" ", "").split(',')
-        
-        if fileExtension in validExtensions:
-            self.data.gcodeFile = filename
-            self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
-            self.data.config.write()
-        else:
-            self.data.message_queue.put("Message: Ground control can only open gcode files with extensions: " + self.data.config.get('Ground Control Settings', 'validExtensions'))
         
         #close the parent popup
         self.parentWidget.close()

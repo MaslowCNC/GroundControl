@@ -426,37 +426,6 @@
         Line:
             points: (self.x-self.width/2, self.height/2+self.y, self.width/2+self.x, self.y-self.height/2)
 
-<LoadDialog>:
-    BoxLayout:
-        size: root.size
-        pos: root.pos
-        orientation: "vertical"
-        FileChooser:
-            id: filechooser
-            path: root.path
-            filters: ['*.nc','*.ngc','*.text,','*.gcode']
-            FileChooserIconLayout
-            FileChooserListLayout
-
-        BoxLayout:
-            size_hint_y: None
-            height: dp(30)
-            Button:
-                text: 'Icon View'
-                on_press: filechooser.view_mode = 'icon'
-                size_hint_x: 0.3
-            Button:
-                text: 'List View'
-                on_press: filechooser.view_mode = 'list'
-                size: root.width/8,root.height
-                size_hint_x: 0.3
-            Button:
-                text: "Load"
-                on_release: root.load(filechooser.path, filechooser.selection)
-            Button:
-                text: "Cancel"
-                on_release: root.cancel()
-
 <NotificationPopup>:
     BoxLayout:
         size: root.size
