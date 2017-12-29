@@ -345,7 +345,6 @@ class GroundControlApp(App):
             "title": "Valid File Extensions",
             "desc": "Valid file extensions for Ground Control to open. Comma separated list.",
             "section": "Ground Control Settings",
-            "disabled": "True",
             "key": "validExtensions"
         }
     ]
