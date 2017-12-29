@@ -27,7 +27,16 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         if startingPath is "": 
             startingPath = path.expanduser('~')
         
-        content = FileBrowser(select_string='Select', favorites=[(startingPath, 'Last Location')], path = startingPath)
+        #We want to filter to show only files that ground control can open
+        validFileTypes = self.data.config.get('Ground Control Settings', 'validExtensions').replace(" ", "").split(',')
+        validFileTypes = ['*{0}'.format(fileType) for fileType in validFileTypes] #add a '*' to each one to match the format the widget expects
+        
+        
+        content = FileBrowser(select_string='Select', 
+                    favorites=[(startingPath, 'Last Location')], 
+                    path = startingPath, 
+                    filters = validFileTypes)
+                    
         content.bind(on_success=self.load,
                          on_canceled=self.dismiss_popup,
                          on_submit=self.load)
