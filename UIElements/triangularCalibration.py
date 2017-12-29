@@ -78,12 +78,14 @@ class TriangularCalibration(Widget):
         elif abs(errorAmt) < acceptableTolerance:               #if we're fully calibrated
             self.carousel.load_slide(self.carousel.slides[11])
         else:
+            
             amtToChange = -.9*errorAmt
             
             print "so we are going to adjust the motor spacing by: "
             print amtToChange
             
             newSledSpacing = float(self.data.config.get('Advanced Settings', 'rotationRadius')) + amtToChange
+            
             print "Now trying spacing: " + str(newSledSpacing)
             self.data.config.set('Advanced Settings', 'rotationRadius', str(newSledSpacing))
             self.data.config.write()
