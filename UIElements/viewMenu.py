@@ -1,5 +1,5 @@
 from   kivy.uix.gridlayout                       import   GridLayout
-from   UIElements.loadDialog                     import   LoadDialog
+from   UIElements.fileBrowser                    import   FileBrowser
 from   UIElements.pageableTextPopup              import   PageableTextPopup
 from   kivy.uix.popup                            import   Popup
 import re
@@ -22,10 +22,18 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         Creates a new pop-up which can be used to open a file.
         
         '''
-        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
-        content.path = path.dirname(self.data.gcodeFile)
-        if content.path is "": 
-            content.path = path.expanduser('~')
+        #starting path is either where the last opened file was or the users home directory
+        startingPath = path.dirname(self.data.gcodeFile)
+        if startingPath is "": 
+            startingPath = path.expanduser('~')
+        
+        content = FileBrowser(select_string='Select', favorites=[(startingPath, 'Last Location')], path = startingPath)
+        content.bind(on_success=self.load,
+                         on_canceled=self.dismiss_popup,
+                         on_submit=self.load)
+        
+        #load=self.load, cancel=self.dismiss_popup
+        
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
@@ -44,7 +52,7 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         #close the parent popup
         self.parentWidget.close()
     
-    def load(self, filePath, filename):
+    def load(self, instance):
         '''
         
         Load A File (Any Type)
@@ -53,22 +61,17 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         
         '''
         
+        filename = instance.selection[0]
+        print(filename)
+        
         #close the open file popup
         self.dismiss_popup()
         
         #locate the file
-        filename = filename[0]
-        fileExtension = path.splitext(filename)[1]
-        
-        validExtensions = self.data.config.get('Ground Control Settings', 'validExtensions').replace(" ", "").split(',')
-        
-        if fileExtension in validExtensions:
-            self.data.gcodeFile = filename
-            self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
-            self.data.config.write()
-        else:
-            self.data.message_queue.put("Message: Ground control can only open gcode files with extensions: " + self.data.config.get('Ground Control Settings', 'validExtensions'))
-        
+        self.data.gcodeFile = filename
+        self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
+        self.data.config.write()
+
         #close the parent popup
         self.parentWidget.close()
     
@@ -136,7 +139,7 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
             self._popup.dismiss()
             self.show_gcode()
     
-    def dismiss_popup(self):
+    def dismiss_popup(self, *args):
         '''
         
         Close The Pop-up
