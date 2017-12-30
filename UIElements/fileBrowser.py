@@ -230,6 +230,7 @@ Builder.load_string('''
                 root.filters = self.text.split(',') if self.text else []
             multiline: False
             text: ','.join([filt for filt in root.filters if isinstance(filt, str)])
+            disabled: True
         Button:
             id: cancel_button
             size_hint_x: None
