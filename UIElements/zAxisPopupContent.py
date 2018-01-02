@@ -36,11 +36,11 @@ class ZAxisPopupContent(GridLayout):
         '''
         if self.data.units == "INCHES":
             self.data.units = "MM"
-            self.distBtn.text = str(25*float(self.distBtn.text))
+            self.distBtn.text = str(25.4*float(self.distBtn.text))
         else:
             self.data.units = "INCHES"
             
-            self.distBtn.text = str(float(self.distBtn.text)/25)
+            self.distBtn.text = str(float(self.distBtn.text)/25.4)
         
         self.unitsBtn.text = self.data.units
     
