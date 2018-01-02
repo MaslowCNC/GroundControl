@@ -356,15 +356,19 @@ class GroundControlApp(App):
         self.data       =  Data()
         
         if self.config.get('Maslow Settings', 'colorScheme') == 'Light':
-            self.data.iconPath        = './Images/Icons/normal/'
-            self.data.fontColor       = '[color=7a7a7a]'
-            self.data.drawingColor    = [.47,.47,.47]
-            Window.clearcolor         = (1, 1, 1, 1)
+            self.data.iconPath               = './Images/Icons/normal/'
+            self.data.fontColor              = '[color=7a7a7a]'
+            self.data.drawingColor           = [.47,.47,.47]
+            Window.clearcolor                = (1, 1, 1, 1)
+            self.data.posIndicatorColor      =  [0,0,0]
+            self.data.targetInicatorColor    =  [1,0,0]
         elif self.config.get('Maslow Settings', 'colorScheme') == 'Dark':
-            self.data.iconPath        = './Images/Icons/highvis/'
-            self.data.fontColor       = '[color=000000]'
-            self.data.drawingColor    = [1,1,1]
-            Window.clearcolor         = (0, 0, 0, 1)
+            self.data.iconPath               = './Images/Icons/highvis/'
+            self.data.fontColor              = '[color=000000]'
+            self.data.drawingColor           = [1,1,1]
+            Window.clearcolor                = (0, 0, 0, 1)
+            self.data.posIndicatorColor      =  [1,1,1]
+            self.data.targetInicatorColor    =  [1,0,0]
         
         
         Window.maximize()
