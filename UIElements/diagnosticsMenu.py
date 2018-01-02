@@ -74,7 +74,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self.parentWidget.close()
     
     def wipeEEPROM(self):
-        self.data.gcode_queue.put("B07 ")
+        self.data.gcode_queue.put("$RST=* ")
         self.parentWidget.close()
     
     def measureMachine(self):
