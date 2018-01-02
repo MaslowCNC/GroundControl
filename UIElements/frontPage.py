@@ -142,11 +142,11 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         if newUnits == "INCHES":
             self.data.gcode_queue.put('G20 ')
-            self.moveDistInput.text = str(float(self.moveDistInput.text)/MMTOINCHES)
+            self.moveDistInput.text = "{0:.2f}".format(float(self.moveDistInput.text)/MMTOINCHES)
             self.data.tolerance = 0.020
         else:
             self.data.gcode_queue.put('G21 ')
-            self.moveDistInput.text = str(float(self.moveDistInput.text)/INCHESTOMM)
+            self.moveDistInput.text = "{0:.2f}".format(float(self.moveDistInput.text)/INCHESTOMM)
             self.data.tolerance = 0.5
     
     def onIndexMove(self, callback, newIndex):
