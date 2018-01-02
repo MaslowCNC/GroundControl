@@ -4,7 +4,8 @@ from UIElements.scrollableTextPopup              import    ScrollableTextPopup
 from kivy.uix.popup                              import    Popup
 from UIElements.measureMachinePopup              import    MeasureMachinePopup
 from UIElements.calibrateLengthsPopup            import    CalibrateLengthsPopup
-from Simulation.simulationCanvas                 import SimulationCanvas
+from Simulation.simulationCanvas                 import    SimulationCanvas
+from kivy.clock                                  import    Clock
 import sys
 
 class Diagnostics(FloatLayout, MakesmithInitFuncs):
@@ -75,6 +76,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
     
     def wipeEEPROM(self):
         self.data.gcode_queue.put("$RST=* ")
+        Clock.schedule_once(self.data.pushSettings, 6)
         self.parentWidget.close()
     
     def measureMachine(self):
