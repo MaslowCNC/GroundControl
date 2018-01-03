@@ -410,7 +410,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
 
     def gotoLinePopup(self):
         
-        self.popupContent = TouchNumberInput(done=self.dismiss_gotoLinePopup)
+        self.popupContent = TouchNumberInput(done=self.dismiss_gotoLinePopup, data=self.data)
         self._popup = Popup(title="Go to gcode line", content=self.popupContent,
                             size_hint=(0.9, 0.9))
         self._popup.open()
