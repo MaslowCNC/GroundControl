@@ -217,6 +217,7 @@ Builder.load_string('''
             root.selection) if root.multiselect else root.selection[0])) or ''
             hint_text: 'Filename'
             multiline: False
+            disabled: True
         Button:
             id: select_button
             size_hint_x: None
