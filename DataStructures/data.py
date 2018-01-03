@@ -71,6 +71,8 @@ class Data(EventDispatcher):
     fontColor                                             =  StringProperty('[color=7a7a7a]')
     drawingColor                                          =  ObjectProperty([.47,.47,.47])
     iconPath                                              =  StringProperty('./Images/Icons/normal/')
+    posIndicatorColor                                     =  ObjectProperty([0,0,0])
+    targetInicatorColor                                   =  ObjectProperty([1,0,0])
     
     
     '''
