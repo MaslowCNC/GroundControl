@@ -57,25 +57,27 @@ class ConnectMenu(FloatLayout, MakesmithInitFuncs):
     def listSerialPorts(self):
         #Detects all the devices connected to the computer. Returns them as an array.
         # import glob
-        if sys.platform.startswith('win'):
+        # Only called for Windows platforms
+        ports = []
+        if sys.platform.startswith('win'): 
             list = serial.tools.list_ports.comports()
-            ports = []
             for element in list:
                 ports.append(element.device)    
 
         else:
             raise EnvironmentError('Windows port search error')
 
-        result = []
-        for port in ports:
-            try:
-                s = serial.Serial(port)
-                s.close()
-                print ("Port " + port)
-                result.append(port)
-            except (OSError, serial.SerialException):
-                pass
-            except (ValueError):
-                print("Port find error")
-        return result
+        return ports
+        #result = []
+        #for port in ports:
+        #    try:
+        #        s = serial.Serial(port)
+        #        s.close()
+        #        print ("Port " + port)
+        #        result.append(port)
+        #    except (OSError, serial.SerialException):
+        #        pass
+        #    except (ValueError):
+        #        print("Port find error")
+        #return result
     
