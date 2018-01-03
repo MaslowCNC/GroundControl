@@ -496,7 +496,6 @@ class GroundControlApp(App):
     
     def push_settings_to_machine(self, *args):
         
-        
         #Push motor configuration settings to machine
         
         if self.data.connectionStatus != 1:
