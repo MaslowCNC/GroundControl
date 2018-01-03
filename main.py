@@ -345,7 +345,6 @@ class GroundControlApp(App):
             "title": "Valid File Extensions",
             "desc": "Valid file extensions for Ground Control to open. Comma separated list.",
             "section": "Ground Control Settings",
-            "disabled": "True",
             "key": "validExtensions"
         }
     ]
@@ -357,15 +356,19 @@ class GroundControlApp(App):
         self.data       =  Data()
         
         if self.config.get('Maslow Settings', 'colorScheme') == 'Light':
-            self.data.iconPath        = './Images/Icons/normal/'
-            self.data.fontColor       = '[color=7a7a7a]'
-            self.data.drawingColor    = [.47,.47,.47]
-            Window.clearcolor         = (1, 1, 1, 1)
+            self.data.iconPath               = './Images/Icons/normal/'
+            self.data.fontColor              = '[color=7a7a7a]'
+            self.data.drawingColor           = [.47,.47,.47]
+            Window.clearcolor                = (1, 1, 1, 1)
+            self.data.posIndicatorColor      =  [0,0,0]
+            self.data.targetInicatorColor    =  [1,0,0]
         elif self.config.get('Maslow Settings', 'colorScheme') == 'Dark':
-            self.data.iconPath        = './Images/Icons/highvis/'
-            self.data.fontColor       = '[color=000000]'
-            self.data.drawingColor    = [1,1,1]
-            Window.clearcolor         = (0, 0, 0, 1)
+            self.data.iconPath               = './Images/Icons/highvis/'
+            self.data.fontColor              = '[color=000000]'
+            self.data.drawingColor           = [1,1,1]
+            Window.clearcolor                = (0, 0, 0, 1)
+            self.data.posIndicatorColor      =  [1,1,1]
+            self.data.targetInicatorColor    =  [1,0,0]
         
         
         Window.maximize()
@@ -497,7 +500,6 @@ class GroundControlApp(App):
     
     def push_settings_to_machine(self, *args):
         
-        
         #Push motor configuration settings to machine
         
         if self.data.connectionStatus != 1:
@@ -523,27 +525,36 @@ class GroundControlApp(App):
             KiV = 0
             KdV = .28
         
+        # Be pretty dumb about this, just push settings without checking to 
+        # see what machine has
         
+        self.data.gcode_queue.put("$16=" + str(self.data.config.get('Maslow Settings', 'zAxis')))
+        self.data.gcode_queue.put("$12=" + str(self.data.config.get('Advanced Settings', 'encoderSteps')))
+        distPerRot = float(self.data.config.get('Advanced Settings', 'gearTeeth')) * float(self.data.config.get('Advanced Settings', 'chainPitch'))
+        self.data.gcode_queue.put("$13=" + str(distPerRot))
+        self.data.gcode_queue.put("$19=" + str(self.data.config.get('Maslow Settings'  , 'zDistPerRot')))
+        self.data.gcode_queue.put("$20=" + str(self.data.config.get('Advanced Settings', 'zEncoderSteps')))
         
-        cmdString = ("B12" 
-            +" I" + str(self.data.config.get('Maslow Settings', 'zAxis'))
-            +" J" + str(self.data.config.get('Advanced Settings', 'encoderSteps'))
-            +" K" + str(self.data.config.get('Advanced Settings', 'gearTeeth'))
-            +" M" + str(self.data.config.get('Advanced Settings', 'chainPitch'))
-            +" N" + str(self.data.config.get('Maslow Settings'  , 'zDistPerRot'))
-            +" P" + str(self.data.config.get('Advanced Settings', 'zEncoderSteps'))
-            +" R" + str(propWeight)
-            +" S" + str(KpPos)
-            +" T" + str(KiPos)
-            +" U" + str(KdPos)
-            +" V" + str(KpV)
-            +" W" + str(KiV)
-            +" X" + str(KdV)
-            +" Y" + str(self.data.config.get('Advanced Settings', 'zAxisAuto'))
-            + " "
-        )
+        #main axes
+        self.data.gcode_queue.put("$21=" + str(KpPos))
+        self.data.gcode_queue.put("$22=" + str(KiPos))
+        self.data.gcode_queue.put("$23=" + str(KdPos))
+        self.data.gcode_queue.put("$24=" + str(propWeight))
+        self.data.gcode_queue.put("$25=" + str(KpV))
+        self.data.gcode_queue.put("$26=" + str(KiV))
+        self.data.gcode_queue.put("$27=" + str(KdV))
+        self.data.gcode_queue.put("$28=1.0")
         
-        self.data.gcode_queue.put(cmdString)
+        #z axis
+        self.data.gcode_queue.put("$29=" + str(KpPos))
+        self.data.gcode_queue.put("$30=" + str(KiPos))
+        self.data.gcode_queue.put("$31=" + str(KdPos))
+        self.data.gcode_queue.put("$32=" + str(propWeight))
+        self.data.gcode_queue.put("$33=" + str(KpV))
+        self.data.gcode_queue.put("$34=" + str(KiV))
+        self.data.gcode_queue.put("$35=" + str(KdV))
+        self.data.gcode_queue.put("$36=1.0")
+        self.data.gcode_queue.put("$17=" + str(self.data.config.get('Advanced Settings', 'zAxisAuto')))
         
         #Push kinematics settings to machine
         if self.data.config.get('Advanced Settings', 'kinematicsType') == 'Quadrilateral':
@@ -551,20 +562,19 @@ class GroundControlApp(App):
         else:
             kinematicsType = 2
         
-        cmdString = ("B03" 
-            +" A" + str(self.data.config.get('Maslow Settings', 'bedWidth'))
-            +" C" + str(self.data.config.get('Maslow Settings', 'bedHeight'))
-            +" Q" + str(self.data.config.get('Maslow Settings', 'motorSpacingX'))
-            +" E" + str(self.data.config.get('Maslow Settings', 'motorOffsetY'))
-            +" F" + str(self.data.config.get('Maslow Settings', 'sledWidth'))
-            +" R" + str(self.data.config.get('Maslow Settings', 'sledHeight'))
-            +" H" + str(self.data.config.get('Maslow Settings', 'sledCG'))
-            +" Y" + str(kinematicsType)
-            +" Z" + str(self.data.config.get('Advanced Settings', 'rotationRadius'))
-            + " "
-        )
+        self.data.gcode_queue.put("$0=" + str(self.data.config.get('Maslow Settings', 'bedWidth')))
+        self.data.gcode_queue.put("$1=" + str(self.data.config.get('Maslow Settings', 'bedHeight')))
+        self.data.gcode_queue.put("$2=" + str(self.data.config.get('Maslow Settings', 'motorSpacingX')))
+        self.data.gcode_queue.put("$3=" + str(self.data.config.get('Maslow Settings', 'motorOffsetY')))
+        self.data.gcode_queue.put("$4=" + str(self.data.config.get('Maslow Settings', 'sledWidth')))
+        self.data.gcode_queue.put("$5=" + str(self.data.config.get('Maslow Settings', 'sledHeight')))
+        self.data.gcode_queue.put("$6=" + str(self.data.config.get('Maslow Settings', 'sledCG')))
+        self.data.gcode_queue.put("$7=" + str(kinematicsType))
+        self.data.gcode_queue.put("$8=" + str(self.data.config.get('Advanced Settings', 'rotationRadius')))
+
         
-        self.data.gcode_queue.put(cmdString)
+        # Force kinematics recalibration
+        self.data.gcode_queue.put("$K")
         
     '''
     

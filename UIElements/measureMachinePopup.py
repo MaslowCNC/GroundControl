@@ -135,6 +135,16 @@ class MeasureMachinePopup(GridLayout):
         if self.carousel.index == 11:
             #Final finish step
             self.goFwdBtn.disabled = True
+            finishString = "Your machine is now calibrated!\n\nCongratulations!\n\nThe final calibration values are:\n"
+            finishString = finishString + "\nDistance between motors: " + self.data.config.get('Maslow Settings', 'motorSpacingX') + "mm"
+            finishString = finishString + "\nVertical motor offset: " + self.data.config.get('Maslow Settings', 'motorOffsetY') + "mm"
+            finishString = finishString + "\nKinematics type: " + self.data.config.get('Advanced Settings', 'kinematicsType')
+            if self.data.config.get('Advanced Settings', 'kinematicsType') == 'Triangular':
+                finishString = finishString + "\nRotation radius: " + self.data.config.get('Advanced Settings', 'rotationRadius') + "mm"
+            else:
+                finishString = finishString + "\nSled mount spacing: " + self.data.config.get('Maslow Settings', 'sledWidth') + "mm"
+            
+            self.finishText.text = finishString
     
     def begin(self):
         
@@ -219,7 +229,7 @@ class MeasureMachinePopup(GridLayout):
     def textInputPopup(self, target):
         self.targetWidget = target
 
-        self.popupContent = TouchNumberInput(done=self.dismiss_popup)
+        self.popupContent = TouchNumberInput(done=self.dismiss_popup, data = self.data)
         self._popup = Popup(title="Number of links", content=self.popupContent,
                             size_hint=(0.9, 0.9))
         self._popup.open()

@@ -6,6 +6,7 @@ import sys
 import glob
 import serial
 import threading
+import serial.tools.list_ports
 
 class ConnectMenu(FloatLayout, MakesmithInitFuncs):
     
@@ -34,25 +35,49 @@ class ConnectMenu(FloatLayout, MakesmithInitFuncs):
             sysports = glob.glob('/dev/tty[A-Za-z]*')
             for port in sysports:
                 portsList.append(port)
+
         elif sys.platform.startswith('darwin'):
             sysports = glob.glob('/dev/tty.*')
             for port in sysports:
                 portsList.append(port)
-        else:
-        #  sys.platform.startswith('win'):
-            for port in self.data.serialPort.listSerialPorts():
+
+        elif sys.platform.startswith('win'):
+            for port in self.listSerialPorts():
                 portsList.append(port)
         
+        else:
+            raise EnvironmentError('Unsupported platform - can\'t find serial ports')
+
         if len(portsList) == 1:
             portsList.append("None")
         
         self.COMports = portsList
     
-    def detectCOMports(self, *args):
-        x = []
-        
-        altPorts = self.listSerialPorts()
-        for z in altPorts:
-            x.append((z,z))
-        
-        self.comPorts = x
+
+    def listSerialPorts(self):
+        #Detects all the devices connected to the computer. Returns them as an array.
+        # import glob
+        # Only called for Windows platforms
+        ports = []
+        if sys.platform.startswith('win'): 
+            list = serial.tools.list_ports.comports()
+            for element in list:
+                ports.append(element.device)    
+
+        else:
+            raise EnvironmentError('Windows port search error')
+
+        return ports
+        #result = []
+        #for port in ports:
+        #    try:
+        #        s = serial.Serial(port)
+        #        s.close()
+        #        print ("Port " + port)
+        #        result.append(port)
+        #    except (OSError, serial.SerialException):
+        #        pass
+        #    except (ValueError):
+        #        print("Port find error")
+        #return result
+    
