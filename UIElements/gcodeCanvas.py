@@ -40,8 +40,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     def initialize(self):
         
-        self.targetIndicator.color   = (1,0,0)
-        self.positionIndicator.color = (0,0,0)
+        self.targetIndicator.color   = self.data.targetInicatorColor
+        self.positionIndicator.color = self.data.posIndicatorColor
         
         self.drawWorkspace()
 
@@ -262,7 +262,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                         Color(1, 0, 0)
                         radius = 2
                     Line(circle=(self.xPosition , self.yPosition, radius), group = 'gcode')
-                    Color(1, 1, 1)
+                    Color(self.data.drawingColor[0], self.data.drawingColor[1], self.data.drawingColor[2])
             
             self.xPosition = xTarget
             self.yPosition = yTarget

@@ -142,11 +142,11 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         if newUnits == "INCHES":
             self.data.gcode_queue.put('G20 ')
-            self.moveDistInput.text = str(float(self.moveDistInput.text)/25)
+            self.moveDistInput.text = "{0:.2f}".format(float(self.moveDistInput.text)/MMTOINCHES)
             self.data.tolerance = 0.020
         else:
             self.data.gcode_queue.put('G21 ')
-            self.moveDistInput.text = str(float(self.moveDistInput.text)*25)
+            self.moveDistInput.text = "{0:.2f}".format(float(self.moveDistInput.text)/INCHESTOMM)
             self.data.tolerance = 0.5
     
     def onIndexMove(self, callback, newIndex):
@@ -351,7 +351,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         self.targetWidget = target
         
-        self.popupContent = TouchNumberInput(done=self.dismiss_popup)
+        self.popupContent = TouchNumberInput(done=self.dismiss_popup, data=self.data)
         self._popup = Popup(title="Change increment size of machine movement", content=self.popupContent,
                             size_hint=(0.9, 0.9))
         self._popup.open()
@@ -410,7 +410,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
 
     def gotoLinePopup(self):
         
-        self.popupContent = TouchNumberInput(done=self.dismiss_gotoLinePopup)
+        self.popupContent = TouchNumberInput(done=self.dismiss_gotoLinePopup, data=self.data)
         self._popup = Popup(title="Go to gcode line", content=self.popupContent,
                             size_hint=(0.9, 0.9))
         self._popup.open()

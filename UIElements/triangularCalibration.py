@@ -1,5 +1,8 @@
-from kivy.uix.widget                      import   Widget
-from kivy.properties                      import   ObjectProperty
+from   kivy.uix.widget                    import   Widget
+from   kivy.properties                    import   ObjectProperty
+from   UIElements.touchNumberInput        import   TouchNumberInput
+from   kivy.uix.popup                     import   Popup
+import global_variables
 
 class TriangularCalibration(Widget):
     '''
@@ -37,7 +40,11 @@ class TriangularCalibration(Widget):
         self.data.gcode_queue.put("G1 Z-7 ")
         self.data.gcode_queue.put("G1 Y-20 ")
         self.data.gcode_queue.put("G1 Z5 ")
-        self.data.gcode_queue.put("G0 X-900 Y500 ")
+        if self.testCutPosSlider.value <= 0:
+            self.data.gcode_queue.put("G0 X-900 Y400 ")
+        else:
+            self.data.gcode_queue.put("G0 X-900 Y-400 ")
+        
         
         
         self.data.gcode_queue.put("G90  ") #Switch back to absolute mode
@@ -45,44 +52,47 @@ class TriangularCalibration(Widget):
         self.numberOfTimesTestCutRun = self.numberOfTimesTestCutRun + 1
         self.cutBtnT.text = "Re-Cut Test\nPattern"
         self.cutBtnT.disabled         = True
-        self.triangleMeasure.disabled = False
-        self.unitsBtnT.disabled       = False
         self.enterValuesT.disabled    = False
+        
+        self.enterValuesT.disabled = False
     
-    def enterTestPaternValuesTriangular(self):
+    def enterTestPaternValuesTriangular(self, dist):
+        '''
         
-        dist = 0
+        Takes the measured distance and uses it to determine a new distance to try
         
-        try:
-            dist = float(self.triangleMeasure.text)
-        except:
-            self.data.message_queue.put("Message: Couldn't make that into a number")
-            return
-        
-        if self.unitsBtnT.text == 'Inches':
+        '''
+        if self.data.units == 'INCHES':
             dist = dist*25.4
         
-        dist = 1905 - dist #1905 is expected test spacing in mm. dist is greater than zero if the length is too long, less than zero if if is too short
+        errorAmt = 1905 - dist #1905 is expected test spacing in mm. dist is greater than zero if the length is too long, less than zero if if is too short
         
         print "The error is: "
-        print dist
+        print errorAmt
         
         acceptableTolerance = .5
+        maximumRealisticError = 300
         
-        if abs(dist) < acceptableTolerance:               #if we're fully calibrated
+        if abs(errorAmt) > maximumRealisticError:
+            self.data.message_queue.put('Message: ' + str(dist) + 'mm is ' + str(errorAmt) + 'mm away from the target distance of 1905mm which seems wrong.\nPlease check the number and enter it again.')
+        elif abs(errorAmt) < acceptableTolerance:               #if we're fully calibrated
             self.carousel.load_slide(self.carousel.slides[11])
         else:
-            amtToChange = -.9*dist
+            
+            amtToChange = -.9*errorAmt
             
             print "so we are going to adjust the motor spacing by: "
             print amtToChange
             
             newSledSpacing = float(self.data.config.get('Advanced Settings', 'rotationRadius')) + amtToChange
+            
             print "Now trying spacing: " + str(newSledSpacing)
             self.data.config.set('Advanced Settings', 'rotationRadius', str(newSledSpacing))
             self.data.config.write()
             self.cutBtnT.disabled = False
             self.data.pushSettings()
+            
+            self.enterValuesT.disabled = True              #disable the button so the same number cannot be entered twice
     
     def stopCut(self):
         self.data.quick_queue.put("!") 
@@ -91,8 +101,28 @@ class TriangularCalibration(Widget):
         
         self.cutBtnT.disabled = False
     
-    def switchUnits(self):
-        if self.unitsBtnT.text == 'MM':
-            self.unitsBtnT.text = 'Inches'
-        else:
-            self.unitsBtnT.text = 'MM'
+    
+    def enterDist(self):
+        '''
+        
+        Called when the "Enter Measurement" button is pressed
+        
+        '''
+        self.popupContent = TouchNumberInput(done=self.dismiss_popup, data = self.data)
+        self._popup = Popup(title="Enter Measured Distance", content=self.popupContent,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
+    
+    def dismiss_popup(self):
+        '''
+        
+        Close The Pop-up to enter distance information
+        
+        '''
+        try:
+            numberEntered = float(self.popupContent.textInput.text)
+            self.enterTestPaternValuesTriangular(numberEntered)
+        except:
+            self.data.message_queue.put("Message: Unable to make that into a number")
+            pass                                                             #If what was entered cannot be converted to a number, leave the value the same
+        self._popup.dismiss()
