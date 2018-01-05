@@ -171,11 +171,6 @@ class MeasureMachinePopup(GridLayout):
         self.data.gcode_queue.put("B09 L-" + str(dist) + " ")
         self.data.gcode_queue.put("G90 ")
 
-    def setZero(self):
-        #mark that the sprockets are straight up
-        self.data.gcode_queue.put("B06 L0 R0 ");
-        self.carousel.load_next()
-
     def measureLeft(self):
         self.data.gcode_queue.put("B10 L")
 
