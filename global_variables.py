@@ -39,3 +39,9 @@ _enableVPIDValues	= 0
 _KpV				= 7
 _KiV				= 0
 _KdV				= .28
+
+# GrouindControl Settings
+_centerCanvasOnResize = 0
+_zoomIn               = "pageup"
+_zoomOut              = "pagedown"
+_validExtensions      = ".nc, .ngc, .text, .gcode"

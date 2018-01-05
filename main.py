@@ -460,10 +460,10 @@ class GroundControlApp(App):
                                                  'KiV'                : global_variables._KiV,
                                                  'KdV'                : global_variables._KdV})
 
-        config.setdefaults('Ground Control Settings', {'centerCanvasOnResize': 0,
-                                                 'zoomIn': "pageup",
-                                                 'zoomOut': "pagedown",
-                                                 'validExtensions': ".nc, .ngc, .text, .gcode"})
+        config.setdefaults('Ground Control Settings', {'centerCanvasOnResize'   : global_variables._centerCanvasOnResize,
+                                                       'zoomIn'                 : global_variables._zoomIn,
+                                                       'zoomOut'                : global_variables._zoomOut,
+                                                       'validExtensions'        : global_variables._validExtensions,})
 
     def build_settings(self, settings):
         """
