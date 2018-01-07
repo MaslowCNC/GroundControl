@@ -120,6 +120,10 @@ class TriangularCalibration(Widget):
         ChainErrorCut2 = acceptableTolerance
         n = 0
 
+        self.vertMeasureT1.disabled = True
+        self.vertMeasureT2.disabled = True
+        self.enterValuesT.disabled = True
+
         print "Iterating for machine parameters"
 
         # Iterate until error tolerance is achieved or maximum number of iterations occurs
