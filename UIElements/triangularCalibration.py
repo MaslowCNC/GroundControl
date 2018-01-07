@@ -17,6 +17,7 @@ class TriangularCalibration(Widget):
     def cutTestPaternTriangular(self):
 
         workspaceHeight = float(self.data.config.get('Maslow Settings', 'bedHeight'))
+        workspaceWidth = float(self.data.config.get('Maslow Settings', 'bedWidth'))
 
         self.data.units = "MM"
         self.data.gcode_queue.put("G21 ")
@@ -29,14 +30,16 @@ class TriangularCalibration(Widget):
 
         self.data.gcode_queue.put("G91 ")   #Switch to relative mode
 
-        self.data.gcode_queue.put("G0 Y" + str(workspaceHeight/4) + "  ")  # Move up 25% the workspace to first cut point
+        self.data.gcode_queue.put("G0 X2.5 Y" + str(workspaceHeight/4) + "  ")  # Move up 25% the workspace to first cut point
         self.data.gcode_queue.put("G1 Z-7 F500 ")
+        self.data.gcode_queue.put("G1 X-5 ") # Cut 5mm horizontal mark
         self.data.gcode_queue.put("G1 Z7 ")
         self.data.gcode_queue.put("G0 Y-" + str(workspaceHeight/2) + "  ")  # Move down 50% the workspace to second cut point
         self.data.gcode_queue.put("G1 Z-7 ")
+        self.data.gcode_queue.put("G1 X5 ") # Cut 5mm horizontal mark
         self.data.gcode_queue.put("G1 Z7 ")
 
-        self.data.gcode_queue.put("G0 Y" + str(workspaceHeight/4) + "  ")  # Move up 25% the workspace to home location
+        self.data.gcode_queue.put("G0 X" + str((workspaceWidth/4)-2.5) + " Y" + str(workspaceHeight/4) + "  ")  # Move up 25% the workspace and to the side to allow measurement of the cuts
 
         self.data.gcode_queue.put("G90  ") #Switch back to absolute mode
 
@@ -82,7 +85,7 @@ class TriangularCalibration(Widget):
             self.data.message_queue.put("Message: Please enter a number for the bit diameter.")
             return
 
-        if ((bitDiameter > 25.4) or (bitDiameter <= 1)):
+        if ((bitDiameter > 25.4) or (bitDiameter < 0)):
             self.data.message_queue.put('Message: The bit diameter value of ' + str(bitDiameter) + 'mm seems wrong.\n\nPlease check the number and enter it again.')
             return
 
@@ -90,8 +93,8 @@ class TriangularCalibration(Widget):
 
         acceptableTolerance = .001
         numberOfIterations = 5000
-        motorYcoordCorrectionScale = 0.5
-        rotationRadiusCorrectionScale = 0.5
+        motorYcoordCorrectionScale = 0.25
+        rotationRadiusCorrectionScale = 0.25
 
         # Gather current machine parameters
 
@@ -114,8 +117,8 @@ class TriangularCalibration(Widget):
 
         # Set up the iterative algorithm
 
-        motorYcoordEst = distWorkareaTopToCut + (bitDiameter / 2)
-        rotationRadiusEst = 0
+        motorYcoordEst = distWorkareaTopToCut + (bitDiameter / 2) + (workspaceHeight / 4)
+        rotationRadiusEst = 100
         ChainErrorCut1 = acceptableTolerance
         ChainErrorCut2 = acceptableTolerance
         n = 0
@@ -161,6 +164,15 @@ class TriangularCalibration(Widget):
                 motorYcoordEst -= Correction * motorYcoordCorrectionScale
             else:
                 rotationRadiusEst -= Correction * rotationRadiusCorrectionScale
+
+            # If we get unrealistic values, reset and try again with smaller steps
+
+            if (motorYcoordEst < -(workspaceHeight/4) or rotationRadiusEst < -100):
+                    motorYcoordEst = distWorkareaTopToCut + (bitDiameter / 2) + (workspaceHeight / 4)
+                    rotationRadiusEst = 100
+                    motorYcoordCorrectionScale = float(motorYcoordCorrectionScale/2)
+                    rotationRadiusCorrectionScale = float(rotationRadiusCorrectionScale/2)
+                    print "Estimated values out of range, trying again with smaller steps"
 
         if n == numberOfIterations:
             self.data.message_queue.put('Message: The machine was not able to be calibrated. Please ensure the work area dimensions are correct and try again.')
