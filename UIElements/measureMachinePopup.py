@@ -153,12 +153,10 @@ class MeasureMachinePopup(GridLayout):
     def defineInitialState(self):
         '''
 
-        Ensure that the calibration process begins with known initial conditions for where the axis
-        think that they are are by setting both to zero. This prevents strange behavior when rotating
-        each sprocket to 12:00
+        This is a place to do any preparation needed on beginning the automatic calibration process. If putting something here, consider how it would
+        affect a user that uses 'Begin' but does not complete the process. Should the preparation be reversable to allow a clean bailout?
 
         '''
-        self.data.gcode_queue.put("B06 L0 R0 ");
         self.carousel.load_next()
             
     def extendLeft(self, dist):
