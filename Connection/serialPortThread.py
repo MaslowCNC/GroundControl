@@ -24,7 +24,7 @@ class SerialPortThread(MakesmithInitFuncs):
     # could be smaller (0.02) however larger number doesn't seem to impact performance
     MINTimePerLine = 0.05    
     
-    def _write (self, message):
+    def _write (self, message, isQuickCommand = False):
         #message = message + 'L' + str(len(message) + 1 + 2 + len(str(len(message))) )
         
         taken = time.time() - self.lastWriteTime
@@ -37,9 +37,16 @@ class SerialPortThread(MakesmithInitFuncs):
         
         message = message + '\n'
         
-        self.bufferSpace       = self.bufferSpace - len(message)
-        self.lengthOfLastLineStack.appendleft(len(message))
+        self.bufferSpace       = self.bufferSpace - len(message)        #shrink the available buffer space by the length of the line
         self.machineIsReadyForData = False
+        
+        #if this is a quick message sent as soon as the button is pressed (like stop) then put it on the right side of the queue
+        #because it is the first message sent, otherwise put it at the end (left) because it is the last message sent
+        if isQuickCommand:
+            self.lengthOfLastLineStack.append(len(message))
+        else:
+            self.lengthOfLastLineStack.appendleft(len(message))
+        
         
         message = message.encode()
         try:
@@ -114,11 +121,8 @@ class SerialPortThread(MakesmithInitFuncs):
                 #Check if a line has been completed
                 if lineFromMachine == "ok\r\n":
                     self.machineIsReadyForData = True
-                    print bool(self.lengthOfLastLineStack)
                     if bool(self.lengthOfLastLineStack) is True:                                     #if we've sent lines to the machine
                         self.bufferSpace = self.bufferSpace + self.lengthOfLastLineStack.pop()    #free up that space in the buffer
-                    print "Buffer space available: "
-                    print self.bufferSpace
                 
                 
                 
@@ -128,7 +132,7 @@ class SerialPortThread(MakesmithInitFuncs):
                 #send any emergency instructions to the machine if there are any
                 if self.data.quick_queue.empty() != True:
                     command = self.data.quick_queue.get_nowait() + " "
-                    self._write(command)
+                    self._write(command, True)
                 
                 #send regular instructions to the machine if there are any
                 if self.bufferSpace == 256 and self.machineIsReadyForData:
