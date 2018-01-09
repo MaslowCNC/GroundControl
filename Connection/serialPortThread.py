@@ -2,7 +2,7 @@ from DataStructures.makesmithInitFuncs         import   MakesmithInitFuncs
 from DataStructures.data          import   Data
 import serial
 import time
-import Queue
+from collections import deque
 
 
 class SerialPortThread(MakesmithInitFuncs):
@@ -18,7 +18,7 @@ class SerialPortThread(MakesmithInitFuncs):
     machineIsReadyForData      = False # Tracks whether last command was acked
     lastWriteTime              = time.time()
     bufferSpace                = 256
-    lengthOfLastLineStack      =  Queue.Queue()
+    lengthOfLastLineStack      =  deque()
     
     # Minimum time between lines sent to allow Arduino to cope
     # could be smaller (0.02) however larger number doesn't seem to impact performance
@@ -38,7 +38,7 @@ class SerialPortThread(MakesmithInitFuncs):
         message = message + '\n'
         
         self.bufferSpace       = self.bufferSpace - len(message)
-        self.lengthOfLastLineStack.put(len(message))
+        self.lengthOfLastLineStack.appendleft(len(message))
         self.machineIsReadyForData = False
         
         message = message.encode()
@@ -114,9 +114,11 @@ class SerialPortThread(MakesmithInitFuncs):
                 #Check if a line has been completed
                 if lineFromMachine == "ok\r\n":
                     self.machineIsReadyForData = True
-                    if self.lengthOfLastLineStack.empty() != True:                                     #if we've sent lines to the machine
-                        self.bufferSpace = self.bufferSpace + self.lengthOfLastLineStack.get_nowait()    #free up that space in the buffer
-                
+                    print bool(self.lengthOfLastLineStack)
+                    if bool(self.lengthOfLastLineStack) is True:                                     #if we've sent lines to the machine
+                        self.bufferSpace = self.bufferSpace + self.lengthOfLastLineStack.pop()    #free up that space in the buffer
+                    print "Buffer space available: "
+                    print self.bufferSpace
                 
                 
                 
