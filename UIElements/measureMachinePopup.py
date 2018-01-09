@@ -158,7 +158,7 @@ class MeasureMachinePopup(GridLayout):
         each sprocket to 12:00
 
         '''
-        self.data.gcode_queue.put("B06 L0 R0 ");
+        # self.data.gcode_queue.put("B06 L0 R0 ");
         self.carousel.load_next()
             
     def extendLeft(self, dist):
