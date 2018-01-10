@@ -30,16 +30,16 @@ class TriangularCalibration(Widget):
 
         self.data.gcode_queue.put("G91 ")   #Switch to relative mode
 
-        self.data.gcode_queue.put("G0 X2.5 Y" + str(workspaceHeight/4) + "  ")  # Move up 25% the workspace to first cut point
+        self.data.gcode_queue.put("G0 X12.7 Y" + str(workspaceHeight/4) + "  ")  # Move up 25% the workspace to first cut point
         self.data.gcode_queue.put("G1 Z-7 F500 ")
-        self.data.gcode_queue.put("G1 X-5 ") # Cut 5mm horizontal mark
+        self.data.gcode_queue.put("G1 X-25.4 ") # Cut 25.4mm horizontal mark
         self.data.gcode_queue.put("G1 Z7 ")
         self.data.gcode_queue.put("G0 Y-" + str(workspaceHeight/2) + "  ")  # Move down 50% the workspace to second cut point
         self.data.gcode_queue.put("G1 Z-7 ")
-        self.data.gcode_queue.put("G1 X5 ") # Cut 5mm horizontal mark
+        self.data.gcode_queue.put("G1 X25.4 ") # Cut 25.4mm horizontal mark
         self.data.gcode_queue.put("G1 Z7 ")
 
-        self.data.gcode_queue.put("G0 X" + str((workspaceWidth/4)-2.5) + " Y" + str(workspaceHeight/4) + "  ")  # Move up 25% the workspace and to the side to allow measurement of the cuts
+        self.data.gcode_queue.put("G0 X" + str((workspaceWidth/8)-12.7) + " Y" + str(workspaceHeight/4) + "  ")  # Move up 25% the workspace and to the side to allow measurement of the cuts
 
         self.data.gcode_queue.put("G90  ") #Switch back to absolute mode
 
@@ -65,18 +65,10 @@ class TriangularCalibration(Widget):
             self.data.message_queue.put("Message: Please enter a number for the distance between cuts.")
             return
 
-        if ((distBetweenCuts > workspaceHeight) or (distBetweenCuts < (workspaceHeight / 10))):
-            self.data.message_queue.put('Message: The measurement between cuts of ' + str(distBetweenCuts) + 'mm seems wrong.\n\nPlease check the number and enter it again.')
-            return
-
         try:
             distWorkareaTopToCut = float(self.vertMeasureT2.text)
         except:
             self.data.message_queue.put("Message: Please enter a number for the distance between the top of the work area and the top cut.")
-            return
-
-        if ((distWorkareaTopToCut > (workspaceHeight / 2)) or (distWorkareaTopToCut < 0)):
-            self.data.message_queue.put('Message: The measurement between the top edge of the work area and the top cut of ' + str(distWorkareaTopToCut) + 'mm seems wrong.\n\nPlease check the number and enter it again.')
             return
 
         try:
@@ -85,16 +77,36 @@ class TriangularCalibration(Widget):
             self.data.message_queue.put("Message: Please enter a number for the bit diameter.")
             return
 
-        if ((bitDiameter > 25.4) or (bitDiameter < 0)):
-            self.data.message_queue.put('Message: The bit diameter value of ' + str(bitDiameter) + 'mm seems wrong.\n\nPlease check the number and enter it again.')
-            return
+        if self.unitsBtnT.text == 'Units: inches':
+            if (((distBetweenCuts*25.4) > workspaceHeight) or ((distBetweenCuts*25.4) < (workspaceHeight / 10))):
+                self.data.message_queue.put('Message: The measurement between cuts of ' + str(distBetweenCuts) + ' inches seems wrong.\n\nPlease check the number and enter it again.')
+                return
+            if (((distWorkareaTopToCut*25.4) > (workspaceHeight / 2)) or (distWorkareaTopToCut < 0)):
+                self.data.message_queue.put('Message: The measurement between the top edge of the work area and the top cut of ' + str(distWorkareaTopToCut) + ' inches seems wrong.\n\nPlease check the number and enter it again.')
+                return
+            if ((bitDiameter > 1) or (bitDiameter < 0)):
+                self.data.message_queue.put('Message: The bit diameter value of ' + str(bitDiameter) + ' inches seems wrong.\n\nPlease check the number and enter it again.')
+                return
+            distBetweenCuts *= 25.4
+            distWorkareaTopToCut *= 25.4
+            bitDiameter *= 25.4
+        else:
+            if ((distBetweenCuts > workspaceHeight) or (distBetweenCuts < (workspaceHeight / 10))):
+                self.data.message_queue.put('Message: The measurement between cuts of ' + str(distBetweenCuts) + ' mm seems wrong.\n\nPlease check the number and enter it again.')
+                return
+            if ((distWorkareaTopToCut > (workspaceHeight / 2)) or (distWorkareaTopToCut < 0)):
+                self.data.message_queue.put('Message: The measurement between the top edge of the work area and the top cut of ' + str(distWorkareaTopToCut) + ' mm seems wrong.\n\nPlease check the number and enter it again.')
+                return
+            if ((bitDiameter > 25.4) or (bitDiameter < 0)):
+                self.data.message_queue.put('Message: The bit diameter value of ' + str(bitDiameter) + ' mm seems wrong.\n\nPlease check the number and enter it again.')
+                return
 
         # Configure iteration parameters
 
         acceptableTolerance = .001
         numberOfIterations = 5000
-        motorYcoordCorrectionScale = 0.25
-        rotationRadiusCorrectionScale = 0.25
+        motorYcoordCorrectionScale = 0.5
+        rotationRadiusCorrectionScale = 0.5
 
         # Gather current machine parameters
 
@@ -117,8 +129,11 @@ class TriangularCalibration(Widget):
 
         # Set up the iterative algorithm
 
-        motorYcoordEst = distWorkareaTopToCut + (bitDiameter / 2) + (workspaceHeight / 4)
-        rotationRadiusEst = 100
+        print "Previous machine parameters:"
+        print "Motor Spacing: " + str(motorSpacing) + ", Motor Y Offset: " + str(motorYoffsetEst) + ", Rotation Disk Radius: " + str(rotationRadiusEst)
+
+        motorYcoordEst = distWorkareaTopToCut + (bitDiameter / 2)
+        rotationRadiusEst = 0
         ChainErrorCut1 = acceptableTolerance
         ChainErrorCut2 = acceptableTolerance
         n = 0
@@ -127,7 +142,7 @@ class TriangularCalibration(Widget):
         self.vertMeasureT2.disabled = True
         self.enterValuesT.disabled = True
 
-        print "Iterating for machine parameters"
+        print "Iterating for new machine parameters"
 
         # Iterate until error tolerance is achieved or maximum number of iterations occurs
 
@@ -146,46 +161,52 @@ class TriangularCalibration(Widget):
 
             ChainErrorCut1 = ChainLengthCut1Est - ChainLengthCut1
             ChainErrorCut2 = ChainLengthCut2Est - ChainLengthCut2
-            ChainErrorCutRatio = ChainErrorCut1 / ChainErrorCut2
-
-            # Establish a correction value
-
-            Correction = (ChainErrorCut1 + ChainErrorCut2) / 2
 
             # Develop a printable motor Y offset value to update the user
 
             motorYoffsetEstPrint = motorYcoordEst - distWorkareaTopToCut - (bitDiameter / 2)
 
-            print "N: " + str(n) + ", Motor Spacing: " + str(round(motorSpacing, 3)) + ", Motor Y Offset: " + str(round(motorYoffsetEstPrint, 3)) + ", Rotation Disk Radius: " + str(round(rotationRadiusEst, 3))
+            print "N: " + str(n) + ", Motor Spacing: " + str(round(motorSpacing, 3)) + ", Motor Y Offset: " + str(round(motorYoffsetEstPrint, 3)) + ", Rotation Disk Radius: " + str(round(rotationRadiusEst, 3)) + ", Chain Error Cut 1: " + str(round(ChainErrorCut1,3)) + ", Chain Error Cut 2: " + str(round(ChainErrorCut2,3))
 
             # Update the machine parameters based on the current chain length errors
 
-            if (ChainErrorCutRatio > 0):
-                motorYcoordEst -= Correction * motorYcoordCorrectionScale
+            if ((ChainErrorCut1 < 0 and ChainErrorCut2 < 0) or (ChainErrorCut1 > 0 and ChainErrorCut2 > 0)):
+                motorYcoordEst -= ((ChainErrorCut1 + ChainErrorCut2) / 2) * motorYcoordCorrectionScale
             else:
-                rotationRadiusEst -= Correction * rotationRadiusCorrectionScale
+                rotationRadiusEst += ((ChainErrorCut1 - ChainErrorCut2) / 2) * rotationRadiusCorrectionScale
+                if (rotationRadiusEst < 0):
+                    rotationRadiusEst = 0
 
             # If we get unrealistic values, reset and try again with smaller steps
 
-            if (motorYcoordEst < -(workspaceHeight/4) or rotationRadiusEst < -100):
-                    motorYcoordEst = distWorkareaTopToCut + (bitDiameter / 2) + (workspaceHeight / 4)
-                    rotationRadiusEst = 100
+            if (motorYcoordEst < -(workspaceHeight/4) or motorYcoordEst > (2*workspaceHeight) or rotationRadiusEst > workspaceHeight):
+                    motorYcoordEst = distWorkareaTopToCut + (bitDiameter / 2)
+                    rotationRadiusEst = 0
                     motorYcoordCorrectionScale = float(motorYcoordCorrectionScale/2)
                     rotationRadiusCorrectionScale = float(rotationRadiusCorrectionScale/2)
                     print "Estimated values out of range, trying again with smaller steps"
 
         if n == numberOfIterations:
             self.data.message_queue.put('Message: The machine was not able to be calibrated. Please ensure the work area dimensions are correct and try again.')
-            self.enterValuesT.text = "Enter Values"
             print "Machine parameters could not be determined"
+
+            # Return sled to workspace center
+
+            self.data.gcode_queue.put("G21 ")
+            self.data.gcode_queue.put("G90 ")
+            self.data.gcode_queue.put("G40 ")
+            self.data.gcode_queue.put("G0 X0 Y0 ")
+            
             return
 
-        print "Machine parameters found"
+        print "Machine parameters found:"
 
         motorYoffsetEst = motorYcoordEst - distWorkareaTopToCut - (bitDiameter / 2)
 
         motorYoffsetEst = round(motorYoffsetEst, 1)
         rotationRadiusEst = round(rotationRadiusEst, 1)
+
+        print "Motor Spacing: " + str(motorSpacing) + ", Motor Y Offset: " + str(motorYoffsetEst) + ", Rotation Disk Radius: " + str(rotationRadiusEst)
 
         # Update machine parameters
 
@@ -193,6 +214,13 @@ class TriangularCalibration(Widget):
         self.data.config.set('Advanced Settings', 'rotationRadius', str(rotationRadiusEst))
         self.data.config.write()
         self.data.pushSettings()
+
+        # With new calibration parameters return sled to workspace center
+
+        self.data.gcode_queue.put("G21 ")
+        self.data.gcode_queue.put("G90 ")
+        self.data.gcode_queue.put("G40 ")
+        self.data.gcode_queue.put("G0 X0 Y0 ")
 
         self.carousel.load_slide(self.carousel.slides[11])
 
@@ -202,3 +230,9 @@ class TriangularCalibration(Widget):
             self.data.gcode_queue.queue.clear()
         
         self.cutBtnT.disabled = False
+
+    def switchUnitsT(self):
+        if self.unitsBtnT.text == 'Units: mm':
+            self.unitsBtnT.text = 'Units: inches'
+        else:
+            self.unitsBtnT.text = 'Units: mm'

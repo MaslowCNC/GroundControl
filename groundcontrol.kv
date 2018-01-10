@@ -613,7 +613,8 @@
     vertMeasureT2:vertMeasureT2
     bitDiameterT:bitDiameterT
     enterValuesT:enterValuesT
-    
+    unitsBtnT:unitsBtnT
+
     GridLayout:
         cols: 2
         width: root.width
@@ -634,24 +635,28 @@
             size_hint_x: rightCol
             Label:
             Label:
-                text: "Measurement\nBetween Cuts (mm):"
+                text: "Measurement\nBetween Cuts:"
                 halign: "center"
             TextInput:
                 id: vertMeasureT1
                 disabled: True
             Label:
-                text: "Measurement\nWork Area Top to Top Cut (mm):"
+                text: "Measurement\nWork Area Top to Top Cut:"
                 halign: "center"
             TextInput:
                 id: vertMeasureT2
                 disabled: True
             Label:
-                text: "Bit Diameter (mm):"
+                text: "Bit Diameter:"
                 halign: "center"
             TextInput:
                 id: bitDiameterT
                 disabled: False
-                text: "6.35"
+            Button:
+                text: "Units: mm"
+                on_release: root.switchUnitsT()
+                id: unitsBtnT
+                disabled: False
             Button:
                 text: "Enter Values"
                 halign: "center"
