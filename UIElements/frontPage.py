@@ -84,6 +84,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         self.run.btnBackground                  = self.data.iconPath + 'RunGreen.png'
         self.holdBtn.btnBackground              = self.data.iconPath + 'HoldYellow.png'
+        self.holdBtn.secretText                 = "HOLD"
         self.stopBtn.btnBackground              = self.data.iconPath + 'StopRed.png'
         
         self.goTo.btnBackground                 = self.data.iconPath + 'GoTo.png'
@@ -158,9 +159,11 @@ class FrontPage(Screen, MakesmithInitFuncs):
     
     def onUploadFlagChange(self, callback, newFlagValue):
         if self.data.uploadFlag is 0 and self.data.gcodeIndex > 1: #if the machine is stopped partway through a file
-            self.holdBtn.text = "CONTINUE"
+            self.holdBtn.secretText = "CONTINUE"
+            self.holdBtn.btnBackground              = self.data.iconPath + 'ContinueYellow.png'
         else:
-            self.holdBtn.text = "HOLD"
+            self.holdBtn.secretText = "HOLD"
+            self.holdBtn.btnBackground              = self.data.iconPath + 'HoldYellow.png'
 
     def moveGcodeZ(self,moves):
         '''
@@ -220,7 +223,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
             print "Unable to update position for new gcode line"
     
     def pause(self):
-        if  self.holdBtn.text == "HOLD":
+        if  self.holdBtn.secretText == "HOLD":
             self.data.uploadFlag = 0
             print("Run Paused")
         else:

@@ -27,7 +27,7 @@
 <ScreenControls>:
     actionsBtn:actionsBtn
     settingsBtn:settingsBtn
-    
+
     BoxLayout:
         orientation: 'horizontal'
         pos: (0, root.height - dp(60))
@@ -80,7 +80,7 @@
     holdBtn:holdBtn
     macro1Btn:macro1Btn
     macro2Btn:macro2Btn
-    
+
     upLeftArrow:upLeftArrow
     upArrow:upArrow
     upRightArrow:upRightArrow
@@ -90,7 +90,7 @@
     downLeftArrow:downLeftArrow
     downArrow:downArrow
     downRightArrow:downRightArrow
-    
+
     zAxisBtn:zAxisBtn
     unitsBtn:unitsBtn
     defHomeBtn:defHomeBtn
@@ -98,10 +98,10 @@
     zRight:zRight
     oneLeft:oneLeft
     oneRight:oneRight
-    
+
     run:run
     stopBtn:stopBtn
-    
+
     goTo:goTo
 
 
@@ -117,7 +117,7 @@
             height: dp(60*4)
             #disabled: not app.data.connectionStatus
             ButtonTemplate:
-                id: upLeftArrow 
+                id: upLeftArrow
                 funcToCallOnPress: root.upLeft
             ButtonTemplate:
                 id: upArrow
@@ -185,7 +185,7 @@
                 funcToCallOnPress: root.startRun
             ButtonTemplate:
                 id: holdBtn
-                text: "HOLD"
+                secretText: "HOLD"
                 funcToCallOnPress: root.pause
             ButtonTemplate:
                 id: stopBtn
@@ -688,26 +688,66 @@
             Image:
                 source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.jpg"
         GridLayout:
-            cols: 1
-            size_hint_x: rightCol
-            Label:
-            Button:
-                text: 'Turn Left Sprocket\n1 degree CCW'
-                on_release: root.LeftCCW()
-            Button:
-                text: 'Turn Left Sprocket\n1 degree CW'
-                on_release: root.LeftCW()
-            Button:
-                text: 'Turn Right Sprocket\n1 degree CCW'
-                on_release: root.RightCCW()
-            Button:
-                text: 'Turn Right Sprocket\n1 degree CW'
-                on_release: root.RightCW()
-            Button:
-                text: 'Set Zero'
-                on_release: root.setZero()
-            Label:
-    
+            cols:1
+            size_hint_x: .4
+            GridLayout:
+                cols: 3
+                size_hint_x: .4
+                Label:
+                    text: "Left Sprocket"
+                    font_size: 20
+                Label:
+                Label:
+                Button:
+                    text: '5 deg CCW'
+                    on_release: root.LeftCCW5()
+                Button:
+                    text: '1 deg CCW'
+                    on_release: root.LeftCCW()
+                Button:
+                    text: '0.1 deg CCW'
+                    on_release: root.LeftCCWpoint1()
+                Button:
+                    text: '5 deg CW'
+                    on_release: root.LeftCW5()
+                Button:
+                    text: '1 deg CW'
+                    on_release: root.LeftCW()
+                Button:
+                    text: '0.1 deg CW'
+                    on_release: root.LeftCWpoint1()
+                Label:
+                    text: "Right Sprocket"
+                    font_size: 20
+                Label:
+                Label:
+                Button:
+                    text: '5 deg CCW'
+                    on_release: root.RightCCW5()
+                Button:
+                    text: '1 deg CCW'
+                    on_release: root.RightCCW()
+                Button:
+                    text: '0.1 deg CCW'
+                    on_release: root.RightCCWpoint1()
+                Button:
+                    text: '5 deg CW'
+                    on_release: root.RightCW5()
+                Button:
+                    text: '1 deg CW'
+                    on_release: root.RightCW()
+                Button:
+                    text: '0.1 deg CW'
+                    on_release: root.RightCWpoint1()
+            GridLayout:
+                cols: 1
+                size_hint_x: .4
+                Label:
+                Button:
+                    text: 'Set Zero'
+                    on_release: root.setZero()
+                Label:
+                    
 <MeasureOutChains>:
     leftChainBtn:leftChainBtn
     rightChainBtn:rightChainBtn
@@ -763,7 +803,7 @@
     measureOutChains:measureOutChains
     triangularCalibration:triangularCalibration
     finishText:finishText
-    
+
     cols: 1
     size: root.size
     pos: root.pos
@@ -1074,7 +1114,7 @@
                 text: 'Finish'
                 on_release: root.done()
                 size_hint_x: rightCol
-    
+
 <CalibrateLengthsPopup>:
     carousel:carousel
     setSprocketsVertical:setSprocketsVertical
