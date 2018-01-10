@@ -131,7 +131,7 @@ class SerialPortThread(MakesmithInitFuncs):
                 
                 #send any emergency instructions to the machine if there are any
                 if self.data.quick_queue.empty() != True:
-                    command = self.data.quick_queue.get_nowait() + " "
+                    command = self.data.quick_queue.get_nowait()
                     self._write(command, True)
                 
                 #send regular instructions to the machine if there are any
