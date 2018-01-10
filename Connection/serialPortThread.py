@@ -168,4 +168,7 @@ class SerialPortThread(MakesmithInitFuncs):
                     self.data.connectionStatus = 0
                     self.serialInstance.close()
                     return
+                
+                # Sleep between passes to save CPU
+                time.sleep(.001)
                     
