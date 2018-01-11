@@ -280,6 +280,7 @@ class MeasureMachinePopup(GridLayout):
         '''
         self.data.config.set('Maslow Settings', 'zAxis', int(self.zAxisActiveSwitch.active))
         self.data.config.write()
+        self.data.pushSettings()
 
     def pullChainTight(self):
         #pull the left chain tight
