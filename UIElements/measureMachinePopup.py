@@ -316,7 +316,7 @@ class MeasureMachinePopup(GridLayout):
             try:
                 #Get the value if it's already there...
                  rotationRadius = self.data.config.get('Advanced Settings', 'rotationRadius')
-                 print "Rotation radius is " + str(rotationRadius)
+                 print "Current rotation radius is " + str(rotationRadius)
             except:
                 #Set up a good initial guess for the radius
                 print "Rotation radius set to 260"
