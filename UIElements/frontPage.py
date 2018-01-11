@@ -302,19 +302,14 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         self.data.gcode_queue.put("G90  ")
         
-        #if the machine has a z-axis lift it then go home
-        if int(self.data.config.get('Maslow Settings', 'zAxis')):
-            if self.units == "INCHES":
-                self.data.gcode_queue.put("G00 Z.25 ")
-            else:
-                self.data.gcode_queue.put("G00 Z5.0 ")
-            
-            self.data.gcode_queue.put("G00 X" + str(self.data.gcodeShift[0]) + " Y" + str(self.data.gcodeShift[1]) + " ")
-            
-            self.data.gcode_queue.put("G00 Z0 ")
-        #if the machine does not have a z-axis, just go home
+        if self.units == "INCHES":
+            self.data.gcode_queue.put("G00 Z.25 ")
         else:
-            self.data.gcode_queue.put("G00 X" + str(self.data.gcodeShift[0]) + " Y" + str(self.data.gcodeShift[1]) + " ")
+            self.data.gcode_queue.put("G00 Z5.0 ")
+        
+        self.data.gcode_queue.put("G00 X" + str(self.data.gcodeShift[0]) + " Y" + str(self.data.gcodeShift[1]) + " ")
+        
+        self.data.gcode_queue.put("G00 Z0 ")
         
     def moveOrigin(self):
         '''
