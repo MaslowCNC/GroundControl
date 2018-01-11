@@ -355,8 +355,13 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         Move the machine to a point selected on the screen
         
         '''
-        xTarget = '%.3f'%(xPosition/self.canvasScaleFactor)
-        yTarget = '%.3f'%(yPosition/self.canvasScaleFactor)
+        if self.data.units == 'MM':
+            scaleFactor = 1
+        else:
+            scaleFactor = 25.4
+        
+        xTarget = '%.3f'%(xPosition/scaleFactor)
+        yTarget = '%.3f'%(yPosition/scaleFactor)
         commandString = 'G0 X' + str(xTarget) + ' Y' + str(yTarget) + " "
         
         self.data.gcode_queue.put(commandString)
@@ -368,8 +373,13 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         '''
         
-        xTarget = xPosition/self.canvasScaleFactor
-        yTarget = yPosition/self.canvasScaleFactor
+        if self.data.units == 'MM':
+            scaleFactor = 1
+        else:
+            scaleFactor = 25.4
+        
+        xTarget = xPosition/scaleFactor
+        yTarget = yPosition/scaleFactor
         marker = PositionIndicator()
         marker.setPos(xTarget, yTarget, self.data.units)
         marker.color = (0,1,0)
