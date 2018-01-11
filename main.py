@@ -264,6 +264,13 @@ class GroundControlApp(App):
             "key": "rotationRadius"
         },
         {
+            "type": "string",
+            "title": "Chain Sag Correction Value for Triangular Kinematics",
+            "desc": "The scaled value computed by the calibration process to calculate chain sag based on sled weight, chain weight, and workspace angle\\ndefault setting: %s",
+            "section": "Advanced Settings",
+            "key": "chainSagCorrection"
+        },
+        {
             "type": "bool",
             "title": "Enable Custom Positional PID Values",
             "desc": "Enable using custom values for the positional PID controller. Turning this off will return to the default values\\ndefault setting: %s",
@@ -339,6 +346,7 @@ class GroundControlApp(App):
         global_variables._digits,
         global_variables._kinematicsType,
         global_variables._rotationRadius,
+        global_variables._chainSagCorrection,
         global_variables._enablePosPIDValues,
         global_variables._KpPos,
         global_variables._KiPos,
@@ -488,6 +496,7 @@ class GroundControlApp(App):
                                                  'digits'             : global_variables._digits,
                                                  'kinematicsType'     : global_variables._kinematicsType,
                                                  'rotationRadius'     : global_variables._rotationRadius,
+                                                 'chainSagCorrection' : global_variables._chainSagCorrection,
                                                  'enablePosPIDValues' : global_variables._enablePosPIDValues,
                                                  'KpPos'              : global_variables._KpPos,
                                                  'KiPos'              : global_variables._KiPos,
@@ -609,6 +618,8 @@ class GroundControlApp(App):
         self.data.gcode_queue.put("$6=" + str(self.data.config.get('Maslow Settings', 'sledCG')))
         self.data.gcode_queue.put("$7=" + str(kinematicsType))
         self.data.gcode_queue.put("$8=" + str(self.data.config.get('Advanced Settings', 'rotationRadius')))
+        self.data.gcode_queue.put("$37=" + str(self.data.config.get('Advanced Settings', 'chainSagCorrection')))
+
 
         
         # Force kinematics recalibration
