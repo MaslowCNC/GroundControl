@@ -125,7 +125,7 @@ class TriangularCalibration(Widget):
 
         # Configure iteration parameters
 
-        acceptableTolerance = .001
+        acceptableTolerance = .0001
         numberOfIterations = 5000
         motorYcoordCorrectionScale = 0.5
         rotationRadiusCorrectionScale = 0.5
@@ -272,10 +272,9 @@ class TriangularCalibration(Widget):
 
             if (abs(ChainErrorCut1) < 0.01 and abs(ChainErrorCut2) < 0.01):
                 chainSagCorrectionEst -= ChainErrorCut4 * chainSagCorrectionCorrectionScale
+                cut34YoffsetEst -= ((ChainErrorCut3 + ChainErrorCut4) / 2) * cut34YoffsetCorrectionScale
                 if (chainSagCorrectionEst < 0):
                     chainSagCorrectionEst = 0
-                if ((ChainErrorCut3 > 0 and ChainErrorCut4 > 0) or (ChainErrorCut3 < 0 and ChainErrorCut4 < 0)):
-                    cut34YoffsetEst -= ((ChainErrorCut3 + ChainErrorCut4) / 2) * cut34YoffsetCorrectionScale
 
             # If we get unrealistic values, reset and try again with smaller steps
 
