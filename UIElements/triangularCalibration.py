@@ -130,7 +130,7 @@ class TriangularCalibration(Widget):
         motorYcoordCorrectionScale = 0.5
         rotationRadiusCorrectionScale = 0.5
         chainSagCorrectionCorrectionScale = 5
-        cut34YoffsetCorrectionScale = 0.05
+        cut34YoffsetCorrectionScale = 0.5
 
         # Gather current machine parameters
 
@@ -274,8 +274,8 @@ class TriangularCalibration(Widget):
                 chainSagCorrectionEst -= ChainErrorCut4 * chainSagCorrectionCorrectionScale
                 if (chainSagCorrectionEst < 0):
                     chainSagCorrectionEst = 0
-                if (abs(ChainErrorCut4) < 0.01):
-                    cut34YoffsetEst -= ChainErrorCut3 * cut34YoffsetCorrectionScale
+                if ((ChainErrorCut3 > 0 and ChainErrorCut4 > 0) or (ChainErrorCut3 < 0 and ChainErrorCut4 < 0)):
+                    cut34YoffsetEst -= ((ChainErrorCut3 + ChainErrorCut4) / 2) * cut34YoffsetCorrectionScale
 
             # If we get unrealistic values, reset and try again with smaller steps
 
