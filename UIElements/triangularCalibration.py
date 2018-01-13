@@ -30,15 +30,15 @@ class TriangularCalibration(Widget):
 
         self.data.gcode_queue.put("G91 ")   #Switch to relative mode
 
-        self.data.gcode_queue.put("G0 X12.7 Y" + str(workspaceHeight/4) + " ")  # Move up 25% the workspace to first cut point
+        self.data.gcode_queue.put("G0 X12.7 ")  # Move to first cut point
         self.data.gcode_queue.put("G1 Z-7 F500 ")
         self.data.gcode_queue.put("G1 X-25.4 ") # Cut 25.4mm horizontal mark
         self.data.gcode_queue.put("G1 Z7 ")
-        self.data.gcode_queue.put("G0 Y-" + str(workspaceHeight/2) + " ")  # Move down 50% the workspace to second cut point
+        self.data.gcode_queue.put("G0 Y-" + str(workspaceHeight*3/8) + " ")  # Move down the workspace to second cut point
         self.data.gcode_queue.put("G1 Z-7 ")
         self.data.gcode_queue.put("G1 X25.4 ") # Cut 25.4mm horizontal mark
         self.data.gcode_queue.put("G1 Z7 ")
-        self.data.gcode_queue.put("G0 X-" + str((workspaceWidth*3/8)+12.7) + " Y" + str((workspaceHeight/4)+12.7) + " ")  # Move up 25% the workspace and to the left side to third cut point
+        self.data.gcode_queue.put("G0 X-" + str((workspaceWidth*3/8)+12.7) + " Y" + str((workspaceHeight*3/8)+12.7) + " ")  # Move up the workspace and to the left side to third cut point
         self.data.gcode_queue.put("G1 Z-7 ")
         self.data.gcode_queue.put("G1 Y-25.4 ") # Cut 25.4mm vertical mark
         self.data.gcode_queue.put("G1 Z7 ")
@@ -93,13 +93,13 @@ class TriangularCalibration(Widget):
             return
 
         if self.unitsBtnT.text == 'Units: inches':
-            if (((distBetweenCuts12*25.4) > workspaceHeight) or ((distBetweenCuts12*25.4) < (workspaceHeight / 10))):
+            if (((distBetweenCuts12*25.4) > (workspaceHeight / 2)) or ((distBetweenCuts12*25.4) < (workspaceHeight / 10))):
                 self.data.message_queue.put('Message: The measurement between cut 1 and cut 2 of ' + str(distBetweenCuts12) + ' inches seems wrong.\n\nPlease check the number and enter it again.')
                 return
             if (((distBetweenCuts34*25.4) > workspaceWidth) or ((distBetweenCuts34*25.4) < (workspaceWidth / 10))):
                 self.data.message_queue.put('Message: The measurement between cut 3 and cut 4 of ' + str(distBetweenCuts34) + ' inches seems wrong.\n\nPlease check the number and enter it again.')
                 return
-            if (((distWorkareaTopToCut1*25.4) > (workspaceHeight / 2)) or (distWorkareaTopToCut1 < 0)):
+            if (((distWorkareaTopToCut1*25.4) > workspaceHeight) or (distWorkareaTopToCut1 < 0)):
                 self.data.message_queue.put('Message: The measurement between the top edge of the work area and cut 1 of ' + str(distWorkareaTopToCut1) + ' inches seems wrong.\n\nPlease check the number and enter it again.')
                 return
             if ((bitDiameter > 1) or (bitDiameter < 0)):
@@ -110,13 +110,13 @@ class TriangularCalibration(Widget):
             distWorkareaTopToCut1 *= 25.4
             bitDiameter *= 25.4
         else:
-            if ((distBetweenCuts12 > workspaceHeight) or (distBetweenCuts12 < (workspaceHeight / 10))):
+            if ((distBetweenCuts12 > (workspaceHeight / 2)) or (distBetweenCuts12 < (workspaceHeight / 10))):
                 self.data.message_queue.put('Message: The measurement between cut 1 and cut 2 of ' + str(distBetweenCuts12) + ' mm seems wrong.\n\nPlease check the number and enter it again.')
                 return
             if ((distBetweenCuts34 > workspaceWidth) or (distBetweenCuts34 < (workspaceWidth / 10))):
                 self.data.message_queue.put('Message: The measurement between cut 3 and cut 4 of ' + str(distBetweenCuts34) + ' mm seems wrong.\n\nPlease check the number and enter it again.')
                 return
-            if ((distWorkareaTopToCut1 > (workspaceHeight / 2)) or (distWorkareaTopToCut1 < 0)):
+            if ((distWorkareaTopToCut1 > workspaceHeight) or (distWorkareaTopToCut1 < 0)):
                 self.data.message_queue.put('Message: The measurement between the top edge of the work area and cut 1 of ' + str(distWorkareaTopToCut1) + ' mm seems wrong.\n\nPlease check the number and enter it again.')
                 return
             if ((bitDiameter > 25.4) or (bitDiameter < 0)):
@@ -129,8 +129,8 @@ class TriangularCalibration(Widget):
         numberOfIterations = 5000
         motorYcoordCorrectionScale = 0.5
         rotationRadiusCorrectionScale = 0.5
-        chainSagCorrectionCorrectionScale = 5
-        cut34YoffsetCorrectionScale = 0.5
+        chainSagCorrectionCorrectionScale = 5.0
+        cut34YoffsetCorrectionScale = 1.0
 
         # Gather current machine parameters
 
@@ -146,14 +146,14 @@ class TriangularCalibration(Widget):
 
         # Calculate the actual chain lengths for each cut location
 
-        MotorDistanceCut1 = math.sqrt(math.pow(motorXcoord,2) + math.pow(motorYcoordEst - (workspaceHeight/4),2))
-        MotorDistanceCut2 = math.sqrt(math.pow(motorXcoord,2) + math.pow(motorYcoordEst + (workspaceHeight/4),2))
+        MotorDistanceCut1 = math.sqrt(math.pow(motorXcoord,2) + math.pow(motorYcoordEst,2))
+        MotorDistanceCut2 = math.sqrt(math.pow(motorXcoord,2) + math.pow(motorYcoordEst + (workspaceHeight*3/8),2))
         MotorDistanceCut3 = math.sqrt(math.pow(motorXcoord - (workspaceWidth*3/8),2) + math.pow(motorYcoordEst,2))
         MotorDistanceCut4 = math.sqrt(math.pow(motorXcoord + (workspaceWidth*3/8),2) + math.pow(motorYcoordEst,2))
 
         #Calculate the chain angles from horizontal
-        ChainAngleCut1 = 3.14159 - math.acos(motorSprocketRadius/MotorDistanceCut1) - math.acos((motorYcoordEst - (workspaceHeight/4)) / MotorDistanceCut1)
-        ChainAngleCut2 = 3.14159 - math.acos(motorSprocketRadius/MotorDistanceCut2) - math.acos((motorYcoordEst + (workspaceHeight/4)) / MotorDistanceCut2)
+        ChainAngleCut1 = 3.14159 - math.acos(motorSprocketRadius/MotorDistanceCut1) - math.acos(motorYcoordEst / MotorDistanceCut1)
+        ChainAngleCut2 = 3.14159 - math.acos(motorSprocketRadius/MotorDistanceCut2) - math.acos((motorYcoordEst + (workspaceHeight*3/8)) / MotorDistanceCut2)
         ChainAngleCut3 = 3.14159 - math.acos(motorSprocketRadius/MotorDistanceCut3) - math.acos((motorYcoordEst) / MotorDistanceCut3)
         ChainAngleCut4 = 3.14159 - math.acos(motorSprocketRadius/MotorDistanceCut4) - math.acos((motorYcoordEst) / MotorDistanceCut4)
 
@@ -189,7 +189,7 @@ class TriangularCalibration(Widget):
         motorYcoordEst = distWorkareaTopToCut1 + (bitDiameter / 2)
         rotationRadiusEst = 0
         chainSagCorrectionEst= 0
-        cut34YoffsetEst = distBetweenCuts12 / 2
+        cut34YoffsetEst = 0
         ChainErrorCut1 = acceptableTolerance
         ChainErrorCut2 = acceptableTolerance
         ChainErrorCut3 = acceptableTolerance
@@ -257,7 +257,7 @@ class TriangularCalibration(Widget):
             motorYoffsetEstPrint = motorYcoordEst - distWorkareaTopToCut1 - (bitDiameter / 2)
 
             print "N: " + str(n) + ", Motor Spacing: " + str(round(motorSpacing, 3)) + ", Motor Y Offset: " + str(round(motorYoffsetEstPrint, 3)) + ", Rotation Disk Radius: " + str(round(rotationRadiusEst, 3)) + ", Chain Sag Correction Value: " + str(round(chainSagCorrectionEst, 6))
-            print "  Chain Error Cut 1: " + str(round(ChainErrorCut1,4)) + ", Chain Error Cut 2: " + str(round(ChainErrorCut2,4)) + ", Chain Error Cut 3: " + str(round(ChainErrorCut3,4)) + ", Chain Error Cut 4: " + str(round(ChainErrorCut4,4)) + ", Sled Drift Error: " + str(round((distBetweenCuts12 / 2) - cut34YoffsetEst, 4))
+            print "  Chain Error Cut 1: " + str(round(ChainErrorCut1,4)) + ", Chain Error Cut 2: " + str(round(ChainErrorCut2,4)) + ", Chain Error Cut 3: " + str(round(ChainErrorCut3,4)) + ", Chain Error Cut 4: " + str(round(ChainErrorCut4,4)) + ", Sled Drift Compensation: " + str(round(-1 * cut34YoffsetEst, 4))
 
             # Update the motorYcoord and rotationRadius parameters based on the current chain length errors
 
@@ -270,7 +270,7 @@ class TriangularCalibration(Widget):
 
             # When we get close to correct values for motorYcoord and rotationRadius begin calibrating for chain sag
 
-            if (abs(ChainErrorCut1) < 0.01 and abs(ChainErrorCut2) < 0.01):
+            if (abs(ChainErrorCut1) < 1 and abs(ChainErrorCut2) < 1):
                 chainSagCorrectionEst -= ChainErrorCut4 * chainSagCorrectionCorrectionScale
                 cut34YoffsetEst -= ((ChainErrorCut3 + ChainErrorCut4) / 2) * cut34YoffsetCorrectionScale
                 if (chainSagCorrectionEst < 0):
@@ -282,7 +282,7 @@ class TriangularCalibration(Widget):
                     motorYcoordEst = distWorkareaTopToCut1 + (bitDiameter / 2)
                     rotationRadiusEst = 0
                     chainSagCorrectionEst= 0
-                    cut34YoffsetEst = distBetweenCuts12 / 2
+                    cut34YoffsetEst = 0
                     motorYcoordCorrectionScale = float(motorYcoordCorrectionScale/2)
                     rotationRadiusCorrectionScale = float(rotationRadiusCorrectionScale/2)
                     chainSagCorrectionCorrectionScale = float(chainSagCorrectionCorrectionScale/2)
