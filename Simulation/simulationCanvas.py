@@ -18,7 +18,7 @@ class SimulationCanvas(GridLayout):
     bedWidth           = 2438.4 #8'
     bedHeight          = 1219.2 #4'
     motorLift          = Kinematics.motorOffsetY
-    motorTranslate     = (Kinematics.D - bedWidth)/2.0
+    motorTranslate     = (Kinematics.D - bedWidth)/2
 
     motorY = bedHeight + motorLift
     motor2X = bedWidth + motorTranslate
@@ -81,7 +81,7 @@ class SimulationCanvas(GridLayout):
         self.leftChainOffset.value = 0
         self.rightChainOffset.value = 0
         self.rotationRadiusOffset.value = 0
-        self.gridSize.value=300.0
+        self.gridSize.value=300
 
     def recompute(self):
         
@@ -92,8 +92,8 @@ class SimulationCanvas(GridLayout):
         #re-draw 4x8 outline
         self.drawOutline()
 
-        leftRigthBound  = int(self.correctKinematics.machineWidth/2.0)
-        topBottomBound  = int(self.correctKinematics.machineHeight/2.0)
+        leftRigthBound  = int(self.correctKinematics.machineWidth/2)
+        topBottomBound  = int(self.correctKinematics.machineHeight/2)
 
         self.testPointGenerator = TestPoint()
         self.testPointGenerator.initialize(self.scatterInstance.canvas, self.correctKinematics, self.distortedKinematics)
@@ -143,8 +143,8 @@ class SimulationCanvas(GridLayout):
 
             for j in range(0,len(self.horizontalPoints)):
                 point = self.listOfPointsToPlot[j + i*len(self.horizontalPoints)]
-                points.append(point[0]+self.bedWidth/2.0)
-                points.append(point[1]+self.bedHeight/2.0)
+                points.append(point[0]+self.bedWidth/2)
+                points.append(point[1]+self.bedHeight/2)
 
             with self.scatterInstance.canvas:
                 Color(0,0,1)
@@ -154,8 +154,8 @@ class SimulationCanvas(GridLayout):
             points = []
             for j in range(0,len(self.listOfPointsToPlot),len(self.horizontalPoints)):
                 point = self.listOfPointsToPlot[j+i]
-                points.append(point[0]+self.bedWidth/2.0)
-                points.append(point[1]+self.bedHeight/2.0)
+                points.append(point[0]+self.bedWidth/2)
+                points.append(point[1]+self.bedHeight/2)
 
 
             with self.scatterInstance.canvas:
@@ -170,8 +170,8 @@ class SimulationCanvas(GridLayout):
 
             for j in range(0,len(self.horizontalPoints)):
                 point = self.listOfDistortedPoints[j + i*len(self.horizontalPoints)]
-                points.append(point[0]+self.bedWidth/2.0)
-                points.append(point[1]+self.bedHeight/2.0)
+                points.append(point[0]+self.bedWidth/2)
+                points.append(point[1]+self.bedHeight/2)
 
             with self.scatterInstance.canvas:
                 Color(1,0,0)
@@ -181,8 +181,8 @@ class SimulationCanvas(GridLayout):
             points = []
             for j in range(0,len(self.listOfDistortedPoints),len(self.horizontalPoints)):
                 point = self.listOfDistortedPoints[j+i]
-                points.append(point[0]+self.bedWidth/2.0)
-                points.append(point[1]+self.bedHeight/2.0)
+                points.append(point[0]+self.bedWidth/2)
+                points.append(point[1]+self.bedHeight/2)
 
 
             with self.scatterInstance.canvas:
@@ -196,8 +196,8 @@ class SimulationCanvas(GridLayout):
 
             for j in range(0,len(self.horizontalPoints)):
                 point = self.listOfPointsPlotted[j + i*len(self.horizontalPoints)]
-                points.append(point[0]+self.bedWidth/2.0)
-                points.append(point[1]+self.bedHeight/2.0)
+                points.append(point[0]+self.bedWidth/2)
+                points.append(point[1]+self.bedHeight/2)
 
             with self.scatterInstance.canvas:
                 Color(0,1,0)
@@ -208,8 +208,8 @@ class SimulationCanvas(GridLayout):
             points = []
             for j in range(0,len(self.listOfPointsPlotted),len(self.horizontalPoints)):
                 point = self.listOfPointsPlotted[j+i]
-                points.append(point[0]+self.bedWidth/2.0)
-                points.append(point[1]+self.bedHeight/2.0)
+                points.append(point[0]+self.bedWidth/2)
+                points.append(point[1]+self.bedHeight/2)
 
 
             with self.scatterInstance.canvas:
@@ -221,22 +221,22 @@ class SimulationCanvas(GridLayout):
 
     def doSpecificCalculation(self):
         
-        lengthMM = 800.0
+        lengthMM = 800
 
         #horizontal measurement 
-        pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2.0, 0)
-        pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2.0,  0)
+        pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, 0)
+        pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2,  0)
         
         #vertical measurement
-        pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(0, lengthMM/2.0)
-        pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(0, -lengthMM/2.0)
+        pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(0, lengthMM/2)
+        pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(0, -lengthMM/2)
         
         printString = "An 800mm square centered on the sheet is distorted\n" + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0])) + "mm horizontally, and " + str(lengthMM - (distortedPoint3[1] - distortedPoint4[1])) + "mm vertically."
         
-        lengthMM = 1905.0/2.0
+        lengthMM = 1905/2
         
-        pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2.0, -400)
-        pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2.0,  -400)
+        pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, -400)
+        pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2,  -400)
         
         printString = printString + "\n\nThe triangular calibration test is off by " + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0])) + "mm"
         
@@ -245,31 +245,31 @@ class SimulationCanvas(GridLayout):
         
         
         
-        lengthMM = 800.0
-        xOffset = 1100.0 - lengthMM/2.0
-        yOffset = 500.0  - lengthMM/2.0
+        lengthMM = 800
+        xOffset = 1100 - lengthMM/2
+        yOffset = 500  - lengthMM/2
         
         #horizontal measurement 
-        pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2.0, yOffset)
-        pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2.0,  yOffset)
+        pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, yOffset)
+        pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2,  yOffset)
         
         #vertical measurement
-        pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(xOffset, lengthMM/2.0)
-        pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(xOffset, -lengthMM/2.0)
+        pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(xOffset, lengthMM/2)
+        pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(xOffset, -lengthMM/2)
         
         printString = "An 800mm square in the top corner on the sheet is distorted\n" + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0])) + "mm horizontally, and " + str(lengthMM - (distortedPoint3[1] - distortedPoint4[1])) + "mm vertically."
         
-        lengthMM = 800.0
-        xOffset = 1100.0 - lengthMM/2.0
-        yOffset = 500.0  - lengthMM/2.0
+        lengthMM = 800
+        xOffset = 1100 - lengthMM/2
+        yOffset = 500  - lengthMM/2
         
         #horizontal measurement 
-        pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2.0, -yOffset)
-        pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2.0,  -yOffset)
+        pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, -yOffset)
+        pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2,  -yOffset)
         
         #vertical measurement
-        pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(xOffset, lengthMM/2.0)
-        pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(xOffset, -lengthMM/2.0)
+        pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(xOffset, lengthMM/2)
+        pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(xOffset, -lengthMM/2)
         
         printString = printString + "\n\nAn 800mm square in the bottom corner on the sheet is distorted\n" + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0])) + "mm horizontally, and " + str(lengthMM - (distortedPoint3[1] - distortedPoint4[1])) + "mm vertically."
         
