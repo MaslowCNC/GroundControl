@@ -1190,11 +1190,11 @@
         Label:
             text: "Not yet computed"
             id: machineLabel1
-            font_size: '12sp'
+            font_size: sp(10)
         Label:
             text: "Not yet computed"
             id: machineLabel2
-            font_size: '12sp'
+            font_size: sp(10)
     GridLayout:
         cols: 2
         size_hint_y: .9
@@ -1214,7 +1214,7 @@
             Label:
                 text: "Motor Spacing\nError: 0mm"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/3
+                font_size: sp(self.height)/sp(3)
                 id: motorSpacingErrorLabel
             Slider:
                 min: -50
@@ -1224,7 +1224,7 @@
             Label:
                 text: "Motor Vertical\nError: 0mm"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/3
+                font_size: sp(self.height)/sp(3)
                 id: motorVerticalErrorLabel
             Slider:
                 min: -50
@@ -1234,7 +1234,7 @@
             Label:
                 text: "Sled Mount\nSpacing Error: 0mm"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/3
+                font_size: sp(self.height)/sp(3)
                 id: sledMountSpacingErrorLabel
                 disabled: not root.isQuadKinematics
             Slider:
@@ -1246,7 +1246,7 @@
             Label:
                 text: "Vert Dist To\nBit Error: 0mm"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/3
+                font_size: sp(self.height)/sp(3)
                 id: vertBitDistLabel
                 disabled: not root.isQuadKinematics
             Slider:
@@ -1258,7 +1258,7 @@
             Label:
                 text: "Vert Dist\nBit to CG Error: 0mm"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/3
+                font_size: sp(self.height)/sp(3)
                 disabled: not root.isQuadKinematics
                 id: vertCGDistLabel
             Slider:
@@ -1270,7 +1270,7 @@
             Label:
                 text: "Left Chain\nSlipped Links: 0links"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/3
+                font_size: sp(self.height)/sp(3)
                 id: leftChainOffsetLabel
             Slider:
                 min: -10
@@ -1280,7 +1280,7 @@
             Label:
                 text: "Right Chain\nSlipped Links: 0links"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/3
+                font_size: sp(self.height)/sp(3)
                 id: rightChainOffsetLabel
             Slider:
                 min: -10
@@ -1290,7 +1290,7 @@
             Label:
                 text: "Rotation Radius"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/3
+                font_size: sp(self.height)/sp(3)
                 disabled: root.isQuadKinematics
                 id: rotationRadiusLabel
             Slider:
@@ -1302,7 +1302,7 @@
             Label:
                 text: "Grid Size: 150mm"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/3
+                font_size: sp(self.height)/sp(3)
                 id: gridSizeLabel
             Slider:
                 min: 25
