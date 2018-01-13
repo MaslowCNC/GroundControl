@@ -269,7 +269,7 @@ class SimulationCanvas(GridLayout):
         pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(xOffset, lengthMM/2)
         pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(xOffset, -lengthMM/2)
         
-        printString = printString + "\n\nAn 800mm square in the top corner on the sheet is distorted\n" + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0])) + "mm horizontally, and " + str(lengthMM - (distortedPoint3[1] - distortedPoint4[1])) + "mm vertically."
+        printString = printString + "\n\nAn 800mm square in the bottom corner on the sheet is distorted\n" + str(lengthMM - (distortedPoint2[0] - distortedPoint1[0])) + "mm horizontally, and " + str(lengthMM - (distortedPoint3[1] - distortedPoint4[1])) + "mm vertically."
         
         
         self.machineLabel2.text = printString
