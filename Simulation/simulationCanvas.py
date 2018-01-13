@@ -25,6 +25,7 @@ class SimulationCanvas(GridLayout):
 
     correctKinematics   = Kinematics()
     distortedKinematics = Kinematics()
+    kinematicsType      = 'Quadrilateral'
     
     isQuadKinematics    = BooleanProperty(True)
 
@@ -43,8 +44,9 @@ class SimulationCanvas(GridLayout):
         
         Clock.schedule_once(self.moveToCenter, 3)
         
-        self.kinematicsSelect.text = "Quadrilateral"
-        
+        #start with our current kinematics type
+        self.kinematicsSelect.text = self.data.config.get('Advanced Settings', 'kinematicsType')
+          
         self.recompute()
     
     def moveToCenter(self, *args):
