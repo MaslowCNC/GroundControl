@@ -609,9 +609,9 @@
 
 <TriangularCalibration>:
     cutBtnT:cutBtnT
-    vertMeasureT1:vertMeasureT1
-    vertMeasureT2:vertMeasureT2
     horzMeasureT1:horzMeasureT1
+    horzMeasureT2:horzMeasureT2
+    vertMeasureT1:vertMeasureT1
     bitDiameterT:bitDiameterT
     enterValuesT:enterValuesT
     unitsBtnT:unitsBtnT
@@ -624,13 +624,15 @@
             cols: 1
             size_hint_x: leftCol
             Label:
-                text: "To refine these measurements we're going to cut a test shape.\nThe test shape consists of four cuts, two cuts along the vertical centerline and two cuts along the horizontal centerline\nBased on the distance between these marks we can dial in the machine settings\n\nThe first measurement is between the cuts at the center and bottom of the work area\nMeasure from the top edge of cut 1 to the top edge of cut 2\n\nThe second measurement is between the cuts at the left and right of the work area\nMeasure from the left edge of cut 3 to the left edge of cut 4\n\nThe third measurement is between the top of the work area and the center cut\nMeasure from the upper work area edge to the top edge of cut 1\n\nEnter the diameter of the bit used to make the cuts (1/4\" = 6.35 mm)\n\nThe more accurate your measurements, the more accurate your machine will be\n\nPress Cut Test Pattern to begin"
+                text: "To refine these measurements we're going to cut a test shape. The test shape consists of five cuts.\n\nCuts 1 and 2 will be short vertical cuts in the upper left and right corners of the work area.\nCuts 3 and 4 will be short vertical cuts in the lower left and right corners of the work area.\nCut 5 will be a short horizontal cut near cut 2.\n\nBased on the distances between these cuts we can dial in the machine settings.\n\nFor the first measurement, measure from the left edge of cut 1 to the left edge of cut 2.\n\nFor the second measurement, measure from the left edge of cut 3 to the left edge of cut 4.\n\nFor the third measurement, measure from the top edge of the work area to the top edge of cut 5.\n\nEnter the diameter of the bit used to make the cuts (1/4\" = 6.35 mm).\n\nThe more accurate your measurements, the more accurate your machine will be.\n\nPress Cut Test Pattern to begin."
             GridLayout:
                 cols: 2
                 Image:
                     source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview Triangular.JPG"
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Measure Test Shape Triangular.jpg"
+                    size_hint_x: 0.5
+                Label:
+                    text: root.triangularCalText
+                    size_hint_x: 0.5
         GridLayout:
             cols: 1
             size_hint_x: rightCol
@@ -639,19 +641,19 @@
                 text: "Measurement\nBetween Cuts 1 and 2:"
                 halign: "center"
             TextInput:
-                id: vertMeasureT1
+                id: horzMeasureT1
                 disabled: True
             Label:
                 text: "Measurement\nBetween Cuts 3 and 4:"
                 halign: "center"
             TextInput:
-                id: horzMeasureT1
+                id: horzMeasureT2
                 disabled: True
             Label:
-                text: "Measurement\nWork Area Top to Top Cut:"
+                text: "Measurement\nWork Area Top to Cut 5:"
                 halign: "center"
             TextInput:
-                id: vertMeasureT2
+                id: vertMeasureT1
                 disabled: True
             Label:
                 text: "Bit Diameter:"
