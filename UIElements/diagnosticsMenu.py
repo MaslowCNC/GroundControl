@@ -65,15 +65,6 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self.data.gcode_queue.put("B04 ")
         self.parentWidget.close()
     
-    def testFeedbackSystem(self):
-        print "Testing feedback system"
-        self.data.gcode = ["G20 ","G1 X-1 Y-1 F25 ", "G1 X1 ", "G3 Y2 J1.5", "G1 X-1 ", "G1 Y-1", "G1 X0 Y0"]
-        self.data.gcodeIndex = 0
-        self.data.uploadFlag = True
-        self.data.logger.beginRecordingAvgError()
-        self.data.message_queue.put("Message: If you press \"Continue\" Maslow will run a small test shape and report the average positional error when finished. The z-axis will not move during this test.")
-        self.parentWidget.close()
-    
     def wipeEEPROM(self):
         self.data.gcode_queue.put("$RST=* ")
         Clock.schedule_once(self.data.pushSettings, 6)
@@ -109,6 +100,15 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self._popup.open()
         self.parentWidget.close()
     
+    def loadCalibrationBenchmarkTest(self):
+        '''
+        
+        Loads the Calibration Benchmark Test file
+        
+        '''
+        self.data.gcodeFile = "./gcodeForTesting/Calibration Benchmark Test.nc"
+        self.parentWidget.close()
+    
     def advancedOptionsFunctions(self, text):
         
         if   text == "Test Feedback System":
@@ -119,3 +119,5 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
             self.wipeEEPROM()
         elif text == "Simulation":
             self.launchSimulation()
+        elif text == "Load Calibration Benchmark Test":
+            self.loadCalibrationBenchmarkTest()
