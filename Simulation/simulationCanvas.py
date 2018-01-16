@@ -240,7 +240,6 @@ class SimulationCanvas(GridLayout):
         
         printString = printString + "\n\nThe triangular calibration test is off by %.4fmm." % ((lengthMM - (distortedPoint2[0] - distortedPoint1[0])))
         
-        self.machineLabel1.text = printString
         
         
         
@@ -271,11 +270,90 @@ class SimulationCanvas(GridLayout):
         pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(xOffset, lengthMM/2)
         pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(xOffset, -lengthMM/2)
         
-        printString = printString + "\n\nAn 800mm square in the bottom corner on the sheet is distorted\n%.4fmm horizontally, and %.4fmm vertically." % ( (lengthMM - (distortedPoint2[0] - distortedPoint1[0])), (lengthMM - (distortedPoint3[1] - distortedPoint4[1])))
+        printString2 = printString + "\n\nAn 800mm square in the bottom corner on the sheet is distorted\n%.4fmm horizontally, and %.4fmm vertically." % ( (lengthMM - (distortedPoint2[0] - distortedPoint1[0])), (lengthMM - (distortedPoint3[1] - distortedPoint4[1])))
         
-        
-        self.machineLabel2.text = printString
-        
+        #calculate "Calibration Benchmark Score"
+
+        #dimensions used in calibration cuts
+        scoreXMM   = 1905.0 
+        scoreYMM   = 900.0
+        scoreBoxMM = 100.0
+
+        #plot horizontal measurement 
+        pointPlotted1h, distortedPoint1h = self.testPointGenerator.plotPoint(-scoreXMM/2.0,  scoreYMM/2.0)
+        pointPlotted2h, distortedPoint2h = self.testPointGenerator.plotPoint( scoreXMM/2.0,  scoreYMM/2.0)
+        errHTop = abs(scoreXMM - abs(distortedPoint1h[0] - distortedPoint2h[0]))
+        pointPlotted3h, distortedPoint3h = self.testPointGenerator.plotPoint(-scoreXMM/2.0,           0.0)
+        pointPlotted4h, distortedPoint4h = self.testPointGenerator.plotPoint( scoreXMM/2.0,           0.0)
+        errHMid = abs(scoreXMM - abs(distortedPoint3h[0] - distortedPoint4h[0]))
+        pointPlotted5h, distortedPoint5h = self.testPointGenerator.plotPoint(-scoreXMM/2.0, -scoreYMM/2.0)
+        pointPlotted6h, distortedPoint6h = self.testPointGenerator.plotPoint( scoreXMM/2.0, -scoreYMM/2.0)
+        errHBtm = abs(scoreXMM - abs(distortedPoint5h[0] - distortedPoint6h[0]))
+
+        # print  "errHTop  "  + str(errHTop)
+        # print  "errHMid  "  + str(errHMid)
+        # print  "errHBtm  "  + str(errHBtm)
+
+        #plot vertical measurements
+        pointPlotted1v, distortedPoint1v = self.testPointGenerator.plotPoint(-scoreXMM/2.0,  scoreYMM/2.0)
+        pointPlotted2v, distortedPoint2v = self.testPointGenerator.plotPoint(-scoreXMM/2.0, -scoreYMM/2.0)
+        errVLft = abs(scoreYMM - abs(distortedPoint1v[1] - distortedPoint2v[1]))
+        pointPlotted3v, distortedPoint3v = self.testPointGenerator.plotPoint(          0.0,  scoreYMM/2.0)
+        pointPlotted4v, distortedPoint4v = self.testPointGenerator.plotPoint(          0.0, -scoreYMM/2.0)
+        errVMid = abs(scoreYMM - abs(distortedPoint3v[1] - distortedPoint4v[1]))
+        pointPlotted5v, distortedPoint5v = self.testPointGenerator.plotPoint(scoreXMM /2.0,  scoreYMM/2.0)
+        pointPlotted6v, distortedPoint6v = self.testPointGenerator.plotPoint(scoreXMM /2.0, -scoreYMM/2.0)
+        errVRht = abs(scoreYMM - abs(distortedPoint5v[1] - distortedPoint6v[1]))
+
+        # print  "errVLft  "  + str(errVLft)
+        # print  "errVMid  "  + str(errVMid)
+        # print  "errVRht  "  + str(errVRht)
+
+        #combine the two averages for the first part of the cmScore
+        cmScoreBig = (errHTop + errHMid + errHBtm + errVLft + errVMid + errVRht) / 6.0
+
+        #plot box measurements
+        pointPlotted0b, distortedPoint0b = self.testPointGenerator.plotPoint(-scoreXMM  /2.0,               scoreYMM  /2.0             )
+        pointPlotted1b, distortedPoint1b = self.testPointGenerator.plotPoint(-scoreXMM  /2.0 + scoreBoxMM,  scoreYMM  /2.0 - scoreBoxMM)
+        pointPlotted2b, distortedPoint2b = self.testPointGenerator.plotPoint(-scoreXMM  /2.0,              -scoreYMM  /2.0             )
+        pointPlotted3b, distortedPoint3b = self.testPointGenerator.plotPoint(-scoreXMM  /2.0 + scoreBoxMM, -scoreYMM  /2.0 + scoreBoxMM)
+        pointPlotted4b, distortedPoint4b = self.testPointGenerator.plotPoint(-scoreBoxMM/2.0,               scoreBoxMM/2.0             )
+        pointPlotted5b, distortedPoint5b = self.testPointGenerator.plotPoint( scoreBoxMM/2.0,              -scoreBoxMM/2.0             )
+        pointPlotted6b, distortedPoint6b = self.testPointGenerator.plotPoint( scoreXMM  /2.0,               scoreYMM  /2.0             )
+        pointPlotted7b, distortedPoint7b = self.testPointGenerator.plotPoint( scoreXMM  /2.0 - scoreBoxMM,  scoreYMM  /2.0 - scoreBoxMM)
+        pointPlotted8b, distortedPoint8b = self.testPointGenerator.plotPoint( scoreXMM  /2.0,              -scoreYMM  /2.0             )
+        pointPlotted9b, distortedPoint9b = self.testPointGenerator.plotPoint( scoreXMM  /2.0 - scoreBoxMM, -scoreYMM  /2.0 + scoreBoxMM)
+
+        #calculate second half of "Calibration Benchmark Score" here, X-directon
+        scoreBoxX1 = abs(scoreBoxMM - abs(distortedPoint0b[0] - distortedPoint1b[0]))
+        scoreBoxX2 = abs(scoreBoxMM - abs(distortedPoint2b[0] - distortedPoint3b[0]))
+        scoreBoxX3 = abs(scoreBoxMM - abs(distortedPoint4b[0] - distortedPoint5b[0]))
+        scoreBoxX4 = abs(scoreBoxMM - abs(distortedPoint6b[0] - distortedPoint7b[0]))
+        scoreBoxX5 = abs(scoreBoxMM - abs(distortedPoint8b[0] - distortedPoint9b[0]))
+        scoreBoxX = (scoreBoxX1 + scoreBoxX2 + scoreBoxX3 + scoreBoxX4 + scoreBoxX5)/ 5.0
+
+        #calculate second half of "Calibration Benchmark Score" here, Y-directon
+        scoreBoxY1 = abs(scoreBoxMM - abs(distortedPoint0b[1] - distortedPoint1b[1]))
+        scoreBoxY2 = abs(scoreBoxMM - abs(distortedPoint2b[1] - distortedPoint3b[1]))
+        scoreBoxY3 = abs(scoreBoxMM - abs(distortedPoint4b[1] - distortedPoint5b[1]))
+        scoreBoxY4 = abs(scoreBoxMM - abs(distortedPoint6b[1] - distortedPoint7b[1]))
+        scoreBoxY5 = abs(scoreBoxMM - abs(distortedPoint8b[1] - distortedPoint9b[1]))
+        scoreBoxY = (scoreBoxY1 + scoreBoxY2 + scoreBoxY3 + scoreBoxY4 + scoreBoxY5)/ 5.0
+
+        # print str(scoreBoxX1) + "   " + str(scoreBoxY1)
+        # print str(scoreBoxX2) + "   " + str(scoreBoxY2)
+        # print str(scoreBoxX3) + "   " + str(scoreBoxY3)
+        # print str(scoreBoxX4) + "   " + str(scoreBoxY4)
+        # print str(scoreBoxX5) + "   " + str(scoreBoxY5)
+
+        #combine the two averages for the second part of the cmScore
+        cmScoreBox = (scoreBoxX + scoreBoxY) / 2.0
+
+        printString1 = printString1 + "\r\n\r\nThe Calibration Benchmark Score is  %.3f - %.3f" % (cmScoreBig,cmScoreBox)
+
+        self.machineLabel1.text = printString1
+        self.machineLabel2.text = printString2
+
     
     def setKinematics(self, kinematicsType):
         
@@ -346,3 +424,4 @@ class SimulationCanvas(GridLayout):
             elif touch.button == 'scrolldown':
                 mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
                 self.scatterInstance.apply_transform(mat, anchor = touch.pos)
+                
