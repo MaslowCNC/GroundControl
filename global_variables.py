@@ -37,7 +37,7 @@ _KiPos				= 0
 _KdPos				= 34
 _propWeight			= 1
 _enableVPIDValues	= 0
-_KpV				= 7
+_KpV				= 5
 _KiV				= 0
 _KdV				= .28
 

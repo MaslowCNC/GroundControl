@@ -568,7 +568,7 @@ class GroundControlApp(App):
             KiV = float(self.data.config.get('Advanced Settings', 'KiV'))
             KdV = float(self.data.config.get('Advanced Settings', 'KdV'))
         else:
-            KpV = 7
+            KpV = 5
             KiV = 0
             KdV = .28
         
