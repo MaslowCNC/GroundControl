@@ -238,7 +238,7 @@ class SimulationCanvas(GridLayout):
         pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, -400)
         pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2,  -400)
         
-        printString = printString + "\n\nThe triangular calibration test is off by %.4fmm." % ((lengthMM - (distortedPoint2[0] - distortedPoint1[0])))
+        printString1 = printString + "\n\nThe triangular calibration test is off by %.4fmm." % ((lengthMM - (distortedPoint2[0] - distortedPoint1[0])))
         
         
         
@@ -424,4 +424,3 @@ class SimulationCanvas(GridLayout):
             elif touch.button == 'scrolldown':
                 mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
                 self.scatterInstance.apply_transform(mat, anchor = touch.pos)
-                
