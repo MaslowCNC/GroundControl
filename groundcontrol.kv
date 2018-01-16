@@ -609,8 +609,9 @@
 
 <TriangularCalibration>:
     cutBtnT:cutBtnT
+    horzMeasureT1:horzMeasureT1
+    horzMeasureT2:horzMeasureT2
     vertMeasureT1:vertMeasureT1
-    vertMeasureT2:vertMeasureT2
     bitDiameterT:bitDiameterT
     enterValuesT:enterValuesT
     unitsBtnT:unitsBtnT
@@ -623,28 +624,36 @@
             cols: 1
             size_hint_x: leftCol
             Label:
-                text: "To refine these measurements we're going to cut a test shape.\nThe test shape consists of two cuts along the vertical centerline\nBased on the distance between these marks we can dial in the machine settings\n\nThe first measurement is between the cuts\nMeasure from the top edge of one cut to the top edge of the other cut\n\nThe second measurement is between the top of the work area and the top cut\nMeasure from the upper work area edge to the top edge of the top cut\n\nEnter the diameter of the bit used to make the cuts (1/4\" = 6.35 mm)\n\nThe more accurate your measurements, the more accurate your machine will be\n\nPress Cut Test Pattern to begin"
+                text: "To refine these measurements we're going to cut a test shape. The test shape consists of five cuts.\n\nCuts 1 and 2 will be short vertical cuts in the upper left and right corners of the work area.\nCuts 3 and 4 will be short vertical cuts in the lower left and right corners of the work area.\nCut 5 will be a short horizontal cut attached to cut 2.\n\nBased on the distances between these cuts we can dial in the machine settings.\n\nFor the first measurement, measure from the left edge of cut 1 to the left edge of cut 2.\n\nFor the second measurement, measure from the left edge of cut 3 to the left edge of cut 4.\n\nFor the third measurement, measure from the top edge of the work area to the top edge of cut 5.\n\nEnter the diameter of the bit used to make the cuts (1/4\" = 6.35 mm).\n\nThe more accurate your measurements, the more accurate your machine will be.\n\nPress Cut Test Pattern to begin."
             GridLayout:
                 cols: 2
                 Image:
                     source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview Triangular.JPG"
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Measure Test Shape Triangular.jpg"
+                    size_hint_x: 0.5
+                Label:
+                    text: root.triangularCalText
+                    size_hint_x: 0.5
         GridLayout:
             cols: 1
             size_hint_x: rightCol
             Label:
             Label:
-                text: "Measurement\nBetween Cuts:"
+                text: "Measurement\nBetween Cuts 1 and 2:"
+                halign: "center"
+            TextInput:
+                id: horzMeasureT1
+                disabled: True
+            Label:
+                text: "Measurement\nBetween Cuts 3 and 4:"
+                halign: "center"
+            TextInput:
+                id: horzMeasureT2
+                disabled: True
+            Label:
+                text: "Measurement\nWork Area Top to Cut 5:"
                 halign: "center"
             TextInput:
                 id: vertMeasureT1
-                disabled: True
-            Label:
-                text: "Measurement\nWork Area Top to Top Cut:"
-                halign: "center"
-            TextInput:
-                id: vertMeasureT2
                 disabled: True
             Label:
                 text: "Bit Diameter:"

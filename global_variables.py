@@ -30,6 +30,7 @@ _truncate			= 0
 _digits				= 4
 _kinematicsType		= 'Quadrilateral'
 _rotationRadius		= '100'
+_chainSagCorrection = '0'
 _enablePosPIDValues	= 0
 _KpPos				= 1300
 _KiPos				= 0
