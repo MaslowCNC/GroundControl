@@ -86,6 +86,7 @@ class Kinematics():
     i = 0
     
     rotationDiskRadius = 100
+    chainSagCorrection = 0
     _xCordOfMotor = D/2
     _yCordOfMotor = machineHeight/2 + motorOffsetY
     isQuadKinematics    = True
@@ -143,10 +144,23 @@ class Kinematics():
         
         Motor1Distance = math.sqrt(math.pow((-1*self._xCordOfMotor - xTarget),2)+math.pow((self._yCordOfMotor - yTarget),2))
         Motor2Distance = math.sqrt(math.pow((self._xCordOfMotor - xTarget),2)+math.pow((self._yCordOfMotor - yTarget),2))
-        
-        Chain1 = (self.R * (3.14159 - math.acos(self.R / Motor1Distance) - math.acos((self._yCordOfMotor - yTarget) / Motor1Distance))) + math.sqrt(math.pow(Motor1Distance,2) - math.pow(self.R,2))
-        Chain2 = (self.R * (3.14159 - math.acos(self.R / Motor2Distance) - math.acos((self._yCordOfMotor - yTarget) / Motor2Distance))) + math.sqrt(math.pow(Motor2Distance,2) - math.pow(self.R,2))
-        
+
+        #Calculate the chain angles from horizontal
+        Chain1Angle = 3.14159 - math.acos(self.R/Motor1Distance) - math.acos((self._yCordOfMotor - yTarget)/Motor1Distance)
+        Chain2Angle = 3.14159 - math.acos(self.R/Motor2Distance) - math.acos((self._yCordOfMotor - yTarget)/Motor2Distance)
+
+        #Calculate the straight chain length from the sprocket to the bit
+        Chain1Straight = math.sqrt(math.pow(Motor1Distance,2)-math.pow(self.R,2))
+        Chain2Straight = math.sqrt(math.pow(Motor2Distance,2)-math.pow(self.R,2))
+
+        #Correct the straight chain lengths to account for chain sag
+        Chain1Straight *= (1 + ((self.chainSagCorrection / 1000000000000) * math.pow(math.cos(Chain1Angle),2) * math.pow(Chain1Straight,2) * math.pow((math.tan(Chain2Angle) * math.cos(Chain1Angle)) + math.sin(Chain1Angle),2)))
+        Chain2Straight *= (1 + ((self.chainSagCorrection / 1000000000000) * math.pow(math.cos(Chain2Angle),2) * math.pow(Chain2Straight,2) * math.pow((math.tan(Chain1Angle) * math.cos(Chain2Angle)) + math.sin(Chain2Angle),2)))
+
+        #Calculate total chain lengths accounting for sprocket geometry and chain sag
+        Chain1 = (self.R * Chain1Angle) + Chain1Straight;
+        Chain2 = (self.R * Chain2Angle) + Chain2Straight;
+
         #Subtract of the virtual length which is added to the chain by the rotation mechanism
         Chain1 = Chain1 - self.rotationDiskRadius
         Chain2 = Chain2 - self.rotationDiskRadius

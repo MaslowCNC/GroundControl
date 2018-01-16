@@ -35,6 +35,11 @@ class MeasureMachinePopup(GridLayout):
 
         self.triangularCalibration.data          =  data
         self.triangularCalibration.carousel      =  self.carousel
+        triangularTestCutText = "The cuts in the corners will be about\n254 mm/10 inches from the work area edges.\n\n"
+        triangularTestCutText = triangularTestCutText + "The pattern will be centered in the work area with dimensions:\n"
+        triangularTestCutText = triangularTestCutText + "Width: " + str(float(self.data.config.get('Maslow Settings', 'bedWidth'))-508) + " mm/" + str((float(self.data.config.get('Maslow Settings', 'bedWidth'))-508)/25.4) + " inches\n"
+        triangularTestCutText = triangularTestCutText + "Height: " + str(float(self.data.config.get('Maslow Settings', 'bedHeight'))-508) + " mm/" + str((float(self.data.config.get('Maslow Settings', 'bedHeight'))-508)/25.4) + " inches\n"
+        self.triangularCalibration.triangularCalText  = triangularTestCutText
 
     def backBtn(self, *args):
         '''
@@ -141,6 +146,7 @@ class MeasureMachinePopup(GridLayout):
             finishString = finishString + "\nKinematics type: " + self.data.config.get('Advanced Settings', 'kinematicsType')
             if self.data.config.get('Advanced Settings', 'kinematicsType') == 'Triangular':
                 finishString = finishString + "\nRotation radius: " + self.data.config.get('Advanced Settings', 'rotationRadius') + "mm"
+                finishString = finishString + "\nChain sag correction value: " + self.data.config.get('Advanced Settings', 'chainSagCorrection')
             else:
                 finishString = finishString + "\nSled mount spacing: " + self.data.config.get('Maslow Settings', 'sledWidth') + "mm"
 
