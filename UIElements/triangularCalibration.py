@@ -36,21 +36,18 @@ class TriangularCalibration(Widget):
         self.data.gcode_queue.put("G1 Z-7 F500 ")
         self.data.gcode_queue.put("G1 Y-25.4 ") # Cut 25.4mm vertical mark
         self.data.gcode_queue.put("G1 Z7 ")
-        self.data.gcode_queue.put("G0 Y-" + str(workspaceHeight-482.6) + " ")  # Move down on the workspace to third cut point
+        self.data.gcode_queue.put("G0 Y-" + str(workspaceHeight-533.4) + " ")  # Move down on the workspace to third cut point
         self.data.gcode_queue.put("G1 Z-7 ")
         self.data.gcode_queue.put("G1 Y-25.4 ") # Cut 25.4mm vertical mark
         self.data.gcode_queue.put("G1 Z7 ")
-        self.data.gcode_queue.put("G0 X" + str(workspaceWidth-508) + " ")  # Move right on the workspace to fourth cut point
+        self.data.gcode_queue.put("G0 X" + str(workspaceWidth-533.4) + " Y" + str(workspaceHeight-482.6) + " ")  # Move up and right on the workspace to fifth and second cut points
         self.data.gcode_queue.put("G1 Z-7 ")
-        self.data.gcode_queue.put("G1 Y25.4 ") # Cut 25.4mm vertical mark
+        self.data.gcode_queue.put("G1 X25.4 ") # Cut 25.4mm horizontal mark
+        self.data.gcode_queue.put("G1 Y-25.4 ") # Cut 25.4mm vertical mark
         self.data.gcode_queue.put("G1 Z7 ")
-        self.data.gcode_queue.put("G0 Y" + str(workspaceHeight-482.6) + " ")  # Move up on the workspace to second cut point
+        self.data.gcode_queue.put("G0 Y-" + str(workspaceHeight-533.4) + " ")  # Move down on the workspace to fourth cut point
         self.data.gcode_queue.put("G1 Z-7 ")
-        self.data.gcode_queue.put("G1 Y25.4 ") # Cut 25.4mm vertical mark
-        self.data.gcode_queue.put("G1 Z7 ")
-        self.data.gcode_queue.put("G0 X-50 Y-12.7 ")  # Move left on the workspace to fifth cut point
-        self.data.gcode_queue.put("G1 Z-7 ")
-        self.data.gcode_queue.put("G1 X-25.4 ") # Cut 25.4mm horizontal mark
+        self.data.gcode_queue.put("G1 Y-25.4 ") # Cut 25.4mm vertical mark
         self.data.gcode_queue.put("G1 Z7 ")
 
         self.data.gcode_queue.put("G90 ") # Switch back to absolute mode
@@ -192,7 +189,7 @@ class TriangularCalibration(Widget):
         print "Previous machine parameters:"
         print "Motor Spacing: " + str(motorSpacing) + ", Motor Y Offset: " + str(motorYoffsetEst) + ", Rotation Disk Radius: " + str(rotationRadiusEst) + ", Chain Sag Correction Value: " + str(chainSagCorrectionEst)
 
-        motorYcoordEst = distWorkareaTopToCut5 + (bitDiameter / 2)
+        motorYcoordEst = distWorkareaTopToCut5 + (bitDiameter / 2) + 12.7
         rotationRadiusEst = 0
         chainSagCorrectionEst= 0
         cut34YoffsetEst = 0
@@ -260,7 +257,7 @@ class TriangularCalibration(Widget):
 
             # Develop a printable motor Y offset value to update the user
 
-            motorYoffsetEstPrint = motorYcoordEst - distWorkareaTopToCut5 - (bitDiameter / 2)
+            motorYoffsetEstPrint = motorYcoordEst - distWorkareaTopToCut5 - (bitDiameter / 2) - 12.7
 
             print "N: " + str(n) + ", Motor Spacing: " + str(round(motorSpacing, 3)) + ", Motor Y Offset: " + str(round(motorYoffsetEstPrint, 3)) + ", Rotation Disk Radius: " + str(round(rotationRadiusEst, 3)) + ", Chain Sag Correction Value: " + str(round(chainSagCorrectionEst, 6))
             print "  Chain Error Cut 1: " + str(round(ChainErrorCut1,4)) + ", Chain Error Cut 2: " + str(round(ChainErrorCut2,4)) + ", Chain Error Cut 3: " + str(round(ChainErrorCut3,4)) + ", Chain Error Cut 4: " + str(round(ChainErrorCut4,4)) + ", Sled Drift Compensation: " + str(round(cut34YoffsetEst, 4))
@@ -283,7 +280,7 @@ class TriangularCalibration(Widget):
             # If we get unrealistic values, reset and try again with smaller steps
 
             if (motorYcoordEst < -(workspaceHeight/4) or motorYcoordEst > (2*workspaceHeight) or rotationRadiusEst > workspaceHeight):
-                    motorYcoordEst = distWorkareaTopToCut5 + (bitDiameter / 2)
+                    motorYcoordEst = distWorkareaTopToCut5 + (bitDiameter / 2) + 12.7
                     rotationRadiusEst = 0
                     chainSagCorrectionEst= 0
                     cut34YoffsetEst = 0
@@ -301,7 +298,7 @@ class TriangularCalibration(Widget):
 
         print "Machine parameters found:"
 
-        motorYoffsetEst = motorYcoordEst - distWorkareaTopToCut5 - (bitDiameter / 2)
+        motorYoffsetEst = motorYcoordEst - distWorkareaTopToCut5 - (bitDiameter / 2) - 12.7
 
         motorYoffsetEst = round(motorYoffsetEst, 1)
         rotationRadiusEst = round(rotationRadiusEst, 1)
