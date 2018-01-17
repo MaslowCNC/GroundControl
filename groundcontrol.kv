@@ -27,7 +27,7 @@
 <ScreenControls>:
     actionsBtn:actionsBtn
     settingsBtn:settingsBtn
-    
+
     BoxLayout:
         orientation: 'horizontal'
         pos: (0, root.height - dp(60))
@@ -80,7 +80,7 @@
     holdBtn:holdBtn
     macro1Btn:macro1Btn
     macro2Btn:macro2Btn
-    
+
     upLeftArrow:upLeftArrow
     upArrow:upArrow
     upRightArrow:upRightArrow
@@ -90,7 +90,7 @@
     downLeftArrow:downLeftArrow
     downArrow:downArrow
     downRightArrow:downRightArrow
-    
+
     zAxisBtn:zAxisBtn
     unitsBtn:unitsBtn
     defHomeBtn:defHomeBtn
@@ -98,10 +98,10 @@
     zRight:zRight
     oneLeft:oneLeft
     oneRight:oneRight
-    
+
     run:run
     stopBtn:stopBtn
-    
+
     goTo:goTo
 
 
@@ -117,7 +117,7 @@
             height: dp(60*4)
             #disabled: not app.data.connectionStatus
             ButtonTemplate:
-                id: upLeftArrow 
+                id: upLeftArrow
                 funcToCallOnPress: root.upLeft
             ButtonTemplate:
                 id: upArrow
@@ -185,7 +185,7 @@
                 funcToCallOnPress: root.startRun
             ButtonTemplate:
                 id: holdBtn
-                text: "HOLD"
+                secretText: "HOLD"
                 funcToCallOnPress: root.pause
             ButtonTemplate:
                 id: stopBtn
@@ -371,7 +371,7 @@
             Spinner:
                 id: advancedOptions
                 text: "Advanced"
-                values: ["Calibrate Chain Length - Manual", "Test Feedback System", "Wipe EEPROM", "Simulation"]
+                values: ["Calibrate Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test"]
                 on_text: root.advancedOptionsFunctions(advancedOptions.text)
 
 <OtherFeatures>:
@@ -608,10 +608,14 @@
                 on_release: root.stopZMove()
 
 <TriangularCalibration>:
-    testCutPosSlider:testCutPosSlider
     cutBtnT:cutBtnT
+    horzMeasureT1:horzMeasureT1
+    horzMeasureT2:horzMeasureT2
+    vertMeasureT1:vertMeasureT1
+    bitDiameterT:bitDiameterT
     enterValuesT:enterValuesT
-    
+    unitsBtnT:unitsBtnT
+
     GridLayout:
         cols: 2
         width: root.width
@@ -620,42 +624,64 @@
             cols: 1
             size_hint_x: leftCol
             Label:
-                text: "To refine these measurements we're going to cut a test shape.\nThe test shape consists of two short vertical cuts a known distance apart\nBased on the distance between these marks we can dial in the machine settings\n\nThe slider to the right of the buttons can be used to vertically adjust where the test cut is done\n\nThe size of bit used is not critical\nMeasure from the left side of one mark to the left side of the other mark\nThe target distance is 1905mm (75in)\nThe process will repeat until the spacing is accurate to within .5mm\nThe more accurate your measurements, the more accurate your machine will be\n\nPress Cut Test Pattern to begin"
+                text: "To refine these measurements we're going to cut a test shape. The test shape consists of five cuts.\n\nCuts 1 and 2 will be short vertical cuts in the upper left and right corners of the work area.\nCuts 3 and 4 will be short vertical cuts in the lower left and right corners of the work area.\nCut 5 will be a short horizontal cut attached to cut 2.\n\nBased on the distances between these cuts we can dial in the machine settings.\n\nFor the first measurement, measure from the left edge of cut 1 to the left edge of cut 2.\n\nFor the second measurement, measure from the left edge of cut 3 to the left edge of cut 4.\n\nFor the third measurement, measure from the top edge of the work area to the top edge of cut 5.\n\nEnter the diameter of the bit used to make the cuts (1/4\" = 6.35 mm).\n\nThe more accurate your measurements, the more accurate your machine will be.\n\nPress Cut Test Pattern to begin."
             GridLayout:
                 cols: 2
                 Image:
                     source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview Triangular.JPG"
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Measure Test Shape Horizontal.jpg"
+                    size_hint_x: 0.5
+                Label:
+                    text: root.triangularCalText
+                    size_hint_x: 0.5
         GridLayout:
             cols: 1
             size_hint_x: rightCol
-            GridLayout:
-                cols: 2
-                GridLayout:
-                    cols: 1
-                    size_hint_x: .8
-                    Label:
-                    Button:
-                        text: "Enter Value"
-                        on_release: root.enterDist()
-                        id: enterValuesT
-                        disabled: True
-                    Button:
-                        text: "Cut Test\nPattern"
-                        id: cutBtnT
-                        on_release: root.cutTestPaternTriangular()
-                    Button:
-                        text: "Stop\nCut"
-                        on_release: root.stopCut()
-                    Label:
-                Slider:
-                    orientation: 'vertical'
-                    min: -400
-                    max:  400
-                    value: -400
-                    id: testCutPosSlider
-                    size_hint_x: .2
+            Label:
+            Label:
+                text: "Measurement\nBetween Cuts 1 and 2:"
+                halign: "center"
+            TextInput:
+                id: horzMeasureT1
+                disabled: True
+            Label:
+                text: "Measurement\nBetween Cuts 3 and 4:"
+                halign: "center"
+            TextInput:
+                id: horzMeasureT2
+                disabled: True
+            Label:
+                text: "Measurement\nWork Area Top to Cut 5:"
+                halign: "center"
+            TextInput:
+                id: vertMeasureT1
+                disabled: True
+            Label:
+                text: "Bit Diameter:"
+                halign: "center"
+            TextInput:
+                id: bitDiameterT
+                disabled: False
+            Button:
+                text: "Units: mm"
+                on_release: root.switchUnitsT()
+                id: unitsBtnT
+                disabled: False
+            Button:
+                text: "Enter Values"
+                halign: "center"
+                on_release: root.enterTestPaternValuesTriangular()
+                id: enterValuesT
+                disabled: True
+            Button:
+                text: "Cut Test\nPattern"
+                halign: "center"
+                id: cutBtnT
+                on_release: root.cutTestPaternTriangular()
+            Button:
+                text: "Stop\nCut"
+                halign: "center"
+                on_release: root.stopCut()
+            Label:
 
 <SetSprocketsVertical>:
     #Set sprockets to 12 o'clock
@@ -671,26 +697,66 @@
             Image:
                 source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.jpg"
         GridLayout:
-            cols: 1
-            size_hint_x: rightCol
-            Label:
-            Button:
-                text: 'Turn Left Sprocket\n1 degree CCW'
-                on_release: root.LeftCCW()
-            Button:
-                text: 'Turn Left Sprocket\n1 degree CW'
-                on_release: root.LeftCW()
-            Button:
-                text: 'Turn Right Sprocket\n1 degree CCW'
-                on_release: root.RightCCW()
-            Button:
-                text: 'Turn Right Sprocket\n1 degree CW'
-                on_release: root.RightCW()
-            Button:
-                text: 'Set Zero'
-                on_release: root.setZero()
-            Label:
-    
+            cols:1
+            size_hint_x: .4
+            GridLayout:
+                cols: 3
+                size_hint_x: .4
+                Label:
+                    text: "Left Sprocket"
+                    font_size: '20sp'
+                Label:
+                Label:
+                Button:
+                    text: '5 deg CCW'
+                    on_release: root.LeftCCW5()
+                Button:
+                    text: '1 deg CCW'
+                    on_release: root.LeftCCW()
+                Button:
+                    text: '0.1 deg CCW'
+                    on_release: root.LeftCCWpoint1()
+                Button:
+                    text: '5 deg CW'
+                    on_release: root.LeftCW5()
+                Button:
+                    text: '1 deg CW'
+                    on_release: root.LeftCW()
+                Button:
+                    text: '0.1 deg CW'
+                    on_release: root.LeftCWpoint1()
+                Label:
+                    text: "Right Sprocket"
+                    font_size: '20sp'
+                Label:
+                Label:
+                Button:
+                    text: '5 deg CCW'
+                    on_release: root.RightCCW5()
+                Button:
+                    text: '1 deg CCW'
+                    on_release: root.RightCCW()
+                Button:
+                    text: '0.1 deg CCW'
+                    on_release: root.RightCCWpoint1()
+                Button:
+                    text: '5 deg CW'
+                    on_release: root.RightCW5()
+                Button:
+                    text: '1 deg CW'
+                    on_release: root.RightCW()
+                Button:
+                    text: '0.1 deg CW'
+                    on_release: root.RightCWpoint1()
+            GridLayout:
+                cols: 1
+                size_hint_x: .4
+                Label:
+                Button:
+                    text: 'Set Zero'
+                    on_release: root.setZero()
+                Label:
+                    
 <MeasureOutChains>:
     leftChainBtn:leftChainBtn
     rightChainBtn:rightChainBtn
@@ -746,7 +812,7 @@
     measureOutChains:measureOutChains
     triangularCalibration:triangularCalibration
     finishText:finishText
-    
+
     cols: 1
     size: root.size
     pos: root.pos
@@ -1057,7 +1123,7 @@
                 text: 'Finish'
                 on_release: root.done()
                 size_hint_x: rightCol
-    
+
 <CalibrateLengthsPopup>:
     carousel:carousel
     setSprocketsVertical:setSprocketsVertical
@@ -1133,11 +1199,11 @@
         Label:
             text: "Not yet computed"
             id: machineLabel1
-            font_size: 10
+            font_size: sp(10)
         Label:
             text: "Not yet computed"
             id: machineLabel2
-            font_size: 10
+            font_size: sp(10)
     GridLayout:
         cols: 2
         size_hint_y: .9
@@ -1157,7 +1223,7 @@
             Label:
                 text: "Motor Spacing\nError: 0mm"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/2
+                font_size: sp(self.height)/sp(3)
                 id: motorSpacingErrorLabel
             Slider:
                 min: -50
@@ -1167,7 +1233,7 @@
             Label:
                 text: "Motor Vertical\nError: 0mm"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/2
+                font_size: sp(self.height)/sp(3)
                 id: motorVerticalErrorLabel
             Slider:
                 min: -50
@@ -1177,7 +1243,7 @@
             Label:
                 text: "Sled Mount\nSpacing Error: 0mm"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/2
+                font_size: sp(self.height)/sp(3)
                 id: sledMountSpacingErrorLabel
                 disabled: not root.isQuadKinematics
             Slider:
@@ -1189,7 +1255,7 @@
             Label:
                 text: "Vert Dist To\nBit Error: 0mm"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/2
+                font_size: sp(self.height)/sp(3)
                 id: vertBitDistLabel
                 disabled: not root.isQuadKinematics
             Slider:
@@ -1201,7 +1267,7 @@
             Label:
                 text: "Vert Dist\nBit to CG Error: 0mm"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/2
+                font_size: sp(self.height)/sp(3)
                 disabled: not root.isQuadKinematics
                 id: vertCGDistLabel
             Slider:
@@ -1213,7 +1279,7 @@
             Label:
                 text: "Left Chain\nSlipped Links: 0links"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/2
+                font_size: sp(self.height)/sp(3)
                 id: leftChainOffsetLabel
             Slider:
                 min: -10
@@ -1223,7 +1289,7 @@
             Label:
                 text: "Right Chain\nSlipped Links: 0links"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/2
+                font_size: sp(self.height)/sp(3)
                 id: rightChainOffsetLabel
             Slider:
                 min: -10
@@ -1233,7 +1299,7 @@
             Label:
                 text: "Rotation Radius"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/2
+                font_size: sp(self.height)/sp(3)
                 disabled: root.isQuadKinematics
                 id: rotationRadiusLabel
             Slider:
@@ -1245,7 +1311,7 @@
             Label:
                 text: "Grid Size: 150mm"
                 text_size: self.width, self.height
-                font_size: (self.height - 6)/2
+                font_size: sp(self.height)/sp(3)
                 id: gridSizeLabel
             Slider:
                 min: 25
