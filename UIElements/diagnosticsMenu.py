@@ -59,7 +59,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
     
     def manualCalibrateChainLengths(self):
         self.data.gcode_queue.put("$MSLW4=1650")
-        self.data.gcode_queue.put("$MSLW4=1650")
+        self.data.gcode_queue.put("$MSLW5=1650")
         self.parentWidget.close()
     
     def testMotors(self):
