@@ -242,6 +242,14 @@ settings = {
                 "firmwareKey": 8
             },
             {
+                "type": "string",
+                "title": "Chain Sag Correction Value for Triangular Kinematics",
+                "desc": "The scaled value computed by the calibration process to calculate chain sag based on sled weight, chain weight, and workspace angle\\ndefault setting: %s",
+                "key": "chainSagCorrection",
+                "default": 0,
+                "firmwareKey": 37
+            },
+            {
                 "type": "bool",
                 "title": "Enable Custom Positional PID Values",
                 "desc": "Enable using custom values for the positional PID controller. Turning this off will return to the default values",
@@ -288,7 +296,7 @@ settings = {
                 "title": "Kp Velocity",
                 "desc": "The proportional constant for the velocity PID controller",
                 "key": "KpV",
-                "default": 7
+                "default": 5
             },
             {
                 "type": "string",

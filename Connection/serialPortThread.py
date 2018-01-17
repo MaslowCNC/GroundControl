@@ -119,7 +119,7 @@ class SerialPortThread(MakesmithInitFuncs):
                     pass
                 
                 #Check if a line has been completed
-                if lineFromMachine == "ok\r\n":
+                if lineFromMachine == "ok\r\n" or (len(lineFromMachine) >= 6 and lineFromMachine[0:6] == "error:"):
                     self.machineIsReadyForData = True
                     if bool(self.lengthOfLastLineStack) is True:                                     #if we've sent lines to the machine
                         self.bufferSpace = self.bufferSpace + self.lengthOfLastLineStack.pop()    #free up that space in the buffer

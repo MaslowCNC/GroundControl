@@ -244,7 +244,7 @@ class GroundControlApp(App):
             KiV = float(self.data.config.get('Advanced Settings', 'KiV'))
             KdV = float(self.data.config.get('Advanced Settings', 'KdV'))
         else:
-            KpV = 7
+            KpV = 5
             KiV = 0
             KdV = .28
         
@@ -294,6 +294,8 @@ class GroundControlApp(App):
         self.data.gcode_queue.put("$6=" + str(self.data.config.get('Maslow Settings', 'sledCG')))
         self.data.gcode_queue.put("$7=" + str(kinematicsType))
         self.data.gcode_queue.put("$8=" + str(self.data.config.get('Advanced Settings', 'rotationRadius')))
+        self.data.gcode_queue.put("$37=" + str(self.data.config.get('Advanced Settings', 'chainSagCorrection')))
+
 
         
         # Force kinematics recalibration

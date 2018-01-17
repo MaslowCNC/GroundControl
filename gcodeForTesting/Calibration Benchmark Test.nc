@@ -1,0 +1,65 @@
+G21
+G90
+G40
+
+G1 Z5 F500
+
+G0 X0 Y0
+
+
+(horizontal pattern)
+G0 X-952.5 Y10
+G1 Z-2 F500
+G1 Y-10
+G1 Z5
+G0 X952.5 Y10
+G1 Z-2
+G1 Y-10
+G1 Z5
+
+
+(vertical pattern)
+G0 X-10 Y450
+G1 Z-2
+G1 X10
+G1 Z5
+G0 X-10 Y-450
+G1 Z-2
+G1 X10
+G1 Z3
+
+(lower left square)
+G0 X-952.5 Y-350
+G1 Z-2
+G1 Y-450
+G1 X-852.5
+G1 Y-350
+G1 X-952.5
+G1 Z5
+
+(upper left square)
+G0 Y450
+G1 Z-2
+G1 Y350
+G1 X-852.5
+G1 Y450
+G1 X-952.5
+G1 Z5
+
+(upper right square)
+G0 X852.5 Y450
+G1 Z-2
+G1 Y350
+G1 X952.5
+G1 Y450
+G1 X852.5
+G1 Z5
+
+(lower right square)
+G0 X852.5 Y-350
+G1 Z-2
+G1 Y-450
+G1 X952.5
+G1 Y-350
+G1 X852.5
+G1 Z5
