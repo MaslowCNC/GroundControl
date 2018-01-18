@@ -6,6 +6,12 @@ title = Maslow Ground Control
 # (str) Package name
 package.name = groundcontrol
 
+# (str) Title of your application
+title = Maslow Ground Control
+
+# (str) Package name
+package.name = groundcontrol
+
 # (str) Package domain (needed for android/ios packaging)
 package.domain = maslowcnc.com
 
