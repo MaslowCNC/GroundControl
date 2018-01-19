@@ -6,7 +6,7 @@ osx.python_version = 2
 # Kivy version to use
 osx.kivy_version = 1.9.1
 
- (str) Title of your application
+# (str) Title of your application
 title = Maslow Ground Control
 
 # (str) Package name
