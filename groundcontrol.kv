@@ -288,6 +288,10 @@
         disabled: False
         on_press: root.show_gcode()
     Button:
+        text: 'Clear Gcode'
+        disabled: False
+        on_press: root.clear_gcode()
+    Button:
         text: 'Reset View'
         disabled: False
         on_press: app.frontpage.gcodecanvas.centerCanvas()
