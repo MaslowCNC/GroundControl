@@ -110,6 +110,9 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         '''
         
         filename = self.data.gcodeFile
+        if filename is "":
+            self.data.gcode = ""
+            return
         try:
             filterfile = open(filename, 'r')
             rawfilters = filterfile.read()
