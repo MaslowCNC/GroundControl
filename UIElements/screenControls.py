@@ -43,12 +43,12 @@ class ScreenControls(FloatLayout, MakesmithInitFuncs):
         '''
         self._popup.dismiss()
 		
-	def open_background(self):
-		'''
-		Open A Pop-up To Manage the Canvas Background
-		'''
-		content = Background()
-		content.setUpData(self.data)
-		content.close = self.close_popup
-		self._popup = Popup(title="Background Picture", content=content, size_hint = (0.5,0.5))
-		self._popup.open()
+    def open_background(self):
+        '''
+        Open A Pop-up To Manage the Canvas Background
+        '''
+        content = Background()
+        content.setUpData(self.data)
+        content.close = self.close_popup
+        self._popup = Popup(title="Background Picture", content=content, size_hint = (0.5,0.5))
+        self._popup.open()

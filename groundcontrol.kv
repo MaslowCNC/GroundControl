@@ -1429,6 +1429,32 @@
                 text: "Recompute"
                 on_release: root.recompute()
 
+<BackgroundMenu>:
+    cols:1
+    size: root.size
+    pos: root.pos
+    Label:
+        text: "Background"
+    Button:
+        text: 'Open Background'
+        on_press: root.openBackground()
+    Button:
+        text: 'Update Background'
+        on_release: root.reloadBackground()
+    Button:
+        text: 'Remove Background'
+        disabled: False
+        on_press: root.clear_background()
+    Button:
+        text: 'Settings...'
+        disabled: False
+        on_press: root.openBackgroundSettings()
+    Button:
+        text: 'Close'
+        disabled: False
+        on_press: app.frontpage.gcodecanvas.centerCanvas()
+        on_release: root.resetView()
+
 <TestPoint>
 
 #:import pi math.pi
