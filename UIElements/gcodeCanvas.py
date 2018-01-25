@@ -110,6 +110,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         '''
         
         filename = self.data.gcodeFile
+        if filename is "": #Blank the g-code if we're loading "nothing"
+			self.data.gcode = ""
+			return
+
         try:
             filterfile = open(filename, 'r')
             rawfilters = filterfile.read()
@@ -152,8 +156,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                     else:
                         self.data.zMoves.append(index)
         except:
-            if filename is not "":
-                self.data.message_queue.put("Message: Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use Actions > Open G-code")
+            self.data.message_queue.put("Message: Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use Actions > Open G-code")
             self.data.gcodeFile = ""
     
     def centerCanvas(self, *args):
