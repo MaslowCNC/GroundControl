@@ -50,6 +50,17 @@ class Data(EventDispatcher):
     tolerance  = NumericProperty(0.5)
     gcodeShift = ObjectProperty([0.0,0.0])                          #the amount that the gcode has been shifted
     logger     =  Logger()                                          #the module which records the machines behavior to review later
+
+    backgroundFile = StringProperty("")
+    #TMJ - These should machine config item...
+    backgroundTLHSV = [(30,40,80),(90,255,255)]
+    backgroundTRHSV = [(90,60,80),(140,255,255)]
+    backgroundBLHSV = [(160, 60, 60),(10,255,255)]
+    backgroundBRHSV = [(160, 60, 60),(10,255,255)]
+    backgroundTRPOS = ( 1225, 615)
+    backgrountTLPOS = (-1225, 615)
+    backgroundBLPOS = (-1225,-615)
+    backgroundBRPOS = ( 1225,-615)
     
     '''
     Flags
