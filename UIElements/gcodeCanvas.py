@@ -18,6 +18,8 @@ from UIElements.modernMenu                   import ModernMenu
 from kivy.graphics.texture                   import Texture
 from kivy.graphics							 import Rectangle
 
+import cv2
+
 import re
 import math
 import global_variables

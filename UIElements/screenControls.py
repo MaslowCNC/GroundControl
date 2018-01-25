@@ -1,6 +1,7 @@
 from kivy.uix.floatlayout                      import   FloatLayout
 from kivy.uix.popup                            import   Popup
 from UIElements.otherFeatures                  import   OtherFeatures
+from UIElements.Background					   import	Background
 from DataStructures.makesmithInitFuncs         import   MakesmithInitFuncs
 from UIElements.buttonTemplate                 import   ButtonTemplate
 from UIElements.backgroundMenu                 import   BackgroundMenu
