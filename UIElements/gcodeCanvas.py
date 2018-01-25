@@ -15,6 +15,10 @@ from UIElements.viewMenu                     import ViewMenu
 from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
 from UIElements.modernMenu                   import ModernMenu
+from kivy.graphics.texture                   import Texture
+from kivy.graphics							 import Rectangle
+
+import cv2
 
 import re
 import math
@@ -204,6 +208,23 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         with self.scatterObject.canvas:
             Color(.47, .47, .47)
 
+			#TMJ
+			#Load Background
+            img = cv2.imread('c:\crap\cv2\sq.JPG')
+            w=int(img.shape[0])
+            h=int(img.shape[1])
+            print "foo"
+            #For a canvas, it goes in as a texture on a rectangle, so make the texture
+            texture = Texture.create(size=(h,w))
+
+            # then, convert the array to a ubyte string
+            buf = img.tobytes()
+            # then blit the buffer
+            texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
+            texture.flip_vertical() #OpenGL is upside down...
+			#The coordinates are for the bottom-left corner.
+            Rectangle(texture=texture, pos=(-1225,-615), size=(2450,1230))
+
             #create the bounding box
             height = float(self.data.config.get('Maslow Settings', 'bedHeight'))
             width  = float(self.data.config.get('Maslow Settings', 'bedWidth'))
@@ -215,6 +236,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             #create the axis lines
             Line(points = (-width/2,0,width/2,0), dash_offset = 5, group='workspace')
             Line(points = (0, -height/2,0,height/2), dash_offset = 5, group='workspace')
+			
     
     def drawLine(self,gCodeLine,command):
         '''

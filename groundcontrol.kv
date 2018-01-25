@@ -27,6 +27,7 @@
 <ScreenControls>:
     actionsBtn:actionsBtn
     settingsBtn:settingsBtn
+	backgroundBtn:backgroundBtn
 
     BoxLayout:
         orientation: 'horizontal'
@@ -42,6 +43,11 @@
             text: "Settings"
             funcToCallOnRelease: app.open_settings
             id: settingsBtn
+        ButtonTemplate:
+            text: "Background"
+            funcToCallOnRelease: root.open_background
+            id: backgroundBtn
+
 
 <GcodeCanvas>:
     scatterObject:scatterObject
