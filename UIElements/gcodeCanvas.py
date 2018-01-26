@@ -272,12 +272,17 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
 
             #Find the centers of the markers:ToDo - handle duplicate/unique colors properly...
             centers = []
-            centers.append(findHSVcenter(img, hsv, backgroundTLHSV[0], backgroundTLHSV[1]))
-            centers.append(findHSVcenter(img, hsv, backgroundTRHSV[0], backgroundTRHSV[1]))
-            centers.append(findHSVcenter(img, hsv, backgroundBLHSV[0], backgroundBLHSV[1]))
+            for c in findHSVcenter(img, hsv, backgroundTLHSV[0], backgroundTLHSV[1]):
+                centers.append(c)
+            for c in findHSVcenter(img, hsv, backgroundTRHSV[0], backgroundTRHSV[1]):
+                centers.append(c)
+            for c in findHSVcenter(img, hsv, backgroundBLHSV[0], backgroundBLHSV[1]):
+                centers.append(c)
+            #centers.append(findHSVcenter(img, hsv, backgroundBLHSV[0], backgroundBLHSV[1]))#ToDo: Not needed in my test case since TL/BL are the same
+            
             print centers
-            #We have to have 4 centers.
-            pts1 = np.float32([centers[0][0],centers[1][0],centers[2][1],centers[2][0]])
+            #We have to have 4 centers... ToDo: sort these so it works always
+            pts1 = np.float32([centers[0],centers[1],centers[3],centers[2]])
             pts2 = np.float32([[0,0],[0,1000],[2000,0],[2000,1000]]) #ToDo: Handle askew points
 
             M = cv2.getPerspectiveTransform(pts1,pts2)
