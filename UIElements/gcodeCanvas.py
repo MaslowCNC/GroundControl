@@ -275,17 +275,20 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 buf = img.tobytes() # then, convert the array to a ubyte string
                 texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte') # and blit the buffer -- note that OpenCV format is BGR
 
-                #The coordinates are for the bottom-left corner.  This code duplicates the backgroundMenu:processBackground logic
-                TL=self.data.backgroundTLPOS
-                TR=self.data.backgroundTRPOS
-                BL=self.data.backgroundBLPOS
-                BR=self.data.backgroundBRPOS
-                
-                leftmost = min(TL[0],BL[0])
-                rightmost=max(TR[0],BR[0])
-                topmost=max(TL[1],TR[1])
-                botmost=min(BL[1],BR[1])
-                Rectangle(texture=texture, pos=(leftmost,botmost), size=(rightmost-leftmost, topmost-botmost))
+            #Find the centers of the markers:ToDo - handle duplicate/unique colors properly...
+            centers = []
+            for c in findHSVcenter(img, hsv, backgroundTLHSV[0], backgroundTLHSV[1]):
+                centers.append(c)
+            for c in findHSVcenter(img, hsv, backgroundTRHSV[0], backgroundTRHSV[1]):
+                centers.append(c)
+            for c in findHSVcenter(img, hsv, backgroundBLHSV[0], backgroundBLHSV[1]):
+                centers.append(c)
+            #centers.append(findHSVcenter(img, hsv, backgroundBLHSV[0], backgroundBLHSV[1]))#ToDo: Not needed in my test case since TL/BL are the same
+            
+            print centers
+            #We have to have 4 centers... ToDo: sort these so it works always
+            pts1 = np.float32([centers[0],centers[1],centers[3],centers[2]])
+            pts2 = np.float32([[0,0],[0,1000],[2000,0],[2000,1000]]) #ToDo: Handle askew points
 
             #create the bounding box
             height = float(self.data.config.get('Maslow Settings', 'bedHeight'))
