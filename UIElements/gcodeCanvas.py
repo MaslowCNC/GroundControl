@@ -267,6 +267,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
 			#TMJ
 			#Load Background
             #ToDo - Put this code someplace useful
+            print "CalcBkgrnd"
             img = cv2.imread('c:\crap\cv2\T3i2.JPG')
             hsv = hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)    #HSV colorspace is easier to do "Color" than RGB
 
@@ -280,31 +281,42 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 centers.append(c)
             #centers.append(findHSVcenter(img, hsv, backgroundBLHSV[0], backgroundBLHSV[1]))#ToDo: Not needed in my test case since TL/BL are the same
             
-            print centers
             #We have to have 4 centers... ToDo: sort these so it works always
             pts1 = np.float32([centers[0],centers[1],centers[3],centers[2]])
-            pts2 = np.float32([[0,0],[0,1000],[2000,0],[2000,1000]]) #ToDo: Handle askew points
-
-            M = cv2.getPerspectiveTransform(pts1,pts2)
-            img = cv2.warpPerspective(img,M,(2000,1000))
-
-            w=int(img.shape[0])
-            h=int(img.shape[1])
-            print "foo"
-            #For a canvas, it goes in as a texture on a rectangle, so make the texture
-            texture = Texture.create(size=(h,w))
-
-            buf = img.tobytes() # then, convert the array to a ubyte string
-            texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte') # and blit the buffer -- note that OpenCV format is BGR
-            texture.flip_vertical() #OpenGL is upside down...
-
-			#The coordinates are for the bottom-left corner.
-            
             leftmost = min(TL[0],BL[0])
             rightmost=max(TR[0],BR[0])
             topmost=max(TL[1],TR[1])
             botmost=min(BL[1],BR[1])
-            Rectangle(texture=texture, pos=(leftmost,botmost), size=(rightmost-leftmost, topmost-botmost))
+            h = topmost-botmost
+            w = rightmost-leftmost
+
+            pts2 = np.float32(
+                [[TL[0]-leftmost,TL[1]-botmost],[BL[0]-leftmost,BL[1]-botmost],
+                 [TR[0]-leftmost, TR[1]-botmost],[BR[0]-leftmost,BR[1]-botmost]]) 
+            
+            M = cv2.getPerspectiveTransform(pts1,pts2)
+            img = cv2.warpPerspective(img,M,(w,h))
+            
+            #ToDo: Break here... the above goes in the "Re-Load Background Image" and stores img into the datastructure
+            
+            if img is not None: #If img is None, then no background.  Skip this mess.
+                print "DrawBkgrnd"
+                w=int(img.shape[0])
+                h=int(img.shape[1])
+                #For a canvas, it goes in as a texture on a rectangle, so make the texture
+                texture = Texture.create(size=(h,w))
+
+                buf = img.tobytes() # then, convert the array to a ubyte string
+                texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte') # and blit the buffer -- note that OpenCV format is BGR
+                texture.flip_vertical() #OpenGL is upside down...
+
+                #The coordinates are for the bottom-left corner.
+                
+                leftmost = min(TL[0],BL[0])
+                rightmost=max(TR[0],BR[0])
+                topmost=max(TL[1],TR[1])
+                botmost=min(BL[1],BR[1])
+                Rectangle(texture=texture, pos=(leftmost,botmost), size=(rightmost-leftmost, topmost-botmost))
 
             #create the bounding box
             height = float(self.data.config.get('Maslow Settings', 'bedHeight'))
