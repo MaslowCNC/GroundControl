@@ -87,6 +87,9 @@ class GroundControlApp(App):
         Load User Settings
         '''
         
+        # force create an ini no matter what.
+        self.config.write()
+
         if self.config.get('Advanced Settings', 'encoderSteps') == '8148.0':
             self.data.message_queue.put("Message: This update will adjust the the number of encoder pulses per rotation from 8,148 to 8,113 in your settings which improves the positional accuracy.\n\nPerforming a calibration will help you get the most out of this update.")
             self.config.set('Advanced Settings', 'encoderSteps', '8113.73')
@@ -125,10 +128,14 @@ class GroundControlApp(App):
         """
         Set the default values for the config sections.
         """
+        # Calculate computed settings on load
+        config.add_callback(self.computeSettings)
+        config.setdefaults('Computed Settings', maslowSettings.getDefaultValueSection('Computed Settings'))
         config.setdefaults('Maslow Settings', maslowSettings.getDefaultValueSection('Maslow Settings'))
         config.setdefaults('Advanced Settings', maslowSettings.getDefaultValueSection('Advanced Settings'))
         config.setdefaults('Ground Control Settings', maslowSettings.getDefaultValueSection('Ground Control Settings'))
-
+        config.remove_callback(self.computeSettings)
+        
     def build_settings(self, settings):
         """
         Add custom section to the default configuration object.
@@ -137,6 +144,36 @@ class GroundControlApp(App):
         settings.add_json_panel('Advanced Settings', self.config, data=maslowSettings.getJSONSettingSection('Advanced Settings'))
         settings.add_json_panel('Ground Control Settings', self.config, data=maslowSettings.getJSONSettingSection("Ground Control Settings"))
         self.config.add_callback(self.configSettingChange)
+
+    def computeSettings(self, section, key, value):
+        # Update Computed settings
+        if key == 'kinematicsType':
+            if value == 'Quadrilateral':
+                self.config.set('Computed Settings', 'kinematicsTypeComputed', "1")
+            else:
+                self.config.set('Computed Settings', 'kinematicsTypeComputed', "2")
+
+        elif (key == 'gearTeeth' or key == 'chainPitch') and self.config.has_option('Advanced Settings', 'gearTeeth') and self.config.has_option('Advanced Settings', 'chainPitch'):
+            distPerRot = float(self.config.get('Advanced Settings', 'gearTeeth')) * float(self.config.get('Advanced Settings', 'chainPitch'))
+            self.config.set('Computed Settings', "distPerRot", str(distPerRot))
+        
+        elif key == 'enablePosPIDValues':
+            for key in ('KpPos', 'KiPos', 'KdPos', 'propWeight'):
+                if int(self.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
+                    value = float(self.config.get('Advanced Settings', key))
+                else:
+                    value = maslowSettings.getDefaultValue('Advanced Settings', key)
+                self.config.set('Computed Settings', key + "Main", value)
+                self.config.set('Computed Settings', key + "Z", value)
+
+        elif key == 'enableVPIDValues':
+            for key in ('KpV', 'KiV', 'KdV'):
+                if int(self.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
+                    value = float(self.config.get('Advanced Settings', key))
+                else:
+                    value = maslowSettings.getDefaultValue('Advanced Settings', key)
+                self.config.set('Computed Settings', key + "Main", value)
+                self.config.set('Computed Settings', key + "Z", value)
 
     def configSettingChange(self, section, key, value):
         """
@@ -157,6 +194,12 @@ class GroundControlApp(App):
             if (key == "truncate") or (key == "digits"):
                 self.frontpage.gcodecanvas.reloadGcode()
         
+        # Update Computed Settings
+        self.computeSettings(section, key, value)
+        
+        # Write the settings change to the Disk
+        self.data.config.write()
+
         # only run on live connection
         if self.data.connectionStatus != 1:
             return
@@ -165,61 +208,6 @@ class GroundControlApp(App):
         firmwareKey = maslowSettings.getFirmwareKey(section, key)
         if firmwareKey is not None:
             self.data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(value))
-        
-        #Push Settings that require some calculations
-        elif key == 'kinematicsType':
-            if value == 'Quadrilateral':
-                kinematicsType = 1
-            else:
-                kinematicsType = 2
-            self.data.gcode_queue.put("$7=" + str(kinematicsType))
-
-        elif key == 'gearTeeth' or key == 'chainPitch':
-            distPerRot = float(self.data.config.get('Advanced Settings', 'gearTeeth')) * float(self.data.config.get('Advanced Settings', 'chainPitch'))
-            self.data.gcode_queue.put("$13=" + str(distPerRot))
-        
-        elif key in ('KpPos', 'KiPos', 'KdPos', 'propWeight'):
-            if int(self.data.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
-                KpPos = float(self.data.config.get('Advanced Settings', 'KpPos'))
-                KiPos = float(self.data.config.get('Advanced Settings', 'KiPos'))
-                KdPos = float(self.data.config.get('Advanced Settings', 'KdPos'))
-                propWeight = float(self.data.config.get('Advanced Settings', 'propWeight'))
-            else:
-                KpPos = 1300
-                KiPos = 0
-                KdPos = 34
-                propWeight = 1
-            if key == 'KpPos':
-                self.data.gcode_queue.put("$21=" + str(KpPos))
-                self.data.gcode_queue.put("$29=" + str(KpPos))
-            elif key == 'KiPos':
-                self.data.gcode_queue.put("$22=" + str(KiPos))
-                self.data.gcode_queue.put("$30=" + str(KiPos))
-            elif key == 'KdPos':
-                self.data.gcode_queue.put("$23=" + str(KdPos))
-                self.data.gcode_queue.put("$31=" + str(KdPos))
-            elif key == 'propWeight':
-                self.data.gcode_queue.put("$24=" + str(propWeight))
-                self.data.gcode_queue.put("$32=" + str(propWeight))
-
-        elif key in ('KpV', 'KiV', 'KdV'):
-            if int(self.data.config.get('Advanced Settings', 'enableVPIDValues')) == 1:
-                KpV = float(self.data.config.get('Advanced Settings', 'KpV'))
-                KiV = float(self.data.config.get('Advanced Settings', 'KiV'))
-                KdV = float(self.data.config.get('Advanced Settings', 'KdV'))
-            else:
-                KpV = 7
-                KiV = 0
-                KdV = .28
-            if key == 'KpV':
-                self.data.gcode_queue.put("$25=" + str(KpV))
-                self.data.gcode_queue.put("$33=" + str(KpV))
-            elif key =='KiV':
-                self.data.gcode_queue.put("$26=" + str(KiV))
-                self.data.gcode_queue.put("$34=" + str(KiV))
-            elif key == 'KdV':
-                self.data.gcode_queue.put("$27=" + str(KdV))
-                self.data.gcode_queue.put("$35=" + str(KdV))
     
     def push_settings_to_machine(self, *args):
         

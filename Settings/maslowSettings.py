@@ -343,6 +343,89 @@ settings = {
                 "key": "validExtensions",
                 "default": ".nc, .ngc, .text, .gcode"
             }
+        ],
+    "Computed Settings": #These are setting calculated from the user inputs on other settings, they are not direclty seen by the user
+        [
+            {
+                "type": "string",
+                "key": "kinematicsTypeComputed",
+                "firmwareKey": 7
+            },
+            {
+                "type": "string",
+                "key": "distPerRot",
+                "firmwareKey": 13
+            },
+            {
+                "type": "string",
+                "key": "KpPosMain",
+                "firmwareKey": 21
+            },
+            {
+                "type": "string",
+                "key": "KiPosMain",
+                "firmwareKey": 22
+            },
+            {
+                "type": "string",
+                "key": "KdPosMain",
+                "firmwareKey": 23
+            },
+            {
+                "type": "string",
+                "key": "propWeightMain",
+                "firmwareKey": 24
+            },
+            {
+                "type": "string",
+                "key": "KpPosZ",
+                "firmwareKey": 29
+            },
+            {
+                "type": "string",
+                "key": "KiPosZ",
+                "firmwareKey": 30
+            },
+            {
+                "type": "string",
+                "key": "KdPosZ",
+                "firmwareKey": 31
+            },
+            {
+                "type": "string",
+                "key": "propWeightZ",
+                "firmwareKey": 32
+            },
+            {
+                "type": "string",
+                "key": "KpVMain",
+                "firmwareKey": 25
+            },
+            {
+                "type": "string",
+                "key": "KiVMain",
+                "firmwareKey": 26
+            },
+            {
+                "type": "string",
+                "key": "KdVMain",
+                "firmwareKey": 27
+            },
+            {
+                "type": "string",
+                "key": "KpVZ",
+                "firmwareKey": 33
+            },
+            {
+                "type": "string",
+                "key": "KiVZ",
+                "firmwareKey": 34
+            },
+            {
+                "type": "string",
+                "key": "KdVZ",
+                "firmwareKey": 35
+            }
         ]
 }
 
@@ -370,6 +453,17 @@ def getDefaultValueSection(section):
         for option in settings[section]:
             if 'default' in option:
                 ret[option['key']] = option['default']
+    return ret
+
+def getDefaultValue(section, key):
+    '''
+    Returns the default value of a setting
+    '''
+    ret = None
+    if section in settings:
+        for option in settings[section]:
+            if option['key'] == key and 'default' in option:
+                ret = option['default']
     return ret
 
 def getFirmwareKey(section, key):
