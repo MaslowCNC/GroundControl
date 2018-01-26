@@ -257,46 +257,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
  
         with self.scatterObject.canvas:
             Color(.47, .47, .47)
-
-			#TMJ
-			#Load Background
-            #ToDo - Put this code someplace useful
-            print "CalcBkgrnd"
-            img = cv2.imread('c:\crap\cv2\T3i2.JPG')
-            hsv = hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)    #HSV colorspace is easier to do "Color" than RGB
-            xmax=img.shape[1]
-            ymax=img.shape[0]
-            xmid = xmax/2
-            ymid = ymax/2;
-
-            #Find the centers of the markers:ToDo - handle duplicate/unique colors properly...
-            centers = []
-            for c in findHSVcenter(img, hsv, backgroundTLHSV[0], backgroundTLHSV[1], (0,0), (xmid,ymid)):
-                centers.append(c)
-            for c in findHSVcenter(img, hsv, backgroundTRHSV[0], backgroundTRHSV[1], (xmid,0),(xmax, ymid)):
-                centers.append(c)
-            for c in findHSVcenter(img, hsv, backgroundBLHSV[0], backgroundBLHSV[1], (0,ymid), (xmid, ymax)):
-                centers.append(c)
-            for c in findHSVcenter(img, hsv, backgroundBRHSV[0], backgroundBRHSV[1], (xmid,ymid), (xmax, ymax)):
-                centers.append(c)
-            
-            #ToDo - what do we do if we don't find points?
-            pts1 = np.float32([centers[0],centers[1],centers[2],centers[3]])
-            leftmost = min(TL[0],BL[0])
-            rightmost=max(TR[0],BR[0])
-            topmost=max(TL[1],TR[1])
-            botmost=min(BL[1],BR[1])
-            h = topmost-botmost
-            w = rightmost-leftmost
-
-            pts2 = np.float32(
-                [[TL[0]-leftmost,TL[1]-botmost],[TR[0]-leftmost, TR[1]-botmost],
-                 [BL[0]-leftmost,BL[1]-botmost],[BR[0]-leftmost,BR[1]-botmost]]) 
-            
-            M = cv2.getPerspectiveTransform(pts1,pts2)
-            img = cv2.warpPerspective(img,M,(w,h))
-            
-            #ToDo: Break here... the above goes in the "Re-Load Background Image" and stores img into the datastructure
+            img = self.data.backgroundImage
             
             if img is not None: #If img is None, then no background.  Skip this mess.
                 print "DrawBkgrnd"
