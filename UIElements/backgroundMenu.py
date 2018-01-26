@@ -10,11 +10,11 @@ from os                                          import    path
 
 
 
-class ViewMenu(GridLayout, MakesmithInitFuncs):
+class BackgroundMenu(GridLayout, MakesmithInitFuncs):
 
     page = 1
     
-    def openFile(self):
+    def openBackground(self):
         '''
         
         Open The Pop-up To Load A File
@@ -23,7 +23,7 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         
         '''
         #starting path is either where the last opened file was or the users home directory
-        startingPath = path.dirname(self.data.gcodeFile)
+        startingPath = path.dirname(self.data.backgroundFile)
         if startingPath is "": 
             startingPath = path.expanduser('~')
         
@@ -46,31 +46,18 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
+    def reloadBackground(self):
+        foo
     
-    def clear_gcode(self):
+    def clear_background(self):
         '''
         
-        Clear gcode
+        Clear background
         
         '''
-        self.data.gcodeFile = ""
-        
-        #close the parent popup
         self.parentWidget.close()
 
-    def reloadGcode(self):
-        '''
-        
-        Trigger a reloading of the gcode file
-        
-        '''
-        
-        filePath = self.data.gcodeFile
-        self.data.gcodeFile = ""
-        self.data.gcodeFile = filePath
-        
-        #close the parent popup
-        self.parentWidget.close()
+ 
     
     def load(self, instance):
         '''
@@ -95,83 +82,13 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         #close the parent popup
         self.parentWidget.close()
     
-    def resetView(self):
+    def openBackgroundSettings(self):
         '''
-        
-        Reset the gcode canvas view. Most of the work is done in the .kv file.
-        
+        Open the background settings page
         '''
         #close the parent popup
         self.parentWidget.close()
     
-    def clear_gcode(self):
-        '''
-        
-        Reset the gcode canvas view. Most of the work is done in the .kv file.
-        
-        '''
-        #locate the file
-        self.data.gcodeFile = ""
-        self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
-        self.data.config.write()
-
-        #close the parent popup
-        self.parentWidget.close()
-    
-    def show_gcode(self):
-        '''
-        
-        Display the currently loaded gcode in a popup
-        
-        It would be cool if you could run the program stepping through using this popup
-        
-        '''
-        
-        popupText = ""
-        titleString = "Gcode File"
-        if len(self.data.gcode) is 0:
-            popupText = "No gcode to display"
-        else:
-            if self.page<=1:
-                line = 0
-            else:
-                line = (self.page-1)*447
-                popupText = "...\n...\n...\n"
-
-            if line>len(self.data.gcode):
-                line = len(self.data.gcode)-447
-
-            for lineNum, gcodeLine in enumerate(self.data.gcode):
-                if lineNum>=line and lineNum<line+447:
-                    popupText = popupText + str(lineNum+1) + ': ' + gcodeLine + "\n"
-                elif lineNum>=line+447:
-                    popupText = popupText + "...\n...\n...\n"
-                    break
-                
-            titleString += ': ' + self.data.gcodeFile +'\nLines: '+str(line+1)+' - '+str(lineNum)+' of '+str(len(self.data.gcode))
-
-        content = PageableTextPopup(cancel = self.dismiss_popup,
-                                      prev = self.show_gcode_prev,
-                                      next = self.show_gcode_next,
-                                      text = popupText)
-
-        self._popup = Popup(title=titleString, content=content,
-                            size_hint=(0.9, 0.9))
-        self._popup.open()
-
-    def show_gcode_next(self,*args):
-
-        if (self.page)*447<len(self.data.gcode):
-            self.page += 1
-            self._popup.dismiss()
-            self.show_gcode()
-
-    def show_gcode_prev(self,*args):
-
-        if self.page > 1:
-            self.page -= 1
-            self._popup.dismiss()
-            self.show_gcode()
     
     def dismiss_popup(self, *args):
         '''
