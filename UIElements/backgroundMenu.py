@@ -22,8 +22,6 @@ TL = (-1225, 515)
 BL = (-1225,-615)
 BR = ( 1325,-615)
 
-backgroundfile='c:\crap\cv2\T3i2.JPG'
-
 def findHSVcenter(img, hsv, hsvLow, hsvHi, bbtl, bbbr):
     #Mask to find the blobs
     if hsvLow[0] > hsvHi[0]:
@@ -104,21 +102,20 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         self.close()
         
     def processBackground(self):
-        filename = 'c:\crap\cv2\T3i2.JPG'   #ToDo: Fixthis
-        print "ProcessBackground",filename
+        print "ProcessBackground",self.data.backgroundFile
         #ToDo: handle yet-to-be-invented "LatestInCurrentDir" bit
 
-        if filename=="":
-            img = None
+        if self.data.backgroundFile=="":
+            self.data.backgroundImage = cv2.warpPerspective(img,M,(w,h))
         else:
-            img = cv2.imread(filename)
+            img = cv2.imread(self.data.backgroundFile)
             hsv = hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)    #HSV colorspace is easier to do "Color" than RGB
             xmax=img.shape[1]
             ymax=img.shape[0]
             xmid = xmax/2
             ymid = ymax/2;
 
-            #Find the centers of the markers:ToDo - handle duplicate/unique colors properly...
+            #Find the centers of the markers: ToDo: This explodes here if it can't find the dots...
             centers = []
             for c in findHSVcenter(img, hsv, backgroundTLHSV[0], backgroundTLHSV[1], (0,0), (xmid,ymid)):
                 centers.append(c)
@@ -143,15 +140,21 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
                  [BL[0]-leftmost,BL[1]-botmost],[BR[0]-leftmost,BR[1]-botmost]]) 
             
             M = cv2.getPerspectiveTransform(pts1,pts2)
-            img = cv2.warpPerspective(img,M,(w,h))
-    
+            self.data.backgroundImage = cv2.warpPerspective(img,M,(w,h))
+            
+        #Trigger a reload
+        filePath = self.data.gcodeFile
+        self.data.gcodeFile = ""
+        self.data.gcodeFile = filePath
+
+            
     def clear_background(self):
         '''
         
         Clear background
         
         '''
-        filename=""
+        self.data.backgroundFile=""
         self.processBackground()
         self.close()
 
@@ -168,7 +171,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         
         filename = instance.selection[0]
         print(filename)
-        backgroundFile = filename
+        self.data.backgroundFile = filename
         
         #close the open file popup
         self.dismiss_popup()
