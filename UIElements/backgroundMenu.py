@@ -8,20 +8,6 @@ from os                                          import    path
 import cv2
 import numpy as np
 
-
-#ToDo: Relocate these to the config section
-#Marker HSV Specs
-backgroundTLHSV = [(30,40,80),(90,255,255)]
-backgroundBLHSV = [(90,60,80),(140,255,255)]
-backgroundTRHSV = [(160, 60, 60),(10,255,255)]
-backgroundBRHSV = [(160, 60, 60),(10,255,255)]
-
-#Location of the markers
-TR = ( 1225, 615)
-TL = (-1225, 515)
-BL = (-1225,-615)
-BR = ( 1325,-615)
-
 def findHSVcenter(img, hsv, hsvLow, hsvHi, bbtl, bbbr):
     #Mask to find the blobs
     if hsvLow[0] > hsvHi[0]:
@@ -106,7 +92,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         #ToDo: handle yet-to-be-invented "LatestInCurrentDir" bit
 
         if self.data.backgroundFile=="":
-            self.data.backgroundImage = cv2.warpPerspective(img,M,(w,h))
+            self.data.backgroundImage = None
         else:
             img = cv2.imread(self.data.backgroundFile)
             hsv = hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)    #HSV colorspace is easier to do "Color" than RGB
@@ -118,18 +104,35 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             #Find the centers of the markers:
             centers = []
             try:
-                for c in findHSVcenter(img, hsv, backgroundTLHSV[0], backgroundTLHSV[1], (0,0), (xmid,ymid)):
-                    centers.append(c)
-                for c in findHSVcenter(img, hsv, backgroundTRHSV[0], backgroundTRHSV[1], (xmid,0),(xmax, ymid)):
-                    centers.append(c)
-                for c in findHSVcenter(img, hsv, backgroundBLHSV[0], backgroundBLHSV[1], (0,ymid), (xmid, ymax)):
-                    centers.append(c)
-                for c in findHSVcenter(img, hsv, backgroundBRHSV[0], backgroundBRHSV[1], (xmid,ymid), (xmax, ymax)):
+                for c in findHSVcenter(img, hsv, self.data.backgroundTLHSV[0], self.data.backgroundTLHSV[1], (0,0), (xmid,ymid)):
                     centers.append(c)
             except TypeError:
                 pass
+            try:
+                for c in findHSVcenter(img, hsv, self.data.backgroundTRHSV[0], self.data.backgroundTRHSV[1], (xmid,0),(xmax, ymid)):
+                    centers.append(c)
+            except TypeError:
+                pass
+            try:
+                for c in findHSVcenter(img, hsv, self.data.backgroundBLHSV[0], self.data.backgroundBLHSV[1], (0,ymid), (xmid, ymax)):
+                    centers.append(c)
+            except TypeError:
+                pass
+            try:
+                for c in findHSVcenter(img, hsv, self.data.backgroundBRHSV[0], self.data.backgroundBRHSV[1], (xmid,ymid), (xmax, ymax)):
+                    centers.append(c)
+            except TypeError:
+                pass
+
             if len(centers) == 4:
-                pts1 = np.float32([centers[0],centers[1],centers[2],centers[3]])
+                
+                #Load into locals for shorthand...
+                TL=self.data.backgroundTLPOS
+                TR=self.data.backgroundTRPOS
+                BL=self.data.backgroundBLPOS
+                BR=self.data.backgroundBRPOS
+
+                #Handle skew in output coordinates
                 leftmost = min(TL[0],BL[0])
                 rightmost=max(TR[0],BR[0])
                 topmost=max(TL[1],TR[1])
@@ -137,6 +140,8 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
                 h = topmost-botmost
                 w = rightmost-leftmost
 
+                #Construct transformation matrices
+                pts1 = np.float32([centers[0],centers[1],centers[2],centers[3]])
                 pts2 = np.float32(
                     [[TL[0]-leftmost,TL[1]-botmost],[TR[0]-leftmost, TR[1]-botmost],
                      [BL[0]-leftmost,BL[1]-botmost],[BR[0]-leftmost,BR[1]-botmost]]) 
@@ -144,7 +149,10 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
                 M = cv2.getPerspectiveTransform(pts1,pts2)
                 self.data.backgroundImage = cv2.warpPerspective(img,M,(w,h))
             else:
-                print "Couldn't find dots."
+                print "Couldn't find dots in "+self.data.backgroundFile
+                #ToDo: Do we want a big indication that this image wasn't good?
+                #You can tell, because the circles for the missing dots aren't there...
+                self.data.backgroundImage=img #reset the background to the new, unaligned image.  
                 
         #Trigger a reload
         filePath = self.data.gcodeFile
