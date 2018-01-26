@@ -115,33 +115,37 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             xmid = xmax/2
             ymid = ymax/2;
 
-            #Find the centers of the markers: ToDo: This explodes here if it can't find the dots...
+            #Find the centers of the markers:
             centers = []
-            for c in findHSVcenter(img, hsv, backgroundTLHSV[0], backgroundTLHSV[1], (0,0), (xmid,ymid)):
-                centers.append(c)
-            for c in findHSVcenter(img, hsv, backgroundTRHSV[0], backgroundTRHSV[1], (xmid,0),(xmax, ymid)):
-                centers.append(c)
-            for c in findHSVcenter(img, hsv, backgroundBLHSV[0], backgroundBLHSV[1], (0,ymid), (xmid, ymax)):
-                centers.append(c)
-            for c in findHSVcenter(img, hsv, backgroundBRHSV[0], backgroundBRHSV[1], (xmid,ymid), (xmax, ymax)):
-                centers.append(c)
-            
-            #ToDo - what do we do if we don't find points?
-            pts1 = np.float32([centers[0],centers[1],centers[2],centers[3]])
-            leftmost = min(TL[0],BL[0])
-            rightmost=max(TR[0],BR[0])
-            topmost=max(TL[1],TR[1])
-            botmost=min(BL[1],BR[1])
-            h = topmost-botmost
-            w = rightmost-leftmost
+            try:
+                for c in findHSVcenter(img, hsv, backgroundTLHSV[0], backgroundTLHSV[1], (0,0), (xmid,ymid)):
+                    centers.append(c)
+                for c in findHSVcenter(img, hsv, backgroundTRHSV[0], backgroundTRHSV[1], (xmid,0),(xmax, ymid)):
+                    centers.append(c)
+                for c in findHSVcenter(img, hsv, backgroundBLHSV[0], backgroundBLHSV[1], (0,ymid), (xmid, ymax)):
+                    centers.append(c)
+                for c in findHSVcenter(img, hsv, backgroundBRHSV[0], backgroundBRHSV[1], (xmid,ymid), (xmax, ymax)):
+                    centers.append(c)
+            except TypeError:
+                pass
+            if len(centers) == 4:
+                pts1 = np.float32([centers[0],centers[1],centers[2],centers[3]])
+                leftmost = min(TL[0],BL[0])
+                rightmost=max(TR[0],BR[0])
+                topmost=max(TL[1],TR[1])
+                botmost=min(BL[1],BR[1])
+                h = topmost-botmost
+                w = rightmost-leftmost
 
-            pts2 = np.float32(
-                [[TL[0]-leftmost,TL[1]-botmost],[TR[0]-leftmost, TR[1]-botmost],
-                 [BL[0]-leftmost,BL[1]-botmost],[BR[0]-leftmost,BR[1]-botmost]]) 
-            
-            M = cv2.getPerspectiveTransform(pts1,pts2)
-            self.data.backgroundImage = cv2.warpPerspective(img,M,(w,h))
-            
+                pts2 = np.float32(
+                    [[TL[0]-leftmost,TL[1]-botmost],[TR[0]-leftmost, TR[1]-botmost],
+                     [BL[0]-leftmost,BL[1]-botmost],[BR[0]-leftmost,BR[1]-botmost]]) 
+                
+                M = cv2.getPerspectiveTransform(pts1,pts2)
+                self.data.backgroundImage = cv2.warpPerspective(img,M,(w,h))
+            else:
+                print "Couldn't find dots."
+                
         #Trigger a reload
         filePath = self.data.gcodeFile
         self.data.gcodeFile = ""
