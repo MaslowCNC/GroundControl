@@ -29,8 +29,8 @@ import global_variables
 #These are config variables
 #Marker HSV Specs
 backgroundTLHSV = [(30,40,80),(90,255,255)]
-backgroundTRHSV = [(90,60,80),(140,255,255)]
-backgroundBLHSV = [(160, 60, 60),(10,255,255)]
+backgroundBLHSV = [(90,60,80),(140,255,255)]
+backgroundTRHSV = [(160, 60, 60),(10,255,255)]
 backgroundBRHSV = [(160, 60, 60),(10,255,255)]
 
 #Location of the markers
@@ -40,44 +40,45 @@ BL = (-1225,-615)
 BR = ( 1325,-615)
 
 #And code that needs to be relocated:
-def findHSVcenter(img, hsv, hsvLow, hsvHi):
-	#Mask to find the blobs
-	if hsvLow[0] > hsvHi[0]:
-		#It's wrapped [red]
-		bottom = (0, hsvLow[1], hsvLow[2])
-		maska=cv2.inRange(hsv, bottom,hsvHi)
-		
-		top = (180, hsvHi[1], hsvHi[2])
-		maskb=cv2.inRange(hsv, hsvLow, top)
-		mask=cv2.bitwise_or(maska, maskb)
-	else:
-		mask=cv2.inRange(hsv, hsvLow, hsvHi)
-			
-	#erode-dilate to clean up noise
-	mask = cv2.erode(mask, None, iterations=3)
-	mask = cv2.dilate(mask, None, iterations=3)
-	cv2.imwrite('c:\crap\cv2\maskb.jpg', mask)
+def findHSVcenter(img, hsv, hsvLow, hsvHi, bbtl, bbbr):
+    #Mask to find the blobs
+    if hsvLow[0] > hsvHi[0]:
+        #It's wrapped [red]
+        bottom = (0, hsvLow[1], hsvLow[2])
+        maska=cv2.inRange(hsv, bottom,hsvHi)
 
-	#find contours
-	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
-	center = None
-	centers = []
-	if len(cnts) > 0:
-		# find the largest contour in the mask, then use
-		# it to compute the minimum enclosing circle and
-		# centroid
-		c = max(cnts, key=cv2.contourArea)	
-		for c in cnts:
-			if cv2.contourArea(c) > 1000:
-				((x, y), radius) = cv2.minEnclosingCircle(c)
-				M = cv2.moments(c)
-				center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))   #ToDo - why not use the XY above?
-				centers.append(center)
-				#Mark the image
-				cv2.circle(img, (int(x), int(y)), int(radius), (0, 255, 255), 2)
-				cv2.circle(img, center, 5, (0, 0, 255), -1)
+        top = (180, hsvHi[1], hsvHi[2])
+        maskb=cv2.inRange(hsv, hsvLow, top)
+        mask=cv2.bitwise_or(maska, maskb)
+    else:
+        mask=cv2.inRange(hsv, hsvLow, hsvHi)
 
-		return centers
+    #erode-dilate to clean up noise
+    mask = cv2.erode(mask, None, iterations=3)
+    mask = cv2.dilate(mask, None, iterations=3)
+    cv2.imwrite('c:\crap\cv2\maskb.jpg', mask)
+
+    #find contours
+    cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
+    center = None
+    centers = []
+    if len(cnts) > 0:
+        # find the largest contour in the mask, then use
+        # it to compute the minimum enclosing circle and
+        # centroid
+        c = max(cnts, key=cv2.contourArea)	
+        for c in cnts:
+            if cv2.contourArea(c) > 1000:
+                ((x, y), radius) = cv2.minEnclosingCircle(c)
+                M = cv2.moments(c)
+                center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))   #ToDo - why not use the XY above?
+                if center[0] >= bbtl[0] and center[0] <= bbbr[0]  and center[1] >= bbtl[1] and center[1] <= bbbr[1]:
+                    #Make sure we're inside the bounding box
+                    centers.append(center)
+                    #Mark the image
+                    cv2.circle(img, (int(x), int(y)), int(radius), (0, 255, 255), 2)
+                    cv2.circle(img, center, 5, (0, 0, 255), -1)
+        return centers
 
 
 class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
@@ -270,19 +271,24 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             print "CalcBkgrnd"
             img = cv2.imread('c:\crap\cv2\T3i2.JPG')
             hsv = hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)    #HSV colorspace is easier to do "Color" than RGB
+            xmax=img.shape[1]
+            ymax=img.shape[0]
+            xmid = xmax/2
+            ymid = ymax/2;
 
             #Find the centers of the markers:ToDo - handle duplicate/unique colors properly...
             centers = []
-            for c in findHSVcenter(img, hsv, backgroundTLHSV[0], backgroundTLHSV[1]):
+            for c in findHSVcenter(img, hsv, backgroundTLHSV[0], backgroundTLHSV[1], (0,0), (xmid,ymid)):
                 centers.append(c)
-            for c in findHSVcenter(img, hsv, backgroundTRHSV[0], backgroundTRHSV[1]):
+            for c in findHSVcenter(img, hsv, backgroundTRHSV[0], backgroundTRHSV[1], (xmid,0),(xmax, ymid)):
                 centers.append(c)
-            for c in findHSVcenter(img, hsv, backgroundBLHSV[0], backgroundBLHSV[1]):
+            for c in findHSVcenter(img, hsv, backgroundBLHSV[0], backgroundBLHSV[1], (0,ymid), (xmid, ymax)):
                 centers.append(c)
-            #centers.append(findHSVcenter(img, hsv, backgroundBLHSV[0], backgroundBLHSV[1]))#ToDo: Not needed in my test case since TL/BL are the same
+            for c in findHSVcenter(img, hsv, backgroundBRHSV[0], backgroundBRHSV[1], (xmid,ymid), (xmax, ymax)):
+                centers.append(c)
             
-            #We have to have 4 centers... ToDo: sort these so it works always
-            pts1 = np.float32([centers[0],centers[1],centers[3],centers[2]])
+            #ToDo - what do we do if we don't find points?
+            pts1 = np.float32([centers[0],centers[1],centers[2],centers[3]])
             leftmost = min(TL[0],BL[0])
             rightmost=max(TR[0],BR[0])
             topmost=max(TL[1],TR[1])
@@ -291,8 +297,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             w = rightmost-leftmost
 
             pts2 = np.float32(
-                [[TL[0]-leftmost,TL[1]-botmost],[BL[0]-leftmost,BL[1]-botmost],
-                 [TR[0]-leftmost, TR[1]-botmost],[BR[0]-leftmost,BR[1]-botmost]]) 
+                [[TL[0]-leftmost,TL[1]-botmost],[TR[0]-leftmost, TR[1]-botmost],
+                 [BL[0]-leftmost,BL[1]-botmost],[BR[0]-leftmost,BR[1]-botmost]]) 
             
             M = cv2.getPerspectiveTransform(pts1,pts2)
             img = cv2.warpPerspective(img,M,(w,h))
