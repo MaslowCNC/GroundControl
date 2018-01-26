@@ -19,10 +19,66 @@ from kivy.graphics.texture                   import Texture
 from kivy.graphics							 import Rectangle
 
 import cv2
+import numpy as np
 
 import re
 import math
 import global_variables
+
+#ToDo: Relocate this properly
+#These are config variables
+#Marker HSV Specs
+backgroundTLHSV = [(30,40,80),(90,255,255)]
+backgroundTRHSV = [(90,60,80),(140,255,255)]
+backgroundBLHSV = [(160, 60, 60),(10,255,255)]
+backgroundBRHSV = [(160, 60, 60),(10,255,255)]
+
+#Location of the markers
+TR = ( 1225, 615)
+TL = (-1225, 515)
+BL = (-1225,-615)
+BR = ( 1325,-615)
+
+#And code that needs to be relocated:
+def findHSVcenter(img, hsv, hsvLow, hsvHi):
+	#Mask to find the blobs
+	if hsvLow[0] > hsvHi[0]:
+		#It's wrapped [red]
+		bottom = (0, hsvLow[1], hsvLow[2])
+		maska=cv2.inRange(hsv, bottom,hsvHi)
+		
+		top = (180, hsvHi[1], hsvHi[2])
+		maskb=cv2.inRange(hsv, hsvLow, top)
+		mask=cv2.bitwise_or(maska, maskb)
+	else:
+		mask=cv2.inRange(hsv, hsvLow, hsvHi)
+			
+	#erode-dilate to clean up noise
+	mask = cv2.erode(mask, None, iterations=3)
+	mask = cv2.dilate(mask, None, iterations=3)
+	cv2.imwrite('c:\crap\cv2\maskb.jpg', mask)
+
+	#find contours
+	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
+	center = None
+	centers = []
+	if len(cnts) > 0:
+		# find the largest contour in the mask, then use
+		# it to compute the minimum enclosing circle and
+		# centroid
+		c = max(cnts, key=cv2.contourArea)	
+		for c in cnts:
+			if cv2.contourArea(c) > 1000:
+				((x, y), radius) = cv2.minEnclosingCircle(c)
+				M = cv2.moments(c)
+				center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))   #ToDo - why not use the XY above?
+				centers.append(center)
+				#Mark the image
+				cv2.circle(img, (int(x), int(y)), int(radius), (0, 255, 255), 2)
+				cv2.circle(img, center, 5, (0, 0, 255), -1)
+
+		return centers
+
 
 class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
@@ -203,20 +259,40 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
 
 			#TMJ
 			#Load Background
-            img = cv2.imread('c:\crap\cv2\sq.JPG')
+            #ToDo - Put this code someplace useful
+            img = cv2.imread('c:\crap\cv2\T3i2.JPG')
+            hsv = hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)    #HSV colorspace is easier to do "Color" than RGB
+
+            #Find the centers of the markers:ToDo - handle duplicate/unique colors properly...
+            centers = []
+            centers.append(findHSVcenter(img, hsv, backgroundTLHSV[0], backgroundTLHSV[1]))
+            centers.append(findHSVcenter(img, hsv, backgroundTRHSV[0], backgroundTRHSV[1]))
+            centers.append(findHSVcenter(img, hsv, backgroundBLHSV[0], backgroundBLHSV[1]))
+            print centers
+            #We have to have 4 centers.
+            pts1 = np.float32([centers[0][0],centers[1][0],centers[2][1],centers[2][0]])
+            pts2 = np.float32([[0,0],[0,1000],[2000,0],[2000,1000]]) #ToDo: Handle askew points
+
+            M = cv2.getPerspectiveTransform(pts1,pts2)
+            img = cv2.warpPerspective(img,M,(2000,1000))
+
             w=int(img.shape[0])
             h=int(img.shape[1])
             print "foo"
             #For a canvas, it goes in as a texture on a rectangle, so make the texture
             texture = Texture.create(size=(h,w))
 
-            # then, convert the array to a ubyte string
-            buf = img.tobytes()
-            # then blit the buffer
-            texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
+            buf = img.tobytes() # then, convert the array to a ubyte string
+            texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte') # and blit the buffer -- note that OpenCV format is BGR
             texture.flip_vertical() #OpenGL is upside down...
+
 			#The coordinates are for the bottom-left corner.
-            Rectangle(texture=texture, pos=(-1225,-615), size=(2450,1230))
+            
+            leftmost = min(TL[0],BL[0])
+            rightmost=max(TR[0],BR[0])
+            topmost=max(TL[1],TR[1])
+            botmost=min(BL[1],BR[1])
+            Rectangle(texture=texture, pos=(leftmost,botmost), size=(rightmost-leftmost, topmost-botmost))
 
             #create the bounding box
             height = float(self.data.config.get('Maslow Settings', 'bedHeight'))
