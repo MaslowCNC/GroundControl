@@ -1340,8 +1340,6 @@
     cols:1
     size: root.size
     pos: root.pos
-    Label:
-        text: "Background"
     Button:
         text: 'Open Background'
         on_press: root.openBackground()
@@ -1350,17 +1348,14 @@
         on_release: root.reloadBackground()
     Button:
         text: 'Remove Background'
-        disabled: False
         on_press: root.clear_background()
     Button:
         text: 'Settings...'
-        disabled: False
         on_press: root.openBackgroundSettings()
     Button:
         text: 'Close'
-        disabled: False
-        on_press: app.frontpage.gcodecanvas.centerCanvas()
-        on_release: root.dismiss_popup()
+        on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
+        on_release: root.close()
 
 <TestPoint>
 
