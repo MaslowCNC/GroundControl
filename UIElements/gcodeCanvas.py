@@ -18,68 +18,9 @@ from UIElements.modernMenu                   import ModernMenu
 from kivy.graphics.texture                   import Texture
 from kivy.graphics							 import Rectangle
 
-import cv2
-import numpy as np
-
 import re
 import math
 import global_variables
-
-#ToDo: Relocate this properly
-#These are config variables
-#Marker HSV Specs
-backgroundTLHSV = [(30,40,80),(90,255,255)]
-backgroundBLHSV = [(90,60,80),(140,255,255)]
-backgroundTRHSV = [(160, 60, 60),(10,255,255)]
-backgroundBRHSV = [(160, 60, 60),(10,255,255)]
-
-#Location of the markers
-TR = ( 1225, 615)
-TL = (-1225, 515)
-BL = (-1225,-615)
-BR = ( 1325,-615)
-
-#And code that needs to be relocated:
-def findHSVcenter(img, hsv, hsvLow, hsvHi, bbtl, bbbr):
-    #Mask to find the blobs
-    if hsvLow[0] > hsvHi[0]:
-        #It's wrapped [red]
-        bottom = (0, hsvLow[1], hsvLow[2])
-        maska=cv2.inRange(hsv, bottom,hsvHi)
-
-        top = (180, hsvHi[1], hsvHi[2])
-        maskb=cv2.inRange(hsv, hsvLow, top)
-        mask=cv2.bitwise_or(maska, maskb)
-    else:
-        mask=cv2.inRange(hsv, hsvLow, hsvHi)
-
-    #erode-dilate to clean up noise
-    mask = cv2.erode(mask, None, iterations=3)
-    mask = cv2.dilate(mask, None, iterations=3)
-    cv2.imwrite('c:\crap\cv2\maskb.jpg', mask)
-
-    #find contours
-    cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
-    center = None
-    centers = []
-    if len(cnts) > 0:
-        # find the largest contour in the mask, then use
-        # it to compute the minimum enclosing circle and
-        # centroid
-        c = max(cnts, key=cv2.contourArea)	
-        for c in cnts:
-            if cv2.contourArea(c) > 1000:
-                ((x, y), radius) = cv2.minEnclosingCircle(c)
-                M = cv2.moments(c)
-                center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))   #ToDo - why not use the XY above?
-                if center[0] >= bbtl[0] and center[0] <= bbbr[0]  and center[1] >= bbtl[1] and center[1] <= bbbr[1]:
-                    #Make sure we're inside the bounding box
-                    centers.append(center)
-                    #Mark the image
-                    cv2.circle(img, (int(x), int(y)), int(radius), (0, 255, 255), 2)
-                    cv2.circle(img, center, 5, (0, 0, 255), -1)
-        return centers
-
 
 class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
@@ -270,7 +211,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte') # and blit the buffer -- note that OpenCV format is BGR
                 texture.flip_vertical() #OpenGL is upside down...
 
-                #The coordinates are for the bottom-left corner.
+                #The coordinates are for the bottom-left corner.  This code duplicates the backgroundMenu:processBackground logic
+                TL=self.data.backgroundTLPOS
+                TR=self.data.backgroundTRPOS
+                BL=self.data.backgroundBLPOS
+                BR=self.data.backgroundBRPOS
                 
                 leftmost = min(TL[0],BL[0])
                 rightmost=max(TR[0],BR[0])
