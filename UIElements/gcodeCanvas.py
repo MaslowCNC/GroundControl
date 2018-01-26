@@ -295,24 +295,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             for c in findHSVcenter(img, hsv, backgroundBRHSV[0], backgroundBRHSV[1], (xmid,ymid), (xmax, ymax)):
                 centers.append(c)
             
-            #ToDo - what do we do if we don't find points?
-            pts1 = np.float32([centers[0],centers[1],centers[2],centers[3]])
-            leftmost = min(TL[0],BL[0])
-            rightmost=max(TR[0],BR[0])
-            topmost=max(TL[1],TR[1])
-            botmost=min(BL[1],BR[1])
-            h = topmost-botmost
-            w = rightmost-leftmost
-
-            pts2 = np.float32(
-                [[TL[0]-leftmost,TL[1]-botmost],[TR[0]-leftmost, TR[1]-botmost],
-                 [BL[0]-leftmost,BL[1]-botmost],[BR[0]-leftmost,BR[1]-botmost]]) 
-            
-            M = cv2.getPerspectiveTransform(pts1,pts2)
-            img = cv2.warpPerspective(img,M,(w,h))
-            
-            #ToDo: Break here... the above goes in the "Re-Load Background Image" and stores img into the datastructure
-            
             if img is not None: #If img is None, then no background.  Skip this mess.
                 print "DrawBkgrnd"
                 w=int(img.shape[0])
