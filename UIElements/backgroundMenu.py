@@ -83,6 +83,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
+        
     def reloadBackground(self):
         self.processBackground()
         self.close()
@@ -158,8 +159,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         filePath = self.data.gcodeFile
         self.data.gcodeFile = ""
         self.data.gcodeFile = filePath
-
-            
+          
     def clear_background(self):
         '''
         
@@ -169,9 +169,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         self.data.backgroundFile=""
         self.processBackground()
         self.close()
-
- 
-    
+        
     def load(self, instance):
         '''
         
