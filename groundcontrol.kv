@@ -47,7 +47,16 @@
             text: "Background"
             funcToCallOnRelease: root.open_background
             id: backgroundBtn
-
+		ButtonTemplate:
+			width: dp(5)
+			text: "+"
+			funcToCallOnPress: root.brighten_background
+			id: backgroundLightBtn
+		ButtonTemplate:
+			width: dp(5)
+			text: "-"
+			funcToCallOnPress: root.darken_background
+			id: backgroundDarkBtn
 
 <GcodeCanvas>:
     scatterObject:scatterObject
@@ -1449,6 +1458,11 @@
         text: 'Close'
         on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
         on_release: root.close()
+		
+<BackgroundSettingsDlg>
+	Button:
+		text: 'Cancel'
+		on_press: root.close()
 
 <TestPoint>
 
