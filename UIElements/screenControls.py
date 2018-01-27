@@ -15,7 +15,7 @@ def adjust_background(self, increment):
         img = img.astype('int16')
         img += increment
         print np.amax(img), np.amin(img)
-        np.clip(img, 0.0, 255.0, out=img)
+        np.clip(img, 0, 255, out=img)
         print np.amax(img), np.amin(img)
         img = img.astype('uint8')
         self.data.backgroundImage = img
