@@ -48,7 +48,7 @@ class ScreenControls(FloatLayout, MakesmithInitFuncs):
         '''
         content = OtherFeatures()
         content.setUpData(self.data)
-        content.close = self.close_popup
+        content.close = self.close_popupd
         self._popup = Popup(title="Actions", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
@@ -68,3 +68,15 @@ class ScreenControls(FloatLayout, MakesmithInitFuncs):
         content.close = self.close_popup
         self._popup = Popup(title="Background Picture", content=content, size_hint = (0.5,0.5))
         self._popup.open()
+        
+    def brighten_background(self):
+        '''
+        Brighten the background
+        '''
+        adjust_background(self,40)
+        
+    def darken_background(self):
+        '''
+        Darken the background
+        '''
+        adjust_background(self,-30)
