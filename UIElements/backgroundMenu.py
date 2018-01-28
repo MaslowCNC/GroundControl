@@ -4,7 +4,8 @@ from   UIElements.pageableTextPopup              import   PageableTextPopup
 from   kivy.uix.popup                            import   Popup
 import re
 from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
-from os                                          import    path
+from os                                          import path
+import os
 import cv2
 import numpy as np
 
@@ -72,16 +73,13 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         content = FileBrowser(select_string='Select', 
                     favorites=[(startingPath, 'Last Location')], 
                     path = startingPath, 
-                    filters = validFileTypes)
+                    filters = validFileTypes, dirselect=False)
                     
         content.bind(on_success=self.load,
                          on_canceled=self.dismiss_popup,
                          on_submit=self.load)
-
-        #ToDo: Add a "latest" checkbox or "dir select button" so that it loads the latest file...
-        #load=self.load, cancel=self.dismiss_popup
-        
-        self._popup = Popup(title="Load file", content=content,
+                    
+        self._popup = Popup(title="Select a file, or no file picks ""Latest File"" in this directory...", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
         
@@ -90,14 +88,28 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         self.close()
         
     def processBackground(self):
-        #ToDo: handle yet-to-be-invented "LatestInCurrentDir" bit
-        print "Foo"
-        self.data.logger.writeToLog("ProcessBackground: "+self.data.backgroundFile)
+        #ToDo: handle yet-to-be-invented "LatestInCurrentDir" bit        
 
         if self.data.backgroundFile=="":
             self.data.backgroundImage = None
         else:
-            img = cv2.imread(self.data.backgroundFile)
+            self.data.logger.writeToLog("ProcessBackground: "+self.data.backgroundFile)
+            file=self.data.backgroundFile
+            
+            #If file is a directory, then "load the latest from that directory"
+            if os.path.isdir(file):
+                files = os.listdir(file)
+                print files
+                filelst =[]
+                for afile in files:
+                    if afile.lower().endswith((".png", ".jpg", ".gif", ".bmp")):
+                        filelst.append(os.path.join(file,afile))
+                filelst.sort(key=os.path.getmtime, reverse=True)
+                print filelst
+                file = filelst[0]
+                print "Latest file:"+file
+                
+            img = cv2.imread(file)
             hsv = hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)    #HSV colorspace is easier to do "Color" than RGB
             xmax=img.shape[1]
             ymax=img.shape[0]
@@ -109,7 +121,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             try:
                 for c in findHSVcenter(self, img, hsv, self.data.backgroundTLHSV[0], self.data.backgroundTLHSV[1], (0,0), (xmid,ymid), tag="A"):
                     centers.append(c)
-            except NotImplementedError:
+            except TypeError:
                 pass
             try:
                 for c in findHSVcenter(self, img, hsv, self.data.backgroundTRHSV[0], self.data.backgroundTRHSV[1], (xmid,0),(xmax, ymid), tag="B"):
@@ -127,7 +139,6 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             except TypeError:
                 pass
                 
-            print "Bar"
             self.data.logger.writeToLog("Centers: "+str(centers))
             if len(centers) == 4:
                 #Load into locals for shorthand... this skew correction is similar to gcodeCanvas.py
@@ -181,8 +192,10 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         Takes in a file path (from pop-up) and handles the file appropriately for the given file-type.
         
         '''
-        
-        filename = instance.selection[0]
+        if len(instance.selection)==1:
+            filename = instance.selection[0]
+        else:
+            filename = instance.path    #User pressed Submit without picking a file, indicating "newest in this dir"
         print(filename)
         self.data.backgroundFile = filename
         
