@@ -34,16 +34,12 @@ class ScreenControls(FloatLayout, MakesmithInitFuncs):
         Called on creation to set up links to button background textures
         
         '''
-        self.actionsBtn.btnBackground            = self.data.iconPath + 'Generic.png'
-        self.actionsBtn.textColor                = self.data.fontColor
-        self.settingsBtn.btnBackground           = self.data.iconPath + 'Generic.png'
-        self.settingsBtn.textColor               = self.data.fontColor
-        self.backgroundBtn.btnBackground         = self.data.iconPath + 'Generic.png'
-        self.backgroundBtn.textColor             = self.data.fontColor
-        #self.backgroundLightBtn.btnBackground    = self.data.iconPath + 'Generic.png'
-        #self.backgroundLightBtn.textColor        = self.data.fontColor
-        #self.backgroundDarkBtn.btnBackground     = self.data.iconPath + 'Generic.png'
-        #self.backgroundDarkBtn.textColor         = self.data.fontColor
+        #For some reason, my +/- buttons didn't work with the old way, so I'll set everything.
+        for widget in self.walk():
+            if "ButtonTemplate" not in str(type(widget)):
+                continue
+            widget.btnBackground            = self.data.iconPath + 'Generic.png'
+            widget.textColor                = self.data.fontColor
          
     def show_actions(self):
         '''
@@ -55,7 +51,7 @@ class ScreenControls(FloatLayout, MakesmithInitFuncs):
         '''
         content = OtherFeatures()
         content.setUpData(self.data)
-        content.close = self.close_popupd
+        content.close = self.close_popup
         self._popup = Popup(title="Actions", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
@@ -80,10 +76,10 @@ class ScreenControls(FloatLayout, MakesmithInitFuncs):
         '''
         Brighten the background
         '''
-        adjust_background(self,40)
+        adjust_background(self,25)
         
     def darken_background(self):
         '''
         Darken the background
         '''
-        adjust_background(self,-30)
+        adjust_background(self,-20)
