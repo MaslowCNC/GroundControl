@@ -30,7 +30,6 @@ def findHSVcenter(self, img, hsv, hsvLow, hsvHi, bbtl, bbbr, clean=3, minarea=10
     #find contours
     cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
     center = None
-    centers = []
     
     #If we found some, lets check their size and location to pick the best ones
     if len(cnts) > 0:
@@ -43,12 +42,11 @@ def findHSVcenter(self, img, hsv, hsvLow, hsvHi, bbtl, bbbr, clean=3, minarea=10
                 M = cv2.moments(c)
                 center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))   #ToDo - why not use the XY above?
                 if center[0] >= bbtl[0] and center[0] <= bbbr[0]  and center[1] >= bbtl[1] and center[1] <= bbbr[1]:
-                    self.data.logger.writeToLog("Chosen {1}")
-                    centers.append(center)
                     #Mark the image
-                    cv2.circle(img, (int(x), int(y)), int(radius), (0, 255, 255), 2)
+                    cv2.circle(img, (int(x), int(y)), int(radius), (0, 255, 255), 5)
                     cv2.circle(img, center, 5, (0, 0, 255), -1)
-                    return centers
+                    return center
+    return center
     self.data.logger.writeToLog("NotFound.")
 
 class BackgroundMenu(GridLayout, MakesmithInitFuncs):
@@ -87,6 +85,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         self.processBackground()
         self.close()
         
+
     def processBackground(self):
         #ToDo: handle yet-to-be-invented "LatestInCurrentDir" bit        
 
@@ -118,62 +117,55 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
 
             #Find the centers of the markers:
             centers = []
-            try:
-                for c in findHSVcenter(self, img, hsv, self.data.backgroundTLHSV[0], self.data.backgroundTLHSV[1], (0,0), (xmid,ymid), tag="A"):
-                    centers.append(c)
-            except TypeError:
-                pass
-            try:
-                for c in findHSVcenter(self, img, hsv, self.data.backgroundTRHSV[0], self.data.backgroundTRHSV[1], (xmid,0),(xmax, ymid), tag="B"):
-                    centers.append(c)
-            except TypeError:
-                pass
-            try:
-                for c in findHSVcenter(self, img, hsv, self.data.backgroundBLHSV[0], self.data.backgroundBLHSV[1], (0,ymid), (xmid, ymax), tag="C"):
-                    centers.append(c)
-            except TypeError:
-                pass
-            try:
-                for c in findHSVcenter(self, img, hsv, self.data.backgroundBRHSV[0], self.data.backgroundBRHSV[1], (xmid,ymid), (xmax, ymax), tag="D"):
-                    centers.append(c)
-            except TypeError:
-                pass
+            
+            centers.append(findHSVcenter(self, img, hsv, self.data.backgroundTLHSV[0], self.data.backgroundTLHSV[1], (0,0), (xmid,ymid), tag="A"))
+            centers.append(findHSVcenter(self, img, hsv, self.data.backgroundTRHSV[0], self.data.backgroundTRHSV[1], (xmid,0),(xmax, ymid), tag="B"))
+            centers.append(findHSVcenter(self, img, hsv, self.data.backgroundBLHSV[0], self.data.backgroundBLHSV[1], (0,ymid), (xmid, ymax), tag="C"))
+            centers.append(findHSVcenter(self, img, hsv, self.data.backgroundBRHSV[0], self.data.backgroundBRHSV[1], (xmid,ymid), (xmax, ymax), tag="D"))
                 
-            self.data.logger.writeToLog("Centers: "+str(centers))
+            print "Centers: "+str(centers)
+            if not len(centers)==4:
+                pass #ToDo: Let the user pick the markers.
+            
+            self.data.backgroundImage = img
             if len(centers) == 4:
-                #Load into locals for shorthand... this skew correction is similar to gcodeCanvas.py
-                TL=self.data.backgroundTLPOS
-                TR=self.data.backgroundTRPOS
-                BL=self.data.backgroundBLPOS
-                BR=self.data.backgroundBRPOS
-
-                #Handle skew in output coordinates
-                leftmost = min(TL[0],BL[0])
-                rightmost=max(TR[0],BR[0])
-                topmost=max(TL[1],TR[1])
-                botmost=min(BL[1],BR[1])
-                h = topmost-botmost
-                w = rightmost-leftmost
-
-                #Construct transformation matrices
-                pts1 = np.float32([centers[0],centers[1],centers[2],centers[3]])
-                pts2 = np.float32(
-                    [[TL[0]-leftmost,TL[1]-botmost],[TR[0]-leftmost, TR[1]-botmost],
-                     [BL[0]-leftmost,BL[1]-botmost],[BR[0]-leftmost,BR[1]-botmost]]) 
-                
-                M = cv2.getPerspectiveTransform(pts1,pts2)
-                self.data.backgroundImage = cv2.warpPerspective(img,M,(w,h))
+                self.centers=centers
+                self.warp_image()
             else:
-                self.data.logger.writeToLog("Couldn't find dots in "+self.data.backgroundFile)
-                #ToDo: Do we want a big indication that this image wasn't good?
-                #You can tell, because the circles for the missing dots aren't there...
-                self.data.backgroundImage=img #reset the background to the new, unaligned image.  
+                pass #ToDo: Let the user pick the centers
+                      
+    def warp_image(self):
+        #Load into locals for shorthand... this skew correction is similar to gcodeCanvas.py
+        centers=self.centers
+        if len(centers)==4:
+            TL=self.data.backgroundTLPOS
+            TR=self.data.backgroundTRPOS
+            BL=self.data.backgroundBLPOS
+            BR=self.data.backgroundBRPOS
+
+            #Handle skew in output coordinates
+            leftmost = min(TL[0],BL[0])
+            rightmost=max(TR[0],BR[0])
+            topmost=max(TL[1],TR[1])
+            botmost=min(BL[1],BR[1])
+            h = topmost-botmost
+            w = rightmost-leftmost
+
+            #Construct transformation matrices
+            pts1 = np.float32([centers[0],centers[1],centers[2],centers[3]])
+            pts2 = np.float32(
+                [[TL[0]-leftmost,TL[1]-botmost],[TR[0]-leftmost, TR[1]-botmost],
+                 [BL[0]-leftmost,BL[1]-botmost],[BR[0]-leftmost,BR[1]-botmost]]) 
+            
+            M = cv2.getPerspectiveTransform(pts1,pts2)
+            
+        self.data.backgroundImage = cv2.warpPerspective(self.data.backgroundImage,M,(w,h))
                 
         #Trigger a reload
         filePath = self.data.gcodeFile
         self.data.gcodeFile = ""
         self.data.gcodeFile = filePath
-          
+
     def clear_background(self):
         '''
         
