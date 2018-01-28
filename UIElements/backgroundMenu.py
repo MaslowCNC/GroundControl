@@ -8,7 +8,8 @@ from os                                          import    path
 import cv2
 import numpy as np
 
-def findHSVcenter(img, hsv, hsvLow, hsvHi, bbtl, bbbr):
+def findHSVcenter(self, img, hsv, hsvLow, hsvHi, bbtl, bbbr, clean=3, minarea=1000, maxarea=6000, tag="A"):
+    self.data.logger.writeToLog("Finding tag="+tag)
     #Mask to find the blobs
     if hsvLow[0] > hsvHi[0]:
         #It's wrapped [red]
@@ -22,32 +23,32 @@ def findHSVcenter(img, hsv, hsvLow, hsvHi, bbtl, bbbr):
         mask=cv2.inRange(hsv, hsvLow, hsvHi)
 
     #erode-dilate to clean up noise
-    mask = cv2.erode(mask, None, iterations=3)
-    mask = cv2.dilate(mask, None, iterations=3)
-    cv2.imwrite('c:\crap\cv2\maskb.jpg', mask)
+    mask = cv2.erode(mask, None, iterations=clean)
+    mask = cv2.dilate(mask, None, iterations=clean)
 
     #find contours
-    cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
+    cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
     center = None
     centers = []
+    
+    #If we found some, lets check their size and location to pick the best ones
     if len(cnts) > 0:
-        # find the largest contour in the mask, then use
-        # it to compute the minimum enclosing circle and
-        # centroid
-        c = max(cnts, key=cv2.contourArea)	
+        cnts = sorted(cnts, key=cv2.contourArea, reverse=True)  #Sort so we find biggest first.
         for c in cnts:
-            if cv2.contourArea(c) > 1000:
+            self.data.logger.writeToLog("Considering: "+str(cv2.contourArea(c)));
+            if cv2.contourArea(c) >= minarea and cv2.contourArea(c)<=maxarea:                    #Discriminate based on size
                 ((x, y), radius) = cv2.minEnclosingCircle(c)
+                print (x,y)
                 M = cv2.moments(c)
                 center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))   #ToDo - why not use the XY above?
                 if center[0] >= bbtl[0] and center[0] <= bbbr[0]  and center[1] >= bbtl[1] and center[1] <= bbbr[1]:
-                    #Make sure we're inside the bounding box
+                    self.data.logger.writeToLog("Chosen {1}")
                     centers.append(center)
                     #Mark the image
                     cv2.circle(img, (int(x), int(y)), int(radius), (0, 255, 255), 2)
                     cv2.circle(img, center, 5, (0, 0, 255), -1)
-        return centers
-
+                    return centers
+    self.data.logger.writeToLog("NotFound.")
 
 class BackgroundMenu(GridLayout, MakesmithInitFuncs):
     
@@ -89,8 +90,9 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         self.close()
         
     def processBackground(self):
-        print "ProcessBackground",self.data.backgroundFile
         #ToDo: handle yet-to-be-invented "LatestInCurrentDir" bit
+        print "Foo"
+        self.data.logger.writeToLog("ProcessBackground: "+self.data.backgroundFile)
 
         if self.data.backgroundFile=="":
             self.data.backgroundImage = None
@@ -105,29 +107,30 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             #Find the centers of the markers:
             centers = []
             try:
-                for c in findHSVcenter(img, hsv, self.data.backgroundTLHSV[0], self.data.backgroundTLHSV[1], (0,0), (xmid,ymid)):
+                for c in findHSVcenter(self, img, hsv, self.data.backgroundTLHSV[0], self.data.backgroundTLHSV[1], (0,0), (xmid,ymid), tag="A"):
+                    centers.append(c)
+            except NotImplementedError:
+                pass
+            try:
+                for c in findHSVcenter(self, img, hsv, self.data.backgroundTRHSV[0], self.data.backgroundTRHSV[1], (xmid,0),(xmax, ymid), tag="B"):
                     centers.append(c)
             except TypeError:
                 pass
             try:
-                for c in findHSVcenter(img, hsv, self.data.backgroundTRHSV[0], self.data.backgroundTRHSV[1], (xmid,0),(xmax, ymid)):
+                for c in findHSVcenter(self, img, hsv, self.data.backgroundBLHSV[0], self.data.backgroundBLHSV[1], (0,ymid), (xmid, ymax), tag="C"):
                     centers.append(c)
             except TypeError:
                 pass
             try:
-                for c in findHSVcenter(img, hsv, self.data.backgroundBLHSV[0], self.data.backgroundBLHSV[1], (0,ymid), (xmid, ymax)):
+                for c in findHSVcenter(self, img, hsv, self.data.backgroundBRHSV[0], self.data.backgroundBRHSV[1], (xmid,ymid), (xmax, ymax), tag="D"):
                     centers.append(c)
             except TypeError:
                 pass
-            try:
-                for c in findHSVcenter(img, hsv, self.data.backgroundBRHSV[0], self.data.backgroundBRHSV[1], (xmid,ymid), (xmax, ymax)):
-                    centers.append(c)
-            except TypeError:
-                pass
-
-            if len(centers) == 4:
                 
-                #Load into locals for shorthand...
+            print "Bar"
+            self.data.logger.writeToLog("Centers: "+str(centers))
+            if len(centers) == 4:
+                #Load into locals for shorthand... this skew correction is similar to gcodeCanvas.py
                 TL=self.data.backgroundTLPOS
                 TR=self.data.backgroundTRPOS
                 BL=self.data.backgroundBLPOS
@@ -150,7 +153,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
                 M = cv2.getPerspectiveTransform(pts1,pts2)
                 self.data.backgroundImage = cv2.warpPerspective(img,M,(w,h))
             else:
-                print "Couldn't find dots in "+self.data.backgroundFile
+                self.data.logger.writeToLog("Couldn't find dots in "+self.data.backgroundFile)
                 #ToDo: Do we want a big indication that this image wasn't good?
                 #You can tell, because the circles for the missing dots aren't there...
                 self.data.backgroundImage=img #reset the background to the new, unaligned image.  
