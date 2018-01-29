@@ -4,10 +4,11 @@ from   UIElements.pageableTextPopup              import   PageableTextPopup
 from   kivy.uix.popup                            import   Popup
 import re
 from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
-from os                                          import path
+from UIElements.BackgroundPickDlg                import BackgroundPickDlg
 import os
 import cv2
 import numpy as np
+
 
 def findHSVcenter(self, img, hsv, hsvLow, hsvHi, bbtl, bbbr, clean=3, minarea=1000, maxarea=6000, tag="A"):
     self.data.logger.writeToLog("Finding tag="+tag)
@@ -60,9 +61,9 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         
         '''
         #starting path is either where the last opened file was or the users home directory
-        startingPath = path.dirname(self.data.backgroundFile)
+        startingPath = os.path.dirname(self.data.backgroundFile)
         if startingPath is "": 
-            startingPath = path.expanduser('~')
+            startingPath = os.path.expanduser('~')
         
         #We want to filter to show only files that ground control can open
         validFileTypes = ".png, .jpg, .gif, .bmp".replace(" ", "").split(',')
@@ -109,6 +110,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
                 print "Latest file:"+file
                 
             img = cv2.imread(file)
+            self.originalimage=img.copy()
             hsv = hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)    #HSV colorspace is easier to do "Color" than RGB
             xmax=img.shape[1]
             ymax=img.shape[0]
@@ -124,16 +126,20 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             centers.append(findHSVcenter(self, img, hsv, self.data.backgroundBRHSV[0], self.data.backgroundBRHSV[1], (xmid,ymid), (xmax, ymax), tag="D"))
                 
             print "Centers: "+str(centers)
-            if not len(centers)==4:
-                pass #ToDo: Let the user pick the markers.
             
             self.data.backgroundImage = img
-            if len(centers) == 4:
+            if None in centers:
+                content = BackgroundPickDlg()
+                content.setUpData(self.data)
+                content.close = self.close_PickDlg
+                self._popup = Popup(title="Background PointPicker", content=content, size_hint = (0.9,0.9))
+                self._popup.open()
+            else:
                 self.centers=centers
                 self.warp_image()
-            else:
-                pass #ToDo: Let the user pick the centers
-                      
+                 
+    def close_PickDlg(self):
+        pass
     def warp_image(self):
         #Load into locals for shorthand... this skew correction is similar to gcodeCanvas.py
         centers=self.centers
@@ -165,7 +171,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         filePath = self.data.gcodeFile
         self.data.gcodeFile = ""
         self.data.gcodeFile = filePath
-
+        
     def clear_background(self):
         '''
         
