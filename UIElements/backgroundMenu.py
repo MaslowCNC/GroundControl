@@ -9,6 +9,8 @@ import os
 import cv2
 import numpy as np
 
+graphicsExtensions = (".jpg", ".png", ".jp2",".webp",".pbm",".ppm",".pgm")
+
 
 def findHSVcenter(self, img, hsv, hsvLow, hsvHi, bbtl, bbbr, clean=3, minarea=1000, maxarea=6000, tag="A"):
     self.data.logger.writeToLog("Finding tag="+tag)
@@ -66,7 +68,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             startingPath = os.path.expanduser('~')
         
         #We want to filter to show only files that ground control can open
-        validFileTypes = ".png, .jpg, .gif, .bmp".replace(" ", "").split(',')
+        validFileTypes = graphicsExtensions
         validFileTypes = ['*{0}'.format(fileType) for fileType in validFileTypes] #add a '*' to each one to match the format the widget expects
         
         content = FileBrowser(select_string='Select', 
@@ -88,8 +90,6 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         
 
     def processBackground(self):
-        #ToDo: handle yet-to-be-invented "LatestInCurrentDir" bit        
-
         if self.data.backgroundFile=="":
             self.data.backgroundImage = None
         else:
@@ -102,7 +102,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
                 print files
                 filelst =[]
                 for afile in files:
-                    if afile.lower().endswith((".png", ".jpg", ".gif", ".bmp")):
+                    if afile.lower().endswith(graphicsExtensions):
                         filelst.append(os.path.join(file,afile))
                 filelst.sort(key=os.path.getmtime, reverse=True)
                 print filelst
@@ -134,12 +134,18 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
                 content.close = self.close_PickDlg
                 self._popup = Popup(title="Background PointPicker", content=content, size_hint = (0.9,0.9))
                 self._popup.open()
+                #ToDo: Bind completion to close_PickDlg
             else:
+                #We have all points; just go on to warp_image
                 self.centers=centers
                 self.warp_image()
                  
-    def close_PickDlg(self):
-        pass
+    def close_PickDlg(self, instance):
+        self.centers=instance.centers   #Grab the data
+        self.dismiss_popup()            #Close pointpicker dialog
+        self.warp_image()               #Process with the user-picked centers
+        self.close()                    #Close background dialog
+        
     def warp_image(self):
         #Load into locals for shorthand... this skew correction is similar to gcodeCanvas.py
         centers=self.centers

@@ -31,7 +31,6 @@ class BackgroundPickDlg(GridLayout, MakesmithInitFuncs):
     def clear(self):
         #clear the list
         self.centers=[]
-        self.instructions = "Pick the Top-Left Alginment Dot"
         
         #present the original image
         self.img=data.backgroundImage
