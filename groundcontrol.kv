@@ -1461,7 +1461,34 @@
         text: 'Close'
         on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
         on_release: root.close()
-		
+
+<BackgroundPickDlg>
+    GridLayout:
+        cols: 2
+		Label:
+			text: "Instructions"
+			text_size: self.width, self.height
+			font_size: sp(self.height)/sp(3)
+			id: instruction
+		GridLayout:
+			cols: 2
+			Button:
+				text: 'Clear'
+				on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
+				on_release: root.clear()
+			Button:
+				text: 'Close'
+				on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
+				on_release: root.close()
+		Widget:
+			canvas:
+				Rectangle:
+					pos: 0,0
+					size: self.size
+					id: drawing
+					on_touch_down: root.touched
+					on_touch_up: untouched
+					
 <BackgroundSettingsDlg>
 	Button:
 		text: 'Cancel'
