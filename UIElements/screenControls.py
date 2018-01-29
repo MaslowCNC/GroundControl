@@ -36,10 +36,9 @@ class ScreenControls(FloatLayout, MakesmithInitFuncs):
         '''
         #For some reason, my +/- buttons didn't work with the old way, so I'll set everything.
         for widget in self.walk():
-            if "ButtonTemplate" not in str(type(widget)):
-                continue
-            widget.btnBackground            = self.data.iconPath + 'Generic.png'
-            widget.textColor                = self.data.fontColor
+            if "ButtonTemplate"in str(type(widget)):
+                widget.btnBackground            = self.data.iconPath + 'Generic.png'
+                widget.textColor                = self.data.fontColor
          
     def show_actions(self):
         '''
