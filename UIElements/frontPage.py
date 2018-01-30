@@ -114,7 +114,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.numericalPosX  = xPos
         self.numericalPosY  = yPos
         
-        #ToDo: Do we want to start logging errors if self.RedoutVel < gcodeVel?
+        #ToDo: Do we want to start logging errors if self.RedoutVel < self.gcodeVel?  How do we know if we're supposed to be moving?
     
     def setUpData(self, data):
         self.gcodecanvas.setUpData(data)
@@ -157,8 +157,12 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def onIndexMove(self, callback, newIndex):
         self.gcodeLineNumber = str(newIndex)
         self.percentComplete = '%.1f' %(100* (float(newIndex) / (len(self.data.gcode)-1))) + "%"
-        #ToDo: Re-Parse the g-code to figure out velocity
-    
+        gCodeLine = self.data.gcode[newIndex]
+        F = re.search("J(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        if F:
+            self.gcodeVel = F   #Otherwise, it stays what it was...
+            
+            
     def onGcodeFileChange(self, callback, newGcode):
         pass
     
