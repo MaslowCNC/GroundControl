@@ -160,8 +160,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         gCodeLine = self.data.gcode[newIndex]
         F = re.search("F(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if F:
-            self.gcodeVel = F   #Otherwise, it stays what it was...
-            
+            self.gcodeVel = "{0:.2f}".format(F)   #Otherwise, it stays what it was...
             
     def onGcodeFileChange(self, callback, newGcode):
         pass
