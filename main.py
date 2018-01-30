@@ -54,6 +54,73 @@ class GroundControlApp(App):
         return super(GroundControlApp, self).get_application_config(
             '~/%(appname)s.ini')
     
+    backgroundimg = '''
+    [
+        {
+            "type": "string",
+            "title": "Top-Left HSV Limits",
+            "desc": "Color specifier for Top-Left Alignment Mark\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundTLHSV"
+        },
+        {
+            "type": "string",
+            "title": "Top-Left HSV Limits",
+            "desc": "Color specifier for Top-Left Alignment Mark\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundTLHSV"
+        },
+        {
+            "type": "string",
+            "title": "Kd Velocity",
+            "desc": "The derivative constant for the velocity PID controller\\ndefault setting: %s",
+            "section": "Advanced Settings",
+            "key": "KdV"
+        }
+    ]
+    ''' % (
+        global_variables.backgroundTLHSV,
+        global_variables.backgroundTRHSV
+        )
+    
+    gcsettings = '''
+    [
+        {
+            "type": "bool",
+            "title": "Center Canvas on Window Resize",
+            "desc": "When resizing the window, automatically reset the Gcode canvas to be centered and zoomed out. Program must be restarted to take effect.\\ndefault setting: %s",
+            "section": "Ground Control Settings",
+            "key": "centerCanvasOnResize"
+        },
+        {
+            "type": "string",
+            "title": "Zoom In",
+            "desc": "Pressing this key will zoom in. Note combinations of keys like \'shift\' + \'=\' may not work as expected. Program must be restarted to take effect.\\ndefault setting: %s",
+            "section": "Ground Control Settings",
+            "key": "zoomIn"
+        },
+        {
+            "type": "string",
+            "title": "Zoom Out",
+            "desc": "Pressing this key will zoom in. Note combinations of keys like \'shift\' + \'=\' may not work as expected. Program must be restarted to take effect.\\ndefault setting: %s",
+            "section": "Ground Control Settings",
+            "key": "zoomOut"
+        },
+        {
+            "type": "string",
+            "title": "Valid File Extensions",
+            "desc": "Valid file extensions for Ground Control to open. Comma separated list.\\ndefault setting: %s",
+            "section": "Ground Control Settings",
+            "key": "validExtensions"
+        }
+    ]
+    ''' % (
+        global_variables._centerCanvasOnResize,
+        global_variables._zoomIn,
+        global_variables._zoomOut,
+        global_variables._validExtensions
+        )
+    
     def build(self):
         
         interface       =  FloatLayout()
