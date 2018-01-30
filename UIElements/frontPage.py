@@ -158,7 +158,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.gcodeLineNumber = str(newIndex)
         self.percentComplete = '%.1f' %(100* (float(newIndex) / (len(self.data.gcode)-1))) + "%"
         gCodeLine = self.data.gcode[newIndex]
-        F = re.search("J(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+        F = re.search("F(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
         if F:
             self.gcodeVel = F   #Otherwise, it stays what it was...
             
