@@ -27,7 +27,8 @@ class FrontPage(Screen, MakesmithInitFuncs):
     xReadoutPos = StringProperty("0 mm")
     yReadoutPos = StringProperty("0 mm")
     zReadoutPos = StringProperty("0 mm")
-    
+    ReadoutVel = StringProperty(" 0 mm/m")
+    gcodeVel = StringProperty(" 0 mm/m")
     percentComplete = StringProperty("0.0%")
     
     numericalPosX  = 0.0
@@ -105,12 +106,15 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         return string
     
-    def setPosReadout(self, xPos, yPos, zPos):
+    def setPosReadout(self, xPos, yPos, zPos, Vel):
         self.xReadoutPos    = self.buildReadoutString(xPos)
         self.yReadoutPos    = self.buildReadoutString(yPos)
         self.zReadoutPos    = self.buildReadoutString(zPos)
+        self.RedoutVel      = self.buildReadoutString(Vel)
         self.numericalPosX  = xPos
         self.numericalPosY  = yPos
+        
+        #ToDo: Do we want to start logging errors if self.RedoutVel < gcodeVel?
     
     def setUpData(self, data):
         self.gcodecanvas.setUpData(data)
@@ -153,6 +157,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def onIndexMove(self, callback, newIndex):
         self.gcodeLineNumber = str(newIndex)
         self.percentComplete = '%.1f' %(100* (float(newIndex) / (len(self.data.gcode)-1))) + "%"
+        #ToDo: Re-Parse the g-code to figure out velocity
     
     def onGcodeFileChange(self, callback, newGcode):
         pass
