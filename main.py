@@ -358,6 +358,35 @@ class GroundControlApp(App):
         global_variables._KdV
         )
     
+    backgroundimg = '''
+    [
+        {
+            "type": "string",
+            "title": "Top-Left HSV Limits",
+            "desc": "Color specifier for Top-Left Alignment Mark\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundTLHSV"
+        },
+        {
+            "type": "string",
+            "title": "Top-Left HSV Limits",
+            "desc": "Color specifier for Top-Left Alignment Mark\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundTLHSV"
+        },
+        {
+            "type": "string",
+            "title": "Kd Velocity",
+            "desc": "The derivative constant for the velocity PID controller\\ndefault setting: %s",
+            "section": "Advanced Settings",
+            "key": "KdV"
+        }
+    ]
+    ''' % (
+        global_variables.backgroundTLHSV,
+        global_variables.backgroundTRHSV
+        )
+    
     gcsettings = '''
     [
         {
