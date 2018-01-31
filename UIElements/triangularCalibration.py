@@ -199,11 +199,6 @@ class TriangularCalibration(Widget):
         ChainErrorCut4 = acceptableTolerance
         n = 0
 
-        self.horzMeasureT1.disabled = True
-        self.horzMeasureT2.disabled = True
-        self.vertMeasureT1.disabled = True
-        self.enterValuesT.disabled = True
-
         print "Iterating for new machine parameters"
 
         # Iterate until error tolerance is achieved or maximum number of iterations occurs
@@ -295,6 +290,11 @@ class TriangularCalibration(Widget):
             print "Machine parameters could not be determined"
 
             return
+
+        self.horzMeasureT1.disabled = True
+        self.horzMeasureT2.disabled = True
+        self.vertMeasureT1.disabled = True
+        self.enterValuesT.disabled = True
 
         print "Machine parameters found:"
 
