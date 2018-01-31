@@ -13,6 +13,7 @@ from kivy.uix.popup                            import Popup
 from UIElements.touchNumberInput               import TouchNumberInput
 from UIElements.zAxisPopupContent              import ZAxisPopupContent
 from DataStructures.data                       import Data
+from math                                      import sqrt
 import re
 import global_variables
 
