@@ -35,7 +35,10 @@ class FrontPage(Screen, MakesmithInitFuncs):
     numericalPosY  = 0.0
 
     previousPosX = 0.0
-    previousPosY = 0.0    
+    previousPosY = 0.0   
+
+    lastpos=(0,0,0)
+    lasttime=0.0
     
     stepsizeval  = 0
     zStepSizeVal = .1
@@ -110,6 +113,16 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.xReadoutPos    = self.buildReadoutString(xPos)
         self.yReadoutPos    = self.buildReadoutString(yPos)
         self.zReadoutPos    = self.buildReadoutString(zPos)
+        
+        if lasttime <> 0.0:
+            delta = sqrt( xpos-lastpos[0]*xpos-lastpos[0] + ypos-lastpos[1]*ypos-lastpos[1] + zpos-lastpos[2] * zpos-lastpos[2])
+            Vel = delta / (time.time()-lasttime) * 60.0 #In XXXX/minute
+        else:
+            Vel=0
+            
+        lasttime = time.time()
+        lastpos = (xPos, yPos, zPos)
+        
         self.ReadoutVel     = self.buildReadoutString(Vel)
         self.numericalPosX  = xPos
         self.numericalPosY  = yPos
@@ -128,7 +141,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.update_macro_titles()
     
     def updateConnectionStatus(self, callback, connected):
-        
         if connected:
             self.connectionStatus = "Connected"
         else:
@@ -353,7 +365,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
             print "gcode run complete"
             self.gcodecanvas.uploadFlag = 0
             self.data.gcodeIndex = 0
-            self.gcodeVel = "---"
     
     def stopRun(self):
         self.data.uploadFlag = 0
