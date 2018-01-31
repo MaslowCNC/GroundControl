@@ -64,10 +64,10 @@ class GroundControlApp(App):
     [
         {
             "type": "string",
-            "title": "Top-Left HSV Limits",
-            "desc": "Color specifier for Top-Left Alignment Mark\\ndefault setting: %s",
+            "title": "Last Loaded Background File",
+            "desc": "Last Loaded Background File (or directory)",
             "section": "Background Image",
-            "key": "backgroundTLHSV"
+            "key": "backgroundFile"
         },
         {
             "type": "string",
@@ -78,15 +78,64 @@ class GroundControlApp(App):
         },
         {
             "type": "string",
-            "title": "Kd Velocity",
-            "desc": "The derivative constant for the velocity PID controller\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "KdV"
+            "title": "Top-Right HSV Limits",
+            "desc": "Color specifier for Top-Right Alignment Mark\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundTRHSV"
+        },
+        {
+            "type": "string",
+            "title": "Bottom-Left HSV Limits",
+            "desc": "Color specifier for Bottom Left Alignment Mark\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundBLHSV"
+        },
+        {
+            "type": "string",
+            "title": "Bottom-Right HSV Limits",
+            "desc": "Color specifier for Bottom-Right Alignment Mark\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundBRHSV"
+        },
+        {
+            "type": "string",
+            "title": "Top Left Position",
+            "desc": "The Top Left Marker position\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundTLPOS"
+        },
+        {
+            "type": "string",
+            "title": "Top Right Position",
+            "desc": "The Top Right Marker position\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundTRPOS"
+        },
+        {
+            "type": "string",
+            "title": "Bottom Left Position",
+            "desc": "The Bottom Left Marker position\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundBLPOS"
+        },
+        {
+            "type": "string",
+            "title": "Bottom Right Position",
+            "desc": "The Bottom Right Marker position\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundBRPOS"
         }
     ]
     ''' % (
-        global_variables.backgroundTLHSV,
-        global_variables.backgroundTRHSV
+        #File didn't have a %s, so it's not included here.
+        global_variables._backgroundTLHSV,
+        global_variables._backgroundTRHSV,
+        global_variables._backgroundBLHSV,
+        global_variables._backgroundBRHSV,
+        global_variables._backgroundTRPOS,
+        global_variables._backgroundTLPOS,
+        global_variables._backgroundBLPOS,
+        global_variables._backgroundBRPOS  
         )
     
     gcsettings = '''
@@ -213,14 +262,61 @@ class GroundControlApp(App):
         """
         Set the default values for the config sections.
         """
-        # Calculate computed settings on load
-        config.add_callback(self.computeSettings)
-        config.setdefaults('Computed Settings', maslowSettings.getDefaultValueSection('Computed Settings'))
-        config.setdefaults('Maslow Settings', maslowSettings.getDefaultValueSection('Maslow Settings'))
-        config.setdefaults('Advanced Settings', maslowSettings.getDefaultValueSection('Advanced Settings'))
-        config.setdefaults('Ground Control Settings', maslowSettings.getDefaultValueSection('Ground Control Settings'))
-        config.remove_callback(self.computeSettings)
+        config.setdefaults('Maslow Settings', {'COMport'              : global_variables._COMport,
+                                               'zAxis'                : global_variables._zAxis,
+                                               'zDistPerRot'          : global_variables._zDistPerRot,
+                                               'bedWidth'             : global_variables._bedWidth,
+                                               'bedHeight'            : global_variables._bedHeight,
+                                               'motorOffsetY'         : global_variables._motorOffsetY,
+                                               'motorSpacingX'        : global_variables._motorSpacingX,
+                                               'sledWidth'            : global_variables._sledWidth,
+                                               'sledHeight'           : global_variables._sledHeight,
+                                               'sledCG'               : global_variables._sledCG,
+                                               'colorScheme'          : global_variables._colorScheme,
+                                               'openFile'             : global_variables._openFile,
+                                               'macro1'               : global_variables._macro1,
+                                               'macro1_title'         : global_variables._macro1_title,
+                                               'macro2'               : global_variables._macro2,
+                                               'macro2_title'         : global_variables._macro2_title})
+
+        config.setdefaults('Advanced Settings', {'encoderSteps'       : global_variables._encoderSteps,
+                                                 'gearTeeth'          : global_variables._gearTeeth,
+                                                 'chainPitch'         : global_variables._chainPitch,
+                                                 'zEncoderSteps'      : global_variables._zEncoderSteps,
+                                                 'zAxisAuto'          : global_variables._zAxisAuto,
+                                                 'homeX'              : global_variables._homeX,
+                                                 'homeY'              : global_variables._homeY,
+                                                 'truncate'           : global_variables._truncate,
+                                                 'digits'             : global_variables._digits,
+                                                 'kinematicsType'     : global_variables._kinematicsType,
+                                                 'rotationRadius'     : global_variables._rotationRadius,
+                                                 'chainSagCorrection' : global_variables._chainSagCorrection,
+                                                 'enablePosPIDValues' : global_variables._enablePosPIDValues,
+                                                 'KpPos'              : global_variables._KpPos,
+                                                 'KiPos'              : global_variables._KiPos,
+                                                 'KdPos'              : global_variables._KdPos,
+                                                 'propWeight'         : global_variables._propWeight,
+                                                 'enableVPIDValues'   : global_variables._enableVPIDValues,
+                                                 'KpV'                : global_variables._KpV,
+                                                 'KiV'                : global_variables._KiV,
+                                                 'KdV'                : global_variables._KdV})
+
+        config.setdefaults('Background Settings', {'backgroundFile'   : global_variables._backgroundFile,
+                                                   'backgroundTLHSV'  : global_variables._backgroundTLHSV,
+                                                   'backgroundTRHSV'  : global_variables._backgroundTRHSV,
+                                                   'backgroundBLHSV'  : global_variables._backgroundBLHSV,
+                                                   'backgroundBRHSV'  : global_variables._backgroundBRHSV,
+                                                   'backgroundTRPOS'  : global_variables._backgroundTRPOS,
+                                                   'backgroundTLPOS'  : global_variables._backgroundTLPOS,
+                                                   'backgroundBLPOS'  : global_variables._backgroundBLPOS,
+                                                   'backgroundBRPOS'  : global_variables._backgroundBRPOS 
+                                            })
                                             
+        config.setdefaults('Ground Control Settings', {'centerCanvasOnResize'   : global_variables._centerCanvasOnResize,
+                                                       'zoomIn'                 : global_variables._zoomIn,
+                                                       'zoomOut'                : global_variables._zoomOut,
+                                                       'validExtensions'        : global_variables._validExtensions,})
+
     def build_settings(self, settings):
         """
         Add custom section to the default configuration object.
@@ -410,7 +506,7 @@ class GroundControlApp(App):
                 pass #displaying all the 'ok' messages clutters up the display
             else:
                 self.writeToTextConsole(message)
-
+         
         #See if we got a new file in the Background Image Directory -- ToDo: Every time?
         #if self.frontpage.BackgroundMenu.DoesNewFileExist():
         #   self.frontpage.BackgroundMenu.processBackground()
