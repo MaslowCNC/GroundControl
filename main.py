@@ -467,7 +467,7 @@ class GroundControlApp(App):
             else:
                 self.writeToTextConsole(message)
 
-        #See if we got a new file in the Background Image Directory
+        #See if we got a new file in the Background Image Directory -- ToDo: Every time?
         if backgroundMenu.DoesNewFileExist():
             backgroundMenu.backgroundMenu.processBackground()
          
