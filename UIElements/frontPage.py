@@ -110,7 +110,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.xReadoutPos    = self.buildReadoutString(xPos)
         self.yReadoutPos    = self.buildReadoutString(yPos)
         self.zReadoutPos    = self.buildReadoutString(zPos)
-        self.RedoutVel      = self.buildReadoutString(Vel)
+        self.ReadoutVel     = self.buildReadoutString(Vel)
         self.numericalPosX  = xPos
         self.numericalPosY  = yPos
         
@@ -157,10 +157,11 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def onIndexMove(self, callback, newIndex):
         self.gcodeLineNumber = str(newIndex)
         self.percentComplete = '%.1f' %(100* (float(newIndex) / (len(self.data.gcode)-1))) + "%"
-        gCodeLine = self.data.gcode[newIndex]
-        F = re.search("F(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
-        if F:
-            self.gcodeVel = F.groups()[1]   #Otherwise, it stays what it was...
+        if newIndex >=1:
+            gCodeLine = self.data.gcode[newIndex-1] #We're executing newIndex-1... about to send newIndex
+            F = re.search("F(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+            if F:
+                self.gcodeVel = F.groups()[1]   #Otherwise, it stays what it was...
             
     def onGcodeFileChange(self, callback, newGcode):
         pass
