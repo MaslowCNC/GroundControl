@@ -14,6 +14,7 @@ from UIElements.touchNumberInput               import TouchNumberInput
 from UIElements.zAxisPopupContent              import ZAxisPopupContent
 from DataStructures.data                       import Data
 from math                                      import sqrt
+from time                                      import time
 import re
 import global_variables
 
@@ -117,11 +118,11 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         if lasttime <> 0.0:
             delta = sqrt( xpos-lastpos[0]*xpos-lastpos[0] + ypos-lastpos[1]*ypos-lastpos[1] + zpos-lastpos[2] * zpos-lastpos[2])
-            Vel = delta / (time.time()-lasttime) * 60.0 #In XXXX/minute
+            Vel = delta / (time()-lasttime) * 60.0 #In XXXX/minute
         else:
             Vel=0
             
-        lasttime = time.time()
+        lasttime = time()
         lastpos = (xPos, yPos, zPos)
         
         self.ReadoutVel     = self.buildReadoutString(Vel)
