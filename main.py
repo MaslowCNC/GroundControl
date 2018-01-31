@@ -19,6 +19,7 @@ from kivy.uix.popup             import Popup
 import math
 import global_variables
 import sys
+import re
 
 
 '''
@@ -119,8 +120,8 @@ class GroundControlApp(App):
         '''
         Push settings to machine
         '''
-        self.data.bind(connectionStatus = self.push_settings_to_machine)
-        self.data.pushSettings = self.push_settings_to_machine
+        self.data.bind(connectionStatus = self.requestMachineSettings)
+        self.data.pushSettings = self.requestMachineSettings
         
         return interface
         
@@ -209,86 +210,37 @@ class GroundControlApp(App):
         if firmwareKey is not None:
             self.data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(value))
     
-    def push_settings_to_machine(self, *args):
-        
-        #Push motor configuration settings to machine
-        
-        if self.data.connectionStatus != 1:
-            return # only run on connection true
-        
-        if int(self.data.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
-            KpPos = float(self.data.config.get('Advanced Settings', 'KpPos'))
-            KiPos = float(self.data.config.get('Advanced Settings', 'KiPos'))
-            KdPos = float(self.data.config.get('Advanced Settings', 'KdPos'))
-            propWeight = float(self.data.config.get('Advanced Settings', 'propWeight'))
-        else:
-            KpPos = 1300
-            KiPos = 0
-            KdPos = 34
-            propWeight = 1
-        
-        if int(self.data.config.get('Advanced Settings', 'enableVPIDValues')) == 1:
-            KpV = float(self.data.config.get('Advanced Settings', 'KpV'))
-            KiV = float(self.data.config.get('Advanced Settings', 'KiV'))
-            KdV = float(self.data.config.get('Advanced Settings', 'KdV'))
-        else:
-            KpV = 5
-            KiV = 0
-            KdV = .28
-        
-        # Be pretty dumb about this, just push settings without checking to 
-        # see what machine has
-        
-        self.data.gcode_queue.put("$16=" + str(self.data.config.get('Maslow Settings', 'zAxis')))
-        self.data.gcode_queue.put("$12=" + str(self.data.config.get('Advanced Settings', 'encoderSteps')))
-        distPerRot = float(self.data.config.get('Advanced Settings', 'gearTeeth')) * float(self.data.config.get('Advanced Settings', 'chainPitch'))
-        self.data.gcode_queue.put("$13=" + str(distPerRot))
-        self.data.gcode_queue.put("$19=" + str(self.data.config.get('Maslow Settings'  , 'zDistPerRot')))
-        self.data.gcode_queue.put("$20=" + str(self.data.config.get('Advanced Settings', 'zEncoderSteps')))
-        
-        #main axes
-        self.data.gcode_queue.put("$21=" + str(KpPos))
-        self.data.gcode_queue.put("$22=" + str(KiPos))
-        self.data.gcode_queue.put("$23=" + str(KdPos))
-        self.data.gcode_queue.put("$24=" + str(propWeight))
-        self.data.gcode_queue.put("$25=" + str(KpV))
-        self.data.gcode_queue.put("$26=" + str(KiV))
-        self.data.gcode_queue.put("$27=" + str(KdV))
-        self.data.gcode_queue.put("$28=1.0")
-        
-        #z axis
-        self.data.gcode_queue.put("$29=" + str(KpPos))
-        self.data.gcode_queue.put("$30=" + str(KiPos))
-        self.data.gcode_queue.put("$31=" + str(KdPos))
-        self.data.gcode_queue.put("$32=" + str(propWeight))
-        self.data.gcode_queue.put("$33=" + str(KpV))
-        self.data.gcode_queue.put("$34=" + str(KiV))
-        self.data.gcode_queue.put("$35=" + str(KdV))
-        self.data.gcode_queue.put("$36=1.0")
-        self.data.gcode_queue.put("$17=" + str(self.data.config.get('Advanced Settings', 'zAxisAuto')))
-        
-        #Push kinematics settings to machine
-        if self.data.config.get('Advanced Settings', 'kinematicsType') == 'Quadrilateral':
-            kinematicsType = 1
-        else:
-            kinematicsType = 2
-        
-        self.data.gcode_queue.put("$0=" + str(self.data.config.get('Maslow Settings', 'bedWidth')))
-        self.data.gcode_queue.put("$1=" + str(self.data.config.get('Maslow Settings', 'bedHeight')))
-        self.data.gcode_queue.put("$2=" + str(self.data.config.get('Maslow Settings', 'motorSpacingX')))
-        self.data.gcode_queue.put("$3=" + str(self.data.config.get('Maslow Settings', 'motorOffsetY')))
-        self.data.gcode_queue.put("$4=" + str(self.data.config.get('Maslow Settings', 'sledWidth')))
-        self.data.gcode_queue.put("$5=" + str(self.data.config.get('Maslow Settings', 'sledHeight')))
-        self.data.gcode_queue.put("$6=" + str(self.data.config.get('Maslow Settings', 'sledCG')))
-        self.data.gcode_queue.put("$7=" + str(kinematicsType))
-        self.data.gcode_queue.put("$8=" + str(self.data.config.get('Advanced Settings', 'rotationRadius')))
-        self.data.gcode_queue.put("$37=" + str(self.data.config.get('Advanced Settings', 'chainSagCorrection')))
-
-
-        
-        # Force kinematics recalibration
-        self.data.gcode_queue.put("$K")
-        
+    def requestMachineSettings(self, *args):
+        ''' 
+        Requests the machine to report all settings.  This will implicitly
+        cause a sync of the machine settings because if GroundControl sees a
+        reported setting which does match its expected value, GC will push the
+        correct setting to the machine.
+        '''
+        if self.data.connectionStatus == 1:
+            self.data.gcode_queue.put("$$")
+    
+    def receivedSetting(self, message):
+        '''
+        This parses a settings report from the machine, usually received in 
+        resonse to a $$ request.  If the value received does not match the 
+        expected value.
+        '''
+        parameter, position = self.parseFloat(message, 0)
+        value, position = self.parseFloat(message, position)
+        maslowSettings.syncFirmwareKey(int(parameter), value, self.data)
+    
+    def parseFloat(self, text, position=0):
+        '''
+        Takes a string and parses out the float found at position default to 0
+        returning a list of the matched float and the ending
+        position of the float
+        '''
+        # This regex comes from a python docs recommended 
+        regex = re.compile("[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?")
+        match = regex.search(text[position:])
+        return (float(match.group(0)), match.end(0))
+    
     '''
     
     Update Functions
@@ -312,6 +264,8 @@ class GroundControlApp(App):
             
             if message[0] == "<":
                 self.setPosOnScreen(message)
+            elif message[0] == "$":
+                self.receivedSetting(message)
             elif message[0] == "[":
                 if message[1:4] == "PE:":
                     self.setErrorOnScreen(message)

@@ -473,3 +473,24 @@ def getFirmwareKey(section, key):
             if option['key'] == key and 'firmwareKey' in option:
                 ret = option['firmwareKey']
     return ret
+
+def syncFirmwareKey(firmwareKey, value, data):
+    for section in settings:
+        for option in settings[section]:
+            if 'firmwareKey' in option and option['firmwareKey'] == firmwareKey:
+                storedValue = data.config.get(section, option['key'])
+                if not isClose(float(storedValue), value):
+                    data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(storedValue))
+                else:
+                    break
+    return
+
+def isClose(a, b, rel_tol=1e-06):
+    '''
+    Takes two values and returns true if values are close enough in value 
+    such that the difference between them is less than the significant 
+    figure specified by rel_tol.  Useful for comparing float values on
+    arduino adapted from https://stackoverflow.com/a/33024979
+    '''
+    return abs(a-b) <= rel_tol * max(abs(a), abs(b))
+    
