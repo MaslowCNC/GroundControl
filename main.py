@@ -362,10 +362,10 @@ class GroundControlApp(App):
     [
         {
             "type": "string",
-            "title": "Top-Left HSV Limits",
-            "desc": "Color specifier for Top-Left Alignment Mark\\ndefault setting: %s",
+            "title": "Last Loaded Background File",
+            "desc": "Last Loaded Background File (or directory)",
             "section": "Background Image",
-            "key": "backgroundTLHSV"
+            "key": "backgroundFile"
         },
         {
             "type": "string",
@@ -376,15 +376,64 @@ class GroundControlApp(App):
         },
         {
             "type": "string",
-            "title": "Kd Velocity",
-            "desc": "The derivative constant for the velocity PID controller\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "KdV"
+            "title": "Top-Right HSV Limits",
+            "desc": "Color specifier for Top-Right Alignment Mark\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundTRHSV"
+        },
+        {
+            "type": "string",
+            "title": "Bottom-Left HSV Limits",
+            "desc": "Color specifier for Bottom Left Alignment Mark\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundBLHSV"
+        },
+        {
+            "type": "string",
+            "title": "Bottom-Right HSV Limits",
+            "desc": "Color specifier for Bottom-Right Alignment Mark\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundBRHSV"
+        },
+        {
+            "type": "string",
+            "title": "Top Left Position",
+            "desc": "The Top Left Marker position\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundTLPOS"
+        },
+        {
+            "type": "string",
+            "title": "Top Right Position",
+            "desc": "The Top Right Marker position\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundTRPOS"
+        },
+        {
+            "type": "string",
+            "title": "Bottom Left Position",
+            "desc": "The Bottom Left Marker position\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundBLPOS"
+        },
+        {
+            "type": "string",
+            "title": "Bottom Right Position",
+            "desc": "The Bottom Right Marker position\\ndefault setting: %s",
+            "section": "Background Image",
+            "key": "backgroundBRPOS"
         }
     ]
     ''' % (
-        global_variables.backgroundTLHSV,
-        global_variables.backgroundTRHSV
+        #File didn't have a %s, so it's not included here.
+        global_variables._backgroundTLHSV,
+        global_variables._backgroundTRHSV,
+        global_variables._backgroundBLHSV,
+        global_variables._backgroundBRHSV,
+        global_variables._backgroundTRPOS,
+        global_variables._backgroundTLPOS,
+        global_variables._backgroundBLPOS,
+        global_variables._backgroundBRPOS  
         )
     
     gcsettings = '''
@@ -471,6 +520,17 @@ class GroundControlApp(App):
         self.data.gcodeShift = [offsetX,offsetY]
         self.data.config  = self.config
         
+        #Image Processing
+        backgroundFile = self.config.get('Background Settings', 'backgroundFile')
+        backgroundTLHSV = self.config.get('Background Settings', 'backgroundTLHSV')
+        backgroundTRHSV = self.config.get('Background Settings', 'backgroundTRHSV')
+        backgroundBLHSV = self.config.get('Background Settings', 'backgroundBLHSV')
+        backgroundBRHSV = self.config.get('Background Settings', 'backgroundBRHSV')
+        backgroundTLPOS = self.config.get('Background Settings', 'backgroundTLPOS')
+        backgroundTRPOS = self.config.get('Background Settings', 'backgroundTRPOS')
+        backgroundBLPOS = self.config.get('Background Settings', 'backgroundBLPOS')
+        backgroundBRPOS = self.config.get('Background Settings', 'backgroundBRPOS')
+        
         '''
         Initializations
         '''
@@ -536,6 +596,17 @@ class GroundControlApp(App):
                                                  'KiV'                : global_variables._KiV,
                                                  'KdV'                : global_variables._KdV})
 
+        config.setdefaults('Background Settings', {'backgroundFile'   : global_variables._backgroundFile,
+                                                   'backgroundTLHSV'  : global_variables._backgroundTLHSV,
+                                                   'backgroundTRHSV'  : global_variables._backgroundTRHSV,
+                                                   'backgroundBLHSV'  : global_variables._backgroundBLHSV,
+                                                   'backgroundBRHSV'  : global_variables._backgroundBRHSV,
+                                                   'backgroundTRPOS'  : global_variables._backgroundTRPOS,
+                                                   'backgroundTLPOS'  : global_variables._backgroundTLPOS,
+                                                   'backgroundBLPOS'  : global_variables._backgroundBLPOS,
+                                                   'backgroundBRPOS'  : global_variables._backgroundBRPOS 
+                                            })
+                                            
         config.setdefaults('Ground Control Settings', {'centerCanvasOnResize'   : global_variables._centerCanvasOnResize,
                                                        'zoomIn'                 : global_variables._zoomIn,
                                                        'zoomOut'                : global_variables._zoomOut,
@@ -719,7 +790,7 @@ class GroundControlApp(App):
                 pass #displaying all the 'ok' messages clutters up the display
             else:
                 self.writeToTextConsole(message)
-
+         
     def ondismiss_popup(self, event):
         if global_variables._keyboard:
             global_variables._keyboard.unbind(on_key_down=self.keydown_popup)

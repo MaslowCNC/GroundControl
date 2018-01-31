@@ -48,10 +48,11 @@ class Data(EventDispatcher):
     logger     =  Logger()                                          #the module which records the machines behavior to review later
 
     #Background image stuff
-    backgroundFile = StringProperty("")
+    #Temporary variables
     backgroundImage = None
-    
-    #TMJ - These should machine config item...
+
+    #Config Items
+    backgroundFile = StringProperty("")
     backgroundTLHSV = [(30,40,80),(90,255,255)]
     backgroundTRHSV = [(160, 60, 40),(10,255,255)]
     backgroundBLHSV = [(90,60,80),(140,255,255)]
