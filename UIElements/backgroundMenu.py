@@ -87,7 +87,26 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
     def reloadBackground(self):
         self.processBackground()
         self.close()
-        
+    
+    def DoesNewFileExist(self):
+        if self.data.backgroundFile=="":
+            return False
+
+        file=self.data.backgroundFile
+            
+        #If file is a directory, then "load the latest from that directory"
+        if not os.path.isdir(file):
+            return false #I'm not going to automatically reload the same file
+        else:
+            files = os.listdir(file)
+            print files
+            filelst =[]
+            for afile in files:
+                if afile.lower().endswith(graphicsExtensions):
+                    filelst.append(os.path.join(file,afile))
+            filelst.sort(key=os.path.getmtime, reverse=True)
+            file = filelst[0]
+            return file <> self.backgroundlastfile
 
     def processBackground(self):
         if self.data.backgroundFile=="":
@@ -108,6 +127,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
                 print filelst
                 file = filelst[0]
                 print "Latest file:"+file
+                self.backgroundlastfile = file
                 
             img = cv2.imread(file)
             self.originalimage=img.copy()
