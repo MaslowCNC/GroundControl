@@ -252,34 +252,42 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def upLeft(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G00 X" + str(-1*self.stepsizeval) + " Y" + str(self.stepsizeval) + " G90 ")
+        self.gcodeVel = "[MAN]"
         
     def upRight(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G00 X" + str(self.stepsizeval) + " Y" + str(self.stepsizeval) + " G90 ")
+        self.gcodeVel = "[MAN]"
 
     def up(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G00 Y" + str(self.stepsizeval) + " G90 ")
+        self.gcodeVel = "[MAN]"
 
     def left(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G0 X" + str(-1*self.stepsizeval) + " G90 ")
+        self.gcodeVel = "[MAN]"
         
     def right(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G0 X" + str(self.stepsizeval) + " G90 ")
+        self.gcodeVel = "[MAN]"
         
     def downLeft(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G00 X" + str(-1*self.stepsizeval) + " Y" + str(-1*self.stepsizeval) + " G90 ")
+        self.gcodeVel = "[MAN]"
 
     def down(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G00 Y" + str(-1*self.stepsizeval) + " G90 ") 
+        self.gcodeVel = "[MAN]"
 
     def downRight(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G00 X" + str(self.stepsizeval) + " Y" + str(-1*self.stepsizeval) + " G90 ")
+        self.gcodeVel = "[MAN]"
     
     def zAxisPopup(self):
         self.popupContent      = ZAxisPopupContent(done=self.dismissZAxisPopup)
@@ -310,6 +318,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         '''
         
         self.data.gcode_queue.put("G90  ")
+        self.gcodeVel = "[MAN]"
         
         if self.units == "INCHES":
             self.data.gcode_queue.put("G00 Z.25 ")
@@ -344,6 +353,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
             print "gcode run complete"
             self.gcodecanvas.uploadFlag = 0
             self.data.gcodeIndex = 0
+            self.gcodeVel = "---"
     
     def stopRun(self):
         self.data.uploadFlag = 0
