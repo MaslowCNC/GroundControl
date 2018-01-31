@@ -183,6 +183,14 @@ settings = {
             },
             {
                 "type": "string",
+                "title": "Chain Length",
+                "desc": "The length in mm of your chains, used to define the kinematics search space",
+                "key": "chainLength",
+                "default": 3360,
+                "firmwareKey": 10
+            },
+            {
+                "type": "string",
                 "title": "Z-Axis Encoder Steps per Revolution",
                 "desc": "The number of encoder steps per revolution of the z-axis",
                 "key": "zEncoderSteps",
