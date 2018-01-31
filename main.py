@@ -26,6 +26,7 @@ Loader Junk
 '''
 import json
 
+from UIElements.backgroundMenu  import backgroundMenu
 
 '''
 
@@ -506,6 +507,10 @@ class GroundControlApp(App):
                 pass #displaying all the 'ok' messages clutters up the display
             else:
                 self.writeToTextConsole(message)
+
+        #See if we got a new file in the Background Image Directory
+        if backgroundMenu.DoesNewFileExist():
+            backgroundMenu.backgroundMenu.processBackground()
          
         #See if we got a new file in the Background Image Directory -- ToDo: Every time?
         #if self.frontpage.BackgroundMenu.DoesNewFileExist():
