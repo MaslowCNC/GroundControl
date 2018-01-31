@@ -222,6 +222,8 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             filename = instance.path    #User pressed Submit without picking a file, indicating "newest in this dir"
         print(filename)
         self.data.backgroundFile = filename
+        self.data.config.set('Background Settings', 'openFile', str(self.data.backgroundFile))
+        self.data.config.write()
         
         #close the open file popup
         self.dismiss_popup()
@@ -235,6 +237,15 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         Open the background settings page
         '''
         dosomething
+        self.config.set('Background Settings', 'backgroundTLHSV', backgroundTLHSV)
+        self.config.set('Background Settings', 'backgroundTRHSV', backgroundTRHSV)
+        self.config.set('Background Settings', 'backgroundBLHSV', backgroundBLHSV)
+        self.config.set('Background Settings', 'backgroundBRHSV', backgroundBRHSV)
+        self.config.set('Background Settings', 'backgroundTLPOS', backgroundTLPOS)
+        self.config.set('Background Settings', 'backgroundTRPOS', backgroundTRPOS)
+        self.config.set('Background Settings', 'backgroundBLPOS', backgroundBLPOS)
+        self.config.set('Background Settings', 'backgroundBRPOS', backgroundBRPOS)        
+        self.data.config.write()
         
     
     def dismiss_popup(self, *args):
