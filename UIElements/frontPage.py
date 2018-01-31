@@ -161,7 +161,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
             gCodeLine = self.data.gcode[newIndex-1] #We're executing newIndex-1... about to send newIndex
             F = re.search("F(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if F:
-                self.gcodeVel = F.groups()[1]   #Otherwise, it stays what it was...
+                self.gcodeVel = F.groups()[0]   #Otherwise, it stays what it was...
             
     def onGcodeFileChange(self, callback, newGcode):
         pass
