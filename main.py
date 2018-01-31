@@ -21,6 +21,7 @@ import global_variables
 import sys
 import re
 
+from UIElements.backgroundMenu  import backgroundMenu
 
 '''
 
@@ -465,6 +466,10 @@ class GroundControlApp(App):
                 pass #displaying all the 'ok' messages clutters up the display
             else:
                 self.writeToTextConsole(message)
+
+        #See if we got a new file in the Background Image Directory
+        if backgroundMenu.DoesNewFileExist():
+            backgroundMenu.backgroundMenu.processBackground()
          
     def ondismiss_popup(self, event):
         if global_variables._keyboard:
