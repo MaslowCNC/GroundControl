@@ -698,6 +698,7 @@
 
 <AdjustZCalibrationDepth>:
     zAxisActiveSwitch:zAxisActiveSwitch
+    openZPopupBtn:openZPopupBtn
     GridLayout:
         cols: 2
         width: root.width
@@ -724,17 +725,10 @@
                     on_active: root.enableZaxis()
                     id: zAxisActiveSwitch
             Button:
-                text: 'Raise Z-Axis 1mm'
-                on_release: root.moveZ(1)
-            Button:
-                text: 'Raise Z-Axis .1mm'
-                on_release: root.moveZ(.1)
-            Button:
-                text: 'Lower Z-Axis 1mm'
-                on_release: root.moveZ(-1)
-            Button:
-                text: 'Lower Z-Axis .1mm'
-                on_release: root.moveZ(-.1)
+                text: "Adjust Z-Axis"
+                on_release: root.zAxisPopup()
+                disabled:True
+                id: openZPopupBtn
             Button:
                 text: 'Define Zero'
                 on_release: root.zeroZ()
