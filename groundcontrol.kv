@@ -1021,18 +1021,28 @@
                     Switch:
                         on_active: root.enableZaxis()
                         id: zAxisActiveSwitch
+				GridLayout:
+					cols:2
+					Button:
+						text: 'Raise 1mm'
+						on_release: root.moveZ(1)
+					Button:
+						text: 'Raise .1mm'
+						on_release: root.moveZ(.1)
+					Button:
+						text: 'Lower 1mm'
+						on_release: root.moveZ(-1)
+					Button:
+						text: 'Lower .1mm'
+						on_release: root.moveZ(-.1)
+				Button:
+					text: "Touch-Zero [HW Req'd]"
+					on_release: root.ZautoZero()
+				Label:
+					text: " " #spacer
                 Button:
-                    text: 'Raise Z-Axis 1mm'
-                    on_release: root.moveZ(1)
-                Button:
-                    text: 'Raise Z-Axis .1mm'
-                    on_release: root.moveZ(.1)
-                Button:
-                    text: 'Lower Z-Axis 1mm'
-                    on_release: root.moveZ(-1)
-                Button:
-                    text: 'Lower Z-Axis .1mm'
-                    on_release: root.moveZ(-.1)
+                    text: 'STOP!'
+                    on_press: root.stopCut()
                 Button:
                     text: 'Define Zero'
                     on_release: root.zeroZ()
