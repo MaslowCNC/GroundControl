@@ -822,16 +822,23 @@
     pos: root.pos
     #top bar
     GridLayout:
-        cols: 3
+        cols: 4
         size_hint_y: .1
         Button:
+			size_hint_x: .2
             text: "<Go Back"
             on_release: root.backBtn()
             id: goBackBtn
             disabled: True
-        Label:
+		Button:
+			size_hint_x: .1
+			text: "QUIT"
+			on_release: root.done()
+			id: closeBtn
+		Label:
             text: root.stepText#Step {} of 9'.format(carousel.index)
         Button:
+			size_hint_x: .2
             text: "Skip>"
             id: goFwdBtn
             on_release: root.fwdBtn()
