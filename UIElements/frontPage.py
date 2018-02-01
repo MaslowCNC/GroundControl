@@ -41,6 +41,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
 
     lastpos=(0,0,0)
     lasttime=0.0
+    tick=0
     
     stepsizeval  = 0
     zStepSizeVal = .1
@@ -94,7 +95,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.stopBtn.btnBackground              = self.data.iconPath + 'StopRed.png'
         
         self.goTo.btnBackground                 = self.data.iconPath + 'GoTo.png'
-    
+
     def buildReadoutString(self, value):
         '''
         
@@ -111,21 +112,25 @@ class FrontPage(Screen, MakesmithInitFuncs):
         
         return string
     
-    def setPosReadout(self, xPos, yPos, zPos, Vel):
+    def setPosReadout(self, xPos, yPos, zPos):
         self.xReadoutPos    = self.buildReadoutString(xPos)
         self.yReadoutPos    = self.buildReadoutString(yPos)
         self.zReadoutPos    = self.buildReadoutString(zPos)
         
-        if lasttime <> 0.0:
-            delta = sqrt( xpos-lastpos[0]*xpos-lastpos[0] + ypos-lastpos[1]*ypos-lastpos[1] + zpos-lastpos[2] * zpos-lastpos[2])
-            Vel = delta / (time()-lasttime) * 60.0 #In XXXX/minute
-        else:
-            Vel=0
+        #Current Velocity is done here now, not in the firmware.
+        self.tick+=1
+        if self.tick>=4:    #Can't do this every time... it's too noisy, so we do it every 5rd time (0.1s).
+            self.tick=0
+            if self.lasttime <> 0.0:
+                delta = sqrt( (xPos-self.lastpos[0])*(xPos-self.lastpos[0]) + (yPos-self.lastpos[1])*(yPos-self.lastpos[1]) + (zPos-self.lastpos[2]) * (zPos-self.lastpos[2]))
+                Vel = delta / (time()-self.lasttime) * 60.0 #In XXXX/minute
+            else:
+                Vel=0
+                
+            self.lasttime = time()
+            self.lastpos = (xPos, yPos, zPos)
             
-        lasttime = time()
-        lastpos = (xPos, yPos, zPos)
-        
-        self.ReadoutVel     = self.buildReadoutString(Vel)
+            self.ReadoutVel     = self.buildReadoutString(Vel)
         self.numericalPosX  = xPos
         self.numericalPosY  = yPos
         

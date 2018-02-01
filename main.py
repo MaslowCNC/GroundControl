@@ -740,8 +740,8 @@ class GroundControlApp(App):
             self.xval  = float(valz[0])
             self.yval  = float(valz[1])
             self.zval  = float(valz[2])
-            self.vel   = float(valz[3])
-            
+            #self.vel   = float(valz[3])
+            print valz
             if math.isnan(self.xval):
                 self.writeToTextConsole("Unable to resolve x Kinematics.")
                 self.xval = 0
@@ -751,11 +751,7 @@ class GroundControlApp(App):
             if math.isnan(self.zval):
                 self.writeToTextConsole("Unable to resolve z Kinematics.")
                 self.zval = 0
-            if math.isnan(self.vel):
-                self.writeToTextConsole("Unable to resolve velocity.")
-                self.vel=0;
-            
-            self.frontpage.setPosReadout(self.xval, self.yval, self.zval, self.vel)
+            self.frontpage.setPosReadout(self.xval, self.yval, self.zval)
             self.frontpage.gcodecanvas.positionIndicator.setPos(self.xval,self.yval,self.data.units)
         except:
             print "One Machine Position Report Command Misread"
