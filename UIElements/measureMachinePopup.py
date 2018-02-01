@@ -1,6 +1,6 @@
 '''
 
-This allows the user interact with the z-axis when it is the content of a popup
+This is the big calibration procedure
 
 '''
 from   kivy.uix.gridlayout                       import   GridLayout
@@ -428,4 +428,14 @@ class MeasureMachinePopup(GridLayout):
 
         '''
         self.data.gcode_queue.put("G10 Z0 ")
+
+        #And go to "safe" height.
+        self.data.gcode_queue.put("G00 Z5.0 ")
         self.carousel.load_next()
+
+    def ZautoZero(self):
+        '''
+        Use touch plate to auto-zero z-axis
+        '''
+        self.data.gcode_queue.put("G21 G91 G38.2 10.0 F500")
+        #ToDo highlight zeroZ button when we get a "z axis zeroed" from the serial port
