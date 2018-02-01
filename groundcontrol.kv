@@ -696,6 +696,50 @@
                 on_release: root.stopCut()
             Label:
 
+<AdjustZCalibrationDepth>:
+    zAxisActiveSwitch:zAxisActiveSwitch
+    GridLayout:
+        cols: 2
+        width: root.width
+        height: root.height
+        GridLayout:
+            cols: 1
+            size_hint_x: leftCol
+            Label:
+                text: "Next, we are going to define the home position for the z-axis\n\nIf you have an automatic z-axis installed use the buttons to enable it and adjust the z-axis until the router bit\nbarely touches the surface of the wood. Then press Define Zero\n\nIf you do not have the z-axis installed, adjust your router until the router bit just barely\ntouches the surface of the wood, then press Define Zero"
+                size_hint_x: leftCol
+            GridLayout:
+                cols: 2
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
+        GridLayout:
+            cols: 1
+            size_hint_x: rightCol
+            Label:
+            GridLayout:
+                cols: 2
+                Label:
+                    text: 'Enable\nAutomatic Z-Axis:'
+                Switch:
+                    on_active: root.enableZaxis()
+                    id: zAxisActiveSwitch
+            Button:
+                text: 'Raise Z-Axis 1mm'
+                on_release: root.moveZ(1)
+            Button:
+                text: 'Raise Z-Axis .1mm'
+                on_release: root.moveZ(.1)
+            Button:
+                text: 'Lower Z-Axis 1mm'
+                on_release: root.moveZ(-1)
+            Button:
+                text: 'Lower Z-Axis .1mm'
+                on_release: root.moveZ(-.1)
+            Button:
+                text: 'Define Zero'
+                on_release: root.zeroZ()
+            Label:
+                
 <SetSprocketsVertical>:
     #Set sprockets to 12 o'clock
     GridLayout:
@@ -820,11 +864,11 @@
     vertMeasure:vertMeasure
     unitsBtn:unitsBtn
     enterValues:enterValues
-    zAxisActiveSwitch:zAxisActiveSwitch
     setSprocketsVertical:setSprocketsVertical
     measureOutChains:measureOutChains
     triangularCalibration:triangularCalibration
     finishText:finishText
+    adjustZStep:adjustZStep
 
     cols: 1
     size: root.size
@@ -1015,44 +1059,9 @@
                 id: measureOutChains
         #set z-axis depth
         GridLayout:
-            cols: 2
-            GridLayout:
-                cols: 1
-                size_hint_x: leftCol
-                Label:
-                    text: "Next, we are going to define the home position for the z-axis\n\nIf you have an automatic z-axis installed use the buttons to enable it and adjust the z-axis until the router bit\nbarely touches the surface of the wood. Then press Define Zero\n\nIf you do not have the z-axis installed, adjust your router until the router bit just barely\ntouches the surface of the wood, then press Define Zero"
-                    size_hint_x: leftCol
-                GridLayout:
-                    cols: 2
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
-            GridLayout:
-                cols: 1
-                size_hint_x: rightCol
-                Label:
-                GridLayout:
-                    cols: 2
-                    Label:
-                        text: 'Enable\nAutomatic Z-Axis:'
-                    Switch:
-                        on_active: root.enableZaxis()
-                        id: zAxisActiveSwitch
-                Button:
-                    text: 'Raise Z-Axis 1mm'
-                    on_release: root.moveZ(1)
-                Button:
-                    text: 'Raise Z-Axis .1mm'
-                    on_release: root.moveZ(.1)
-                Button:
-                    text: 'Lower Z-Axis 1mm'
-                    on_release: root.moveZ(-1)
-                Button:
-                    text: 'Lower Z-Axis .1mm'
-                    on_release: root.moveZ(-.1)
-                Button:
-                    text: 'Define Zero'
-                    on_release: root.zeroZ()
-                Label:
+            cols: 1
+            AdjustZCalibrationDepth:
+                id: adjustZStep
         #choose kinematics type
         GridLayout:
             cols: 2

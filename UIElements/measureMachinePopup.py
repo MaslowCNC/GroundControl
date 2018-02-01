@@ -8,6 +8,7 @@ from   kivy.properties                           import   ObjectProperty
 from   kivy.properties                           import   StringProperty
 from   UIElements.touchNumberInput               import   TouchNumberInput
 from   UIElements.triangularCalibration          import   TriangularCalibration
+from   UIElements.adjustZCalibrationDepth        import   AdjustZCalibrationDepth
 from   kivy.uix.popup                            import   Popup
 import global_variables
 
@@ -32,7 +33,10 @@ class MeasureMachinePopup(GridLayout):
         self.measureOutChains.data          =  data
         self.measureOutChains.carousel      =  self.carousel
         self.measureOutChains.text          =  "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of the right chain on the vertical tooth of the right sprocket\n as shown in the picture below\n\nThe left chain does not need to be moved, it can be left partly extended\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Next\nPressing Next will move the sled to the center of the sheet.\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way"
-
+        
+        self.adjustZStep.data               =  data
+        self.adjustZStep.carousel           =  self.carousel
+        
         self.triangularCalibration.data          =  data
         self.triangularCalibration.carousel      =  self.carousel
         triangularTestCutText = "The cuts in the corners will be about\n254 mm/10 inches from the work area edges.\n\n"
@@ -70,7 +74,15 @@ class MeasureMachinePopup(GridLayout):
             self.carousel.load_next()
 
     def slideJustChanged(self):
-
+        '''
+        
+        Runs when the slide has just been changed
+        
+        '''
+        
+        print self.carousel.slides
+        #self.carousel.slides[self.carousel.index].on_enter()
+        
         if self.carousel.index == 0:
             #begin notes
             self.goBackBtn.disabled = True
@@ -107,10 +119,7 @@ class MeasureMachinePopup(GridLayout):
 
         if self.carousel.index == 7:
             #set up z-axis
-            if int(self.data.config.get('Maslow Settings', 'zAxis')) == 1:
-                self.zAxisActiveSwitch.active = True
-            else:
-                self.zAxisActiveSwitch.active = False
+            self.adjustZStep.on_enter()
             self.stepText = "Step 8 of 10"
 
         if self.carousel.index == 8:
@@ -278,16 +287,6 @@ class MeasureMachinePopup(GridLayout):
         print "calibrating"
         self.data.gcode_queue.put("B02 ")
 
-    def enableZaxis(self, *args):
-        '''
-
-        Triggered when the switch to enable the z-axis is touched
-
-        '''
-        self.data.config.set('Maslow Settings', 'zAxis', int(self.zAxisActiveSwitch.active))
-        self.data.config.write()
-        self.data.pushSettings()
-
     def pullChainTight(self):
         #pull the left chain tight
         self.data.gcode_queue.put("B11 S50 T3 ")
@@ -411,21 +410,4 @@ class MeasureMachinePopup(GridLayout):
         else:
             self.unitsBtn.text = 'MM'
 
-    def moveZ(self, dist):
-        '''
-
-        Move the z-axis the specified distance
-
-        '''
-        self.data.units = "MM"
-        self.data.gcode_queue.put("G21 ")
-        self.data.gcode_queue.put("G91 G00 Z" + str(dist) + " G90 ")
-
-    def zeroZ(self):
-        '''
-
-        Define the z-axis to be currently at height 0
-
-        '''
-        self.data.gcode_queue.put("G10 Z0 ")
-        self.carousel.load_next()
+    
