@@ -740,8 +740,7 @@ class GroundControlApp(App):
             self.xval  = float(valz[0])
             self.yval  = float(valz[1])
             self.zval  = float(valz[2])
-            #self.vel   = float(valz[3])
-            print valz
+
             if math.isnan(self.xval):
                 self.writeToTextConsole("Unable to resolve x Kinematics.")
                 self.xval = 0
