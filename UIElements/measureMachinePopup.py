@@ -9,6 +9,7 @@ from   kivy.properties                           import   StringProperty
 from   UIElements.touchNumberInput               import   TouchNumberInput
 from   UIElements.triangularCalibration          import   TriangularCalibration
 from   UIElements.adjustZCalibrationDepth        import   AdjustZCalibrationDepth
+from   UIElements.measureDistBetweenMotors       import   MeasureDistBetweenMotors
 from   kivy.uix.popup                            import   Popup
 import global_variables
 
@@ -36,6 +37,9 @@ class MeasureMachinePopup(GridLayout):
         
         self.adjustZStep.data               =  data
         self.adjustZStep.carousel           =  self.carousel
+        
+        self.measureMotorDist.data          =  data
+        self.measureMotorDist.carousel      =  self.carousel
         
         self.triangularCalibration.data          =  data
         self.triangularCalibration.carousel      =  self.carousel
@@ -79,9 +83,6 @@ class MeasureMachinePopup(GridLayout):
         Runs when the slide has just been changed
         
         '''
-        
-        print self.carousel.slides
-        #self.carousel.slides[self.carousel.index].on_enter()
         
         if self.carousel.index == 0:
             #begin notes
@@ -286,10 +287,6 @@ class MeasureMachinePopup(GridLayout):
     def calibrateChainLengths(self):
         print "calibrating"
         self.data.gcode_queue.put("B02 ")
-
-    def pullChainTight(self):
-        #pull the left chain tight
-        self.data.gcode_queue.put("B11 S50 T3 ")
 
     def updateReviewValuesText(self, *args):
         '''
