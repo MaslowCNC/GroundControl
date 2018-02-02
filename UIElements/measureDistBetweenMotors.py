@@ -32,9 +32,9 @@ class MeasureDistBetweenMotors(Widget):
             self._popup.bind(on_dismiss=self.ondismiss_popup)
     
     def ondismiss_popup(self, event):
-       if global_variables._keyboard:
+        if global_variables._keyboard:
            global_variables._keyboard.unbind(on_key_down=self.keydown_popup)
-    
+        
     def keydown_popup(self, keyboard, keycode, text, modifiers):
         if (keycode[1] == '0') or (keycode[1] =='numpad0'):
             self.popupContent.addText('0')
@@ -70,7 +70,8 @@ class MeasureDistBetweenMotors(Widget):
     def dismiss_popup(self):
         try:
             tempfloat = float(self.popupContent.textInput.text)
-            self.targetWidget.text = "Dist: " + str(tempfloat) + " " + self.data.units  # Update displayed text using standard numeric format
+            self.targetWidget.text = str(tempfloat)  # Update displayed text using standard numeric format
+            #self.distText.text = "Dist (" + self.data.units + "):"
         except:
             pass  # If what was entered cannot be converted to a number, leave the value the same
         self._popup.dismiss()
@@ -79,6 +80,18 @@ class MeasureDistBetweenMotors(Widget):
         self.data.quick_queue.put("!")
         with self.data.gcode_queue.mutex:
             self.data.gcode_queue.queue.clear()
+    
+    def extend(self):
+        dist = float(self.distToMove.text)
+        self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B09 L" + str(dist) + " ")
+        self.data.gcode_queue.put("G90 ")
+    
+    def retract(self):
+        dist = float(self.distToMove.text)
+        self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B09 L" + str(-1*dist) + " ")
+        self.data.gcode_queue.put("G90 ")
     
     def measureLeft(self):
         self.data.gcode_queue.put("B10 L")

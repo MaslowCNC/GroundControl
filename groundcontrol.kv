@@ -697,6 +697,8 @@
             Label:
 
 <MeasureDistBetweenMotors>
+    distToMove:distToMove
+    distText:distText
     GridLayout:
         cols: 2
         width: root.width
@@ -719,14 +721,18 @@
             size_hint_x: rightCol
             Label:
             Label:
-                text: "Dist:"
+                text: "Dist(MM):"
+                id: distText
             Button:
-                text: "100mm"
+                text: "100"
                 on_release: root.textInputPopup(self)
+                id: distToMove
             Button:
                 text: "Extend"
+                on_release: root.extend()
             Button:
                 text: "Retract"
+                on_release: root.retract()
             Button:
                 text: 'Pull Chain Tight'
                 on_release: root.pullChainTight()
