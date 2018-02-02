@@ -38,12 +38,16 @@ class SerialPortThread(MakesmithInitFuncs):
         message = message + '\n'
         
         self.bufferSpace       = self.bufferSpace - len(message)        #shrink the available buffer space by the length of the line
+        
         self.machineIsReadyForData = False
         
         #if this is a quick message sent as soon as the button is pressed (like stop) then put it on the right side of the queue
         #because it is the first message sent, otherwise put it at the end (left) because it is the last message sent
         if isQuickCommand:
-            self.lengthOfLastLineStack.append(len(message))
+            if message[0] == '!':
+                self.lengthOfLastLineStack.append(256) #if we've just sent a stop command, the buffer is now empty on the arduino side
+            else:
+                self.lengthOfLastLineStack.append(len(message))
         else:
             self.lengthOfLastLineStack.appendleft(len(message))
         
@@ -123,6 +127,8 @@ class SerialPortThread(MakesmithInitFuncs):
                     self.machineIsReadyForData = True
                     if bool(self.lengthOfLastLineStack) is True:                                     #if we've sent lines to the machine
                         self.bufferSpace = self.bufferSpace + self.lengthOfLastLineStack.pop()    #free up that space in the buffer
+                        if self.bufferSpace > 256:
+                            self.bufferSpace = 256
                 
                 
                 
