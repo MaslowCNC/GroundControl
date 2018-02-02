@@ -882,6 +882,27 @@
             cols: 1
             SetSprocketsVertical:
                 id: setSprocketsVertical
+        #Set chain above/below sprocket to sled
+        GridLayout:
+            cols: 2
+            GridLayout:
+                cols: 1
+                Label:
+                    text: "In this step we will select on which side of the\nmotor sprockets the chains connect to the sled\n\nSelect the button on the right corresponding to your configuration\n\nBelow is an example of a 'Top' configuration"
+                    size_hint_x: leftCol
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Chain On Left Sprocket.jpg"
+            GridLayout:
+                cols: 1
+                size_hint_x: rightCol
+                Label:
+                Button:
+                    text: 'Top'
+                    on_release: root.chainsOnTop()
+                Button:
+                    text: 'Bottom'
+                    on_release: root.chainsOnBottom()
+                Label:
         GridLayout:
             cols: 2
             GridLayout:

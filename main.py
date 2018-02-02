@@ -207,6 +207,14 @@ class GroundControlApp(App):
             "key": "chainPitch"
         },
         {
+            "type": "options",
+            "title": "Side of Motor Sprockets That Chains Go to Sled",
+            "desc": "On which side of the motor sprockets the chains connect to the sled\\ndefault setting: %s",
+            "options": ["Top", "Bottom"],
+            "section": "Advanced Settings",
+            "key": "chainOverSprocket"
+        },
+        {
             "type": "string",
             "title": "Z-Axis Encoder Steps per Revolution",
             "desc": "The number of encoder steps per revolution of the z-axis\\ndefault setting: %s",
@@ -338,6 +346,7 @@ class GroundControlApp(App):
         global_variables._encoderSteps,
         global_variables._gearTeeth,
         global_variables._chainPitch,
+        global_variables._chainOverSprocket,
         global_variables._zEncoderSteps,
         global_variables._zAxisAuto,
         global_variables._homeX,
@@ -488,6 +497,7 @@ class GroundControlApp(App):
         config.setdefaults('Advanced Settings', {'encoderSteps'       : global_variables._encoderSteps,
                                                  'gearTeeth'          : global_variables._gearTeeth,
                                                  'chainPitch'         : global_variables._chainPitch,
+                                                 'chainOverSprocket'  : global_variables._chainOverSprocket,
                                                  'zEncoderSteps'      : global_variables._zEncoderSteps,
                                                  'zAxisAuto'          : global_variables._zAxisAuto,
                                                  'homeX'              : global_variables._homeX,
@@ -619,6 +629,12 @@ class GroundControlApp(App):
         self.data.gcode_queue.put("$7=" + str(kinematicsType))
         self.data.gcode_queue.put("$8=" + str(self.data.config.get('Advanced Settings', 'rotationRadius')))
         self.data.gcode_queue.put("$37=" + str(self.data.config.get('Advanced Settings', 'chainSagCorrection')))
+
+        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
+            chainOverSprocket = 1
+        else:
+            chainOverSprocket = 2
+        self.data.gcode_queue.put("$38=" + str(chainOverSprocket))
 
 
         

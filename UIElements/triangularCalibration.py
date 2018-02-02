@@ -143,6 +143,10 @@ class TriangularCalibration(Widget):
         motorYcoordEst = (workspaceHeight/2) + motorYoffsetEst
         rotationRadiusEst = float(self.data.config.get('Advanced Settings', 'rotationRadius'))
         chainSagCorrectionEst = float(self.data.config.get('Advanced Settings', 'chainSagCorrection'))
+        if str(self.data.config.get('Advanced Settings', 'chainOverSprocket')) == 'Top':
+            chainOverSprocket = 1
+        else:
+            chainOverSprocket = 2
         gearTeeth = float(self.data.config.get('Advanced Settings', 'gearTeeth'))
         chainPitch = float(self.data.config.get('Advanced Settings', 'chainPitch'))
         motorSprocketRadius = (gearTeeth*chainPitch)/(2*3.14159)
@@ -154,11 +158,27 @@ class TriangularCalibration(Widget):
         MotorDistanceCut3 = math.sqrt(math.pow(motorXcoord - ((workspaceWidth/2)-254),2) + math.pow(motorYcoordEst + ((workspaceHeight/2)-254),2))
         MotorDistanceCut4 = math.sqrt(math.pow(motorXcoord + ((workspaceWidth/2)-254),2) + math.pow(motorYcoordEst + ((workspaceHeight/2)-254),2))
 
-        #Calculate the chain angles from horizontal
-        ChainAngleCut1 = 3.14159 - math.acos(motorSprocketRadius/MotorDistanceCut1) - math.acos((motorYcoordEst - ((workspaceHeight/2)-254)) / MotorDistanceCut1)
-        ChainAngleCut2 = 3.14159 - math.acos(motorSprocketRadius/MotorDistanceCut2) - math.acos((motorYcoordEst - ((workspaceHeight/2)-254)) / MotorDistanceCut2)
-        ChainAngleCut3 = 3.14159 - math.acos(motorSprocketRadius/MotorDistanceCut3) - math.acos((motorYcoordEst + ((workspaceHeight/2)-254)) / MotorDistanceCut3)
-        ChainAngleCut4 = 3.14159 - math.acos(motorSprocketRadius/MotorDistanceCut4) - math.acos((motorYcoordEst + ((workspaceHeight/2)-254)) / MotorDistanceCut4)
+        #Calculate the chain angles from horizontal, based on if the chain connects to the sled from the top or bottom of the sprocket
+        if chainOverSprocket == 1:
+            ChainAngleCut1 = math.asin((motorYcoordEst - ((workspaceHeight/2)-254)) / MotorDistanceCut1) + math.asin(motorSprocketRadius/MotorDistanceCut1)
+            ChainAngleCut2 = math.asin((motorYcoordEst - ((workspaceHeight/2)-254)) / MotorDistanceCut2) + math.asin(motorSprocketRadius/MotorDistanceCut2)
+            ChainAngleCut3 = math.asin((motorYcoordEst + ((workspaceHeight/2)-254)) / MotorDistanceCut3) + math.asin(motorSprocketRadius/MotorDistanceCut3)
+            ChainAngleCut4 = math.asin((motorYcoordEst + ((workspaceHeight/2)-254)) / MotorDistanceCut4) + math.asin(motorSprocketRadius/MotorDistanceCut4)
+
+            ChainAroundSprocketCut1 = motorSprocketRadius * ChainAngleCut1
+            ChainAroundSprocketCut2 = motorSprocketRadius * ChainAngleCut2
+            ChainAroundSprocketCut3 = motorSprocketRadius * ChainAngleCut3
+            ChainAroundSprocketCut4 = motorSprocketRadius * ChainAngleCut4
+        else:
+            ChainAngleCut1 = math.asin((motorYcoordEst - ((workspaceHeight/2)-254)) / MotorDistanceCut1) - math.asin(motorSprocketRadius/MotorDistanceCut1)
+            ChainAngleCut2 = math.asin((motorYcoordEst - ((workspaceHeight/2)-254)) / MotorDistanceCut2) - math.asin(motorSprocketRadius/MotorDistanceCut2)
+            ChainAngleCut3 = math.asin((motorYcoordEst + ((workspaceHeight/2)-254)) / MotorDistanceCut3) - math.asin(motorSprocketRadius/MotorDistanceCut3)
+            ChainAngleCut4 = math.asin((motorYcoordEst + ((workspaceHeight/2)-254)) / MotorDistanceCut4) - math.asin(motorSprocketRadius/MotorDistanceCut4)
+
+            ChainAroundSprocketCut1 = motorSprocketRadius * (3.14159 - ChainAngleCut1)
+            ChainAroundSprocketCut2 = motorSprocketRadius * (3.14159 - ChainAngleCut2)
+            ChainAroundSprocketCut3 = motorSprocketRadius * (3.14159 - ChainAngleCut3)
+            ChainAroundSprocketCut4 = motorSprocketRadius * (3.14159 - ChainAngleCut4)
 
         #Calculate the straight chain length from the sprocket to the bit
         ChainStraightCut1 = math.sqrt(math.pow(MotorDistanceCut1,2) - math.pow(motorSprocketRadius,2))
@@ -173,10 +193,10 @@ class TriangularCalibration(Widget):
         ChainStraightCut4 *= (1 + ((chainSagCorrectionEst / 1000000000000) * math.pow(math.cos(ChainAngleCut4),2) * math.pow(ChainStraightCut4,2) * math.pow((math.tan(ChainAngleCut3) * math.cos(ChainAngleCut4)) + math.sin(ChainAngleCut4),2)))
 
         #Calculate total chain lengths accounting for sprocket geometry and chain sag
-        ChainLengthCut1 = (motorSprocketRadius * ChainAngleCut1) + ChainStraightCut1;
-        ChainLengthCut2 = (motorSprocketRadius * ChainAngleCut2) + ChainStraightCut2;
-        ChainLengthCut3 = (motorSprocketRadius * ChainAngleCut3) + ChainStraightCut3;
-        ChainLengthCut4 = (motorSprocketRadius * ChainAngleCut4) + ChainStraightCut4;
+        ChainLengthCut1 = ChainAroundSprocketCut1 + ChainStraightCut1
+        ChainLengthCut2 = ChainAroundSprocketCut2 + ChainStraightCut2
+        ChainLengthCut3 = ChainAroundSprocketCut3 + ChainStraightCut3
+        ChainLengthCut4 = ChainAroundSprocketCut4 + ChainStraightCut4
 
         #Subtract of the virtual length which is added to the chain by the rotation mechanism
         ChainLengthCut1 -= rotationRadiusEst
@@ -213,11 +233,27 @@ class TriangularCalibration(Widget):
             MotorDistanceCut3Est = math.sqrt(math.pow(motorXcoord - (distBetweenCuts34 / 2),2) + math.pow(motorYcoordEst + (workspaceHeight-508) - cut34YoffsetEst,2))
             MotorDistanceCut4Est = math.sqrt(math.pow(motorXcoord + (distBetweenCuts34 / 2),2) + math.pow(motorYcoordEst + (workspaceHeight-508) - cut34YoffsetEst,2))
 
-            #Calculate the chain angles from horizontal
-            ChainAngleCut1Est = 3.14159 - math.acos(motorSprocketRadius / MotorDistanceCut1Est) - math.acos(motorYcoordEst / MotorDistanceCut1Est)
-            ChainAngleCut2Est = 3.14159 - math.acos(motorSprocketRadius / MotorDistanceCut2Est) - math.acos(motorYcoordEst / MotorDistanceCut2Est)
-            ChainAngleCut3Est = 3.14159 - math.acos(motorSprocketRadius / MotorDistanceCut3Est) - math.acos((motorYcoordEst + (workspaceHeight-508) - cut34YoffsetEst) / MotorDistanceCut3Est)
-            ChainAngleCut4Est = 3.14159 - math.acos(motorSprocketRadius / MotorDistanceCut4Est) - math.acos((motorYcoordEst + (workspaceHeight-508) - cut34YoffsetEst) / MotorDistanceCut4Est)
+            #Calculate the chain angles from horizontal, based on if the chain connects to the sled from the top or bottom of the sprocket
+            if chainOverSprocket == 1:
+                ChainAngleCut1Est = math.asin(motorYcoordEst / MotorDistanceCut1Est) + math.asin(motorSprocketRadius / MotorDistanceCut1Est)
+                ChainAngleCut2Est = math.asin(motorYcoordEst / MotorDistanceCut2Est) + math.asin(motorSprocketRadius / MotorDistanceCut2Est)
+                ChainAngleCut3Est = math.asin((motorYcoordEst + (workspaceHeight-508) - cut34YoffsetEst) / MotorDistanceCut3Est) + math.asin(motorSprocketRadius / MotorDistanceCut3Est)
+                ChainAngleCut4Est = math.asin((motorYcoordEst + (workspaceHeight-508) - cut34YoffsetEst) / MotorDistanceCut4Est) + math.asin(motorSprocketRadius / MotorDistanceCut4Est)
+
+                ChainAroundSprocketCut1Est = motorSprocketRadius * ChainAngleCut1Est
+                ChainAroundSprocketCut2Est = motorSprocketRadius * ChainAngleCut2Est
+                ChainAroundSprocketCut3Est = motorSprocketRadius * ChainAngleCut3Est
+                ChainAroundSprocketCut4Est = motorSprocketRadius * ChainAngleCut4Est
+            else:
+                ChainAngleCut1Est = math.asin(motorYcoordEst / MotorDistanceCut1Est) - math.asin(motorSprocketRadius / MotorDistanceCut1Est)
+                ChainAngleCut2Est = math.asin(motorYcoordEst / MotorDistanceCut2Est) - math.asin(motorSprocketRadius / MotorDistanceCut2Est)
+                ChainAngleCut3Est = math.asin((motorYcoordEst + (workspaceHeight-508) - cut34YoffsetEst) / MotorDistanceCut3Est) - math.asin(motorSprocketRadius / MotorDistanceCut3Est)
+                ChainAngleCut4Est = math.asin((motorYcoordEst + (workspaceHeight-508) - cut34YoffsetEst) / MotorDistanceCut4Est) - math.asin(motorSprocketRadius / MotorDistanceCut4Est)
+
+                ChainAroundSprocketCut1Est = motorSprocketRadius * (3.14159 - ChainAngleCut1Est)
+                ChainAroundSprocketCut2Est = motorSprocketRadius * (3.14159 - ChainAngleCut2Est)
+                ChainAroundSprocketCut3Est = motorSprocketRadius * (3.14159 - ChainAngleCut3Est)
+                ChainAroundSprocketCut4Est = motorSprocketRadius * (3.14159 - ChainAngleCut4Est)
 
             #Calculate the straight chain length from the sprocket to the bit
             ChainStraightCut1Est = math.sqrt(math.pow(MotorDistanceCut1Est,2) - math.pow(motorSprocketRadius,2))
@@ -232,10 +268,10 @@ class TriangularCalibration(Widget):
             ChainStraightCut4Est *= (1 + ((chainSagCorrectionEst / 1000000000000) * math.pow(math.cos(ChainAngleCut4Est),2) * math.pow(ChainStraightCut4Est,2) * math.pow((math.tan(ChainAngleCut3Est) * math.cos(ChainAngleCut4Est)) + math.sin(ChainAngleCut4Est),2)))
 
             #Calculate total chain lengths accounting for sprocket geometry and chain sag
-            ChainLengthCut1Est = (motorSprocketRadius * ChainAngleCut1Est) + ChainStraightCut1Est;
-            ChainLengthCut2Est = (motorSprocketRadius * ChainAngleCut2Est) + ChainStraightCut2Est;
-            ChainLengthCut3Est = (motorSprocketRadius * ChainAngleCut3Est) + ChainStraightCut3Est;
-            ChainLengthCut4Est = (motorSprocketRadius * ChainAngleCut4Est) + ChainStraightCut4Est;
+            ChainLengthCut1Est = ChainAroundSprocketCut1Est + ChainStraightCut1Est
+            ChainLengthCut2Est = ChainAroundSprocketCut2Est + ChainStraightCut2Est
+            ChainLengthCut3Est = ChainAroundSprocketCut3Est + ChainStraightCut3Est
+            ChainLengthCut4Est = ChainAroundSprocketCut4Est + ChainStraightCut4Est
 
             #Subtract of the virtual length which is added to the chain by the rotation mechanism
             ChainLengthCut1Est -= rotationRadiusEst
@@ -321,7 +357,7 @@ class TriangularCalibration(Widget):
         self.data.gcode_queue.put("G40 ")
         self.data.gcode_queue.put("G0 X0 Y0 ")
 
-        self.carousel.load_slide(self.carousel.slides[11])
+        self.carousel.load_slide(self.carousel.slides[12])
 
     def stopCut(self):
         self.data.quick_queue.put("!") 
