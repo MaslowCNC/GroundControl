@@ -199,6 +199,8 @@ class MeasureMachinePopup(GridLayout):
         self.carousel.load_next()
 
     def readVerticalOffset(self, dist):
+        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Bottom':
+            dist *= -1
         print "vertical offset measured at: " + str(dist)
         self.data.config.set('Maslow Settings', 'motorOffsetY', str(dist))
         self.data.config.write()
