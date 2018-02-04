@@ -10,11 +10,10 @@ from   UIElements.touchNumberInput               import   TouchNumberInput
 from   UIElements.triangularCalibration          import   TriangularCalibration
 from   kivy.uix.popup                            import   Popup
 import global_variables
-import math
 
 class MeasureMachinePopup(GridLayout):
     done                         = ObjectProperty(None)
-    stepText                     = StringProperty("Step 1 of 11")
+    stepText                     = StringProperty("Step 1 of 10")
     numberOfTimesTestCutRun      = -2
     kinematicsType               = 'Quadrilateral'
 
@@ -49,10 +48,10 @@ class MeasureMachinePopup(GridLayout):
 
         '''
 
-        if self.carousel.index == 11 and self.kinematicsType == 'Quadrilateral':                                        #if we're at the test cut for quadrilateral and we want to go back to choosing kinematics type
+        if self.carousel.index == 10 and self.kinematicsType == 'Quadrilateral':                                        #if we're at the test cut for quadrilateral and we want to go back to choosing kinematics type
+            self.carousel.load_slide(self.carousel.slides[8])
+        elif self.carousel.index == 11 and self.kinematicsType == 'Triangular':                                      #if we're at the last step and need to go back but but we want to go back to the triangular kinematics test cut
             self.carousel.load_slide(self.carousel.slides[9])
-        elif self.carousel.index == 12 and self.kinematicsType == 'Triangular':                                      #if we're at the last step and need to go back but but we want to go back to the triangular kinematics test cut
-            self.carousel.load_slide(self.carousel.slides[10])
         else:
             self.carousel.load_previous()
 
@@ -63,10 +62,10 @@ class MeasureMachinePopup(GridLayout):
 
         '''
 
-        if self.carousel.index == 9 and self.kinematicsType == 'Quadrilateral':                                         #If the kinematics type is quadrilateral skip to the quadrilateral test
+        if self.carousel.index == 8 and self.kinematicsType == 'Quadrilateral':                                         #If the kinematics type is quadrilateral skip to the quadrilateral test
+            self.carousel.load_slide(self.carousel.slides[10])
+        elif self.carousel.index == 9 and self.kinematicsType == 'Triangular':                                       #If we're in the cut test shape triangular and we want to skip to the end
             self.carousel.load_slide(self.carousel.slides[11])
-        elif self.carousel.index == 10 and self.kinematicsType == 'Triangular':                                       #If we're in the cut test shape triangular and we want to skip to the end
-            self.carousel.load_slide(self.carousel.slides[12])
         else:
             self.carousel.load_next()
 
@@ -75,74 +74,70 @@ class MeasureMachinePopup(GridLayout):
         if self.carousel.index == 0:
             #begin notes
             self.goBackBtn.disabled = True
-            self.stepText = "Step 1 of 11"
+            self.stepText = "Step 1 of 10"
 
         if self.carousel.index == 1:
             #pointing one sprocket up
             self.goBackBtn.disabled = False
-            self.stepText = "Step 2 of 11"
+            self.stepText = "Step 2 of 10"
 
         if self.carousel.index == 2:
-            #setting chainOverSprocket
-            self.stepText = "Step 3 of 11"
-
-        if self.carousel.index == 3:
             #measuring distance between motors
             self.data.measureRequest = self.readMotorSpacing
-            self.stepText = "Step 4 of 11"
+            self.stepText = "Step 3 of 10"
 
-        if self.carousel.index == 4:
+        if self.carousel.index == 3:
             #measure sled spacing
-            self.stepText = "Step 5 of 11"
+            self.stepText = "Step 4 of 10"
             pass
 
-        if self.carousel.index == 5:
+        if self.carousel.index == 4:
             #measure vertical distance to wood
             self.data.measureRequest = self.readVerticalOffset
-            self.stepText = "Step 6 of 11"
+            self.stepText = "Step 5 of 10"
 
-        if self.carousel.index == 6:
+        if self.carousel.index == 5:
             #review calculations
             self.updateReviewValuesText()
-            self.stepText = "Step 7 of 11"
+            self.stepText = "Step 6 of 10"
+
+        if self.carousel.index == 6:
+            #Calibrate chain lengths
+            self.stepText = "Step 7 of 10"
 
         if self.carousel.index == 7:
-            #Calibrate chain lengths
-            self.stepText = "Step 8 of 11"
-
-        if self.carousel.index == 8:
             #set up z-axis
             if int(self.data.config.get('Maslow Settings', 'zAxis')) == 1:
                 self.zAxisActiveSwitch.active = True
             else:
                 self.zAxisActiveSwitch.active = False
-            self.stepText = "Step 9 of 11"
+            self.stepText = "Step 8 of 10"
+
+        if self.carousel.index == 8:
+            #Choose kinematics type
+            self.stepText = "Step 9 of 10"
 
         if self.carousel.index == 9:
-            #Choose kinematics type
-            self.stepText = "Step 10 of 11"
-
-        if self.carousel.index == 10:
             #Cut test shape triangular
             self.data.pushSettings()
-            self.stepText = "Step 11 of 11"
+            self.stepText = "Step 10 of 10"
             self.goFwdBtn.disabled = False
 
             #if we're not supposed to be in triangular calibration go to the next page
             if self.kinematicsType != 'Triangular':
                 self.carousel.load_next()
 
-        if self.carousel.index == 11:
+        if self.carousel.index == 10:
             #Cut test shape quadrilateral
             self.data.pushSettings()
             self.goFwdBtn.disabled = False
-            self.stepText = "Step 11 of 11"
+            self.stepText = "Step 10 of 10"
 
             #if we're not supposed to be in quadratic calibration go to finished
             if self.kinematicsType == 'Triangular':
                 self.carousel.load_next()
 
-        if self.carousel.index == 12:
+        if self.carousel.index == 11:
             #Final finish step
             self.goFwdBtn.disabled = True
             finishString = "Your machine is now calibrated!\n\nCongratulations!\n\nThe final calibration values are:\n"
@@ -172,25 +167,28 @@ class MeasureMachinePopup(GridLayout):
             
     def extendLeft(self, dist):
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B09 L" + str(dist) + " ")
+        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
+            self.data.gcode_queue.put("B09 L" + str(dist) + " ")
+        else:
+            self.data.gcode_queue.put("B09 L-" + str(dist) + " ")
         self.data.gcode_queue.put("G90 ")
 
     def retractLeft(self, dist):
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B09 L-" + str(dist) + " ")
+        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
+            self.data.gcode_queue.put("B09 L-" + str(dist) + " ")
+        else:
+            self.data.gcode_queue.put("B09 L" + str(dist) + " ")
         self.data.gcode_queue.put("G90 ")
 
     def measureLeft(self):
         self.data.gcode_queue.put("B10 L")
 
     def readMotorSpacing(self, dist):
+        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Bottom':
+            dist *= -1
 
         dist = dist - 2*6.35                                #subtract off the extra two links
-
-        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Bottom':
-            motorSprocketRadius = (float(self.data.config.get('Advanced Settings', 'gearTeeth')) * float(self.data.config.get('Advanced Settings', 'chainPitch'))) / (2 * 3.14159)
-            dist -= motorSprocketRadius * 3.14159
-            dist = math.sqrt(math.pow(dist,2) - math.pow((2*motorSprocketRadius),2))
 
         print "Read motor spacing: " + str(dist)
         self.data.config.set('Maslow Settings', 'motorSpacingX', str(dist))
@@ -342,7 +340,7 @@ class MeasureMachinePopup(GridLayout):
             self.carousel.load_next()
         else:
 
-            self.carousel.load_slide(self.carousel.slides[11])
+            self.carousel.load_slide(self.carousel.slides[10])
 
     def cutTestPatern(self):
 
@@ -438,28 +436,4 @@ class MeasureMachinePopup(GridLayout):
 
         '''
         self.data.gcode_queue.put("G10 Z0 ")
-        self.carousel.load_next()
-
-    def chainsOnTop(self):
-        '''
-
-        Set chainOverSprocket to Top
-
-        '''
-        print "Setting chainOverSprocket to: Top"
-        self.data.config.set('Advanced Settings', 'chainOverSprocket', 'Top')
-        self.data.config.write()
-        self.data.pushSettings()
-        self.carousel.load_next()
-
-    def chainsOnBottom(self):
-        '''
-
-        Set chainOverSprocket to Bottom
-
-        '''
-        print "Setting chainOverSprocket to: Bottom"
-        self.data.config.set('Advanced Settings', 'chainOverSprocket', 'Bottom')
-        self.data.config.write()
-        self.data.pushSettings()
         self.carousel.load_next()

@@ -357,7 +357,7 @@ class TriangularCalibration(Widget):
         self.data.gcode_queue.put("G40 ")
         self.data.gcode_queue.put("G0 X0 Y0 ")
 
-        self.carousel.load_slide(self.carousel.slides[12])
+        self.carousel.load_slide(self.carousel.slides[11])
 
     def stopCut(self):
         self.data.quick_queue.put("!") 
