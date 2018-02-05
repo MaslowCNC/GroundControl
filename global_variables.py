@@ -22,6 +22,7 @@ _macro2_title		= "Macro 2"
 _encoderSteps		= 8113.73
 _gearTeeth			= 10
 _chainPitch			= 6.35
+_chainOverSprocket	= 'Top'
 _zEncoderSteps		= 7560.0
 _zAxisAuto			= 0
 _homeX				= 0.0

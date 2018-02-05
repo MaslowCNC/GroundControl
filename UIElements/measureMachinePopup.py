@@ -177,18 +177,26 @@ class MeasureMachinePopup(GridLayout):
             
     def extendLeft(self, dist):
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B09 L" + str(dist) + " ")
+        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
+            self.data.gcode_queue.put("B09 L" + str(dist) + " ")
+        else:
+            self.data.gcode_queue.put("B09 L-" + str(dist) + " ")
         self.data.gcode_queue.put("G90 ")
 
     def retractLeft(self, dist):
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B09 L-" + str(dist) + " ")
+        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
+            self.data.gcode_queue.put("B09 L-" + str(dist) + " ")
+        else:
+            self.data.gcode_queue.put("B09 L" + str(dist) + " ")
         self.data.gcode_queue.put("G90 ")
 
     def measureLeft(self):
         self.data.gcode_queue.put("B10 L")
 
     def readMotorSpacing(self, dist):
+        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Bottom':
+            dist *= -1
 
         dist = dist - 2*6.35                                #subtract off the extra two links
 
@@ -201,6 +209,8 @@ class MeasureMachinePopup(GridLayout):
         self.carousel.load_next()
 
     def readVerticalOffset(self, dist):
+        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Bottom':
+            dist *= -1
         print "vertical offset measured at: " + str(dist)
         self.data.config.set('Maslow Settings', 'motorOffsetY', str(dist))
         self.data.config.write()
