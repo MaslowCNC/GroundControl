@@ -1461,33 +1461,44 @@
         text: 'Close'
         on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
         on_release: root.close()
-
+					
 <BackgroundPickDlg>
-    GridLayout:
-        cols: 2
+	cols:1
+	size: root.size
+	pos: root.pos
+	#Top Bar
+	GridLayout:
+		cols: 3
+		size_hint_y: None
 		Label:
-			text: "Instructions"
+			text: root.instructionText
 			text_size: self.width, self.height
 			font_size: sp(self.height)/sp(3)
-			id: instruction
-		GridLayout:
-			cols: 2
-			Button:
-				text: 'Clear'
-				on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
-				on_release: root.clear()
-			Button:
-				text: 'Close'
-				on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
-				on_release: root.close()
-		Widget:
-			canvas:
-				Rectangle:
-					pos: 0,0
-					size: self.size
-					id: drawing
-					on_touch_down: root.touched
-					on_touch_up: untouched
+			halign: 'left'
+			valign: 'center'
+		Button:
+			size_hint_x: None
+			text: 'Clear'
+			on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
+			on_release: root.clear()
+		Button:
+			size_hint_x: None
+			text: 'Close'
+			on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
+			on_release: root.close()
+	#Underneath
+	Widget:
+		text: 'Foo'	#For some reason self.Drawing doesn't work, so I search for this tag.  ToDo: Fix this.
+		id: Drawing	#I suppose I should use a Scatter Object, but I'm not sure how.
+		on_touch_down: root.touched		#For some reason, these don't get called.  But if there's no function behind them, it explodes.
+		on_touch_move: root.touchmove
+		on_touch_up: root.untouched
+		canvas:
+			Color:
+				rgba: 1, 1, 1, 1
+			Rectangle:
+				pos: self.pos
+				size: self.size
 					
 <BackgroundSettingsDlg>
 	Button:
