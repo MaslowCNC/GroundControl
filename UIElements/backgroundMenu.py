@@ -2,7 +2,7 @@ from   kivy.uix.gridlayout                       import   GridLayout
 from   UIElements.fileBrowser                    import   FileBrowser
 from   UIElements.pageableTextPopup              import   PageableTextPopup
 from   kivy.uix.popup                            import   Popup
-import re
+
 from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
 from UIElements.BackgroundPickDlg                import BackgroundPickDlg
 import os
@@ -149,7 +149,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             
             self.data.backgroundImage = img
             if None in centers:
-                content = BackgroundPickDlg()
+                content = BackgroundPickDlg(self.data)
                 content.setUpData(self.data)
                 content.close = self.close_PickDlg
                 self._popup = Popup(title="Background PointPicker", content=content, size_hint = (0.9,0.9))
