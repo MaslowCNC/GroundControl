@@ -280,9 +280,11 @@
     Button:
         text: 'Open File'
         on_press: root.openFile()
+		disabled: app.data.uploadFlag == 1
     Button:
         text: 'Update Gcode'
         on_release: root.reloadGcode()
+		disabled: app.data.uploadFlag == 1
     Button:
         text: 'View Gcode'
         disabled: False
