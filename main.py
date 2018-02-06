@@ -21,8 +21,6 @@ import global_variables
 import sys
 import re
 
-from UIElements.backgroundMenu  import backgroundMenu
-
 '''
 
 Internal Module Imports
@@ -38,6 +36,7 @@ from UIElements.viewMenu          import   ViewMenu
 from UIElements.runMenu           import   RunMenu
 from UIElements.connectMenu       import   ConnectMenu
 from UIElements.diagnosticsMenu   import   Diagnostics
+from UIElements.backgroundMenu    import   BackgroundMenu
 from UIElements.manualControls    import   ManualControl
 from DataStructures.data          import   Data
 from Connection.nonVisibleWidgets import   NonVisibleWidgets
@@ -468,9 +467,9 @@ class GroundControlApp(App):
                 self.writeToTextConsole(message)
 
         #See if we got a new file in the Background Image Directory -- ToDo: Every time?
-        if backgroundMenu.DoesNewFileExist():
-            backgroundMenu.backgroundMenu.processBackground()
-         
+        #if self.frontpage.BackgroundMenu.DoesNewFileExist():
+        #   self.frontpage.BackgroundMenu.processBackground()
+
     def ondismiss_popup(self, event):
         if global_variables._keyboard:
             global_variables._keyboard.unbind(on_key_down=self.keydown_popup)
