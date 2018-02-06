@@ -1355,6 +1355,10 @@
     Button:
         text: 'Open Background'
         on_press: root.openBackground()
+	Button:
+		text: 'Re-pick Alignment'
+		on_press: root.realignBackground()
+		disabled: app.data.originalimage is None
     Button:
         text: 'Update Background'
         on_release: root.reloadBackground()
@@ -1392,14 +1396,14 @@
 			size_hint_x: None
 			text: 'Close'
 			on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
-			on_release: root.close()
+			on_release: root.closeit()
 	#Underneath
 	Widget:
 		text: 'Foo'	#For some reason self.Drawing doesn't work, so I search for this tag.  ToDo: Fix this.
 		id: Drawing	#I suppose I should use a Scatter Object, but I'm not sure how.
-		on_touch_down: root.touched		#For some reason, these don't get called.  But if there's no function behind them, it explodes.
-		on_touch_move: root.touchmove
-		on_touch_up: root.untouched
+		#on_touch_down: root.touched		#For some reason, these don't get called.  But if there's no function behind them, it explodes.
+		#on_touch_move: root.touchmove		#So I do it with a Bind...
+		#on_touch_up: root.untouched
 		canvas:
 			Color:
 				rgba: 1, 1, 1, 1
