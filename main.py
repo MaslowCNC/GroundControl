@@ -175,6 +175,12 @@ class GroundControlApp(App):
                     value = maslowSettings.getDefaultValue('Advanced Settings', key)
                 self.config.set('Computed Settings', key + "Main", value)
                 self.config.set('Computed Settings', key + "Z", value)
+        
+        elif key == 'chainOverSprocket':
+            if value == 'Top':
+                self.config.set('Computed Settings',  'chainOverSprocketComputed', 1)
+            else:
+                self.config.set('Computed Settings',  'chainOverSprocketComputed', 2)
 
     def configSettingChange(self, section, key, value):
         """
@@ -358,7 +364,7 @@ class GroundControlApp(App):
             self.xval  = float(valz[0])
             self.yval  = float(valz[1])
             self.zval  = float(valz[2])
-            
+
             if math.isnan(self.xval):
                 self.writeToTextConsole("Unable to resolve x Kinematics.")
                 self.xval = 0
@@ -368,8 +374,7 @@ class GroundControlApp(App):
             if math.isnan(self.zval):
                 self.writeToTextConsole("Unable to resolve z Kinematics.")
                 self.zval = 0
-            
-            self.frontpage.setPosReadout(self.xval,self.yval,self.zval)
+            self.frontpage.setPosReadout(self.xval, self.yval, self.zval)
             self.frontpage.gcodecanvas.positionIndicator.setPos(self.xval,self.yval,self.data.units)
         except:
             print "One Machine Position Report Command Misread"

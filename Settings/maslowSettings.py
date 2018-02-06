@@ -182,6 +182,14 @@ settings = {
                 "default": 6.35
             },
             {
+                "type": "options",
+                "title": "Side of Motor Sprockets That Chains Go to Sled",
+                "desc": "On which side of the motor sprockets the chains connect to the sled",
+                "options": ["Top", "Bottom"],
+                "default": "Top",
+                "key": "chainOverSprocket"
+            },
+            {
                 "type": "string",
                 "title": "Chain Length",
                 "desc": "The length in mm of your chains, used to define the kinematics search space",
@@ -433,6 +441,11 @@ settings = {
                 "type": "string",
                 "key": "KdVZ",
                 "firmwareKey": 35
+            },
+            {
+                "type": "string",
+                "key": "chainOverSprocketComputed",
+                "firmwareKey": 38
             }
         ]
 }
