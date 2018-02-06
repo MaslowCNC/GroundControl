@@ -117,6 +117,9 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.yReadoutPos    = self.buildReadoutString(yPos)
         self.zReadoutPos    = self.buildReadoutString(zPos)
         
+        #So other widgets can access the position
+        self.data.zReadoutPos = zPos
+        
         #Current Velocity is done here now, not in the firmware.
         self.tick+=1
         if self.tick>=4:    #Can't do this every time... it's too noisy, so we do it every 5rd time (0.1s).

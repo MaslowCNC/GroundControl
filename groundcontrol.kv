@@ -589,27 +589,63 @@
         GridLayout:
             size_hint_x: ".75sp"
             cols: 3
-            rosw: 2
-            Button:
-                text: ".1"
-                id: distBtn
-                on_release: root.setDist()
+            rows: 2
+			GridLayout:
+				cols: 1
+				rows: 2
+				Button:
+					text: ".1"
+					id: distBtn
+					on_release: root.setDist()
+				Button:
+					size_hint_y:0.2
+					text: "ToDepth [Absolute]"
+					on_release: root.goThere()
             Button:
                 text: "MM"
                 on_release: root.units()
                 id: unitsBtn
-            Button:
-                text: "Raise"
-                on_release: root.zOut()
+			GridLayout:
+				cols:1
+				rows:2
+				Button:
+					text: "Raise"
+					on_release: root.zOut()
+				Button:
+					size_hint_y: 0.2
+					text: "to safety"
+					on_release: root.zUp()
             Button:
                 text: "Done"
                 on_release: root.done()
-            Button:
-                text: "Define Zero"
-                on_release: root.zero()
-            Button:
-                text: "Lower"
-                on_release: root.zIn()
+			GridLayout:
+				cols: 1
+				rows: 2
+				Button:
+					text: "Define Zero"
+					on_release: root.zero()
+				Button:
+					size_hint_y: 0.2
+					text: "Touch Zero"
+					on_release: root.touchZero()
+					disabled: True
+			GridLayout:
+				cols:1
+				rows:2
+				Button:
+					text: "Lower"
+					on_release: root.zIn()
+				GridLayout:
+					size_hint_y: 0.2
+					cols:2
+					rows:1
+					Button:
+						text: "to Zero"
+						on_release: root.zToZero()
+					Button:
+						text: root.zCutLabel
+						disabled: root.zPopDisable
+						on_release: root.zToCut()
         GridLayout:
             size_hint_x: ".25sp"
             cols: 1

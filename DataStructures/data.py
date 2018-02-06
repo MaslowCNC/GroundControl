@@ -73,7 +73,13 @@ class Data(EventDispatcher):
     iconPath                                              =  StringProperty('./Images/Icons/normal/')
     posIndicatorColor                                     =  ObjectProperty([0,0,0])
     targetInicatorColor                                   =  ObjectProperty([1,0,0])
-    
+
+    '''
+    Misc UI bits that need to be saved between invocations (but not saved)
+    '''
+    zPush = None
+    zPushUnits = 'MM'
+    zReadoutPos = 0.00
     
     '''
     Queues

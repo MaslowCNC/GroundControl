@@ -11,6 +11,8 @@ from   kivy.uix.popup                            import   Popup
 
 class ZAxisPopupContent(GridLayout):
     done   = ObjectProperty(None)
+    zCutLabel = StringProperty("to...")
+    zPopDisable = ObjectProperty(True)
     
     def initialize(self, zStepSizeVal):
         '''
@@ -20,6 +22,9 @@ class ZAxisPopupContent(GridLayout):
         '''
         self.unitsBtn.text = self.data.units
         self.distBtn.text  = str(zStepSizeVal)
+        if self.data.zPush is not None:
+            self.zCutLabel = "to:"+'%.2f'%(self.data.zPush)
+            self.zPopDisable = self.data.zPushUnits <> self.data.units
     
     def setDist(self):
         self.popupContent = TouchNumberInput(done=self.dismiss_popup, data = self.data)
@@ -43,6 +48,16 @@ class ZAxisPopupContent(GridLayout):
             self.distBtn.text = "{0:.2f}".format(float(self.distBtn.text)/25.4)
         
         self.unitsBtn.text = self.data.units
+        
+        if self.data.zPush is not None:
+            self.zPopDisable = self.data.zPushUnits <> self.data.units
+    
+    def goThere(self):
+        '''
+        Go to the position (into work -- you can pop out to a safe height)
+        '''
+        self.data.gcode_queue.put("G00 Z"+ str(-1*float(self.distBtn.text)))
+        
     
     def zIn(self):
         '''
@@ -59,6 +74,34 @@ class ZAxisPopupContent(GridLayout):
         
         '''
         self.data.gcode_queue.put("G91 G00 Z" + str(self.distBtn.text) + " G90 ")
+        
+    def zUp(self):
+        '''
+        Move z-axis to safety
+        '''
+        #Save the current "cut" point
+        self.data.zPush = self.data.zReadoutPos
+        self.data.zPushUnits = self.units
+        self.zCutLabel = "to:"+'%.2f'%(self.data.zPush)
+        self.zPopDisable = False
+        
+        if self.data.units == "INCHES":
+            self.data.gcode_queue.put("G00 Z.25 ")
+        else:
+            self.data.gcode_queue.put("G00 Z5.0 ")
+
+    def zToZero(self):
+        '''
+        Move z-axis to zero
+        '''
+        self.data.gcode_queue.put("G00 Z0")
+        
+    def zToCut(self):
+        '''
+        Move z-axis to last cut (saved point when "move to safety" was pressed
+        '''
+        print "zspot", self.data.zPush
+        self.data.gcode_queue.put("G00 Z"+str(self.data.zPush))
     
     def zero(self):
         '''
@@ -71,7 +114,7 @@ class ZAxisPopupContent(GridLayout):
     def stopZMove(self):
         '''
         
-        Send the imediate stop command
+        Send the immediate stop command
         
         '''
         print("z-axis Stopped")
