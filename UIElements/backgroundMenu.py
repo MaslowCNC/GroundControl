@@ -5,6 +5,7 @@ from   kivy.uix.popup                            import   Popup
 
 from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
 from UIElements.BackgroundPickDlg                import BackgroundPickDlg
+from UIElements.BackgroundSettingsDlg            import BackgroundSettingsDlg
 import os
 import cv2
 import numpy as np
@@ -41,7 +42,6 @@ def findHSVcenter(self, img, hsv, hsvLow, hsvHi, bbtl, bbbr, clean=3, minarea=10
             self.data.logger.writeToLog("Considering: "+str(cv2.contourArea(c)));
             if cv2.contourArea(c) >= minarea and cv2.contourArea(c)<=maxarea:                    #Discriminate based on size
                 ((x, y), radius) = cv2.minEnclosingCircle(c)
-                print (x,y)
                 M = cv2.moments(c)
                 center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))   #ToDo - why not use the XY above?
                 if center[0] >= bbtl[0] and center[0] <= bbbr[0]  and center[1] >= bbtl[1] and center[1] <= bbbr[1]:
@@ -99,7 +99,6 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             return false #I'm not going to automatically reload the same file
         else:
             files = os.listdir(file)
-            print files
             filelst =[]
             for afile in files:
                 if afile.lower().endswith(graphicsExtensions):
@@ -118,15 +117,13 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             #If file is a directory, then "load the latest from that directory"
             if os.path.isdir(file):
                 files = os.listdir(file)
-                print files
                 filelst =[]
                 for afile in files:
                     if afile.lower().endswith(graphicsExtensions):
                         filelst.append(os.path.join(file,afile))
                 filelst.sort(key=os.path.getmtime, reverse=True)
-                print filelst
                 file = filelst[0]
-                print "Latest file:"+file
+
                 self.backgroundlastfile = file
                 
             img = cv2.imread(file)
@@ -144,8 +141,6 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             centers.append(findHSVcenter(self, img, hsv, self.data.backgroundTRHSV[0], self.data.backgroundTRHSV[1], (xmid,0),(xmax, ymid), tag="B"))
             centers.append(findHSVcenter(self, img, hsv, self.data.backgroundBLHSV[0], self.data.backgroundBLHSV[1], (0,ymid), (xmid, ymax), tag="C"))
             centers.append(findHSVcenter(self, img, hsv, self.data.backgroundBRHSV[0], self.data.backgroundBRHSV[1], (xmid,ymid), (xmax, ymax), tag="D"))
-                
-            print "Centers: "+str(centers)
             
             self.data.backgroundImage = img
             if None in centers:
@@ -172,7 +167,6 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
     def warp_image(self):
         #Load into locals for shorthand... this skew correction is similar to gcodeCanvas.py
         centers=self.centers
-        print "WCenters: "+str(centers)
         if len(centers)==4:
             TL=self.data.backgroundTLPOS
             TR=self.data.backgroundTRPOS
@@ -204,9 +198,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         
     def clear_background(self):
         '''
-        
         Clear background
-        
         '''
         self.data.backgroundFile=""
         self.processBackground()
@@ -214,17 +206,13 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         
     def load(self, instance):
         '''
-        
-        Load A Backround Image File from the file dialog
-        
+        Load A Background Image File from the file dialog
         Takes in a file path (from pop-up) and handles the file appropriately for the given file-type.
-        
         '''
         if len(instance.selection)==1:
             filename = instance.selection[0]
         else:
             filename = instance.path    #User pressed Submit without picking a file, indicating "newest in this dir"
-        print(filename)
         self.data.backgroundFile = filename
         self.data.config.set('Background Settings', 'openFile', str(self.data.backgroundFile))
         self.data.config.write()
@@ -240,7 +228,13 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         '''
         Open the background settings page
         '''
-        dosomething
+        content = BackgroundSettingsDlg(self.data)
+        content.setUpData(self.data)
+        content.close = self.closeBackgroundSettings
+        self._popup = Popup(title="Background Settings", content=content, size_hint = (0.9,0.9))
+        self._popup.open()
+        
+    def closeBackgroundSettings(self):
         self.config.set('Background Settings', 'backgroundTLHSV', backgroundTLHSV)
         self.config.set('Background Settings', 'backgroundTRHSV', backgroundTRHSV)
         self.config.set('Background Settings', 'backgroundBLHSV', backgroundBLHSV)
