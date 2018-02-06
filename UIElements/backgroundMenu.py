@@ -130,7 +130,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
                 self.backgroundlastfile = file
                 
             img = cv2.imread(file)
-            self.originalimage=img.copy()
+            self.data.originalimage=img.copy()
             hsv = hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)    #HSV colorspace is easier to do "Color" than RGB
             xmax=img.shape[1]
             ymax=img.shape[0]
@@ -149,17 +149,20 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             
             self.data.backgroundImage = img
             if None in centers:
-                content = BackgroundPickDlg(self.data)
-                content.setUpData(self.data)
-                content.close = self.close_PickDlg
-                self._popup = Popup(title="Background PointPicker", content=content, size_hint = (0.9,0.9))
-                self._popup.open()
-                #ToDo: Bind completion to close_PickDlg
+                self.realignBackground()
             else:
                 #We have all points; just go on to warp_image
                 self.centers=centers
                 self.warp_image()
-                 
+                
+    def realignBackground(self):
+        self.data.backgroundImage=self.data.originalimage.copy()
+        content = BackgroundPickDlg(self.data)
+        content.setUpData(self.data)
+        content.close = self.close_PickDlg
+        self._popup = Popup(title="Background PointPicker", content=content, size_hint = (0.9,0.9))
+        self._popup.open()
+
     def close_PickDlg(self, instance):
         self.centers=instance.centers   #Grab the data
         self.dismiss_popup()            #Close pointpicker dialog
@@ -169,6 +172,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
     def warp_image(self):
         #Load into locals for shorthand... this skew correction is similar to gcodeCanvas.py
         centers=self.centers
+        print "WCenters: "+str(centers)
         if len(centers)==4:
             TL=self.data.backgroundTLPOS
             TR=self.data.backgroundTRPOS
@@ -191,7 +195,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             
             M = cv2.getPerspectiveTransform(pts1,pts2)
             
-        self.data.backgroundImage = cv2.warpPerspective(self.data.backgroundImage,M,(w,h))
+            self.data.backgroundImage = cv2.warpPerspective(self.data.backgroundImage,M,(w,h))
                 
         #Trigger a reload
         filePath = self.data.gcodeFile
