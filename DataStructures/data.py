@@ -54,6 +54,7 @@ class Data(EventDispatcher):
     #Background image stuff
     #Temporary variables
     backgroundImage = None
+    originalimage = None
 
     #Config Items
     backgroundFile = StringProperty("")

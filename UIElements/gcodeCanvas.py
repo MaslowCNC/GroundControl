@@ -245,7 +245,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
 
                 buf = img.tobytes() # then, convert the array to a ubyte string
                 texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte') # and blit the buffer -- note that OpenCV format is BGR
-                texture.flip_vertical() #OpenGL is upside down...
 
                 #The coordinates are for the bottom-left corner.  This code duplicates the backgroundMenu:processBackground logic
                 TL=self.data.backgroundTLPOS

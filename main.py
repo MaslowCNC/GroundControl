@@ -22,13 +22,6 @@ import sys
 import re
 
 '''
-Loader Junk
-'''
-import json
-
-from UIElements.backgroundMenu  import backgroundMenu
-
-'''
 
 Internal Module Imports
 
@@ -509,9 +502,9 @@ class GroundControlApp(App):
                 self.writeToTextConsole(message)
 
         #See if we got a new file in the Background Image Directory -- ToDo: Every time?
-        if backgroundMenu.DoesNewFileExist():
-            backgroundMenu.backgroundMenu.processBackground()
-         
+        #if self.frontpage.BackgroundMenu.DoesNewFileExist():
+        #   self.frontpage.BackgroundMenu.processBackground()
+
         #See if we got a new file in the Background Image Directory -- ToDo: Every time?
         #if self.frontpage.BackgroundMenu.DoesNewFileExist():
         #   self.frontpage.BackgroundMenu.processBackground()
