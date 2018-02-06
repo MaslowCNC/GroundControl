@@ -9,6 +9,7 @@ from UIElements.BackgroundSettingsDlg            import BackgroundSettingsDlg
 import os
 import cv2
 import numpy as np
+import json
 
 graphicsExtensions = (".jpg", ".png", ".jp2",".webp",".pbm",".ppm",".pgm")
 
@@ -56,11 +57,8 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
     
     def openBackground(self):
         '''
-        
         Open The Pop-up To Load A File
-        
         Creates a new pop-up which can be used to open a file.
-        
         '''
         #starting path is either where the last opened file was or the users home directory
         startingPath = os.path.dirname(self.data.backgroundFile)
@@ -231,19 +229,30 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         content = BackgroundSettingsDlg(self.data)
         content.setUpData(self.data)
         content.close = self.closeBackgroundSettings
-        self._popup = Popup(title="Background Settings", content=content, size_hint = (0.9,0.9))
+        self._popup = Popup(title="Background Settings", content=content, size_hint = (0.6,0.5))
         self._popup.open()
         
-    def closeBackgroundSettings(self):
-        self.config.set('Background Settings', 'backgroundTLHSV', backgroundTLHSV)
-        self.config.set('Background Settings', 'backgroundTRHSV', backgroundTRHSV)
-        self.config.set('Background Settings', 'backgroundBLHSV', backgroundBLHSV)
-        self.config.set('Background Settings', 'backgroundBRHSV', backgroundBRHSV)
-        self.config.set('Background Settings', 'backgroundTLPOS', backgroundTLPOS)
-        self.config.set('Background Settings', 'backgroundTRPOS', backgroundTRPOS)
-        self.config.set('Background Settings', 'backgroundBLPOS', backgroundBLPOS)
-        self.config.set('Background Settings', 'backgroundBRPOS', backgroundBRPOS)        
+    def closeBackgroundSettings(self, instance):
+        print "'"+instance.backgroundTLHSV+"'"
+        self.data.backgroundTLHSV =json.loads(instance.backgroundTLHSV)
+        self.data.backgroundTRHSV =json.loads(instance.backgroundTRHSV)
+        self.data.backgroundBLHSV =json.loads(instance.backgroundBLHSV)
+        self.data.backgroundBRHSV =json.loads(instance.backgroundBRHSV)
+        self.data.backgroundTLPOS =json.loads(instance.backgroundTLPOS)
+        self.data.backgroundTRPOS =json.loads(instance.backgroundTRPOS)
+        self.data.backgroundBLPOS =json.loads(instance.backgroundBLPOS)
+        self.data.backgroundBRPOS =json.loads(instance.backgroundBRPOS)
+        print "Decoded",self.data.backgroundTLHSV
+        self.data.config.set('Background Settings', 'backgroundTLHSV', instance.backgroundTLHSV)
+        self.data.config.set('Background Settings', 'backgroundTRHSV', instance.backgroundTRHSV)
+        self.data.config.set('Background Settings', 'backgroundBLHSV', instance.backgroundBLHSV)
+        self.data.config.set('Background Settings', 'backgroundBRHSV', instance.backgroundBRHSV)
+        self.data.config.set('Background Settings', 'backgroundTLPOS', instance.backgroundTLPOS)
+        self.data.config.set('Background Settings', 'backgroundTRPOS', instance.backgroundTRPOS)
+        self.data.config.set('Background Settings', 'backgroundBLPOS', instance.backgroundBLPOS)
+        self.data.config.set('Background Settings', 'backgroundBRPOS', instance.backgroundBRPOS)        
         self.data.config.write()
+        self._popup.dismiss()
         
     
     def dismiss_popup(self, *args):
