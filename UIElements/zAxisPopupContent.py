@@ -116,9 +116,9 @@ class ZAxisPopupContent(GridLayout):
         Probe for Zero Z
         '''
         if self.data.units == "INCHES":
-            self.data.gcode_queue.put("G38.2 Z2 F2")
+            self.data.gcode_queue.put("G38.2 Z2 F2")    #Only go down 2 inches...
         else:
-            self.data.gcode_queue.put("G38.2 Z50 F50")
+            self.data.gcode_queue.put("G38.2 Z50 F50")  #Or 50mm.
             
     
     def stopZMove(self):
