@@ -1412,9 +1412,43 @@
 				size: self.size
 					
 <BackgroundSettingsDlg>
+	cols:1
+	GridLayout:
+		cols:3
+		Label:
+			text: "Location"
+		Label:
+			text: "Dist from Center (mm)"
+		Label:
+			text: "HSV limits (for auto-align)"
+		Label:
+			text: "Top-Left:"
+		TextInput:
+			text: root.backgroundTLPOS
+		TextInput:
+			text: root.backgroundTLHSV
+		Label:
+			text: "Top-Right:"
+		TextInput:
+			text: root.backgroundTRPOS
+		TextInput:
+			text: root.backgroundTRHSV
+		Label:
+			text: "Bottom-Left:"
+		TextInput:
+			text: root.backgroundBLPOS
+		TextInput:
+			text: root.backgroundBLHSV
+		Label:
+			text: "Bottom-Right:"
+		TextInput:
+			text: root.backgroundBRPOS
+		TextInput:
+			text: root.backgroundBRHSV
 	Button:
-		text: 'Cancel'
-		on_press: root.close()
+		size_hint_y:.1
+		text: 'Close'
+		on_press: root.closeit()
 
 <TestPoint>
 
