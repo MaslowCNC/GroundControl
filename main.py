@@ -766,11 +766,12 @@ class GroundControlApp(App):
             if math.isnan(self.zval):
                 self.writeToTextConsole("Unable to resolve z Kinematics.")
                 self.zval = 0
-            self.frontpage.setPosReadout(self.xval, self.yval, self.zval)
-            self.frontpage.gcodecanvas.positionIndicator.setPos(self.xval,self.yval,self.data.units)
         except:
             print "One Machine Position Report Command Misread"
             return
+
+        self.frontpage.setPosReadout(self.xval, self.yval, self.zval)
+        self.frontpage.gcodecanvas.positionIndicator.setPos(self.xval,self.yval,self.data.units)
     
     def setErrorOnScreen(self, message):
         
