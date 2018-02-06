@@ -110,6 +110,16 @@ class ZAxisPopupContent(GridLayout):
         
         '''
         self.data.gcode_queue.put("G10 Z0 ")
+        
+    def touchZero(self):
+        '''
+        Probe for Zero Z
+        '''
+        if self.data.units == "INCHES":
+            self.data.gcode_queue.put("G38.2 Z2 F2")
+        else:
+            self.data.gcode_queue.put("G38.2 Z50 F50")
+            
     
     def stopZMove(self):
         '''
