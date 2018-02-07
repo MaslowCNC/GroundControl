@@ -1223,6 +1223,8 @@
     gridSizeLabel:gridSizeLabel
     rotationRadiusOffset:rotationRadiusOffset
     rotationRadiusLabel:rotationRadiusLabel
+    chainSagCorrectionOffset:chainSagCorrectionOffset
+    chainSagCorrectionLabel:chainSagCorrectionLabel
     kinematicsSelect:kinematicsSelect
 
     rows: 3
@@ -1344,6 +1346,18 @@
                 value: 0
                 disabled: root.isQuadKinematics
                 id: rotationRadiusOffset
+            Label:
+                text: "Chain Sag Correction"
+                text_size: self.width, self.height
+                font_size: sp(self.height)/sp(3)
+                disabled: root.isQuadKinematics
+                id: chainSagCorrectionLabel
+            Slider:
+                min: -50
+                max:50
+                value: 0
+                disabled: root.isQuadKinematics
+                id: chainSagCorrectionOffset
             Label:
                 text: "Grid Size: 150mm"
                 text_size: self.width, self.height
