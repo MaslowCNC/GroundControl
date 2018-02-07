@@ -12,13 +12,11 @@ def adjust_background(self, increment):
     '''
     img = self.data.backgroundImage
     if img is not None:
-        img = img.astype('int16')
-        img += increment
-        print np.amax(img), np.amin(img)
-        np.clip(img, 0, 255, out=img)
-        print np.amax(img), np.amin(img)
-        img = img.astype('uint8')
-        self.data.backgroundImage = img
+        img = img.astype('int16')       #Expand the range
+        img += increment                #Do the math
+        np.clip(img, 0, 255, out=img)   #Clip the image (no wrapping!)
+        img = img.astype('uint8')       #Convert it back
+        self.data.backgroundImage = img #Reset it
         
         #Trigger a reload
         filePath = self.data.gcodeFile
