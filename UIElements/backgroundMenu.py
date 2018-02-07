@@ -2,6 +2,7 @@ from   kivy.uix.gridlayout                       import   GridLayout
 from   UIElements.fileBrowser                    import   FileBrowser
 from   UIElements.pageableTextPopup              import   PageableTextPopup
 from   kivy.uix.popup                            import   Popup
+from   kivy.clock                                import Clock
 
 from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
 from UIElements.BackgroundPickDlg                import BackgroundPickDlg
@@ -56,6 +57,12 @@ def findHSVcenter(self, img, hsv, hsvLow, hsvHi, bbtl, bbbr, clean=3, minarea=10
     return center
 
 class BackgroundMenu(GridLayout, MakesmithInitFuncs):
+    def __init__(self, data, **kwargs):
+        super(BackgroundMenu, self).__init__(**kwargs)
+        self.data = data
+
+        #Fire off a clock to check for new images every 2 seconds
+        Clock.schedule_interval(self.timer, 2)
     
     def openBackground(self):
         '''
@@ -88,7 +95,11 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         self.processBackground()
         self.close()
     
-    def DoesNewFileExist(self):
+    def timer(self, *args):
+        if self.doesNewFileExist():
+            self.processBackground()
+ 
+    def doesNewFileExist(self, *args):
         if self.data.backgroundFile=="":
             return False
 
