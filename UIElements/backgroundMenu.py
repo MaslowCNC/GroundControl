@@ -15,7 +15,11 @@ graphicsExtensions = (".jpg", ".png", ".jp2",".webp",".pbm",".ppm",".pgm")
 
 
 def findHSVcenter(self, img, hsv, hsvLow, hsvHi, bbtl, bbbr, clean=3, minarea=1000, maxarea=6000, tag="A"):
-    self.data.logger.writeToLog("Finding tag="+tag)
+    if isinstance(hsvLow, list):
+        #cv2 can't handle lists... make 'em into tuples
+        hsvLow = tuple(hsvLow)
+        hsvHi = tuple(hsvHi)
+        
     #Mask to find the blobs
     if hsvLow[0] > hsvHi[0]:
         #It's wrapped [red]
@@ -40,7 +44,6 @@ def findHSVcenter(self, img, hsv, hsvLow, hsvHi, bbtl, bbbr, clean=3, minarea=10
     if len(cnts) > 0:
         cnts = sorted(cnts, key=cv2.contourArea, reverse=True)  #Sort so we find biggest first.
         for c in cnts:
-            self.data.logger.writeToLog("Considering: "+str(cv2.contourArea(c)));
             if cv2.contourArea(c) >= minarea and cv2.contourArea(c)<=maxarea:                    #Discriminate based on size
                 ((x, y), radius) = cv2.minEnclosingCircle(c)
                 M = cv2.moments(c)
@@ -51,7 +54,6 @@ def findHSVcenter(self, img, hsv, hsvLow, hsvHi, bbtl, bbbr, clean=3, minarea=10
                     cv2.circle(img, center, 5, (0, 0, 255), -1)
                     return center
     return center
-    self.data.logger.writeToLog("NotFound.")
 
 class BackgroundMenu(GridLayout, MakesmithInitFuncs):
     
@@ -160,7 +162,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         self.centers=instance.centers   #Grab the data
         self.dismiss_popup()            #Close pointpicker dialog
         self.warp_image()               #Process with the user-picked centers
-        self.close()                    #Close background dialog
+        self.close()                    #Close background menu dialog
         
     def warp_image(self):
         #Load into locals for shorthand... this skew correction is similar to gcodeCanvas.py
@@ -213,7 +215,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             filename = instance.path    #User pressed Submit without picking a file, indicating "newest in this dir"
         self.data.backgroundFile = filename
         self.data.config.set('Background Settings', 'openFile', str(self.data.backgroundFile))
-        self.data.config.write()
+        self.data.config.write() #ToDo: Doesn't seem to happen
         
         #close the open file popup
         self.dismiss_popup()
@@ -233,7 +235,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         self._popup.open()
         
     def closeBackgroundSettings(self, instance):
-        print "'"+instance.backgroundTLHSV+"'"
+        #Convert string data back into lists for use (should be a list of tuples, but I fixed it so it can be a list of lists)...
         self.data.backgroundTLHSV =json.loads(instance.backgroundTLHSV)
         self.data.backgroundTRHSV =json.loads(instance.backgroundTRHSV)
         self.data.backgroundBLHSV =json.loads(instance.backgroundBLHSV)
@@ -242,7 +244,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         self.data.backgroundTRPOS =json.loads(instance.backgroundTRPOS)
         self.data.backgroundBLPOS =json.loads(instance.backgroundBLPOS)
         self.data.backgroundBRPOS =json.loads(instance.backgroundBRPOS)
-        print "Decoded",self.data.backgroundTLHSV
+        
         self.data.config.set('Background Settings', 'backgroundTLHSV', instance.backgroundTLHSV)
         self.data.config.set('Background Settings', 'backgroundTRHSV', instance.backgroundTRHSV)
         self.data.config.set('Background Settings', 'backgroundBLHSV', instance.backgroundBLHSV)
@@ -251,8 +253,8 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         self.data.config.set('Background Settings', 'backgroundTRPOS', instance.backgroundTRPOS)
         self.data.config.set('Background Settings', 'backgroundBLPOS', instance.backgroundBLPOS)
         self.data.config.set('Background Settings', 'backgroundBRPOS', instance.backgroundBRPOS)        
-        self.data.config.write()
-        self._popup.dismiss()
+        self.data.config.write()#ToDo: This doesn't seem to happen.
+        self._popup.dismiss()   #Close the settings dialog
         
     
     def dismiss_popup(self, *args):
