@@ -234,7 +234,8 @@ class GroundControlApp(App):
         '''
         parameter, position = self.parseFloat(message, 0)
         value, position = self.parseFloat(message, position)
-        maslowSettings.syncFirmwareKey(int(parameter), value, self.data)
+        if (parameter is not None and value is not None):
+            maslowSettings.syncFirmwareKey(int(parameter), value, self.data)
     
     def parseFloat(self, text, position=0):
         '''
@@ -245,7 +246,10 @@ class GroundControlApp(App):
         # This regex comes from a python docs recommended 
         regex = re.compile("[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?")
         match = regex.search(text[position:])
-        return (float(match.group(0)), match.end(0))
+        if match:
+            return (float(match.group(0)), match.end(0))
+        else:
+            return (None, position)
     
     '''
     
