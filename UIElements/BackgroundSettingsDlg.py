@@ -18,7 +18,7 @@ class BackgroundSettingsDlg(GridLayout, MakesmithInitFuncs):
     def __init__(self, data, **kwargs):
         super(BackgroundSettingsDlg, self).__init__(**kwargs)
         self.data = data
-        
+
         #Convert to JSON data so caller can get tuples back
         self.backgroundTLHSV = json.dumps(self.data.backgroundTLHSV)
         self.backgroundTRHSV = json.dumps(self.data.backgroundTRHSV)

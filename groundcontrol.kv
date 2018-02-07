@@ -1504,8 +1504,16 @@
 				pos: self.pos
 				size: self.size
 					
-<BackgroundSettingsDlg>
-	cols:1
+<BackgroundSettingsDlg>:
+	tlpos:tlpos	#Make these controls accessible to the code
+	trpos:trpos
+	blpos:blpos
+	brpos:brpos
+	tlhsv:tlhsv
+	trhsv:trhsv
+	blhsv:blhsv
+	brhsv:brhsv
+	cols: 1
 	GridLayout:
 		cols:3
 		Label:
@@ -1517,26 +1525,34 @@
 		Label:
 			text: "Top-Left:"
 		TextInput:
+			id: tlpos
 			text: root.backgroundTLPOS
 		TextInput:
+			id: tlhsv
 			text: root.backgroundTLHSV
 		Label:
 			text: "Top-Right:"
 		TextInput:
+			id: trpos
 			text: root.backgroundTRPOS
 		TextInput:
+			id: trhsv
 			text: root.backgroundTRHSV
 		Label:
 			text: "Bottom-Left:"
 		TextInput:
+			id: blpos
 			text: root.backgroundBLPOS
 		TextInput:
+			id: blhsv
 			text: root.backgroundBLHSV
 		Label:
 			text: "Bottom-Right:"
 		TextInput:
+			id: brpos
 			text: root.backgroundBRPOS
 		TextInput:
+			id: brhsv
 			text: root.backgroundBRHSV
 	Button:
 		size_hint_y:.1
