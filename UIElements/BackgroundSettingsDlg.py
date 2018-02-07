@@ -18,28 +18,16 @@ class BackgroundSettingsDlg(GridLayout, MakesmithInitFuncs):
     def __init__(self, data, **kwargs):
         super(BackgroundSettingsDlg, self).__init__(**kwargs)
         self.data = data
-        print "Dumped '"+json.dumps(self.data.backgroundTLHSV)+"'"
-        backgroundTLHSV = json.dumps(self.data.backgroundTLHSV)
-        backgroundTRHSV = json.dumps(self.data.backgroundTRHSV)
-        backgroundBLHSV = json.dumps(self.data.backgroundBLHSV)
-        backgroundBRHSV = json.dumps(self.data.backgroundBRHSV)
-        backgroundTRPOS = json.dumps(self.data.backgroundTRPOS)
-        backgroundTLPOS = json.dumps(self.data.backgroundTLPOS)
-        backgroundBLPOS = json.dumps(self.data.backgroundBLPOS)
-        backgroundBRPOS = json.dumps(self.data.backgroundBRPOS)
-        Clock.schedule_once(self.open)
         
-    def open(self, *args):
-        print "ODumped '"+json.dumps(self.data.backgroundTLHSV)+"'"
-        backgroundTLHSV = json.dumps(self.data.backgroundTLHSV)
-        backgroundTRHSV = json.dumps(self.data.backgroundTRHSV)
-        backgroundBLHSV = json.dumps(self.data.backgroundBLHSV)
-        backgroundBRHSV = json.dumps(self.data.backgroundBRHSV)
-        backgroundTRPOS = json.dumps(self.data.backgroundTRPOS)
-        backgroundTLPOS = json.dumps(self.data.backgroundTLPOS)
-        backgroundBLPOS = json.dumps(self.data.backgroundBLPOS)
-        backgroundBRPOS = json.dumps(self.data.backgroundBRPOS)
-
+        #Convert to JSON data so caller can get tuples back
+        self.backgroundTLHSV = json.dumps(self.data.backgroundTLHSV)
+        self.backgroundTRHSV = json.dumps(self.data.backgroundTRHSV)
+        self.backgroundBLHSV = json.dumps(self.data.backgroundBLHSV)
+        self.backgroundBRHSV = json.dumps(self.data.backgroundBRHSV)
+        self.backgroundTRPOS = json.dumps(self.data.backgroundTRPOS)
+        self.backgroundTLPOS = json.dumps(self.data.backgroundTLPOS)
+        self.backgroundBLPOS = json.dumps(self.data.backgroundBLPOS)
+        self.backgroundBRPOS = json.dumps(self.data.backgroundBRPOS)
         
     def closeit(self):
         self.close(self)
