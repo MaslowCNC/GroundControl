@@ -21,6 +21,12 @@ import global_variables
 import sys
 
 '''
+Loader Junk
+'''
+import json
+
+
+'''
 
 Internal Module Imports
 
@@ -521,15 +527,15 @@ class GroundControlApp(App):
         self.data.config  = self.config
         
         #Image Processing
-        backgroundFile = self.config.get('Background Settings', 'backgroundFile')
-        backgroundTLHSV = self.config.get('Background Settings', 'backgroundTLHSV')
-        backgroundTRHSV = self.config.get('Background Settings', 'backgroundTRHSV')
-        backgroundBLHSV = self.config.get('Background Settings', 'backgroundBLHSV')
-        backgroundBRHSV = self.config.get('Background Settings', 'backgroundBRHSV')
-        backgroundTLPOS = self.config.get('Background Settings', 'backgroundTLPOS')
-        backgroundTRPOS = self.config.get('Background Settings', 'backgroundTRPOS')
-        backgroundBLPOS = self.config.get('Background Settings', 'backgroundBLPOS')
-        backgroundBRPOS = self.config.get('Background Settings', 'backgroundBRPOS')
+        self.data.backgroundFile = self.config.get('Background Settings', 'backgroundFile')
+        self.data.backgroundTLHSV = json.loads(self.config.get('Background Settings', 'backgroundTLHSV'))
+        self.data.backgroundTRHSV = json.loads(self.config.get('Background Settings', 'backgroundTRHSV'))
+        self.data.backgroundBLHSV = json.loads(self.config.get('Background Settings', 'backgroundBLHSV'))
+        self.data.backgroundBRHSV = json.loads(self.config.get('Background Settings', 'backgroundBRHSV'))
+        self.data.backgroundTLPOS = json.loads(self.config.get('Background Settings', 'backgroundTLPOS'))
+        self.data.backgroundTRPOS = json.loads(self.config.get('Background Settings', 'backgroundTRPOS'))
+        self.data.backgroundBLPOS = json.loads(self.config.get('Background Settings', 'backgroundBLPOS'))
+        self.data.backgroundBRPOS = json.loads(self.config.get('Background Settings', 'backgroundBRPOS'))
         
         '''
         Initializations
