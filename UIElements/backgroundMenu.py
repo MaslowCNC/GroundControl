@@ -215,7 +215,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             filename = instance.path    #User pressed Submit without picking a file, indicating "newest in this dir"
         self.data.backgroundFile = filename
         self.data.config.set('Background Settings', 'openFile', str(self.data.backgroundFile))
-        self.data.config.write() #ToDo: Doesn't seem to happen
+        self.data.config.write()
         
         #close the open file popup
         self.dismiss_popup()
@@ -244,7 +244,8 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         self.data.backgroundTRPOS =json.loads(instance.backgroundTRPOS)
         self.data.backgroundBLPOS =json.loads(instance.backgroundBLPOS)
         self.data.backgroundBRPOS =json.loads(instance.backgroundBRPOS)
-        
+
+        #Write the data to the config file (just use the json data)
         self.data.config.set('Background Settings', 'backgroundTLHSV', instance.backgroundTLHSV)
         self.data.config.set('Background Settings', 'backgroundTRHSV', instance.backgroundTRHSV)
         self.data.config.set('Background Settings', 'backgroundBLHSV', instance.backgroundBLHSV)
@@ -253,8 +254,8 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         self.data.config.set('Background Settings', 'backgroundTRPOS', instance.backgroundTRPOS)
         self.data.config.set('Background Settings', 'backgroundBLPOS', instance.backgroundBLPOS)
         self.data.config.set('Background Settings', 'backgroundBRPOS', instance.backgroundBRPOS)        
-        self.data.config.write()#ToDo: This doesn't seem to happen.
-        self._popup.dismiss()   #Close the settings dialog
+        self.data.config.write()
+        self._popup.dismiss()   #Close the settings popup
         
     
     def dismiss_popup(self, *args):

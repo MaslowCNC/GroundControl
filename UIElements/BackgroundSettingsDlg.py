@@ -14,11 +14,11 @@ class BackgroundSettingsDlg(GridLayout, MakesmithInitFuncs):
     backgroundTLPOS = StringProperty("(-1225, 615)")
     backgroundBLPOS = StringProperty("(-1225,-615)")
     backgroundBRPOS = StringProperty("( 1225,-615)")
-
+    
     def __init__(self, data, **kwargs):
         super(BackgroundSettingsDlg, self).__init__(**kwargs)
         self.data = data
-        
+
         #Convert to JSON data so caller can get tuples back
         self.backgroundTLHSV = json.dumps(self.data.backgroundTLHSV)
         self.backgroundTRHSV = json.dumps(self.data.backgroundTRHSV)
@@ -30,4 +30,15 @@ class BackgroundSettingsDlg(GridLayout, MakesmithInitFuncs):
         self.backgroundBRPOS = json.dumps(self.data.backgroundBRPOS)
         
     def closeit(self):
-        self.close(self)
+        #ToDo: Not sure why I have to copy all this back, but I do:
+        self.backgroundTLHSV = self.tlhsv.text
+        self.backgroundTRHSV = self.trhsv.text
+        self.backgroundBLHSV = self.blhsv.text
+        self.backgroundBRHSV = self.brhsv.text
+        self.backgroundTRPOS = self.trpos.text
+        self.backgroundTLPOS = self.tlpos.text
+        self.backgroundBLPOS = self.blpos.text
+        self.backgroundBRPOS = self.brpos.text
+        
+        self.close(self) #Call the callback
+        
