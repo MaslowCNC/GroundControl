@@ -13,20 +13,20 @@ class ZAxisPopupContent(GridLayout):
     done   = ObjectProperty(None)
     zCutLabel = StringProperty("Re-Plunge To\nSaved Depth")
     zPopDisable = ObjectProperty(True)
-    onEntryUnits = StringProperty("")
+    unitsArmed=False
     
-    def initialize(self, zStepSizeVal):
+    def initialize(self):
         '''
         
         Initialize the z-axis popup
         
         '''
-        self.unitsBtn.text = self.data.units
-        self.onEntryUnits = self.data.units
-        self.distBtn.text  = str(zStepSizeVal)
+        if self.data.zPopupUnits is None:
+            self.data.zPopupUnits = self.data.units
+        self.unitsBtn.text = self.data.zPopupUnits
         if self.data.zPush is not None:
             self.zCutLabel = "Re-Plunge to\n"+'%.2f'%(self.data.zPush)
-            self.zPopDisable = self.data.zPushUnits <> self.data.units
+            self.zPopDisable = self.data.zPushUnits <> self.data.zPopupUnits
     
     def setDist(self):
         self.popupContent = TouchNumberInput(done=self.dismiss_popup, data = self.data)
@@ -37,19 +37,17 @@ class ZAxisPopupContent(GridLayout):
     
     def units(self):
         '''
-        
-        Toggle the machine units.
-        
+        Toggle the dialog units.
         '''
-        if self.data.units == "INCHES":
-            self.data.units = "MM"
-            self.distBtn.text = "{0:.2f}".format(25.4*float(self.distBtn.text))
+        if self.data.zPopupUnits == "INCHES":
+            self.data.zPopupUnits = "MM"
+            self.data.zStepSizeVal=25.4*float(self.distBtn.text)
         else:
-            self.data.units = "INCHES"
-            
-            self.distBtn.text = "{0:.2f}".format(float(self.distBtn.text)/25.4)
+            self.data.zPopupUnits = "INCHES"
+            self.data.zStepSizeVal=float(self.distBtn.text)/25.4
         
-        self.unitsBtn.text = self.data.units
+        self.distBtn.text = "%.2f"%self.data.zStepSizeVal
+        self.unitsBtn.text = self.data.zPopupUnits
         
         if self.data.zPush is not None:
             self.zPopDisable = self.data.zPushUnits <> self.data.units
@@ -140,14 +138,13 @@ class ZAxisPopupContent(GridLayout):
         Close The Pop-up to enter distance information
         
         '''
-        self.data.units=self.onEntryUnits #Restore original units
         try:
             tempfloat = float(self.popupContent.textInput.text)
-            self.distBtn.text = str(tempfloat)  # Update displayed text using standard numeric format
-        except:
+            self.data.zStepSizeVal=tempfloat  # Update displayed text using standard numeric format
+            self.distBtn.text = "%.2f"%tempfloat
+        except ValueError:
             pass                                                             #If what was entered cannot be converted to a number, leave the value the same
         self._popup.dismiss()
         
     def close(self):
-        self.data.units=self.onEntryUnits #Restore original units
         self.done()

@@ -80,6 +80,8 @@ class Data(EventDispatcher):
     zPush = None
     zPushUnits = 'MM'
     zReadoutPos = 0.00
+    zPopupUnits = None
+    zStepSizeVal = 0.1
     
     '''
     Queues

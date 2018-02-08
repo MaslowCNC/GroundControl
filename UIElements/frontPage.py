@@ -44,7 +44,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
     tick=0
     
     stepsizeval  = 0
-    zStepSizeVal = .1
     
     consoleText  = StringProperty(" ")
     
@@ -314,7 +313,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def zAxisPopup(self):
         self.popupContent      = ZAxisPopupContent(done=self.dismissZAxisPopup)
         self.popupContent.data = self.data
-        self.popupContent.initialize(self.zStepSizeVal)
+        self.popupContent.initialize()
         self._popup = Popup(title="Z-Axis", content=self.popupContent,
                             size_hint=(0.5, 0.5))
         self._popup.open()
@@ -325,10 +324,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         Close The Z-Axis Pop-up
         
         '''
-        try:
-            self.zStepSizeVal = float(self.popupContent.distBtn.text)
-        except:
-            pass
         self._popup.dismiss()
     
     def home(self):
