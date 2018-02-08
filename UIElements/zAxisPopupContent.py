@@ -11,7 +11,7 @@ from   kivy.uix.popup                            import   Popup
 
 class ZAxisPopupContent(GridLayout):
     done   = ObjectProperty(None)
-    zCutLabel = StringProperty("to...")
+    zCutLabel = StringProperty("[To Saved]")
     zPopDisable = ObjectProperty(True)
     
     def initialize(self, zStepSizeVal):
@@ -23,7 +23,7 @@ class ZAxisPopupContent(GridLayout):
         self.unitsBtn.text = self.data.units
         self.distBtn.text  = str(zStepSizeVal)
         if self.data.zPush is not None:
-            self.zCutLabel = "to:"+'%.2f'%(self.data.zPush)
+            self.zCutLabel = "To "+'%.2f'%(self.data.zPush)
             self.zPopDisable = self.data.zPushUnits <> self.data.units
     
     def setDist(self):
