@@ -146,4 +146,8 @@ class ZAxisPopupContent(GridLayout):
             self.distBtn.text = str(tempfloat)  # Update displayed text using standard numeric format
         except:
             pass                                                             #If what was entered cannot be converted to a number, leave the value the same
+        self._popup.dismiss()
+        
+    def close(self):
+        self.data.units=self.onEntryUnits #Restore original units
         self.done()
