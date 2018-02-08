@@ -19,6 +19,7 @@ from kivy.uix.popup             import Popup
 import math
 import global_variables
 import sys
+import re
 
 
 '''
@@ -40,6 +41,7 @@ from UIElements.manualControls    import   ManualControl
 from DataStructures.data          import   Data
 from Connection.nonVisibleWidgets import   NonVisibleWidgets
 from UIElements.notificationPopup import   NotificationPopup
+from Settings                     import   maslowSettings
 '''
 
 Main UI Program
@@ -51,359 +53,6 @@ class GroundControlApp(App):
     def get_application_config(self):
         return super(GroundControlApp, self).get_application_config(
             '~/%(appname)s.ini')
-
-    json = '''
-    [
-        {
-            "type": "string",
-            "title": "Serial Connection",
-            "desc": "Select the COM port to connect to machine",
-            "section": "Maslow Settings",
-            "key": "COMport"
-        },
-        {
-            "type": "string",
-            "title": "Distance Between Motors",
-            "desc": "The horizontal distance between the center of the motor shafts in MM.\\ndefault setting: %s",
-            "section": "Maslow Settings",
-            "key": "motorSpacingX"
-            
-        },
-        {
-            "type": "string",
-            "title": "Work Area Width in MM",
-            "desc": "The width of the machine working area (normally 8 feet).\\ndefault setting: %s",
-            "section": "Maslow Settings",
-            "key": "bedWidth"
-        },
-        {
-            "type": "string",
-            "title": "Work Area Height in MM",
-            "desc": "The Height of the machine working area (normally 4 feet).\\ndefault setting: %s",
-            "section": "Maslow Settings",
-            "key": "bedHeight"
-        },
-        {
-            "type": "string",
-            "title": "Motor Offset Height in MM",
-            "desc": "The vertical distance from the edge of the work area to the level of the motors.\\ndefault setting: %s",
-            "section": "Maslow Settings",
-            "key": "motorOffsetY"
-        },
-        {
-            "type": "string",
-            "title": "Distance Between Sled Mounting Points",
-            "desc": "The horizontal distance between the points where the chains mount to the sled.\\ndefault setting: %s",
-            "section": "Maslow Settings",
-            "key": "sledWidth"
-        },
-        {
-            "type": "string",
-            "title": "Vertical Distance Sled Mounts to Cutter",
-            "desc": "The vertical distance between where the chains mount on the sled to the cutting tool.\\ndefault setting: %s",
-            "section": "Maslow Settings",
-            "key": "sledHeight"
-        },
-        {
-            "type": "string",
-            "title": "Center Of Gravity",
-            "desc": "How far below the cutting bit is the center of gravity. This can be found by resting the sled on a round object and observing where it balances.\\ndefault setting: %s",
-            "section": "Maslow Settings",
-            "key": "sledCG"
-        },
-        {
-            "type": "bool",
-            "title": "z-axis installed",
-            "desc": "Does the machine have an automatic z-axis?\\ndefault setting: %s",
-            "section": "Maslow Settings",
-            "key": "zAxis"
-        },
-        {
-            "type": "string",
-            "title": "Z-Axis Pitch",
-            "desc": "The number of mm moved per rotation of the z-axis\\ndefault setting: %s",
-            "section": "Maslow Settings",
-            "key": "zDistPerRot"
-        },
-        {
-            "type": "options",
-            "title": "Color Scheme",
-            "desc": "Switch between the light and dark color schemes. Restarting GC is needed for this change to take effect\\ndefault setting: %s",
-            "options": ["Light", "Dark"],
-            "section": "Maslow Settings",
-            "key": "colorScheme"
-        },
-        {
-            "type": "string",
-            "title": "Open File",
-            "desc": "The path to the open file\\ndefault setting: your home directory",
-            "section": "Maslow Settings",
-            "key": "openFile"
-        },
-        {
-            "type": "string",
-            "title": "Macro 1",
-            "desc": "User defined gcode bound to the Macro 1 button",
-            "section": "Maslow Settings",
-            "key": "macro1"
-        },
-        {
-            "type": "string",
-            "title": "Macro 1 Title",
-            "desc": "User defined title for the Macro 1 button",
-            "section": "Maslow Settings",
-            "key": "macro1_title"
-        },
-        {
-            "type": "string",
-            "title": "Macro 2",
-            "desc": "User defined gcode bound to the Macro 2 button",
-            "section": "Maslow Settings",
-            "key": "macro2"
-        },
-        {
-            "type": "string",
-            "title": "Macro 2 Title",
-            "desc": "User defined title for the Macro 2 button",
-            "section": "Maslow Settings",
-            "key": "macro2_title"
-        }
-    ]
-    ''' % (
-        # global_variables._COMport, 
-        global_variables._motorSpacingX, 
-        global_variables._bedWidth,
-        global_variables._bedHeight,
-        global_variables._motorOffsetY,
-        global_variables._sledWidth,
-        global_variables._sledHeight,
-        global_variables._sledCG,
-        global_variables._zAxis,
-        global_variables._zDistPerRot,
-        global_variables._colorScheme
-        )
-
-    advanced = '''
-    [
-        {
-            "type": "string",
-            "title": "Encoder Steps per Revolution",
-            "desc": "The number of encoder steps per revolution of the left or right motor\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "encoderSteps"
-        },
-        {
-            "type": "string",
-            "title": "Gear Teeth",
-            "desc": "The number of teeth on the gear of the left or right motor\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "gearTeeth"
-        },
-        {
-            "type": "string",
-            "title": "Chain Pitch",
-            "desc": "The distance between chain roller centers\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "chainPitch"
-        },
-        {
-            "type": "options",
-            "title": "Side of Motor Sprockets That Chains Go to Sled",
-            "desc": "On which side of the motor sprockets the chains connect to the sled\\ndefault setting: %s",
-            "options": ["Top", "Bottom"],
-            "section": "Advanced Settings",
-            "key": "chainOverSprocket"
-        },
-        {
-            "type": "string",
-            "title": "Z-Axis Encoder Steps per Revolution",
-            "desc": "The number of encoder steps per revolution of the z-axis\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "zEncoderSteps"
-        },
-        {
-            "type": "bool",
-            "title": "Spindle Automation",
-            "desc": "Should the spindle start and stop automatically based on gcode? Leave off for default stepper control.\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "zAxisAuto"
-        },
-        {
-            "type": "string",
-            "title": "Home Position X Coordinate",
-            "desc": "The X coordinate of the home position\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "homeX"
-        },
-        {
-            "type": "string",
-            "title": "Home Position Y Coordinate",
-            "desc": "The X coordinate of the home position\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "homeY"
-        },
-        {
-            "type": "bool",
-            "title": "Truncate Floating Point Numbers",
-            "desc": "Truncate floating point numbers at the specified number of decimal places\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "truncate"
-        },
-        {
-            "type": "string",
-            "title": "Floating Point Precision",
-            "desc": "If truncate floating point numbers is enabled, the number of digits after the decimal place to preserve\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "digits"
-        },
-        {
-            "type": "options",
-            "title": "Kinematics Type",
-            "desc": "Switch between trapezoidal and triangular kinematics\\ndefault setting: %s",
-            "options": ["Quadrilateral", "Triangular"],
-            "section": "Advanced Settings",
-            "key": "kinematicsType"
-        },
-        {
-            "type": "string",
-            "title": "Rotation Radius for Triangular Kinematics",
-            "desc": "The distance between where the chains attach and the center of the router bit in mm\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "rotationRadius"
-        },
-        {
-            "type": "string",
-            "title": "Chain Sag Correction Value for Triangular Kinematics",
-            "desc": "The scaled value computed by the calibration process to calculate chain sag based on sled weight, chain weight, and workspace angle\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "chainSagCorrection"
-        },
-        {
-            "type": "bool",
-            "title": "Enable Custom Positional PID Values",
-            "desc": "Enable using custom values for the positional PID controller. Turning this off will return to the default values\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "enablePosPIDValues"
-        },
-        {
-            "type": "string",
-            "title": "Kp Position",
-            "desc": "The proportional constant for the position PID controller\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "KpPos"
-        },
-        {
-            "type": "string",
-            "title": "Ki Position",
-            "desc": "The integral constant for the position PID controller\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "KiPos"
-        },
-        {
-            "type": "string",
-            "title": "Kd Position",
-            "desc": "The derivative constant for the position PID controller\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "KdPos"
-        },
-        {
-            "type": "string",
-            "title": "Proportional Weighting",
-            "desc": "The ratio of Proportional on Error (1) to Proportional on Measure (0)\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "propWeight"
-        },
-        {
-            "type": "bool",
-            "title": "Enable Custom Velocity PID Values",
-            "desc": "Enable using custom values for the Velocity PID controller. Turning this off will return to the default values\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "enableVPIDValues"
-        },
-        {
-            "type": "string",
-            "title": "Kp Velocity",
-            "desc": "The proportional constant for the velocity PID controller\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "KpV"
-        },
-        {
-            "type": "string",
-            "title": "Ki Velocity",
-            "desc": "The integral constant for the velocity PID controller\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "KiV"
-        },
-        {
-            "type": "string",
-            "title": "Kd Velocity",
-            "desc": "The derivative constant for the velocity PID controller\\ndefault setting: %s",
-            "section": "Advanced Settings",
-            "key": "KdV"
-        }
-    ]
-    ''' % (
-        global_variables._encoderSteps,
-        global_variables._gearTeeth,
-        global_variables._chainPitch,
-        global_variables._chainOverSprocket,
-        global_variables._zEncoderSteps,
-        global_variables._zAxisAuto,
-        global_variables._homeX,
-        global_variables._homeY,
-        global_variables._truncate,
-        global_variables._digits,
-        global_variables._kinematicsType,
-        global_variables._rotationRadius,
-        global_variables._chainSagCorrection,
-        global_variables._enablePosPIDValues,
-        global_variables._KpPos,
-        global_variables._KiPos,
-        global_variables._KdPos,
-        global_variables._propWeight,
-        global_variables._enableVPIDValues,
-        global_variables._KpV,
-        global_variables._KiV,
-        global_variables._KdV
-        )
-    
-    gcsettings = '''
-    [
-        {
-            "type": "bool",
-            "title": "Center Canvas on Window Resize",
-            "desc": "When resizing the window, automatically reset the Gcode canvas to be centered and zoomed out. Program must be restarted to take effect.\\ndefault setting: %s",
-            "section": "Ground Control Settings",
-            "key": "centerCanvasOnResize"
-        },
-        {
-            "type": "string",
-            "title": "Zoom In",
-            "desc": "Pressing this key will zoom in. Note combinations of keys like \'shift\' + \'=\' may not work as expected. Program must be restarted to take effect.\\ndefault setting: %s",
-            "section": "Ground Control Settings",
-            "key": "zoomIn"
-        },
-        {
-            "type": "string",
-            "title": "Zoom Out",
-            "desc": "Pressing this key will zoom in. Note combinations of keys like \'shift\' + \'=\' may not work as expected. Program must be restarted to take effect.\\ndefault setting: %s",
-            "section": "Ground Control Settings",
-            "key": "zoomOut"
-        },
-        {
-            "type": "string",
-            "title": "Valid File Extensions",
-            "desc": "Valid file extensions for Ground Control to open. Comma separated list.\\ndefault setting: %s",
-            "section": "Ground Control Settings",
-            "key": "validExtensions"
-        }
-    ]
-    ''' % (
-        global_variables._centerCanvasOnResize,
-        global_variables._zoomIn,
-        global_variables._zoomOut,
-        global_variables._validExtensions
-        )
     
     def build(self):
         
@@ -439,6 +88,9 @@ class GroundControlApp(App):
         Load User Settings
         '''
         
+        # force create an ini no matter what.
+        self.config.write()
+
         if self.config.get('Advanced Settings', 'encoderSteps') == '8148.0':
             self.data.message_queue.put("Message: This update will adjust the the number of encoder pulses per rotation from 8,148 to 8,113 in your settings which improves the positional accuracy.\n\nPerforming a calibration will help you get the most out of this update.")
             self.config.set('Advanced Settings', 'encoderSteps', '8113.73')
@@ -468,8 +120,8 @@ class GroundControlApp(App):
         '''
         Push settings to machine
         '''
-        self.data.bind(connectionStatus = self.push_settings_to_machine)
-        self.data.pushSettings = self.push_settings_to_machine
+        self.data.bind(connectionStatus = self.requestMachineSettings)
+        self.data.pushSettings = self.requestMachineSettings
         
         return interface
         
@@ -477,68 +129,65 @@ class GroundControlApp(App):
         """
         Set the default values for the config sections.
         """
-        config.setdefaults('Maslow Settings', {'COMport'              : global_variables._COMport,
-                                               'zAxis'                : global_variables._zAxis,
-                                               'zDistPerRot'          : global_variables._zDistPerRot,
-                                               'bedWidth'             : global_variables._bedWidth,
-                                               'bedHeight'            : global_variables._bedHeight,
-                                               'motorOffsetY'         : global_variables._motorOffsetY,
-                                               'motorSpacingX'        : global_variables._motorSpacingX,
-                                               'sledWidth'            : global_variables._sledWidth,
-                                               'sledHeight'           : global_variables._sledHeight,
-                                               'sledCG'               : global_variables._sledCG,
-                                               'colorScheme'          : global_variables._colorScheme,
-                                               'openFile'             : global_variables._openFile,
-                                               'macro1'               : global_variables._macro1,
-                                               'macro1_title'         : global_variables._macro1_title,
-                                               'macro2'               : global_variables._macro2,
-                                               'macro2_title'         : global_variables._macro2_title})
-
-        config.setdefaults('Advanced Settings', {'encoderSteps'       : global_variables._encoderSteps,
-                                                 'gearTeeth'          : global_variables._gearTeeth,
-                                                 'chainPitch'         : global_variables._chainPitch,
-                                                 'chainOverSprocket'  : global_variables._chainOverSprocket,
-                                                 'zEncoderSteps'      : global_variables._zEncoderSteps,
-                                                 'zAxisAuto'          : global_variables._zAxisAuto,
-                                                 'homeX'              : global_variables._homeX,
-                                                 'homeY'              : global_variables._homeY,
-                                                 'truncate'           : global_variables._truncate,
-                                                 'digits'             : global_variables._digits,
-                                                 'kinematicsType'     : global_variables._kinematicsType,
-                                                 'rotationRadius'     : global_variables._rotationRadius,
-                                                 'chainSagCorrection' : global_variables._chainSagCorrection,
-                                                 'enablePosPIDValues' : global_variables._enablePosPIDValues,
-                                                 'KpPos'              : global_variables._KpPos,
-                                                 'KiPos'              : global_variables._KiPos,
-                                                 'KdPos'              : global_variables._KdPos,
-                                                 'propWeight'         : global_variables._propWeight,
-                                                 'enableVPIDValues'   : global_variables._enableVPIDValues,
-                                                 'KpV'                : global_variables._KpV,
-                                                 'KiV'                : global_variables._KiV,
-                                                 'KdV'                : global_variables._KdV})
-
-        config.setdefaults('Ground Control Settings', {'centerCanvasOnResize'   : global_variables._centerCanvasOnResize,
-                                                       'zoomIn'                 : global_variables._zoomIn,
-                                                       'zoomOut'                : global_variables._zoomOut,
-                                                       'validExtensions'        : global_variables._validExtensions,})
-
+        # Calculate computed settings on load
+        config.add_callback(self.computeSettings)
+        config.setdefaults('Computed Settings', maslowSettings.getDefaultValueSection('Computed Settings'))
+        config.setdefaults('Maslow Settings', maslowSettings.getDefaultValueSection('Maslow Settings'))
+        config.setdefaults('Advanced Settings', maslowSettings.getDefaultValueSection('Advanced Settings'))
+        config.setdefaults('Ground Control Settings', maslowSettings.getDefaultValueSection('Ground Control Settings'))
+        config.remove_callback(self.computeSettings)
+        
     def build_settings(self, settings):
         """
         Add custom section to the default configuration object.
         """
-        settings.add_json_panel('Maslow Settings', self.config, data=self.json)
-        settings.add_json_panel('Advanced Settings', self.config, data=self.advanced)
-        settings.add_json_panel('Ground Control Settings', self.config, data=self.gcsettings)
+        settings.add_json_panel('Maslow Settings', self.config, data=maslowSettings.getJSONSettingSection('Maslow Settings'))
+        settings.add_json_panel('Advanced Settings', self.config, data=maslowSettings.getJSONSettingSection('Advanced Settings'))
+        settings.add_json_panel('Ground Control Settings', self.config, data=maslowSettings.getJSONSettingSection("Ground Control Settings"))
+        self.config.add_callback(self.configSettingChange)
 
-    def on_config_change(self, config, section, key, value):
+    def computeSettings(self, section, key, value):
+        # Update Computed settings
+        if key == 'kinematicsType':
+            if value == 'Quadrilateral':
+                self.config.set('Computed Settings', 'kinematicsTypeComputed', "1")
+            else:
+                self.config.set('Computed Settings', 'kinematicsTypeComputed', "2")
+
+        elif (key == 'gearTeeth' or key == 'chainPitch') and self.config.has_option('Advanced Settings', 'gearTeeth') and self.config.has_option('Advanced Settings', 'chainPitch'):
+            distPerRot = float(self.config.get('Advanced Settings', 'gearTeeth')) * float(self.config.get('Advanced Settings', 'chainPitch'))
+            self.config.set('Computed Settings', "distPerRot", str(distPerRot))
+        
+        elif key == 'enablePosPIDValues':
+            for key in ('KpPos', 'KiPos', 'KdPos', 'propWeight'):
+                if int(self.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
+                    value = float(self.config.get('Advanced Settings', key))
+                else:
+                    value = maslowSettings.getDefaultValue('Advanced Settings', key)
+                self.config.set('Computed Settings', key + "Main", value)
+                self.config.set('Computed Settings', key + "Z", value)
+
+        elif key == 'enableVPIDValues':
+            for key in ('KpV', 'KiV', 'KdV'):
+                if int(self.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
+                    value = float(self.config.get('Advanced Settings', key))
+                else:
+                    value = maslowSettings.getDefaultValue('Advanced Settings', key)
+                self.config.set('Computed Settings', key + "Main", value)
+                self.config.set('Computed Settings', key + "Z", value)
+        
+        elif key == 'chainOverSprocket':
+            if value == 'Top':
+                self.config.set('Computed Settings',  'chainOverSprocketComputed', 1)
+            else:
+                self.config.set('Computed Settings',  'chainOverSprocketComputed', 2)
+
+    def configSettingChange(self, section, key, value):
         """
         Respond to changes in the configuration.
         """
-        
+        # Update GC things
         if section == "Maslow Settings":
-            
-            self.push_settings_to_machine()
-            
             if key == "COMport":
                 self.data.comport = value
             
@@ -549,98 +198,59 @@ class GroundControlApp(App):
                 self.frontpage.update_macro_titles()
 
         if section == "Advanced Settings":
-            
-            self.push_settings_to_machine()
-            
             if (key == "truncate") or (key == "digits"):
                 self.frontpage.gcodecanvas.reloadGcode()
-    
-    def push_settings_to_machine(self, *args):
         
-        #Push motor configuration settings to machine
+        # Update Computed Settings
+        self.computeSettings(section, key, value)
         
+        # Write the settings change to the Disk
+        self.data.config.write()
+
+        # only run on live connection
         if self.data.connectionStatus != 1:
-            return # only run on connection true
+            return
         
-        if int(self.data.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
-            KpPos = float(self.data.config.get('Advanced Settings', 'KpPos'))
-            KiPos = float(self.data.config.get('Advanced Settings', 'KiPos'))
-            KdPos = float(self.data.config.get('Advanced Settings', 'KdPos'))
-            propWeight = float(self.data.config.get('Advanced Settings', 'propWeight'))
+        # Push settings that can be directly written to machine
+        firmwareKey = maslowSettings.getFirmwareKey(section, key)
+        if firmwareKey is not None:
+            self.data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(value))
+    
+    def requestMachineSettings(self, *args):
+        ''' 
+        Requests the machine to report all settings.  This will implicitly
+        cause a sync of the machine settings because if GroundControl sees a
+        reported setting which does match its expected value, GC will push the
+        correct setting to the machine.
+        '''
+        if self.data.connectionStatus == 1:
+            self.data.gcode_queue.put("$$")
+    
+    def receivedSetting(self, message):
+        '''
+        This parses a settings report from the machine, usually received in 
+        resonse to a $$ request.  If the value received does not match the 
+        expected value.
+        '''
+        parameter, position = self.parseFloat(message, 0)
+        value, position = self.parseFloat(message, position)
+        if (parameter is not None and value is not None):
+            maslowSettings.syncFirmwareKey(int(parameter), value, self.data)
+    
+    def parseFloat(self, text, position=0):
+        '''
+        Takes a string and parses out the float found at position default to 0
+        returning a list of the matched float and the ending
+        position of the float
+        '''
+        # This regex comes from a python docs recommended 
+        regex = re.compile("[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?")
+        match = regex.search(text[position:])
+        if match:
+            return (float(match.group(0)), match.end(0))
         else:
-            KpPos = 1300
-            KiPos = 0
-            KdPos = 34
-            propWeight = 1
-        
-        if int(self.data.config.get('Advanced Settings', 'enableVPIDValues')) == 1:
-            KpV = float(self.data.config.get('Advanced Settings', 'KpV'))
-            KiV = float(self.data.config.get('Advanced Settings', 'KiV'))
-            KdV = float(self.data.config.get('Advanced Settings', 'KdV'))
-        else:
-            KpV = 5
-            KiV = 0
-            KdV = .28
-        
-        # Be pretty dumb about this, just push settings without checking to 
-        # see what machine has
-        
-        self.data.gcode_queue.put("$16=" + str(self.data.config.get('Maslow Settings', 'zAxis')))
-        self.data.gcode_queue.put("$12=" + str(self.data.config.get('Advanced Settings', 'encoderSteps')))
-        distPerRot = float(self.data.config.get('Advanced Settings', 'gearTeeth')) * float(self.data.config.get('Advanced Settings', 'chainPitch'))
-        self.data.gcode_queue.put("$13=" + str(distPerRot))
-        self.data.gcode_queue.put("$19=" + str(self.data.config.get('Maslow Settings'  , 'zDistPerRot')))
-        self.data.gcode_queue.put("$20=" + str(self.data.config.get('Advanced Settings', 'zEncoderSteps')))
-        
-        #main axes
-        self.data.gcode_queue.put("$21=" + str(KpPos))
-        self.data.gcode_queue.put("$22=" + str(KiPos))
-        self.data.gcode_queue.put("$23=" + str(KdPos))
-        self.data.gcode_queue.put("$24=" + str(propWeight))
-        self.data.gcode_queue.put("$25=" + str(KpV))
-        self.data.gcode_queue.put("$26=" + str(KiV))
-        self.data.gcode_queue.put("$27=" + str(KdV))
-        self.data.gcode_queue.put("$28=1.0")
-        
-        #z axis
-        self.data.gcode_queue.put("$29=" + str(KpPos))
-        self.data.gcode_queue.put("$30=" + str(KiPos))
-        self.data.gcode_queue.put("$31=" + str(KdPos))
-        self.data.gcode_queue.put("$32=" + str(propWeight))
-        self.data.gcode_queue.put("$33=" + str(KpV))
-        self.data.gcode_queue.put("$34=" + str(KiV))
-        self.data.gcode_queue.put("$35=" + str(KdV))
-        self.data.gcode_queue.put("$36=1.0")
-        self.data.gcode_queue.put("$17=" + str(self.data.config.get('Advanced Settings', 'zAxisAuto')))
-        
-        #Push kinematics settings to machine
-        if self.data.config.get('Advanced Settings', 'kinematicsType') == 'Quadrilateral':
-            kinematicsType = 1
-        else:
-            kinematicsType = 2
-        
-        self.data.gcode_queue.put("$0=" + str(self.data.config.get('Maslow Settings', 'bedWidth')))
-        self.data.gcode_queue.put("$1=" + str(self.data.config.get('Maslow Settings', 'bedHeight')))
-        self.data.gcode_queue.put("$2=" + str(self.data.config.get('Maslow Settings', 'motorSpacingX')))
-        self.data.gcode_queue.put("$3=" + str(self.data.config.get('Maslow Settings', 'motorOffsetY')))
-        self.data.gcode_queue.put("$4=" + str(self.data.config.get('Maslow Settings', 'sledWidth')))
-        self.data.gcode_queue.put("$5=" + str(self.data.config.get('Maslow Settings', 'sledHeight')))
-        self.data.gcode_queue.put("$6=" + str(self.data.config.get('Maslow Settings', 'sledCG')))
-        self.data.gcode_queue.put("$7=" + str(kinematicsType))
-        self.data.gcode_queue.put("$8=" + str(self.data.config.get('Advanced Settings', 'rotationRadius')))
-        self.data.gcode_queue.put("$37=" + str(self.data.config.get('Advanced Settings', 'chainSagCorrection')))
-
-        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
-            chainOverSprocket = 1
-        else:
-            chainOverSprocket = 2
-        self.data.gcode_queue.put("$38=" + str(chainOverSprocket))
-
-
-        
-        # Force kinematics recalibration
-        self.data.gcode_queue.put("$K")
-        
+            return (None, position)
+    
     '''
     
     Update Functions
@@ -664,6 +274,8 @@ class GroundControlApp(App):
             
             if message[0] == "<":
                 self.setPosOnScreen(message)
+            elif message[0] == "$":
+                self.receivedSetting(message)
             elif message[0] == "[":
                 if message[1:4] == "PE:":
                     self.setErrorOnScreen(message)
