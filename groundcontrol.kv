@@ -153,6 +153,7 @@
                 funcToCallOnPress: root.downRight
             ButtonTemplate:
                 id: zAxisBtn
+				disabled: app.data.uploadFlag == 1 #zAxisPopup can change units... don't let it be popped during a move!
                 text: 'Z-Axis'
                 funcToCallOnPress: root.zAxisPopup
             Label:

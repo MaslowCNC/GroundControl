@@ -27,7 +27,20 @@ class ZAxisPopupContent(GridLayout):
         if self.data.zPush is not None:
             self.zCutLabel = "Re-Plunge to\n"+'%.2f'%(self.data.zPush)
             self.zPopDisable = self.data.zPushUnits <> self.data.zPopupUnits
-    
+        self.setMachineUnits()
+
+    def setMachineUnits(self):
+        if self.data.zPopupUnits == "INCHES":
+            self.data.gcode_queue.put('G20 ')
+        else:
+            self.data.gcode_queue.put('G21 ')
+
+    def resetMachineUnits(self):
+        if self.data.units == "INCHES":
+            self.data.gcode_queue.put('G20 ')
+        else:
+            self.data.gcode_queue.put('G21 ')
+
     def setDist(self):
         self.popupContent = TouchNumberInput(done=self.dismiss_popup, data = self.data)
         self._popup = Popup(title="Change increment size of machine movement", content=self.popupContent,
@@ -56,24 +69,26 @@ class ZAxisPopupContent(GridLayout):
         '''
         Go to the position (into work -- you can pop out to a safe height)
         '''
+        self.setMachineUnits()
         self.data.gcode_queue.put("G00 Z"+ str(-1*float(self.distBtn.text)))
+        self.resetMachineUnits()
         
     
     def zIn(self):
         '''
-        
         Move the z-axis in
-        
         '''
+        self.setMachineUnits()
         self.data.gcode_queue.put("G91 G00 Z" + str(-1*float(self.distBtn.text)) + " G90 ")
-    
+        self.resetMachineUnits()
+
     def zOut(self):
-        '''
-        
+        '''        
         Move the z-axis out
-        
         '''
+        self.setMachineUnits()
         self.data.gcode_queue.put("G91 G00 Z" + str(self.distBtn.text) + " G90 ")
+        self.resetMachineUnits()
         
     def zUp(self):
         '''
@@ -85,23 +100,26 @@ class ZAxisPopupContent(GridLayout):
         self.zCutLabel = "Re-Plunge to\n"+'%.2f'%(self.data.zPush)
         self.zPopDisable = False
         
-        if self.data.units == "INCHES":
+        self.setMachineUnits()
+        if self.data.zPopupUnits == "INCHES":
             self.data.gcode_queue.put("G00 Z.25 ")
         else:
             self.data.gcode_queue.put("G00 Z5.0 ")
+        self.resetMachineUnits()
 
     def zToZero(self):
         '''
         Move z-axis to zero
         '''
-        self.data.gcode_queue.put("G00 Z0")
+        self.data.gcode_queue.put("G00 Z0") #Zero is zero in mm or in ;)
         
     def zToCut(self):
         '''
         Move z-axis to last cut (saved point when "move to safety" was pressed
         '''
-        print "zspot", self.data.zPush
+        self.setMachineUnits()
         self.data.gcode_queue.put("G00 Z"+str(self.data.zPush))
+        self.resetMachineUnits()
     
     def zero(self):
         '''
@@ -115,17 +133,17 @@ class ZAxisPopupContent(GridLayout):
         '''
         Probe for Zero Z
         '''
+        self.setMachineUnits()
         if self.data.units == "INCHES":
             self.data.gcode_queue.put("G38.2 Z2 F2")    #Only go down 2 inches...
         else:
             self.data.gcode_queue.put("G38.2 Z50 F50")  #Or 50mm.
+        self.resetMachineUnits()
             
     
     def stopZMove(self):
         '''
-        
         Send the immediate stop command
-        
         '''
         print("z-axis Stopped")
         self.data.quick_queue.put("!")
