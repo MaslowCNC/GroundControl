@@ -616,10 +616,12 @@
 				cols:1
 				rows:2
 				Button:
-					text: "To -"+root.distBtn.text
+					text: "Plunge to\n-"+root.distBtn.text
+					halign: "center"
 					on_release: root.goThere()
 				Button:
-					text: "To Safety"
+					text: "Save and\nRaise to Traverse"
+					halign: "center"
 					on_release: root.zUp()
             Button:
                 text: "Done"
@@ -642,10 +644,11 @@
 				cols:1
 				rows:2
 				Button:
-					text: "To Zero"
+					text: "Go to Zero"
 					on_release: root.zToZero()
 				Button:
 					text: root.zCutLabel
+					halign: "center"
 					disabled: root.zPopDisable
 					on_release: root.zToCut()
 			Label:
