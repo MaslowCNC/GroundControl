@@ -13,6 +13,7 @@ class ZAxisPopupContent(GridLayout):
     done   = ObjectProperty(None)
     zCutLabel = StringProperty("Re-Plunge To\nSaved Depth")
     zPopDisable = ObjectProperty(True)
+    onEntryUnits = StringProperty("")
     
     def initialize(self, zStepSizeVal):
         '''
@@ -21,6 +22,7 @@ class ZAxisPopupContent(GridLayout):
         
         '''
         self.unitsBtn.text = self.data.units
+        self.onEntryUnits = self.data.units
         self.distBtn.text  = str(zStepSizeVal)
         if self.data.zPush is not None:
             self.zCutLabel = "Re-Plunge to\n"+'%.2f'%(self.data.zPush)
@@ -138,9 +140,10 @@ class ZAxisPopupContent(GridLayout):
         Close The Pop-up to enter distance information
         
         '''
+        self.data.units=self.onEntryUnits #Restore original units
         try:
             tempfloat = float(self.popupContent.textInput.text)
             self.distBtn.text = str(tempfloat)  # Update displayed text using standard numeric format
         except:
             pass                                                             #If what was entered cannot be converted to a number, leave the value the same
-        self._popup.dismiss()
+        self.done()
