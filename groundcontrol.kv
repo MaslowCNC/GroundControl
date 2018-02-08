@@ -589,7 +589,7 @@
         GridLayout:
             size_hint_x: ".75sp"
             cols: 4
-            rows: 3
+            rows: 4
 			Label:
 				text: ""
 				size_hint_y: 0.2
@@ -648,6 +648,9 @@
 					text: root.zCutLabel
 					disabled: root.zPopDisable
 					on_release: root.zToCut()
+			Label:
+				text: ""
+				size_hint_y: 0.2
         GridLayout:
             size_hint_x: ".25sp"
             cols: 1
