@@ -620,12 +620,12 @@
 					halign: "center"
 					on_release: root.goThere()
 				Button:
-					text: "Save and\nRaise to Traverse"
+					text: "Save and\nRaise to\nTraverse"
 					halign: "center"
 					on_release: root.zUp()
             Button:
                 text: "Done"
-                on_release: root.done()
+                on_release: root.dismiss_popup()
 			GridLayout:
 				cols: 1
 				rows: 2
