@@ -588,7 +588,7 @@
         cols: 3
         GridLayout:
             size_hint_x: ".75sp"
-            cols: 3
+            cols: 4
             rows: 3
 			Label:
 				text: ""
@@ -597,6 +597,9 @@
 				size_hint_y: 0.2
 			Label:
 				text: "Relative"
+				size_hint_y: 0.2
+			Label:
+				text: "Absolute"
 				size_hint_y: 0.2
 			Button:
 				text: ".1"
@@ -609,6 +612,15 @@
 			Button:
 				text: "Raise"
 				on_release: root.zOut()
+			GridLayout:
+				cols:1
+				rows:2
+				Button:
+					text: "To Depth"
+					on_release: root.goThere()
+				Button:
+					text: "To Safety"
+					on_release: root.zUp()
             Button:
                 text: "Done"
                 on_release: root.done()
@@ -626,31 +638,6 @@
 			Button:
 				text: "Lower"
 				on_release: root.zIn()
-        GridLayout:
-            size_hint_x: ".25sp"
-            cols: 1
-            rows: 1
-            Button:
-                text: "Stop!"
-                # font_size: '48sp'
-                # color: [1,0,0,1]
-                on_release: root.stopZMove()
-		GridLayout:
-			cols: 1
-			rows: 3
-			size_hint_x: ".25sp"
-			Label:
-				text: "Absolute"
-				size_hint_y: 0.2
-			GridLayout:
-				cols:1
-				rows:2
-				Button:
-					text: "To Depth"
-					on_release: root.goThere()
-				Button:
-					text: "To Safety"
-					on_release: root.zUp()
 			GridLayout:
 				cols:1
 				rows:2
@@ -661,6 +648,15 @@
 					text: root.zCutLabel
 					disabled: root.zPopDisable
 					on_release: root.zToCut()
+        GridLayout:
+            size_hint_x: ".25sp"
+            cols: 1
+            rows: 1
+            Button:
+                text: "Stop!"
+                # font_size: '48sp'
+                # color: [1,0,0,1]
+                on_release: root.stopZMove()
 
 <TriangularCalibration>:
     cutBtnT:cutBtnT
