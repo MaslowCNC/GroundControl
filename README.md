@@ -176,12 +176,12 @@ In the .kv file:
 Kivy uses groundcontrol.kv as a description language for most of the widgets in GroundControl; some tips:
 1. Class References: 
 	root.X refers to things inside the class.  You can add your own variables, but they don't get initialized in time to be used (so root.data doesn't work)
-	but you can use app.X to refer to things in the app namespace, so app.data will always work.  BUT you must define the variable in DataStructures.data.py;
+	but you can use app.X to refer to things in the app namespace, so app.data will always work.  BUT you must define the variable in DataStructures/data.py;
 	things put in the data dict at runtime *will not work*
 	
 2. Formatting:
-	You can include format strings and logic in the .kv file; eg text: "{%.2f}"%app.data.ZPos will automatically expand/update when app.data.ZPos changes
-	But, if it's a text field, you need to hook the field to an event -- changing the text in the box *will not* update app.data.ZPos.
+	You can include format strings and logic in the .kv file; eg text: "{%.2f}"%app.data.zPos will automatically expand/update when app.data.zPos changes
+	But, if it's a text input field, you need to hook the field to an event -- changing the text in the box *will not* update app.data.zPos.
 
 3. Referring to UI bits in code:
 	If you want to refer to a widget in the code, you need to give it an id, *and* you need to put a id:id statement after the widget definition starts
@@ -189,24 +189,28 @@ Kivy uses groundcontrol.kv as a description language for most of the widgets in 
 	crash when you bring up the widget.
 	
 4. Attributes:
-	Most attributes (eg, text_size, multiline, disabled etc) are not inheritable (you can't set the attribute in the "GridLayout" portion); they have to be decorated on each control.
+	Most attributes (eg. text_size, multiline, disabled, etc) are not inheritable (you can't set the attribute in the "GridLayout" portion); they have to be
+	decorated on each control.
 	
 5. Layouts:
-	GridLayout's et al don't support "span" to span columns or rows.  If you want to do that kind of thing, redo the grid to the large size and put sub-GridLayouts in the cells.   Try to make the cells the same size so they line up nicely.
+	GridLayout's et al don't support "span" to span columns or rows.  If you want to do that kind of thing, redo the grid to the large size and put
+	sub-GridLayouts in the cells.   Try to make the cells the same size so they line up nicely.
 	The Layouts will not actually work unless you have rows & columns attributes in them.  The log file will complain about this, so watch for it.
-	You can auto-size-to-the-minimum *sometimes* with the size_hint_x: None.  But if you give it a 2 (eg, 2%), it always works kinda (it always works but may not do what you expected).
+	You can auto-size-to-the-minimum *sometimes* with the size_hint_x: None.  But if you give it a 2 (ie, 2%), it always works kinda (it always works but may not 
+	do what you expected).
 	
 6. Coordinate Systems:
-	Kivy defines things as origin ia bottom-left, an increasing Y is up, increasing X is right.
+	Kivy defines things as origin is bottom-left, an increasing Y is up, increasing X is right.
 	Please use self.origin in the code -- if you draw something, 0,0 is the bottom-left of the application, not the bottom-left of your widget.
 	
 Python Tips:
 1. If an object begins with a capital letter, it is a global object (eg, CanvasSize=4).  Don't do CamelCase; do camelCase instead.
-2. If you want to persist values across functions, they need to be in the object-space (self.x) or in the global-space (CanvasSize)
-	If you use a variable without the self., it will work but it won't be persisted, so it can be annoying to figure out what happened.
-3. If you want to call another function in your class, preface it with self.
+2. If you want to persist values across functions, they need to be in the object-space (self.x) or in the global-space (CanvasSize), or in App-space 
+	(app.data.X or self.data.X after init)
+	If you use a variable without the self., it will work but it won't be persisted, so it can be annoying to figure out what (didn't) happened.
+3. If you want to call another function in your class, preface it with self. (eg, self.recomputethis() -- and the self arg gets passed in automagically)
 4. Always remember to call the super if you're implementing __init__
-5. Remember - your dialog/widget/etc can go away *without* calling the callback function - the user just clicks back to the main windows
+5. Remember - your dialog/widget/etc can go away *without* calling the callback function - the user just clicks back to the main window
 	Don't count on the callback to save state.  Don't use the callback to put the machine in a known state (because it may not get executed).
 6. Dialogs don't get to close themselves; when your self.done is executed, call your callback function, and your parent can get data out of 
 	your dialog and is responsible for closing you.  But see rule #5.
@@ -215,7 +219,7 @@ Python Tips:
 9. Some mumbo-jumbo about how to use the logger
 10. If you need to send a command to Maslow, use the self.data.gcode_queue.put('GCode-Here')
 11. Mumbo-jumbo about how to get data back from Maslow
-12. On the g-code canvas, 0,0 is the center, and bottom-left is -X,-Y (y axis is reversed compared to old computer code).
+12. On the g-code canvas, 0,0 is the center, and bottom-left is -X,-Y (y axis is reversed compared to old computer code, but "usual" in math terms).
 13. json does not know about tuples.  It will make the variables a /list/ and if your functions can't handle that, you need to convert them.
 
 General UI Layout:
