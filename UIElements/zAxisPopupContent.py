@@ -14,6 +14,7 @@ class ZAxisPopupContent(GridLayout):
     zCutLabel = StringProperty("Re-Plunge To\nSaved Depth")
     zPopDisable = ObjectProperty(True)
     unitsArmed=False
+    onEntryUnits=""
     
     def initialize(self):
         '''
@@ -28,14 +29,17 @@ class ZAxisPopupContent(GridLayout):
             self.zCutLabel = "Re-Plunge to\n"+'%.2f'%(self.data.zPush)
             self.zPopDisable = self.data.zPushUnits <> self.data.zPopupUnits
         self.setMachineUnits()
+        self.onEntryUnits= self.data.units
 
     def setMachineUnits(self):
+        self.data.units = self.data.zPopupUnits #Show the right units on the main screen
         if self.data.zPopupUnits == "INCHES":
             self.data.gcode_queue.put('G20 ')
         else:
             self.data.gcode_queue.put('G21 ')
 
     def resetMachineUnits(self):
+        self.data.units = self.onEntryUnits #Return main screen to old units
         if self.data.units == "INCHES":
             self.data.gcode_queue.put('G20 ')
         else:
