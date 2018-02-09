@@ -27,12 +27,15 @@ class ZAxisPopupContent(GridLayout):
             self.data.zPopupUnits = self.data.units
         self.unitsBtn.text = self.data.zPopupUnits
         if self.data.zPush is not None:
-            self.zCutLabel = "Re-Plunge to\n"+'%.2f'%(self.data.zPush)
-            self.zPopDisable = self.data.zPushUnits <> self.data.zPopupUnits
-
-    def setMachineUnits(self):
-        self.data.units = self.data.zPopupUnits #Show the right units on the main screen
-        if self.data.zPopupUnits == "INCHES":
+            self.zCutLabel = "Re-Plunge to\n"+'%.2f '%(self.data.zPush)+self.data.zPushUnits[:2]
+            self.zPopDisable=False
+            
+    def setMachineUnits(self, units=None):
+        if units is None:
+            units = self.data.zPopupUnits
+            
+        self.data.units = units #Show the right units on the main screen
+        if units == "INCHES":
             self.data.gcode_queue.put('G20 ')
         else:
             self.data.gcode_queue.put('G21 ')
@@ -64,9 +67,6 @@ class ZAxisPopupContent(GridLayout):
         
         self.distBtn.text = "%.2f"%self.data.zStepSizeVal
         self.unitsBtn.text = self.data.zPopupUnits
-        
-        if self.data.zPush is not None:
-            self.zPopDisable = self.data.zPushUnits <> self.data.units
     
     def goThere(self):
         '''
@@ -100,7 +100,7 @@ class ZAxisPopupContent(GridLayout):
         #Save the current "cut" point
         self.data.zPush = self.data.zReadoutPos
         self.data.zPushUnits = self.data.units
-        self.zCutLabel = "Re-Plunge to\n"+'%.2f'%(self.data.zPush)
+        self.zCutLabel = "Re-Plunge to\n"+'%.2f '%(self.data.zPush)+self.data.zPushUnits[:2]
         self.zPopDisable = False
         
         self.setMachineUnits()
@@ -120,7 +120,7 @@ class ZAxisPopupContent(GridLayout):
         '''
         Move z-axis to last cut (saved point when "move to safety" was pressed
         '''
-        self.setMachineUnits()
+        self.setMachineUnits(self.data.zPushUnits)
         self.data.gcode_queue.put("G00 Z"+str(self.data.zPush))
         self.resetMachineUnits()
     
