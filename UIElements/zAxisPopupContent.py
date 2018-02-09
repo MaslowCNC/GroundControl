@@ -22,14 +22,13 @@ class ZAxisPopupContent(GridLayout):
         Initialize the z-axis popup
         
         '''
+        self.onEntryUnits= self.data.units
         if self.data.zPopupUnits is None:
             self.data.zPopupUnits = self.data.units
         self.unitsBtn.text = self.data.zPopupUnits
         if self.data.zPush is not None:
             self.zCutLabel = "Re-Plunge to\n"+'%.2f'%(self.data.zPush)
             self.zPopDisable = self.data.zPushUnits <> self.data.zPopupUnits
-        self.setMachineUnits()
-        self.onEntryUnits= self.data.units
 
     def setMachineUnits(self):
         self.data.units = self.data.zPopupUnits #Show the right units on the main screen
