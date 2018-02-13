@@ -180,7 +180,7 @@ Kivy uses groundcontrol.kv as a description language for most of the widgets in 
 	things put in the data dict at runtime *will not work*.
 	
 2. Formatting:
-	You can include format strings and logic in the .kv file; eg `text: "{%.2f}"%app.data.zPos` will automatically expand/update when `app.data.zPos` changes.
+	You can include format strings and logic in the .kv file; eg `text: "{Z: %.2f}"%app.data.zPos` will automatically expand/update when `app.data.zPos` changes.
 	But, if it's a text input field, you need to hook the field to an event -- changing the text in the box *will not* update `app.data.zPos`.
 
 3. Referring to UI bits in code:
@@ -202,6 +202,11 @@ Kivy uses groundcontrol.kv as a description language for most of the widgets in 
 6. Coordinate Systems:
 	Kivy defines things as origin is bottom-left, an increasing Y is up, increasing X is right.
 	Please use `self.origin` in the code -- if you draw something, 0,0 is the bottom-left of the application, not the bottom-left of your widget.
+	
+7. Events:
+	Always bind to the `on_touch_up` event.  If you bind to the `on_touch_down` instead, you get a behavior that looks like a click-through:
+	* You catch the `on_touch_down`, and pop-up a menu with a button on it.
+	* The mouse is still down... so it will select a file (if file_dialog), or if the next dialog catches the `on_touch_up` event, it will fire as soon as the click is released
 	
 ### Python Tips:
 1. If an object begins with a capital letter, it is a global object (eg, `CanvasSize=4`).  Don't do `CamelCase`; do `camelCase` instead.
