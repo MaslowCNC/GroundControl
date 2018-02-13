@@ -180,7 +180,7 @@ Kivy uses groundcontrol.kv as a description language for most of the widgets in 
 	things put in the data dict at runtime *will not work*
 	
 2. Formatting:
-	You can include format strings and logic in the .kv file; eg text: "{%.2f}"%app.data.zPos will automatically expand/update when app.data.zPos changes
+	You can include format strings and logic in the .kv file; eg text: "{ %.2f}"%app.data.zPos will automatically expand/update when app.data.zPos changes
 	But, if it's a text input field, you need to hook the field to an event -- changing the text in the box *will not* update app.data.zPos.
 
 3. Referring to UI bits in code:
