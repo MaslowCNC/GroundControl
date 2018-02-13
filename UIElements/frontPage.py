@@ -124,8 +124,11 @@ class FrontPage(Screen, MakesmithInitFuncs):
         if self.tick>=4:    #Can't do this every time... it's too noisy, so we do it every 5rd time (0.1s).
             self.tick=0
             if self.lasttime <> 0.0:
-                delta = sqrt( (xPos-self.lastpos[0])*(xPos-self.lastpos[0]) + (yPos-self.lastpos[1])*(yPos-self.lastpos[1]) + (zPos-self.lastpos[2]) * (zPos-self.lastpos[2]))
-                Vel = delta / (time()-self.lasttime) * 60.0 #In XXXX/minute
+				try:
+					delta = sqrt( (xPos-self.lastpos[0])*(xPos-self.lastpos[0]) + (yPos-self.lastpos[1])*(yPos-self.lastpos[1]) + (zPos-self.lastpos[2]) * (zPos-self.lastpos[2]))
+					Vel = delta / (time()-self.lasttime) * 60.0 #In XXXX/minute
+				except:
+					print "unable to compute velocity"
             else:
                 Vel=0
                 
