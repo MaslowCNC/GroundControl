@@ -2,7 +2,7 @@ from   kivy.uix.gridlayout                       import   GridLayout
 from   UIElements.fileBrowser                    import   FileBrowser
 from   UIElements.pageableTextPopup              import   PageableTextPopup
 from   kivy.uix.popup                            import   Popup
-from   kivy.clock                                import Clock
+from   kivy.clock                                import   Clock
 
 from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
 from UIElements.BackgroundPickDlg                import BackgroundPickDlg
@@ -15,62 +15,70 @@ import json
 graphicsExtensions = (".jpg", ".png", ".jp2",".webp",".pbm",".ppm",".pgm")
 
 
-def findHSVcenter(self, img, hsv, hsvLow, hsvHi, bbtl, bbbr, clean=3, minarea=1000, maxarea=6000, tag="A"):
-    if isinstance(hsvLow, list):
-        #cv2 can't handle lists... make 'em into tuples
-        hsvLow = tuple(hsvLow)
-        hsvHi = tuple(hsvHi)
-        
-    #Mask to find the blobs
-    if hsvLow[0] > hsvHi[0]:
-        #It's wrapped [red]
-        bottom = (0, hsvLow[1], hsvLow[2])
-        maska=cv2.inRange(hsv, bottom,hsvHi)
 
-        top = (180, hsvHi[1], hsvHi[2])
-        maskb=cv2.inRange(hsv, hsvLow, top)
-        mask=cv2.bitwise_or(maska, maskb)
-    else:
-        mask=cv2.inRange(hsv, hsvLow, hsvHi)
-
-    #erode-dilate to clean up noise
-    mask = cv2.erode(mask, None, iterations=clean)
-    mask = cv2.dilate(mask, None, iterations=clean)
-
-    #find contours
-    cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
-    center = None
-    
-    #If we found some, lets check their size and location to pick the best ones
-    if len(cnts) > 0:
-        cnts = sorted(cnts, key=cv2.contourArea, reverse=True)  #Sort so we find biggest first.
-        for c in cnts:
-            if cv2.contourArea(c) >= minarea and cv2.contourArea(c)<=maxarea:                    #Discriminate based on size
-                ((x, y), radius) = cv2.minEnclosingCircle(c)
-                M = cv2.moments(c)
-                center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))   #ToDo - why not use the XY above?
-                if center[0] >= bbtl[0] and center[0] <= bbbr[0]  and center[1] >= bbtl[1] and center[1] <= bbbr[1]:
-                    #Mark the image
-                    cv2.circle(img, (int(x), int(y)), int(radius), (0, 255, 255), 5)
-                    cv2.circle(img, center, 5, (0, 0, 255), -1)
-                    return center
-    return center
 
 class BackgroundMenu(GridLayout, MakesmithInitFuncs):
+    
     def __init__(self, data, **kwargs):
         super(BackgroundMenu, self).__init__(**kwargs)
         self.data = data
 
-        #Fire off a clock to check for new images every 2 seconds
-        Clock.schedule_interval(self.timer, 2)
-    
+        #Fire off a clock to check for new images every 2 seconds - this should only run once per app start!
+        if self.data.backgroundClock is None:
+            self.data.backgroundClock=Clock.schedule_interval(self.timer, 2)
+
+    def findHSVcenter(self, img, hsv, hsvLow, hsvHi, bbtl, bbbr, clean=3, minarea=1000, maxarea=6000, tag="A"):
+        if isinstance(hsvLow, list):
+            #cv2 can't handle lists... make 'em into tuples
+            hsvLow = tuple(hsvLow)
+            hsvHi = tuple(hsvHi)
+            
+        #Mask to find the blobs
+        if hsvLow[0] > hsvHi[0]:
+            #It's wrapped [red]
+            bottom = (0, hsvLow[1], hsvLow[2])
+            maska=cv2.inRange(hsv, bottom,hsvHi)
+
+            top = (180, hsvHi[1], hsvHi[2])
+            maskb=cv2.inRange(hsv, hsvLow, top)
+            mask=cv2.bitwise_or(maska, maskb)
+        else:
+            mask=cv2.inRange(hsv, hsvLow, hsvHi)
+
+        #erode-dilate to clean up noise
+        mask = cv2.erode(mask, None, iterations=clean)
+        mask = cv2.dilate(mask, None, iterations=clean)
+
+        #find contours
+        cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
+        center = None
+        
+        #If we found some, lets check their size and location to pick the best ones
+        if len(cnts) > 0:
+            cnts = sorted(cnts, key=cv2.contourArea, reverse=True)  #Sort so we find biggest first.
+            for c in cnts:
+                if cv2.contourArea(c) >= minarea and cv2.contourArea(c)<=maxarea:                    #Discriminate based on size
+                    ((x, y), radius) = cv2.minEnclosingCircle(c)
+                    M = cv2.moments(c)
+                    center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))   #ToDo - why not use the XY above?
+                    if center[0] >= bbtl[0] and center[0] <= bbbr[0]  and center[1] >= bbtl[1] and center[1] <= bbbr[1]:
+                        #Mark the image
+                        cv2.circle(img, (int(x), int(y)), int(radius), (0, 255, 255), 5)
+                        cv2.circle(img, center, 5, (0, 0, 255), -1)
+                        return center
+        return center
+        
     def openBackground(self):
         '''
         Open The Pop-up To Load A File
         Creates a new pop-up which can be used to open a file.
         '''
         #starting path is either where the last opened file was or the users home directory
-        startingPath = os.path.dirname(self.data.backgroundFile)
+        if not os.path.isdir(self.data.backgroundFile):
+            startingPath = os.path.dirname(self.data.backgroundFile)
+        else:
+            startingPath = self.data.backgroundFile #Don't go up a dir if the "backgroundFile" is a directory!
+
         if startingPath is "": 
             startingPath = os.path.expanduser('~')
         
@@ -104,7 +112,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             return False
 
         file=self.data.backgroundFile
-            
+
         #If file is a directory, then "load the latest from that directory"
         if not os.path.isdir(file):
             return false #I'm not going to automatically reload the same file
@@ -115,8 +123,14 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
                 if afile.lower().endswith(graphicsExtensions):
                     filelst.append(os.path.join(file,afile))
             filelst.sort(key=os.path.getmtime, reverse=True)
+
+            if len(filelst) == 0:
+                file=None
+                return
+
             file = filelst[0]
-            return file <> self.backgroundlastfile
+
+            return file <> self.data.backgroundLastFile
 
     def processBackground(self):
         if self.data.backgroundFile=="":
@@ -132,10 +146,16 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
                 for afile in files:
                     if afile.lower().endswith(graphicsExtensions):
                         filelst.append(os.path.join(file,afile))
+                
+                if len(filelst) == 0:
+                    file=None
+                    return
+                    
                 filelst.sort(key=os.path.getmtime, reverse=True)
                 file = filelst[0]
 
-                self.backgroundlastfile = file
+                #Save the file we're processing...
+                self.data.backgroundLastFile = file
                 
             img = cv2.imread(file)
             self.data.originalimage=img.copy()
@@ -148,16 +168,14 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             #Find the centers of the markers:
             centers = []
             
-            print self.data.backgroundTLHSV
-            print type(self.data.backgroundTLHSV)
             if not isinstance(self.data.backgroundTLHSV,list) and not isinstance(self.data.backgroundTLHSV, tuple):
                 #Not a valid tuple or list, consider it a flag to go to manual mode immediately
                 centers.append(None)
             else:
-                centers.append(findHSVcenter(self, img, hsv, self.data.backgroundTLHSV[0], self.data.backgroundTLHSV[1], (0,0), (xmid,ymid), tag="A"))
-                centers.append(findHSVcenter(self, img, hsv, self.data.backgroundTRHSV[0], self.data.backgroundTRHSV[1], (xmid,0),(xmax, ymid), tag="B"))
-                centers.append(findHSVcenter(self, img, hsv, self.data.backgroundBLHSV[0], self.data.backgroundBLHSV[1], (0,ymid), (xmid, ymax), tag="C"))
-                centers.append(findHSVcenter(self, img, hsv, self.data.backgroundBRHSV[0], self.data.backgroundBRHSV[1], (xmid,ymid), (xmax, ymax), tag="D"))
+                centers.append(self.findHSVcenter(img, hsv, self.data.backgroundTLHSV[0], self.data.backgroundTLHSV[1], (0,0), (xmid,ymid), tag="A"))
+                centers.append(self.findHSVcenter(img, hsv, self.data.backgroundTRHSV[0], self.data.backgroundTRHSV[1], (xmid,0),(xmax, ymid), tag="B"))
+                centers.append(self.findHSVcenter(img, hsv, self.data.backgroundBLHSV[0], self.data.backgroundBLHSV[1], (0,ymid), (xmid, ymax), tag="C"))
+                centers.append(self.findHSVcenter(img, hsv, self.data.backgroundBRHSV[0], self.data.backgroundBRHSV[1], (xmid,ymid), (xmax, ymax), tag="D"))
             
             self.data.backgroundImage = img
             if None in centers:
@@ -168,7 +186,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
                 self.warp_image()
                 
     def realignBackground(self):
-        self.data.backgroundImage=self.data.originalimage.copy()
+        self.data.backgroundImage=self.data.originalimage.copy() #Reload original image
         content = BackgroundPickDlg(self.data)
         content.setUpData(self.data)
         content.close = self.close_PickDlg
