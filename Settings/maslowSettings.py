@@ -183,7 +183,7 @@ settings = {
             },
             {
                 "type": "options",
-                "title": "Side of Motor Sprockets That Chains Go to Sled",
+                "title": "Side of Motor Sprockets That Chains Go to Sled (Requires Maslow Board Restart)",
                 "desc": "On which side of the motor sprockets the chains connect to the sled",
                 "options": ["Top", "Bottom"],
                 "default": "Top",
