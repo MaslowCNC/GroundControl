@@ -230,4 +230,3 @@ Kivy uses groundcontrol.kv as a description language for most of the widgets in 
 ### General UI Layout:
 * frontPage - is the root host for all widgets.
   * screenControls - has all the buttons on the main screen (both the top bar and the right side)
-
