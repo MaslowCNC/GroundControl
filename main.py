@@ -182,6 +182,14 @@ class GroundControlApp(App):
             else:
                 self.config.set('Computed Settings',  'chainOverSprocketComputed', 2)
 
+        elif key == 'fPWM':
+            if value == '31,000Hz':
+                self.config.set('Computed Settings',  'fPWMComputed', 1)
+            elif value == '4,100Hz':
+                self.config.set('Computed Settings',  'fPWMComputed', 2)
+            else: 
+                self.config.set('Computed Settings',  'fPWMComputed', 3)
+
     def configSettingChange(self, section, key, value):
         """
         Respond to changes in the configuration.

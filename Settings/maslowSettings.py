@@ -327,6 +327,14 @@ settings = {
                 "desc": "The derivative constant for the velocity PID controller",
                 "key": "KdV",
                 "default": .28
+            },
+            {
+                "type": "options",
+                "title": "PWM frequency for motor control",
+                "desc": "The PWM frequence used for motor speed control",
+                "options": ["490Hz", "4,100Hz", "31,000Hz"],
+                "default": "490Hz",
+                "key": "fPWM",
             }
         ],
     "Ground Control Settings":
@@ -446,6 +454,11 @@ settings = {
                 "type": "string",
                 "key": "chainOverSprocketComputed",
                 "firmwareKey": 38
+            },
+            {
+                "type": "string",
+                "key": "fPWMComputed",
+                "firmwareKey": 39
             }
         ]
 }
