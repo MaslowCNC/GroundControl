@@ -1354,20 +1354,20 @@
     pos: root.pos
     Button:
         text: 'Open Background'
-        on_press: root.openBackground()
+        on_release: root.openBackground()
 	Button:
 		text: 'Re-pick Alignment'
-		on_press: root.realignBackground()
+		on_release: root.realignBackground()
 		disabled: app.data.originalimage is None
     Button:
         text: 'Update Background'
         on_release: root.reloadBackground()
     Button:
         text: 'Remove Background'
-        on_press: root.clear_background()
+        on_release: root.clear_background()
     Button:
         text: 'Settings...'
-        on_press: root.openBackgroundSettings()
+        on_release: root.openBackgroundSettings()
     Button:
         text: 'Close'
         on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
