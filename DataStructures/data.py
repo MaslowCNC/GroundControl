@@ -66,7 +66,11 @@ class Data(EventDispatcher):
     backgroundTLPOS = (-1225, 615)
     backgroundBLPOS = (-1225,-615)
     backgroundBRPOS = ( 1225,-615)
-    
+
+    #Persist, no save:
+    backgroundLastFile = StringProperty("")
+    backgroundClock = None
+
     '''
     Flags
     '''
