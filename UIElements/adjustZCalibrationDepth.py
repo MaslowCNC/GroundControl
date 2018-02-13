@@ -7,11 +7,10 @@ from UIElements.zAxisPopupContent              import ZAxisPopupContent
 class AdjustZCalibrationDepth(Widget):
     '''
     
-    Provides a standard interface for running the calibration test pattern for triangular kinematics 
+    Provides a standard interface for setting up the Z axis 
     
     '''
     data                         =  ObjectProperty(None) #linked externally
-    zStepSizeVal                 =  .1                   #The default movement size for the z-axis
     
     def on_enter(self):
         '''
@@ -46,7 +45,7 @@ class AdjustZCalibrationDepth(Widget):
     def zAxisPopup(self):
         self.popupContent      = ZAxisPopupContent(done=self.dismissZAxisPopup)
         self.popupContent.data = self.data
-        self.popupContent.initialize(self.zStepSizeVal)
+        self.popupContent.initialize()
         self._zpopup = Popup(title="Z-Axis", content=self.popupContent,
                             size_hint=(0.5, 0.5))
         self._zpopup.open()
@@ -57,17 +56,18 @@ class AdjustZCalibrationDepth(Widget):
         Close The Z-Axis Pop-up
         
         '''
-        try:
-            self.zStepSizeVal = float(self.popupContent.distBtn.text)
-        except:
-            pass
         self._zpopup.dismiss()
     
     def zeroZ(self):
         '''
 
-        Define the z-axis to be currently at height 0
+        Define the z-axis to be currently at height 0 and move to the next step.
 
         '''
-        self.data.gcode_queue.put("G10 Z0 ")
-        self.carousel.load_next()
+        self.data.gcode_queue.put("G10 Z0 ")        #Set z-zero
+        if self.data.units == "INCHES":             #Go to traverse
+            self.data.gcode_queue.put("G00 Z.25 ")
+        else:
+            self.data.gcode_queue.put("G00 Z5.0 ")
+        
+        self.carousel.load_next()   #Next slide please...
