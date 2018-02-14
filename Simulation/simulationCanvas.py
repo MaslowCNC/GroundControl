@@ -38,6 +38,7 @@ class SimulationCanvas(GridLayout):
         self.leftChainOffset.bind(value=self.onSliderChange)
         self.rightChainOffset.bind(value=self.onSliderChange)
         self.rotationRadiusOffset.bind(value=self.onSliderChange)
+        self.chainSagCorrectionOffset.bind(value=self.onSliderChange)
 
         self.vertCGDist.bind(value=self.onSliderChange)
         self.gridSize.bind(value=self.onSliderChange)
@@ -81,6 +82,7 @@ class SimulationCanvas(GridLayout):
         self.leftChainOffset.value = 0
         self.rightChainOffset.value = 0
         self.rotationRadiusOffset.value = 0
+        self.chainSagCorrectionOffset.value = 0
         self.gridSize.value=300
 
     def recompute(self):
@@ -391,7 +393,10 @@ class SimulationCanvas(GridLayout):
         
         self.distortedKinematics.rotationDiskRadius = self.correctKinematics.rotationDiskRadius + self.rotationRadiusOffset.value
         self.rotationRadiusLabel.text = "Rotation Radius\nSpacing Error: " + "%.2f" % self.rotationRadiusOffset.value + "mm"
-        
+
+        self.distortedKinematics.chainSagCorrection = self.correctKinematics.chainSagCorrection + self.chainSagCorrectionOffset.value
+        self.chainSagCorrectionLabel.text = "Chain Sag\Correction Error: " + "%.2f" % self.chainSagCorrectionOffset.value
+
         #self.machineLabel.text = "distance between sled attachments ideal: "+str(self.correctKinematics.l)+" actual: "+str(self.distortedKinematics.l)+"mm\nvertical distance between sled attachments and bit ideal: "+str(self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.s)+"mm\nvertical distance between sled attachments and CG ideal: "+str(self.correctKinematics.h3+self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.h3+self.distortedKinematics.s)+"mm\ndistance between motors ideal: "+str(self.correctKinematics.D)+" actual: "+str(self.distortedKinematics.D)+"mm"
 
         self.gridSizeLabel.text = "Grid Size: "+str(int(self.gridSize.value))+"mm"

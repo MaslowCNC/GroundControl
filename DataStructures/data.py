@@ -26,7 +26,7 @@ class Data(EventDispatcher):
     
     #Gcodes contains all of the lines of gcode in the opened file
     gcode      = ObjectProperty([])
-    version    = '1.04'
+    version    = '1.06'
     #all of the available COM ports
     comPorts   = []
     #This defines which COM port is used
@@ -73,7 +73,15 @@ class Data(EventDispatcher):
     iconPath                                              =  StringProperty('./Images/Icons/normal/')
     posIndicatorColor                                     =  ObjectProperty([0,0,0])
     targetInicatorColor                                   =  ObjectProperty([1,0,0])
-    
+
+    '''
+    Misc UI bits that need to be saved between invocations (but not saved)
+    '''
+    zPush = None
+    zPushUnits = 'MM'
+    zReadoutPos = 0.00
+    zPopupUnits = None
+    zStepSizeVal = 0.1
     
     '''
     Queues

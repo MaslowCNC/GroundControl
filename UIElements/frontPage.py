@@ -13,6 +13,8 @@ from kivy.uix.popup                            import Popup
 from UIElements.touchNumberInput               import TouchNumberInput
 from UIElements.zAxisPopupContent              import ZAxisPopupContent
 from DataStructures.data                       import Data
+from math                                      import sqrt
+from time                                      import time
 import re
 import global_variables
 
@@ -27,17 +29,21 @@ class FrontPage(Screen, MakesmithInitFuncs):
     xReadoutPos = StringProperty("0 mm")
     yReadoutPos = StringProperty("0 mm")
     zReadoutPos = StringProperty("0 mm")
-    
+    ReadoutVel = StringProperty(" 0 mm/m")
+    gcodeVel = StringProperty(" 0 mm/m")
     percentComplete = StringProperty("0.0%")
     
     numericalPosX  = 0.0
     numericalPosY  = 0.0
 
     previousPosX = 0.0
-    previousPosY = 0.0    
+    previousPosY = 0.0   
+
+    lastpos=(0,0,0)
+    lasttime=0.0
+    tick=0
     
     stepsizeval  = 0
-    zStepSizeVal = .1
     
     consoleText  = StringProperty(" ")
     
@@ -88,7 +94,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.stopBtn.btnBackground              = self.data.iconPath + 'StopRed.png'
         
         self.goTo.btnBackground                 = self.data.iconPath + 'GoTo.png'
-    
+
     def buildReadoutString(self, value):
         '''
         
@@ -109,8 +115,31 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.xReadoutPos    = self.buildReadoutString(xPos)
         self.yReadoutPos    = self.buildReadoutString(yPos)
         self.zReadoutPos    = self.buildReadoutString(zPos)
+        
+        #So other widgets can access the position
+        self.data.zReadoutPos = zPos
+        
+        #Current Velocity is done here now, not in the firmware.
+        self.tick+=1
+        if self.tick>=4:    #Can't do this every time... it's too noisy, so we do it every 5rd time (0.1s).
+            self.tick=0
+            if self.lasttime <> 0.0:
+				try:
+					delta = sqrt( (xPos-self.lastpos[0])*(xPos-self.lastpos[0]) + (yPos-self.lastpos[1])*(yPos-self.lastpos[1]) + (zPos-self.lastpos[2]) * (zPos-self.lastpos[2]))
+					Vel = delta / (time()-self.lasttime) * 60.0 #In XXXX/minute
+				except:
+					print "unable to compute velocity"
+            else:
+                Vel=0
+                
+            self.lasttime = time()
+            self.lastpos = (xPos, yPos, zPos)
+            
+            self.ReadoutVel     = self.buildReadoutString(Vel)
         self.numericalPosX  = xPos
         self.numericalPosY  = yPos
+        
+        #ToDo: Do we want to start logging errors if self.RedoutVel < self.gcodeVel?  How do we know if we're supposed to be moving?
     
     def setUpData(self, data):
         self.gcodecanvas.setUpData(data)
@@ -124,7 +153,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.update_macro_titles()
     
     def updateConnectionStatus(self, callback, connected):
-        
         if connected:
             self.connectionStatus = "Connected"
         else:
@@ -153,7 +181,12 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def onIndexMove(self, callback, newIndex):
         self.gcodeLineNumber = str(newIndex)
         self.percentComplete = '%.1f' %(100* (float(newIndex) / (len(self.data.gcode)-1))) + "%"
-    
+        if newIndex >=1:
+            gCodeLine = self.data.gcode[newIndex-1] #We're executing newIndex-1... about to send newIndex
+            F = re.search("F(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+            if F:
+                self.gcodeVel = F.groups()[0]   #Otherwise, it stays what it was...
+            
     def onGcodeFileChange(self, callback, newGcode):
         pass
     
@@ -243,39 +276,47 @@ class FrontPage(Screen, MakesmithInitFuncs):
     def upLeft(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G00 X" + str(-1*self.stepsizeval) + " Y" + str(self.stepsizeval) + " G90 ")
+        self.gcodeVel = "[MAN]"
         
     def upRight(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G00 X" + str(self.stepsizeval) + " Y" + str(self.stepsizeval) + " G90 ")
+        self.gcodeVel = "[MAN]"
 
     def up(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G00 Y" + str(self.stepsizeval) + " G90 ")
+        self.gcodeVel = "[MAN]"
 
     def left(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G0 X" + str(-1*self.stepsizeval) + " G90 ")
+        self.gcodeVel = "[MAN]"
         
     def right(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G0 X" + str(self.stepsizeval) + " G90 ")
+        self.gcodeVel = "[MAN]"
         
     def downLeft(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G00 X" + str(-1*self.stepsizeval) + " Y" + str(-1*self.stepsizeval) + " G90 ")
+        self.gcodeVel = "[MAN]"
 
     def down(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G00 Y" + str(-1*self.stepsizeval) + " G90 ") 
+        self.gcodeVel = "[MAN]"
 
     def downRight(self):
         self.jmpsize()
         self.data.gcode_queue.put("G91 G00 X" + str(self.stepsizeval) + " Y" + str(-1*self.stepsizeval) + " G90 ")
+        self.gcodeVel = "[MAN]"
     
     def zAxisPopup(self):
         self.popupContent      = ZAxisPopupContent(done=self.dismissZAxisPopup)
         self.popupContent.data = self.data
-        self.popupContent.initialize(self.zStepSizeVal)
+        self.popupContent.initialize()
         self._popup = Popup(title="Z-Axis", content=self.popupContent,
                             size_hint=(0.5, 0.5))
         self._popup.open()
@@ -286,10 +327,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         Close The Z-Axis Pop-up
         
         '''
-        try:
-            self.zStepSizeVal = float(self.popupContent.distBtn.text)
-        except:
-            pass
         self._popup.dismiss()
     
     def home(self):
@@ -301,6 +338,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
         '''
         
         self.data.gcode_queue.put("G90  ")
+        self.gcodeVel = "[MAN]"
         
         if self.units == "INCHES":
             self.data.gcode_queue.put("G00 Z.25 ")

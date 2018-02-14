@@ -17,7 +17,8 @@ class SerialPortThread(MakesmithInitFuncs):
     
     machineIsReadyForData      = False # Tracks whether last command was acked
     lastWriteTime              = time.time()
-    bufferSpace                = 256
+    bufferSize                 = 256                #The total size of the arduino buffer
+    bufferSpace                = bufferSize         #The amount of space currently available in the buffer
     lengthOfLastLineStack      =  deque()
     
     # Minimum time between lines sent to allow Arduino to cope
@@ -38,12 +39,19 @@ class SerialPortThread(MakesmithInitFuncs):
         message = message + '\n'
         
         self.bufferSpace       = self.bufferSpace - len(message)        #shrink the available buffer space by the length of the line
+        
         self.machineIsReadyForData = False
         
         #if this is a quick message sent as soon as the button is pressed (like stop) then put it on the right side of the queue
         #because it is the first message sent, otherwise put it at the end (left) because it is the last message sent
         if isQuickCommand:
-            self.lengthOfLastLineStack.append(len(message))
+            if message[0] == '!':
+                #if we've just sent a stop command, the buffer is now empty on the arduino side
+                self.lengthOfLastLineStack.clear()
+                self.bufferSpace = self.bufferSize - len(message)
+                self.lengthOfLastLineStack.append(len(message)) 
+            else:
+                self.lengthOfLastLineStack.append(len(message))
         else:
             self.lengthOfLastLineStack.appendleft(len(message))
         
@@ -135,13 +143,13 @@ class SerialPortThread(MakesmithInitFuncs):
                     self._write(command, True)
                 
                 #send regular instructions to the machine if there are any
-                if self.bufferSpace == 256 and self.machineIsReadyForData:
+                if self.bufferSpace == self.bufferSize and self.machineIsReadyForData:
                     if self.data.gcode_queue.empty() != True:
                         command = self.data.gcode_queue.get_nowait() + " "
                         self._write(command)
                 
                 #Send the next line of gcode to the machine if we're running a program
-                if self.bufferSpace == 256 and self.machineIsReadyForData: #> len(self.data.gcode[self.data.gcodeIndex]):
+                if self.bufferSpace == self.bufferSize and self.machineIsReadyForData: #> len(self.data.gcode[self.data.gcodeIndex]):
                     if self.data.uploadFlag:
                         self._write(self.data.gcode[self.data.gcodeIndex])
                         
