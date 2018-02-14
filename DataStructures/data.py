@@ -52,24 +52,11 @@ class Data(EventDispatcher):
     logger     =  Logger()                                          #the module which records the machines behavior to review later
 
     #Background image stuff
-    #Temporary variables
-    backgroundImage = None
-    originalimage = None
-
-    #Config Items
-    backgroundFile = StringProperty("")
-    backgroundTLHSV = [(30,40,80),(90,255,255)]
-    backgroundTRHSV = [(160, 60, 40),(10,255,255)]
-    backgroundBLHSV = [(90,60,80),(140,255,255)]
-    backgroundBRHSV = [(160, 60, 40),(10,255,255)]
-    backgroundTRPOS = ( 1225, 615)
-    backgroundTLPOS = (-1225, 615)
-    backgroundBLPOS = (-1225,-615)
-    backgroundBRPOS = ( 1225,-615)
-
-    #Persist, no save:
-    backgroundLastFile = StringProperty("")
-    backgroundClock = None
+    #Persist, No save:
+    backgroundImage = None  #CV2 images for the textures - marked
+    originalimage = None    #and original
+    backgroundLastFile = StringProperty("") #Last file loaded for the background
+    backgroundClock = None                  #And a saver for the Periodic Update clock.
 
     '''
     Flags

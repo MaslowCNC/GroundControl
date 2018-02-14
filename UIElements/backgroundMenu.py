@@ -73,15 +73,17 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         Open The Pop-up To Load A File
         Creates a new pop-up which can be used to open a file.
         '''
+        print 'spath [%s]'%self.data.backgroundFile
         #starting path is either where the last opened file was or the users home directory
-        if not os.path.isdir(self.data.backgroundFile):
-            startingPath = os.path.dirname(self.data.backgroundFile)
-        else:
-            startingPath = self.data.backgroundFile #Don't go up a dir if the "backgroundFile" is a directory!
+        if self.data.backgroundFile is not None:
+            if not os.path.isdir(self.data.backgroundFile):
+                startingPath = os.path.dirname(self.data.backgroundFile)
+            else:
+                startingPath = self.data.backgroundFile #Don't go up a dir if the "backgroundFile" is a directory!
 
-        if startingPath is "": 
+        if startingPath is None or len(startingPath) == 0: 
             startingPath = os.path.expanduser('~')
-        
+                
         #We want to filter to show only files that ground control can open
         validFileTypes = graphicsExtensions
         validFileTypes = ['*{0}'.format(fileType) for fileType in validFileTypes] #add a '*' to each one to match the format the widget expects
@@ -115,7 +117,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
 
         #If file is a directory, then "load the latest from that directory"
         if not os.path.isdir(file):
-            return false #I'm not going to automatically reload the same file
+            return False #I'm not going to automatically reload the same file
         else:
             files = os.listdir(file)
             filelst =[]
@@ -124,9 +126,9 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
                     filelst.append(os.path.join(file,afile))
             filelst.sort(key=os.path.getmtime, reverse=True)
 
-            if len(filelst) == 0:
+            if len(filelst) == 0:   #No graphics files, so don't try to load them..
                 file=None
-                return
+                return False
 
             file = filelst[0]
 

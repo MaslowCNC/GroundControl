@@ -58,123 +58,7 @@ class GroundControlApp(App):
 
     def get_application_config(self):
         return super(GroundControlApp, self).get_application_config(
-            '~/%(appname)s.ini')
-    
-    backgroundimg = '''
-    [
-        {
-            "type": "string",
-            "title": "Last Loaded Background File",
-            "desc": "Last Loaded Background File (or directory)",
-            "section": "Background Image",
-            "key": "backgroundFile"
-        },
-        {
-            "type": "string",
-            "title": "Top-Left HSV Limits",
-            "desc": "Color specifier for Top-Left Alignment Mark\\ndefault setting: %s",
-            "section": "Background Image",
-            "key": "backgroundTLHSV"
-        },
-        {
-            "type": "string",
-            "title": "Top-Right HSV Limits",
-            "desc": "Color specifier for Top-Right Alignment Mark\\ndefault setting: %s",
-            "section": "Background Image",
-            "key": "backgroundTRHSV"
-        },
-        {
-            "type": "string",
-            "title": "Bottom-Left HSV Limits",
-            "desc": "Color specifier for Bottom Left Alignment Mark\\ndefault setting: %s",
-            "section": "Background Image",
-            "key": "backgroundBLHSV"
-        },
-        {
-            "type": "string",
-            "title": "Bottom-Right HSV Limits",
-            "desc": "Color specifier for Bottom-Right Alignment Mark\\ndefault setting: %s",
-            "section": "Background Image",
-            "key": "backgroundBRHSV"
-        },
-        {
-            "type": "string",
-            "title": "Top Left Position",
-            "desc": "The Top Left Marker position\\ndefault setting: %s",
-            "section": "Background Image",
-            "key": "backgroundTLPOS"
-        },
-        {
-            "type": "string",
-            "title": "Top Right Position",
-            "desc": "The Top Right Marker position\\ndefault setting: %s",
-            "section": "Background Image",
-            "key": "backgroundTRPOS"
-        },
-        {
-            "type": "string",
-            "title": "Bottom Left Position",
-            "desc": "The Bottom Left Marker position\\ndefault setting: %s",
-            "section": "Background Image",
-            "key": "backgroundBLPOS"
-        },
-        {
-            "type": "string",
-            "title": "Bottom Right Position",
-            "desc": "The Bottom Right Marker position\\ndefault setting: %s",
-            "section": "Background Image",
-            "key": "backgroundBRPOS"
-        }
-    ]
-    ''' % (
-        #File didn't have a %s, so it's not included here.
-        global_variables._backgroundTLHSV,
-        global_variables._backgroundTRHSV,
-        global_variables._backgroundBLHSV,
-        global_variables._backgroundBRHSV,
-        global_variables._backgroundTRPOS,
-        global_variables._backgroundTLPOS,
-        global_variables._backgroundBLPOS,
-        global_variables._backgroundBRPOS  
-        )
-    
-    gcsettings = '''
-    [
-        {
-            "type": "bool",
-            "title": "Center Canvas on Window Resize",
-            "desc": "When resizing the window, automatically reset the Gcode canvas to be centered and zoomed out. Program must be restarted to take effect.\\ndefault setting: %s",
-            "section": "Ground Control Settings",
-            "key": "centerCanvasOnResize"
-        },
-        {
-            "type": "string",
-            "title": "Zoom In",
-            "desc": "Pressing this key will zoom in. Note combinations of keys like \'shift\' + \'=\' may not work as expected. Program must be restarted to take effect.\\ndefault setting: %s",
-            "section": "Ground Control Settings",
-            "key": "zoomIn"
-        },
-        {
-            "type": "string",
-            "title": "Zoom Out",
-            "desc": "Pressing this key will zoom in. Note combinations of keys like \'shift\' + \'=\' may not work as expected. Program must be restarted to take effect.\\ndefault setting: %s",
-            "section": "Ground Control Settings",
-            "key": "zoomOut"
-        },
-        {
-            "type": "string",
-            "title": "Valid File Extensions",
-            "desc": "Valid file extensions for Ground Control to open. Comma separated list.\\ndefault setting: %s",
-            "section": "Ground Control Settings",
-            "key": "validExtensions"
-        }
-    ]
-    ''' % (
-        global_variables._centerCanvasOnResize,
-        global_variables._zoomIn,
-        global_variables._zoomOut,
-        global_variables._validExtensions
-        )
+            '~/%(appname)s.ini')    
     
     def build(self):
         
@@ -269,18 +153,6 @@ class GroundControlApp(App):
         config.setdefaults('Advanced Settings', maslowSettings.getDefaultValueSection('Advanced Settings'))
         config.setdefaults('Ground Control Settings', maslowSettings.getDefaultValueSection('Ground Control Settings'))
         config.remove_callback(self.computeSettings)
-        
-
-        config.setdefaults('Background Settings', {'backgroundFile'   : global_variables._backgroundFile,
-                                                   'backgroundTLHSV'  : global_variables._backgroundTLHSV,
-                                                   'backgroundTRHSV'  : global_variables._backgroundTRHSV,
-                                                   'backgroundBLHSV'  : global_variables._backgroundBLHSV,
-                                                   'backgroundBRHSV'  : global_variables._backgroundBRHSV,
-                                                   'backgroundTRPOS'  : global_variables._backgroundTRPOS,
-                                                   'backgroundTLPOS'  : global_variables._backgroundTLPOS,
-                                                   'backgroundBLPOS'  : global_variables._backgroundBLPOS,
-                                                   'backgroundBRPOS'  : global_variables._backgroundBRPOS 
-                                            })
                                             
     def build_settings(self, settings):
         """

@@ -375,7 +375,7 @@ settings = {
                 "default": ".nc, .ngc, .text, .gcode"
             }
         ],
-    "Computed Settings": #These are setting calculated from the user inputs on other settings, they are not direclty seen by the user
+    "Computed Settings": #These are setting calculated from the user inputs on other settings, they are not directly seen by the user
         [
             {
                 "type": "string",
@@ -466,6 +466,70 @@ settings = {
                 "type": "string",
                 "key": "fPWMComputed",
                 "firmwareKey": 39
+            }
+        ],
+    "Background Settings": #These settings are used by the BackgroundImage routines
+        [
+            {
+                "type": "string",
+                "title": "Background File or Directory",
+                "desc": "Last background file (or a directory, indicating 'latest here'.",
+                "key": "backgroundFile",
+            },
+            {
+                "type": "list",
+                "title": "TL Position",
+                "desc": "Top Left Position from 0,0 in mm.",
+                "key": "TLPos",
+                "default": (-1225, 615),
+            },
+            {
+                "type": "list",
+                "title": "TR Position",
+                "desc": "Top Right Position from 0,0 in mm.",
+                "key": "TLPos",
+                "default": (1225, 615),
+            },            {
+                "type": "list",
+                "title": "BL Position",
+                "desc": "Bottom Left Position from 0,0 in mm.",
+                "key": "BLPos",
+                "default": (-1225, -615),
+            },            
+            {
+                "type": "list",
+                "title": "BR Position",
+                "desc": "Bottom Right Position from 0,0 in mm.",
+                "key": "BRPos",
+                "default": (1225, -615),
+            },
+            {
+                "type": "list",
+                "title": "TL HSV",
+                "desc": "Top-Left HSV Interval.",
+                "key": "TLHSV",
+                "default": [(30,40,80),(90,255,255)],
+            },
+            {
+                "type": "list",
+                "title": "TR HSV",
+                "desc": "Top-Right HSV Interval.",
+                "key": "TRHSV",
+                "default": [(160, 60, 40),(10,255,255)],
+            },
+            {
+                "type": "list",
+                "title": "BL HSV",
+                "desc": "Bottom-Left HSV Interval.",
+                "key": "BLHSV",
+                "default": [(90,60,80),(140,255,255)],
+            },
+            {
+                "type": "list",
+                "title": "BR HSV",
+                "desc": "Bottom-Right HSV Interval.",
+                "key": "BRHSV",
+                "default": [(160, 60, 40),(10,255,255)],
             }
         ]
 }
