@@ -153,6 +153,7 @@
                 funcToCallOnPress: root.downRight
             ButtonTemplate:
                 id: zAxisBtn
+				disabled: app.data.uploadFlag == 1 #zAxisPopup can change units... don't let it be popped during a move!
                 text: 'Z-Axis'
                 funcToCallOnPress: root.zAxisPopup
             Label:
@@ -242,6 +243,12 @@
                 Label:
                     text: root.zReadoutPos
                     color: .476, .476, .476,1
+                Label:
+                    text: '                 Vel : '
+                    color: .476, .476, .476,1
+                Label:
+                    text: root.ReadoutVel
+                    color: .476, .476, .476,1
             GridLayout:
                 cols: 1
                 Label:
@@ -253,6 +260,9 @@
                     color: .476, .476, .476,1
                 Label:
                     text: root.gcodeLineNumber
+                    color: .476, .476, .476,1
+				Label:
+                    text: root.gcodeVel
                     color: .476, .476, .476,1
         Label:
             text: root.connectionStatus
@@ -280,9 +290,11 @@
     Button:
         text: 'Open File'
         on_press: root.openFile()
+		disabled: app.data.uploadFlag == 1
     Button:
         text: 'Update Gcode'
         on_release: root.reloadGcode()
+		disabled: app.data.uploadFlag == 1
     Button:
         text: 'View Gcode'
         disabled: False
@@ -576,35 +588,79 @@
     size: root.size
     pos: root.pos
     GridLayout:
-        cols: 2
+        cols: 3
         GridLayout:
             size_hint_x: ".75sp"
-            cols: 3
-            rosw: 2
-            Button:
-                text: ".1"
-                id: distBtn
-                on_release: root.setDist()
+            cols: 4
+            rows: 4
+			Label:
+				text: ""
+				size_hint_y: 0.2
+			Label:
+				size_hint_y: 0.2
+			Label:
+				text: "Relative"
+				size_hint_y: 0.2
+			Label:
+				text: "Absolute"
+				size_hint_y: 0.2
+			Button:
+				text: "%.2f"%app.data.zStepSizeVal
+				id: distBtn
+				on_release: root.setDist()
             Button:
                 text: "MM"
                 on_release: root.units()
                 id: unitsBtn
-            Button:
-                text: "Raise"
-                on_release: root.zOut()
+			Button:
+				text: "Raise"
+				on_release: root.zOut()
+			GridLayout:
+				cols:1
+				rows:2
+				Button:
+					text: "Plunge to\n-"+root.distBtn.text
+					halign: "center"
+					on_release: root.goThere()
+				Button:
+					text: "Save and\nRaise to\nTraverse"
+					halign: "center"
+					on_release: root.zUp()
             Button:
                 text: "Done"
-                on_release: root.done()
-            Button:
-                text: "Define Zero"
-                on_release: root.zero()
-            Button:
-                text: "Lower"
-                on_release: root.zIn()
+                on_release: root.close()
+			GridLayout:
+				cols: 1
+				rows: 2
+				Button:
+					text: "Define Zero"
+					on_release: root.zero()
+				Button:
+					size_hint_y: 0.2
+					text: "Touch Zero"
+					on_release: root.touchZero()
+					disabled: True
+			Button:
+				text: "Lower"
+				on_release: root.zIn()
+			GridLayout:
+				cols:1
+				rows:2
+				Button:
+					text: "Go to Zero"
+					on_release: root.zToZero()
+				Button:
+					text: root.zCutLabel
+					halign: "center"
+					disabled: root.zPopDisable
+					on_release: root.zToCut()
+			Label:
+				text: ""
+				size_hint_y: 0.2
         GridLayout:
             size_hint_x: ".25sp"
             cols: 1
-            rosw: 1
+            rows: 1
             Button:
                 text: "Stop!"
                 # font_size: '48sp'
@@ -687,6 +743,92 @@
                 on_release: root.stopCut()
             Label:
 
+<MeasureDistBetweenMotors>
+    distToMove:distToMove
+    distText:distText
+    GridLayout:
+        cols: 2
+        width: root.width
+        height: root.height
+        GridLayout:
+            cols: 1
+            Label:
+                text: "Rather than using a tape measure to measure the spacing between the motors, we're going to use the chain.\n\nHook the first link from the left chain over the top tooth on the left motor\n\nThen, use the buttons to the right to extend the chain until it can reach the right motor.\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way\n\nHook the third link on the right motor's 12:00 tooth as shown in the picture below\n\nPull the chain tight by pressing Pull Chain Tight. You can use this button repeatedly if needed\n\nPress Measure when the chain is taught"
+                size_hint_x: leftCol
+            GridLayout:
+                cols: 3
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Chain On Left Sprocket.jpg"
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Chain Between Sprockets.jpg"
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Chain On Right Sprocket.jpg"
+        GridLayout:
+            cols: 1
+            size_hint_x: rightCol
+            Label:
+            Label:
+                text: "Dist(MM):"
+                id: distText
+            Button:
+                text: "100"
+                on_release: root.textInputPopup(self)
+                id: distToMove
+            Button:
+                text: "Extend"
+                on_release: root.extend()
+            Button:
+                text: "Retract"
+                on_release: root.retract()
+            Button:
+                text: 'Pull Chain Tight'
+                on_release: root.pullChainTight()
+            Button:
+                text: 'Measure'
+                on_release: root.measureLeft()
+            Button:
+                text: "Stop\nMotors"
+                on_release: root.stopCut()
+            Label:
+
+<AdjustZCalibrationDepth>:
+    zAxisActiveSwitch:zAxisActiveSwitch
+    openZPopupBtn:openZPopupBtn
+    GridLayout:
+        cols: 2
+        width: root.width
+        height: root.height
+        GridLayout:
+            cols: 1
+            size_hint_x: leftCol
+            Label:
+                text: "Next, we are going to define the home position for the z-axis\n\nIf you have an automatic z-axis installed use the buttons to enable it and adjust the z-axis until the router bit\nbarely touches the surface of the wood. Then press Define Zero\n\nIf you do not have the z-axis installed, adjust your router until the router bit just barely\ntouches the surface of the wood, then press Define Zero"
+                size_hint_x: leftCol
+            GridLayout:
+                cols: 2
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
+        GridLayout:
+            cols: 1
+            size_hint_x: rightCol
+            Label:
+            GridLayout:
+                cols: 2
+                Label:
+                    text: 'Enable\nAutomatic Z-Axis:'
+                Switch:
+                    on_active: root.enableZaxis()
+                    id: zAxisActiveSwitch
+            Button:
+                text: "Adjust Z-Axis"
+                on_release: root.zAxisPopup()
+                disabled:True
+                id: openZPopupBtn
+            Button:
+                text: 'Define Zero'
+                on_release: root.zeroZ()
+            Label:
+                
 <SetSprocketsVertical>:
     #Set sprockets to 12 o'clock
     GridLayout:
@@ -811,27 +953,35 @@
     vertMeasure:vertMeasure
     unitsBtn:unitsBtn
     enterValues:enterValues
-    zAxisActiveSwitch:zAxisActiveSwitch
     setSprocketsVertical:setSprocketsVertical
     measureOutChains:measureOutChains
     triangularCalibration:triangularCalibration
     finishText:finishText
+    adjustZStep:adjustZStep
+    measureMotorDist:measureMotorDist
 
     cols: 1
     size: root.size
     pos: root.pos
     #top bar
     GridLayout:
-        cols: 3
+        cols: 4
         size_hint_y: .1
         Button:
+			size_hint_x: .2
             text: "<Go Back"
             on_release: root.backBtn()
             id: goBackBtn
             disabled: True
-        Label:
+		Button:
+			size_hint_x: .1
+			text: "QUIT"
+			on_release: root.done()
+			id: closeBtn
+		Label:
             text: root.stepText#Step {} of 9'.format(carousel.index)
         Button:
+			size_hint_x: .2
             text: "Skip>"
             id: goFwdBtn
             on_release: root.fwdBtn()
@@ -866,47 +1016,11 @@
             cols: 1
             SetSprocketsVertical:
                 id: setSprocketsVertical
+        #Measure the distance between the motors
         GridLayout:
-            cols: 2
-            GridLayout:
-                cols: 1
-                Label:
-                    text: "Rather than using a tape measure to measure the spacing between the motors, we're going to use the chain.\n\nHook the first link from the left chain over the top tooth on the left motor\n\nThen, use the buttons to the right to extend the chain until it can reach the right motor.\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way\n\nHook the third link on the right motor's 12:00 tooth as shown in the picture below\n\nPull the chain tight by pressing Pull Chain Tight. You can use this button repeatedly if needed\n\nPress Measure when the chain is taught"
-                    size_hint_x: leftCol
-                GridLayout:
-                    cols: 3
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Chain On Left Sprocket.jpg"
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Chain Between Sprockets.jpg"
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Chain On Right Sprocket.jpg"
-            GridLayout:
-                cols: 1
-                size_hint_x: rightCol
-                Label:
-                Button:
-                    text: 'Extend Left Chain 1mm'
-                    on_release: root.extendLeft(1)
-                Button:
-                    text: 'Extend Left Chain 10mm'
-                    on_release: root.extendLeft(10)
-                Button:
-                    text: 'Extend Left Chain 100mm'
-                    on_release: root.extendLeft(100)
-                Button:
-                    text: 'Extend Left Chain 1000mm'
-                    on_release: root.extendLeft(1000)
-                Button:
-                    text: 'Pull Chain Tight'
-                    on_release: root.pullChainTight()
-                Button:
-                    text: 'Measure'
-                    on_release: root.measureLeft()
-                Button:
-                    text: "Stop\nMotors"
-                    on_release: root.stopCut()
-                Label:
+            cols: 1
+            MeasureDistBetweenMotors:
+                id: measureMotorDist
         #Measure sled spacing
         GridLayout:
             cols: 2
@@ -999,44 +1113,9 @@
                 id: measureOutChains
         #set z-axis depth
         GridLayout:
-            cols: 2
-            GridLayout:
-                cols: 1
-                size_hint_x: leftCol
-                Label:
-                    text: "Next, we are going to define the home position for the z-axis\n\nIf you have an automatic z-axis installed use the buttons to enable it and adjust the z-axis until the router bit\nbarely touches the surface of the wood. Then press Define Zero\n\nIf you do not have the z-axis installed, adjust your router until the router bit just barely\ntouches the surface of the wood, then press Define Zero"
-                    size_hint_x: leftCol
-                GridLayout:
-                    cols: 2
-                    Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
-            GridLayout:
-                cols: 1
-                size_hint_x: rightCol
-                Label:
-                GridLayout:
-                    cols: 2
-                    Label:
-                        text: 'Enable\nAutomatic Z-Axis:'
-                    Switch:
-                        on_active: root.enableZaxis()
-                        id: zAxisActiveSwitch
-                Button:
-                    text: 'Raise Z-Axis 1mm'
-                    on_release: root.moveZ(1)
-                Button:
-                    text: 'Raise Z-Axis .1mm'
-                    on_release: root.moveZ(.1)
-                Button:
-                    text: 'Lower Z-Axis 1mm'
-                    on_release: root.moveZ(-1)
-                Button:
-                    text: 'Lower Z-Axis .1mm'
-                    on_release: root.moveZ(-.1)
-                Button:
-                    text: 'Define Zero'
-                    on_release: root.zeroZ()
-                Label:
+            cols: 1
+            AdjustZCalibrationDepth:
+                id: adjustZStep
         #choose kinematics type
         GridLayout:
             cols: 2
@@ -1191,6 +1270,8 @@
     gridSizeLabel:gridSizeLabel
     rotationRadiusOffset:rotationRadiusOffset
     rotationRadiusLabel:rotationRadiusLabel
+    chainSagCorrectionOffset:chainSagCorrectionOffset
+    chainSagCorrectionLabel:chainSagCorrectionLabel
     kinematicsSelect:kinematicsSelect
 
     rows: 3
@@ -1312,6 +1393,18 @@
                 value: 0
                 disabled: root.isQuadKinematics
                 id: rotationRadiusOffset
+            Label:
+                text: "Chain Sag Correction"
+                text_size: self.width, self.height
+                font_size: sp(self.height)/sp(3)
+                disabled: root.isQuadKinematics
+                id: chainSagCorrectionLabel
+            Slider:
+                min: -50
+                max:50
+                value: 0
+                disabled: root.isQuadKinematics
+                id: chainSagCorrectionOffset
             Label:
                 text: "Grid Size: 150mm"
                 text_size: self.width, self.height
