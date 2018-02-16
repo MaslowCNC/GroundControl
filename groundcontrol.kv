@@ -109,7 +109,7 @@
         id: gcodecanvas
     BoxLayout:
         orientation: 'vertical'
-        pos: root.width - dp(300), root.height - dp(630)
+        pos: root.width - dp(300), dp(0)
         GridLayout:
             cols: 4
             size_hint: None, None
@@ -273,7 +273,7 @@
             color: .476, .476, .476,1
         ScrollableLabel:
             id: textconsole
-            size: dp(300), dp(200)
+            size: dp(300), root.height - dp(430)
             text: root.consoleText
             size_hint: None, None
 
