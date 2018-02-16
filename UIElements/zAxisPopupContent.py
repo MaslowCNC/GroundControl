@@ -140,9 +140,9 @@ class ZAxisPopupContent(GridLayout):
         '''
         self.setMachineUnits()
         if self.data.units == "INCHES":
-            self.data.gcode_queue.put("G38.2 Z2 F2")    #Only go down 2 inches...
+            self.data.gcode_queue.put("G38.2 Z-.2 F2")    #Only go down 0.2 inches...
         else:
-            self.data.gcode_queue.put("G38.2 Z50 F50")  #Or 50mm.
+            self.data.gcode_queue.put("G38.2 Z-.5 F50")  #Or 0.5mm.
         self.resetMachineUnits()
             
     
