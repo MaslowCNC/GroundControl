@@ -216,7 +216,7 @@ settings = {
                 "type": "bool",
                 "title": "Spindle Automation",
                 "desc": "Should the spindle start and stop automatically based on gcode? Leave off for default stepper control.",
-                "key": "zAxisAuto",
+                "key": "spindleAutomate",
                 "default": 0,
                 "firmwareKey": 17
             },
