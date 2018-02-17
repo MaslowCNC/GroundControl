@@ -1,6 +1,7 @@
 from   kivy.uix.gridlayout                       import   GridLayout
 from   UIElements.fileBrowser                    import   FileBrowser
 from   UIElements.pageableTextPopup              import   PageableTextPopup
+from   kivy.utils                                import   escape_markup
 from   kivy.uix.popup                            import   Popup
 import re
 from DataStructures.makesmithInitFuncs           import MakesmithInitFuncs
@@ -145,7 +146,10 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
             
             for lineNum, gcodeLine in enumerate(orgcode):
                 if lineNum>=line and lineNum<line+447:
-                    popupText = popupText + str(lineNum+1) + ': ' + gcodeLine + "  {"+self.data.gcode[lineNum]+ "}\n"
+                    if lineNum == self.data.gcodeIndex:
+                        popupText = popupText + str(lineNum+1) + '> ' + gcodeLine + "  {"+self.data.gcode[lineNum]+ "}\n"
+                    else:
+                        popupText = popupText + str(lineNum+1) + ': ' + gcodeLine + "  {"+self.data.gcode[lineNum]+ "}\n"                    
                 elif lineNum>=line+447:
                     popupText = popupText + "...\n...\n...\n"
                     break
@@ -155,7 +159,7 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         content = PageableTextPopup(cancel = self.dismiss_popup,
                                       prev = self.show_gcode_prev,
                                       next = self.show_gcode_next,
-                                      text = popupText)
+                                      text = popupText, markup=True)
 
         self._popup = Popup(title=titleString, content=content,
                             size_hint=(0.9, 0.9))
