@@ -115,7 +115,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
 
         #If file is a directory, then "load the latest from that directory"
         if not os.path.isdir(file):
-            return false #I'm not going to automatically reload the same file
+            return False #I'm not going to automatically reload the same file
         else:
             files = os.listdir(file)
             filelst =[]
