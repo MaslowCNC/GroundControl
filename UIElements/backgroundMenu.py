@@ -134,6 +134,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
     def processBackground(self):
         if self.data.backgroundFile=="":
             self.data.backgroundImage = None
+            self.data.gcodeRedraw=True
         else:
             self.data.logger.writeToLog("ProcessBackground: "+self.data.backgroundFile)
             file=self.data.backgroundFile
@@ -225,10 +226,8 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             
             self.data.backgroundImage = cv2.warpPerspective(self.data.backgroundImage,M,(w,h))
                 
-        #Trigger a reload
-        filePath = self.data.gcodeFile
-        self.data.gcodeFile = ""
-        self.data.gcodeFile = filePath
+        #Trigger a redraw
+        self.data.gcodeRedraw=True
         
     def clear_background(self):
         '''
