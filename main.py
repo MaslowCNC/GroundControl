@@ -267,7 +267,7 @@ class GroundControlApp(App):
     
     def writeToTextConsole(self, message):
         try:
-            newText = self.frontpage.consoleText[-500:] + message
+            newText = self.frontpage.consoleText[-2000:] + message
             self.frontpage.consoleText = newText
             self.frontpage.textconsole.gotToBottom()  
         except:
