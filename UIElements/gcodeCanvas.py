@@ -205,37 +205,9 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
  
         with self.scatterObject.canvas:
             Color(.47, .47, .47)
+
             img = self.data.backgroundImage
-            
-            if img is not None: #If img is None, then no background.  Skip this mess.
-                print "DrawBkgrnd"
-                w=int(img.shape[0])
-                h=int(img.shape[1])
-                #For a canvas, it goes in as a texture on a rectangle, so make the texture
-                texture = Texture.create(size=(h,w))
 
-			#TMJ
-			#Load Background
-            #ToDo - Put this code someplace useful
-            print "CalcBkgrnd"
-            img = cv2.imread('c:\crap\cv2\T3i2.JPG')
-            hsv = hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)    #HSV colorspace is easier to do "Color" than RGB
-            xmax=img.shape[1]
-            ymax=img.shape[0]
-            xmid = xmax/2
-            ymid = ymax/2;
-
-            #Find the centers of the markers:ToDo - handle duplicate/unique colors properly...
-            centers = []
-            for c in findHSVcenter(img, hsv, backgroundTLHSV[0], backgroundTLHSV[1], (0,0), (xmid,ymid)):
-                centers.append(c)
-            for c in findHSVcenter(img, hsv, backgroundTRHSV[0], backgroundTRHSV[1], (xmid,0),(xmax, ymid)):
-                centers.append(c)
-            for c in findHSVcenter(img, hsv, backgroundBLHSV[0], backgroundBLHSV[1], (0,ymid), (xmid, ymax)):
-                centers.append(c)
-            for c in findHSVcenter(img, hsv, backgroundBRHSV[0], backgroundBRHSV[1], (xmid,ymid), (xmax, ymax)):
-                centers.append(c)
-            
             if img is not None: #If img is None, then no background.  Skip this mess.
                 print "DrawBkgrnd"
                 w=int(img.shape[0])
