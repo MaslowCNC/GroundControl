@@ -59,7 +59,7 @@ class GroundControlApp(App):
     def get_application_config(self):
         return super(GroundControlApp, self).get_application_config(
             '~/%(appname)s.ini')    
-    114    
+    
     def build(self):
         
         interface       =  FloatLayout()
@@ -154,7 +154,7 @@ class GroundControlApp(App):
         config.setdefaults('Ground Control Settings', maslowSettings.getDefaultValueSection('Ground Control Settings'))
         config.setdefaults('Background Settings', maslowSettings.getDefaultValueSection('Background Settings'))
         config.remove_callback(self.computeSettings)
-        
+                                            
     def build_settings(self, settings):
         """
         Add custom section to the default configuration object.
@@ -345,10 +345,6 @@ class GroundControlApp(App):
                 pass #displaying all the 'ok' messages clutters up the display
             else:
                 self.writeToTextConsole(message)
-
-        #See if we got a new file in the Background Image Directory -- ToDo: Every time?
-        #if self.frontpage.BackgroundMenu.DoesNewFileExist():
-        #   self.frontpage.BackgroundMenu.processBackground()
 
         #See if we got a new file in the Background Image Directory -- ToDo: Every time?
         #if self.frontpage.BackgroundMenu.DoesNewFileExist():

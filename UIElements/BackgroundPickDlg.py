@@ -107,8 +107,5 @@ class BackgroundPickDlg(GridLayout, MakesmithInitFuncs):
     def touched(self, isntance,  touch):
         self.armed=True
         
-    def touchmove(self, touch):
-        print "tmove"
+    def touchmove(self, isntance, touch):
         pass
-        
-        
