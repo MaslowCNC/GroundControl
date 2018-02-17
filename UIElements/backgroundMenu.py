@@ -129,7 +129,6 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
                 return
 
             file = filelst[0]
-
             return file <> self.data.backgroundLastFile
 
     def processBackground(self):
@@ -242,21 +241,25 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
     def load(self, instance):
         '''
         Load A Background Image File from the file dialog
-        Takes in a file path (from pop-up) and handles the file appropriately for the given file-type.
+        Takes in a file path (from the pop-up filepicker) (or directory, if no file picked) and processes it.
         '''
         if len(instance.selection)==1:
             filename = instance.selection[0]
         else:
             filename = instance.path    #User pressed Submit without picking a file, indicating "newest in this dir"
+
+        #Save the file in the config...
         self.data.backgroundFile = filename
         self.data.config.set('Background Settings', 'openFile', str(self.data.backgroundFile))
         self.data.config.write()
         
         #close the open file popup
         self.dismiss_popup()
+        
+        #process it
         self.processBackground()
         
-        #And close the menu
+        #Close the menu, going back to the main page.
         self.close()
     
     def openBackgroundSettings(self):
@@ -295,8 +298,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
     
     def dismiss_popup(self, *args):
         '''
-        
         Close The File Picker (cancel was pressed instead of OK).
-        
         '''
         self._popup.dismiss()
+        pass #And take no other action...
