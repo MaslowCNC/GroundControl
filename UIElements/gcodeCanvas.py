@@ -48,13 +48,15 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         if self.data.config.getboolean('Ground Control Settings', 'centerCanvasOnResize'):
             Window.bind(on_resize = self.centerCanvas)
 
-        self.data.bind(gcode = self.updateGcode)
-        self.data.bind(gcodeShift = self.reloadGcode)
-        self.data.bind(gcodeFile = self.centerCanvasAndReloadGcode)
+        self.data.bind(gcode = self.updateGcode)                    #Parses self.data.gcode and draws if you change self.data.gcode
+        self.data.bind(gcodeRedraw = self.updateGcode)              #Easy way for other pieces to call for a redraw with no changes
+        self.data.bind(gcodeShift = self.updateGcode)               #No need to reload if the origin is changed, just clear and redraw
+        self.data.bind(gcodeFile = self.centerCanvasAndReloadGcode) #If filename changed, center canvas and reload file
         
         global_variables._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         global_variables._keyboard.bind(on_key_down=self._on_keyboard_down)
         
+        #Load it up from the saved data
         self.centerCanvasAndReloadGcode()
     
     def addPoint(self, x, y):
@@ -116,49 +118,54 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
 
         try:
             filterfile = open(filename, 'r')
-            rawfilters = filterfile.read()
-
-            filtersparsed = re.sub(r'\(([^)]*)\)','\n',rawfilters) #replace mach3 style gcode comments with newline
-            filtersparsed = re.sub(r';([^\n]*)\n','\n',filtersparsed) #replace standard ; initiated gcode comments with newline
-            filtersparsed = re.sub(r'\n\n','\n',filtersparsed) #removes blank lines
-            filtersparsed = re.sub(r'([0-9])([GXYZIJFTM]) *', '\\1 \\2',filtersparsed) #put spaces between gcodes
-            filtersparsed = re.sub(r'  +',' ',filtersparsed) #condense space runs
-
-            if self.data.config.getint('Advanced Settings','truncate'):
-                digits = self.data.config.get('Advanced Settings','digits')
-                filtersparsed = re.sub(r'([+-]?\d*\.\d{1,'+digits+'})(\d*)',r'\g<1>',filtersparsed) #truncates all long floats to 4 decimal places, leaves shorter floats
-
-            filtersparsed = re.split('\n', filtersparsed) #splits the gcode into elements to be added to the list
-            filtersparsed = [x + ' ' for x in filtersparsed] #adds a space to the end of each line
-            filtersparsed = [x.lstrip() for x in filtersparsed]
-            filtersparsed = [x.replace('X ','X') for x in filtersparsed]
-            filtersparsed = [x.replace('Y ','Y') for x in filtersparsed]
-            filtersparsed = [x.replace('Z ','Z') for x in filtersparsed]
-            filtersparsed = [x.replace('I ','I') for x in filtersparsed]
-            filtersparsed = [x.replace('J ','J') for x in filtersparsed]
-            filtersparsed = [x.replace('F ','F') for x in filtersparsed]
-            
-            self.data.gcode = "[]"
-            self.data.gcode = filtersparsed
+            rawfilters = filterfile.read()      #Read the whole thing
+            self.data.gcodeOriginal = rawfilters
             
             filterfile.close() #closes the filter save file
-
-            #Find gcode indicies of z moves
-            self.data.zMoves = [0]
-            zList = []
-            for index, line in enumerate(self.data.gcode):
-                z = re.search("Z(?=.)([+-]?([0-9]*)(\.([0-9]+))?)",line)
-                if z:
-                    zList.append(z)
-                    if len(zList) > 1:
-                        if not self.isClose(float(zList[-1].groups()[0]),float(zList[-2].groups()[0])):
-                            self.data.zMoves.append(index-1)
-                    else:
-                        self.data.zMoves.append(index)
         except:
             self.data.message_queue.put("Message: Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use Actions > Open G-code")
             self.data.gcodeFile = ""
-    
+        self.processFile()
+        
+    def processFile(self):
+        rawfilters = self.data.gcodeOriginal #Reload Raw...
+        
+        filtersparsed = re.sub(r'\(([^)]*)\)','',rawfilters) #replace mach3 style gcode comments with nothing (the newline is still there)
+        filtersparsed = re.sub(r';([^\n]*)\n','\n',filtersparsed) #replace standard ; initiated gcode comments with newline (the newline got matched)
+        filtersparsed = re.sub(r'([0-9])([GXYZIJFTM]) *', '\\1 \\2',filtersparsed) #put spaces between gcodes
+        filtersparsed = re.sub(r'  +',' ',filtersparsed) #condense space runs
+
+        if self.data.config.getint('Advanced Settings','truncate'):
+            digits = self.data.config.get('Advanced Settings','digits')
+            filtersparsed = re.sub(r'([+-]?\d*\.\d{1,'+digits+'})(\d*)',r'\g<1>',filtersparsed) #truncates all long floats to 4 decimal places, leaves shorter floats
+
+        filtersparsed = re.split('\n', filtersparsed) #splits the gcode into elements to be added to the list
+        filtersparsed = [x + ' ' for x in filtersparsed] #adds a space to the end of each line
+        filtersparsed = [x.lstrip() for x in filtersparsed]
+        filtersparsed = [x.replace('X ','X') for x in filtersparsed]
+        filtersparsed = [x.replace('Y ','Y') for x in filtersparsed]
+        filtersparsed = [x.replace('Z ','Z') for x in filtersparsed]
+        filtersparsed = [x.replace('I ','I') for x in filtersparsed]
+        filtersparsed = [x.replace('J ','J') for x in filtersparsed]
+        filtersparsed = [x.replace('F ','F') for x in filtersparsed]
+        
+        self.data.gcode = "[]"
+        self.data.gcode = filtersparsed
+        
+
+        #Find gcode indicies of z moves
+        self.data.zMoves = [0]
+        zList = []
+        for index, line in enumerate(self.data.gcode):
+            z = re.search("Z(?=.)([+-]?([0-9]*)(\.([0-9]+))?)",line)
+            if z:
+                zList.append(z)
+                if len(zList) > 1:
+                    if not self.isClose(float(zList[-1].groups()[0]),float(zList[-2].groups()[0])):
+                        self.data.zMoves.append(index-1)
+                else:
+                    self.data.zMoves.append(index)
+        
     def centerCanvas(self, *args):
         '''
         
@@ -526,6 +533,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         '''
         
         #reset variables 
+        self.data.gcodeRedraw=False #Reset the redraw flag
         self.xPosition = self.data.gcodeShift[0]*self.canvasScaleFactor
         self.yPosition = self.data.gcodeShift[1]*self.canvasScaleFactor
         self.zPosition = 0
