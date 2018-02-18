@@ -19,9 +19,7 @@ def adjust_background(self, increment):
         self.data.backgroundImage = img #Reset it
         
         #Trigger a reload
-        filePath = self.data.gcodeFile
-        self.data.gcodeFile = ""
-        self.data.gcodeFile = filePath
+    self.data.gcodeRedraw=True
 
 class ScreenControls(FloatLayout, MakesmithInitFuncs):
     

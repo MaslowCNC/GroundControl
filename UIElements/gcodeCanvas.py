@@ -229,30 +229,6 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 botmost=min(BL[1],BR[1])
                 Rectangle(texture=texture, pos=(leftmost,botmost), size=(rightmost-leftmost, topmost-botmost))
 
-            img = self.data.backgroundImage
-
-            if img is not None: #If img is None, then no background.  Skip this mess.
-                print "DrawBkgrnd"
-                w=int(img.shape[0])
-                h=int(img.shape[1])
-                #For a canvas, it goes in as a texture on a rectangle, so make the texture
-                texture = Texture.create(size=(h,w))
-
-                buf = img.tobytes() # then, convert the array to a ubyte string
-                texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte') # and blit the buffer -- note that OpenCV format is BGR
-
-                #The coordinates are for the bottom-left corner.  This code duplicates the backgroundMenu:processBackground logic
-                TL=self.data.backgroundTLPOS
-                TR=self.data.backgroundTRPOS
-                BL=self.data.backgroundBLPOS
-                BR=self.data.backgroundBRPOS
-                
-                leftmost = min(TL[0],BL[0])
-                rightmost=max(TR[0],BR[0])
-                topmost=max(TL[1],TR[1])
-                botmost=min(BL[1],BR[1])
-                Rectangle(texture=texture, pos=(leftmost,botmost), size=(rightmost-leftmost, topmost-botmost))
-
             #create the bounding box
             height = float(self.data.config.get('Maslow Settings', 'bedHeight'))
             width  = float(self.data.config.get('Maslow Settings', 'bedWidth'))
@@ -573,7 +549,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         #Repeat until end of file
         if self.lineNumber < min(len(self.data.gcode),60000):
             Clock.schedule_once(self.callBackMechanism)
-    
+
+    def pupdateGcode(self, *args):
+        self.processFile()
+            
     def updateGcode(self, *args):
         '''
         
