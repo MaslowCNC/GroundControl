@@ -51,8 +51,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Window.bind(on_resize = self.centerCanvas)
 
         self.data.bind(gcode = self.updateGcode)                    #Parses self.data.gcode and draws if you change self.data.gcode
-        self.data.bind(gcodeRedraw = self.updateGcode)              #Easy way for other pieces to call for a redraw with no changes
-        self.data.bind(gcodeShift = self.updateGcode)               #No need to reload if the origin is changed, just clear and redraw
+        self.data.bind(gcodeRedraw = self.pupdateGcode)             #Easy way for other pieces to call for a redraw with no changes
+        self.data.bind(gcodeShift = self.pupdateGcode)              #No need to reload if the origin is changed, just clear and redraw
         self.data.bind(gcodeFile = self.centerCanvasAndReloadGcode) #If filename changed, center canvas and reload file
         
         global_variables._keyboard = Window.request_keyboard(self._keyboard_closed, self)
@@ -551,6 +551,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Clock.schedule_once(self.callBackMechanism)
 
     def pupdateGcode(self, *args):
+        #Force a re-process of the g-code, because as-we-draw-it, the draw shifts the coordinates around
+        #So if you just "update", the gcode will shift around based on where your origin is
         self.processFile()
             
     def updateGcode(self, *args):
