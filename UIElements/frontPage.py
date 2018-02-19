@@ -230,8 +230,10 @@ class FrontPage(Screen, MakesmithInitFuncs):
             self.data.gcodeIndex = maxIndex
         else:
             self.data.gcodeIndex = targetIndex
+        self.data.gcodeJump=True;
         
         gCodeLine = self.data.gcode[self.data.gcodeIndex]
+        
         
         xTarget = 0
         yTarget = 0

@@ -33,6 +33,8 @@ class Data(EventDispatcher):
     comport    = StringProperty("")
     #The index of the next unread line of Gcode
     gcodeIndex = NumericProperty(0)
+    #Flag for a Gcode jump
+    gcodeJump= BooleanProperty(False)
     #Index of changes in z
     zMoves     = ObjectProperty([])
     #Holds the current value of the feed rate
