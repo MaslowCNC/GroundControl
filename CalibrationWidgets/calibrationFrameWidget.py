@@ -17,10 +17,10 @@ class CalibrationFrameWidget(GridLayout):
         Called the first time the widget is created
         
         '''
-        initialWidget =  Intro()
-        initialWidget.readyToMoveOn = self.loadNextStep
+        self.currentWidget =  Intro()
+        self.currentWidget.readyToMoveOn = self.loadNextStep
         
-        self.cFrameWidgetSpace.add_widget(initialWidget)
+        self.cFrameWidgetSpace.add_widget(self.currentWidget)
     
     def on_Exit(self):
         '''
@@ -37,3 +37,4 @@ class CalibrationFrameWidget(GridLayout):
         
         '''
         print "load next step ran"
+        self.cFrameWidgetSpace.remove_widget(self.currentWidget)
