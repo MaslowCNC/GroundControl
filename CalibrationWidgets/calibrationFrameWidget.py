@@ -10,6 +10,7 @@ from   kivy.uix.gridlayout                          import  GridLayout
 from   kivy.properties                              import  ObjectProperty
 from CalibrationWidgets.intro                       import  Intro
 from CalibrationWidgets.chooseKinematicsType        import  ChooseKinematicsType
+from CalibrationWidgets.computeCalibrationSteps     import  ComputeCalibrationSteps
 
 
 class CalibrationFrameWidget(GridLayout):
@@ -27,10 +28,14 @@ class CalibrationFrameWidget(GridLayout):
         #generate the first two steps because they are always the same
         intro =  Intro()
         self.listOfCalibrationSteps.append(intro)
+        
         chooseKinematicsType = ChooseKinematicsType()
         self.listOfCalibrationSteps.append(chooseKinematicsType)
         
-        self.loadNextStep()
+        computeCalibrationSteps = ComputeCalibrationSteps()
+        self.listOfCalibrationSteps.append(computeCalibrationSteps)
+        
+        self.loadStep(0)
     
     def on_Exit(self):
         '''
@@ -47,6 +52,20 @@ class CalibrationFrameWidget(GridLayout):
         
         '''
         
+        self.currentStepNumber = self.currentStepNumber + 1
+        self.loadStep(self.currentStepNumber)
+    
+    def back(self):
+        '''
+        
+        Re-load the previous step
+        
+        '''
+        self.currentStepNumber = self.currentStepNumber - 1
+        self.loadStep(self.currentStepNumber)
+        
+    def loadStep(self, stepNumber):
+        
         #remove the old widget
         print "load next step ran"
         try:
@@ -56,7 +75,6 @@ class CalibrationFrameWidget(GridLayout):
             
         #load the new widget
         self.currentWidget = self.listOfCalibrationSteps[self.currentStepNumber]
-        self.currentStepNumber = self.currentStepNumber + 1
         
         #initialize the new widget
         self.currentWidget.readyToMoveOn = self.loadNextStep

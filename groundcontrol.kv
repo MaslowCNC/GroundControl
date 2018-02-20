@@ -707,8 +707,10 @@
             size_hint_y: .1
             Button:
                 text: "Back"
+                on_release: root.back()
             Button:
                 text: "Skip"
+                on_release: root.loadNextStep()
             Button:
                 text: "Quit"
                 on_release: root.on_Exit()
@@ -761,6 +763,30 @@
         Button:
             text: 'Triangular'
             on_release: root.setKinematicsTypeTri()
+        Label:
+
+ComputeCalibrationSteps:
+    cols: 2
+    width: root.width
+    height: root.height
+    GridLayout:
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: "Text about what to do in this step"
+            size_hint_x: leftCol
+        GridLayout:
+            cols: 2
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Button:
+            text: "Thing one"
+        Button:
+            text: 'Thing two'
         Label:
 
 <TriangularCalibration>:
