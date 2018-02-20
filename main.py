@@ -21,6 +21,11 @@ import global_variables
 import sys
 import re
 
+'''
+Loader Junk
+'''
+import json
+
 
 '''
 
@@ -37,6 +42,7 @@ from UIElements.viewMenu          import   ViewMenu
 from UIElements.runMenu           import   RunMenu
 from UIElements.connectMenu       import   ConnectMenu
 from UIElements.diagnosticsMenu   import   Diagnostics
+from UIElements.backgroundMenu    import   BackgroundMenu
 from UIElements.manualControls    import   ManualControl
 from DataStructures.data          import   Data
 from Connection.nonVisibleWidgets import   NonVisibleWidgets
@@ -52,7 +58,7 @@ class GroundControlApp(App):
 
     def get_application_config(self):
         return super(GroundControlApp, self).get_application_config(
-            '~/%(appname)s.ini')
+            '~/%(appname)s.ini')    
     
     def build(self):
         
@@ -103,6 +109,17 @@ class GroundControlApp(App):
         self.data.gcodeShift = [offsetX,offsetY]
         self.data.config  = self.config
         
+        #Image Processing
+        self.data.backgroundFile = self.config.get('Background Settings', 'backgroundFile')
+        self.data.backgroundTLHSV = json.loads(self.config.get('Background Settings', 'backgroundTLHSV'))
+        self.data.backgroundTRHSV = json.loads(self.config.get('Background Settings', 'backgroundTRHSV'))
+        self.data.backgroundBLHSV = json.loads(self.config.get('Background Settings', 'backgroundBLHSV'))
+        self.data.backgroundBRHSV = json.loads(self.config.get('Background Settings', 'backgroundBRHSV'))
+        self.data.backgroundTLPOS = json.loads(self.config.get('Background Settings', 'backgroundTLPOS'))
+        self.data.backgroundTRPOS = json.loads(self.config.get('Background Settings', 'backgroundTRPOS'))
+        self.data.backgroundBLPOS = json.loads(self.config.get('Background Settings', 'backgroundBLPOS'))
+        self.data.backgroundBRPOS = json.loads(self.config.get('Background Settings', 'backgroundBRPOS'))
+        
         '''
         Initializations
         '''
@@ -135,8 +152,9 @@ class GroundControlApp(App):
         config.setdefaults('Maslow Settings', maslowSettings.getDefaultValueSection('Maslow Settings'))
         config.setdefaults('Advanced Settings', maslowSettings.getDefaultValueSection('Advanced Settings'))
         config.setdefaults('Ground Control Settings', maslowSettings.getDefaultValueSection('Ground Control Settings'))
+        config.setdefaults('Background Settings', maslowSettings.getDefaultValueSection('Background Settings'))
         config.remove_callback(self.computeSettings)
-        
+                                            
     def build_settings(self, settings):
         """
         Add custom section to the default configuration object.
@@ -144,6 +162,7 @@ class GroundControlApp(App):
         settings.add_json_panel('Maslow Settings', self.config, data=maslowSettings.getJSONSettingSection('Maslow Settings'))
         settings.add_json_panel('Advanced Settings', self.config, data=maslowSettings.getJSONSettingSection('Advanced Settings'))
         settings.add_json_panel('Ground Control Settings', self.config, data=maslowSettings.getJSONSettingSection("Ground Control Settings"))
+        settings.add_json_panel('Background Settings', self.config, data=maslowSettings.getJSONSettingSection("Background Settings"))
         self.config.add_callback(self.configSettingChange)
 
     def computeSettings(self, section, key, value):
@@ -326,6 +345,10 @@ class GroundControlApp(App):
                 pass #displaying all the 'ok' messages clutters up the display
             else:
                 self.writeToTextConsole(message)
+
+        #See if we got a new file in the Background Image Directory -- ToDo: Every time?
+        #if self.frontpage.BackgroundMenu.DoesNewFileExist():
+        #   self.frontpage.BackgroundMenu.processBackground()
 
     def ondismiss_popup(self, event):
         if global_variables._keyboard:
