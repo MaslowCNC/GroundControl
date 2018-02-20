@@ -153,7 +153,7 @@
                 funcToCallOnPress: root.downRight
             ButtonTemplate:
                 id: zAxisBtn
-				disabled: app.data.uploadFlag == 1 #zAxisPopup can change units... don't let it be popped during a move!
+                disabled: app.data.uploadFlag == 1 #zAxisPopup can change units... don't let it be popped during a move!
                 text: 'Z-Axis'
                 funcToCallOnPress: root.zAxisPopup
             Label:
@@ -261,7 +261,7 @@
                 Label:
                     text: root.gcodeLineNumber
                     color: .476, .476, .476,1
-				Label:
+                Label:
                     text: root.gcodeVel
                     color: .476, .476, .476,1
         Label:
@@ -290,11 +290,11 @@
     Button:
         text: 'Open File'
         on_press: root.openFile()
-		disabled: app.data.uploadFlag == 1
+        disabled: app.data.uploadFlag == 1
     Button:
         text: 'Update Gcode'
         on_release: root.reloadGcode()
-		disabled: app.data.uploadFlag == 1
+        disabled: app.data.uploadFlag == 1
     Button:
         text: 'View Gcode'
         disabled: False
@@ -372,7 +372,7 @@
                 on_press: root.testMotors()
             Button:
                 text: 'Calibrate'
-                on_release: root.measureMachine()
+                on_release: root.calibrateMachine()
             Button:
                 text: 'Set Chain Length - Automatic'
                 on_release: root.calibrateChainLengths()
@@ -592,70 +592,70 @@
             size_hint_x: ".75sp"
             cols: 4
             rows: 4
-			Label:
-				text: ""
-				size_hint_y: 0.2
-			Label:
-				size_hint_y: 0.2
-			Label:
-				text: "Relative"
-				size_hint_y: 0.2
-			Label:
-				text: "Absolute"
-				size_hint_y: 0.2
-			Button:
-				text: "%.2f"%app.data.zStepSizeVal
-				id: distBtn
-				on_release: root.setDist()
+            Label:
+                text: ""
+                size_hint_y: 0.2
+            Label:
+                size_hint_y: 0.2
+            Label:
+                text: "Relative"
+                size_hint_y: 0.2
+            Label:
+                text: "Absolute"
+                size_hint_y: 0.2
+            Button:
+                text: "%.2f"%app.data.zStepSizeVal
+                id: distBtn
+                on_release: root.setDist()
             Button:
                 text: "MM"
                 on_release: root.units()
                 id: unitsBtn
-			Button:
-				text: "Raise"
-				on_release: root.zOut()
-			GridLayout:
-				cols:1
-				rows:2
-				Button:
-					text: "Plunge to\n-"+root.distBtn.text
-					halign: "center"
-					on_release: root.goThere()
-				Button:
-					text: "Save and\nRaise to\nTraverse"
-					halign: "center"
-					on_release: root.zUp()
+            Button:
+                text: "Raise"
+                on_release: root.zOut()
+            GridLayout:
+                cols:1
+                rows:2
+                Button:
+                    text: "Plunge to\n-"+root.distBtn.text
+                    halign: "center"
+                    on_release: root.goThere()
+                Button:
+                    text: "Save and\nRaise to\nTraverse"
+                    halign: "center"
+                    on_release: root.zUp()
             Button:
                 text: "Done"
                 on_release: root.close()
-			GridLayout:
-				cols: 1
-				rows: 2
-				Button:
-					text: "Define Zero"
-					on_release: root.zero()
-				Button:
-					size_hint_y: 0.2
-					text: "Touch Zero"
-					on_release: root.touchZero()
-					disabled: True
-			Button:
-				text: "Lower"
-				on_release: root.zIn()
-			GridLayout:
-				cols:1
-				rows:2
-				Button:
-					text: "Go to Zero"
-					on_release: root.zToZero()
-				Button:
-					text: root.zCutLabel
-					halign: "center"
-					disabled: root.zPopDisable
-					on_release: root.zToCut()
-			Label:
-				text: ""
-				size_hint_y: 0.2
+            GridLayout:
+                cols: 1
+                rows: 2
+                Button:
+                    text: "Define Zero"
+                    on_release: root.zero()
+                Button:
+                    size_hint_y: 0.2
+                    text: "Touch Zero"
+                    on_release: root.touchZero()
+                    disabled: True
+            Button:
+                text: "Lower"
+                on_release: root.zIn()
+            GridLayout:
+                cols:1
+                rows:2
+                Button:
+                    text: "Go to Zero"
+                    on_release: root.zToZero()
+                Button:
+                    text: root.zCutLabel
+                    halign: "center"
+                    disabled: root.zPopDisable
+                    on_release: root.zToCut()
+            Label:
+                text: ""
+                size_hint_y: 0.2
         GridLayout:
             size_hint_x: ".25sp"
             cols: 1
@@ -692,7 +692,51 @@
             Button:
                 text: 'Thing two'
             Label:
-  
+
+<CalibrationFrameWidget>:
+    cFrameWidgetSpace:cFrameWidgetSpace
+    cols: 1
+    size: root.size
+    pos:  root.pos
+    GridLayout:
+        rows: 2
+        width: root.width
+        height: root.height
+        id: cFrameWidgetSpace
+        GridLayout:
+            cols: 3
+            size_hint_y: .1
+            Button:
+                text: "Back"
+            Button:
+                text: "Skip"
+            Button:
+                text: "Quit"
+                on_release: root.on_Exit()
+        
+
+<Intro>:
+    GridLayout:
+        cols: 2
+        width: root.width
+        height: root.height
+        GridLayout:
+            cols: 1
+            size_hint_x: leftCol
+            Label:
+                text: 'This walk-through will guide you through the process of calibrating your Maslow Machine. \n\nClick Begin to start. \n\nYou can move forward and backwards through the walk-through at any time using the Back and Skip buttons\n\nYou can also skip this process entirely and enter your machine dimensions in the Settings window\n\nYour feedback on how to improve this process is more than welcome'
+        GridLayout:
+            cols: 1
+            size_hint_x: rightCol
+            Label:
+            Label:
+                text: 'The controls you will need\nfor each step will be on here\non the right'
+                size_hint_x: leftCol
+            Button:
+                text: "Begin"
+                on_release: root.on_Exit()
+            Label:
+
 <TriangularCalibration>:
     cutBtnT:cutBtnT
     horzMeasureT1:horzMeasureT1
@@ -854,7 +898,7 @@
                 text: 'Define Zero'
                 on_release: root.zeroZ()
             Label:
-                
+
 <SetSprocketsVertical>:
     #Set sprockets to 12 o'clock
     GridLayout:
@@ -928,7 +972,7 @@
                     text: 'Set Zero'
                     on_release: root.setZero()
                 Label:
-                    
+
 <MeasureOutChains>:
     leftChainBtn:leftChainBtn
     rightChainBtn:rightChainBtn
@@ -994,20 +1038,20 @@
         cols: 4
         size_hint_y: .1
         Button:
-			size_hint_x: .2
+            size_hint_x: .2
             text: "<Go Back"
             on_release: root.backBtn()
             id: goBackBtn
             disabled: True
-		Button:
-			size_hint_x: .1
-			text: "QUIT"
-			on_release: root.done()
-			id: closeBtn
-		Label:
+        Button:
+            size_hint_x: .1
+            text: "QUIT"
+            on_release: root.done()
+            id: closeBtn
+        Label:
             text: root.stepText#Step {} of 9'.format(carousel.index)
         Button:
-			size_hint_x: .2
+            size_hint_x: .2
             text: "Skip>"
             id: goFwdBtn
             on_release: root.fwdBtn()

@@ -2,7 +2,7 @@ from kivy.uix.floatlayout                        import    FloatLayout
 from DataStructures.makesmithInitFuncs           import    MakesmithInitFuncs
 from UIElements.scrollableTextPopup              import    ScrollableTextPopup
 from kivy.uix.popup                              import    Popup
-from CalibrationWidgets.measureMachinePopup      import    MeasureMachinePopup
+from CalibrationWidgets.calibrationFrameWidget   import    CalibrationFrameWidget
 from CalibrationWidgets.calibrateLengthsPopup    import    CalibrateLengthsPopup
 from Simulation.simulationCanvas                 import    SimulationCanvas
 from kivy.clock                                  import    Clock
@@ -70,22 +70,22 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         Clock.schedule_once(self.data.pushSettings, 6)
         self.parentWidget.close()
     
-    def measureMachine(self):
+    def calibrateMachine(self):
         '''
         
         Spawns a walk through that helps the user measure the machine's dimensions
         
         '''
-        self.popupContent      = MeasureMachinePopup(done=self.dismissMeasureMachinePopup)
-        self.popupContent.establishDataConnection(self.data)
-        self._popup = Popup(title="Setup Machine Dimensions", content=self.popupContent,
-                            size_hint=(0.85, 0.95), auto_dismiss = False)
+        self.popupContent       = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
+        self.popupContent.on_Enter()
+        self._popup = Popup(title="Calibration", content=self.popupContent,
+                            size_hint=(0.95, 0.95), auto_dismiss = False)
         self._popup.open()
     
-    def dismissMeasureMachinePopup(self):
+    def dismissCalibrationPopup(self):
         '''
         
-        Close The measure machine Pop-up
+        Close The calibration Pop-up
         
         '''
         self._popup.dismiss()

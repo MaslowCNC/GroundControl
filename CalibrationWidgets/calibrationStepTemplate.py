@@ -1,27 +1,13 @@
 '''
 
-A template for creating a new calibration step widget
+This is the widget which creates a frame around the calibration process providing infrastructure like the forwards and back buttons.
 
 '''
 from   kivy.uix.gridlayout							import   GridLayout
 from   kivy.properties								import   ObjectProperty
 
-class CalibrationStepTemplate(GridLayout):
+class CalibrationFrameWidget(GridLayout):
     done   = ObjectProperty(None)
     
     
-    def on_Enter(self):
-		'''
-		
-		This function runs when the step is entered
-		
-		'''
-		pass
-	
-	def on_Exit(self):
-		'''
-		
-		This function run when the step is completed
-		
-		'''
-		pass
+    pass
