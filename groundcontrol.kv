@@ -371,14 +371,13 @@
                 text: 'Test Motors/Encoders'
                 on_press: root.testMotors()
             Button:
-                text: 'Calibrate Machine Dimensions'
+                text: 'Calibrate'
                 on_release: root.measureMachine()
             Button:
-                text: 'Calibrate Chain Length - Automatic'
+                text: 'Set Chain Length - Automatic'
                 on_release: root.calibrateChainLengths()
             Button:
-                text: 'Calibrate Motors\n-----Obsolete-----'
-                on_release: root.calibrateMotors()
+                text: ' '
                 disabled: True
             Button:
                 text: 'About'
@@ -387,7 +386,7 @@
             Spinner:
                 id: advancedOptions
                 text: "Advanced"
-                values: ["Calibrate Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test"]
+                values: ["Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test"]
                 on_text: root.advancedOptionsFunctions(advancedOptions.text)
 
 <OtherFeatures>:
