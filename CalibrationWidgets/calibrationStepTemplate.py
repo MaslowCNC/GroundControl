@@ -10,16 +10,18 @@ class CalibrationStepTemplate(GridLayout):
     done   = ObjectProperty(None)
     
     
-    def onEnter(self):
+    def on_Enter(self):
 		'''
 		
 		This function runs when the step is entered
 		
 		'''
+		pass
 	
-	def onExit(self):
+	def on_Exit(self):
 		'''
 		
 		This function run when the step is completed
 		
 		'''
+		pass
