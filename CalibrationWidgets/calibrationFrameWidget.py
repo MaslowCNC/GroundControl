@@ -14,6 +14,8 @@ from CalibrationWidgets.chooseKinematicsType        import  ChooseKinematicsType
 
 class CalibrationFrameWidget(GridLayout):
     done   = ObjectProperty(None)
+    listOfCalibrationSteps = []
+    currentStepNumber = 0
     
     def on_Enter(self):
         '''
@@ -21,11 +23,14 @@ class CalibrationFrameWidget(GridLayout):
         Called the first time the widget is created
         
         '''
-        self.currentWidget =  Intro()
-        self.currentWidget.readyToMoveOn = self.loadNextStep
-        self.currentWidget.on_Enter()
         
-        self.cFrameWidgetSpace.add_widget(self.currentWidget)
+        #generate the first two steps because they are always the same
+        intro =  Intro()
+        self.listOfCalibrationSteps.append(intro)
+        chooseKinematicsType = ChooseKinematicsType()
+        self.listOfCalibrationSteps.append(chooseKinematicsType)
+        
+        self.loadNextStep()
     
     def on_Exit(self):
         '''
@@ -44,9 +49,16 @@ class CalibrationFrameWidget(GridLayout):
         
         #remove the old widget
         print "load next step ran"
-        self.cFrameWidgetSpace.remove_widget(self.currentWidget)
+        try:
+            self.cFrameWidgetSpace.remove_widget(self.currentWidget)
+        except:
+            pass #there was no widget to remove
+            
         #load the new widget
-        self.currentWidget = ChooseKinematicsType()
+        self.currentWidget = self.listOfCalibrationSteps[self.currentStepNumber]
+        self.currentStepNumber = self.currentStepNumber + 1
+        
+        #initialize the new widget
         self.currentWidget.readyToMoveOn = self.loadNextStep
         self.currentWidget.on_Enter()
         self.cFrameWidgetSpace.add_widget(self.currentWidget)
