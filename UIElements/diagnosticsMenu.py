@@ -113,7 +113,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         
         if   text == "Test Feedback System":
             self.testFeedbackSystem()
-        elif text == "Calibrate Chain Length - Manual":
+        elif text == "Set Chain Length - Manual":
             self.manualCalibrateChainLengths()
         elif text == "Wipe EEPROM":
             self.wipeEEPROM()
