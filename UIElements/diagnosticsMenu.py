@@ -2,8 +2,8 @@ from kivy.uix.floatlayout                        import    FloatLayout
 from DataStructures.makesmithInitFuncs           import    MakesmithInitFuncs
 from UIElements.scrollableTextPopup              import    ScrollableTextPopup
 from kivy.uix.popup                              import    Popup
-from UIElements.measureMachinePopup              import    MeasureMachinePopup
-from UIElements.calibrateLengthsPopup            import    CalibrateLengthsPopup
+from CalibrationWidgets.measureMachinePopup      import    MeasureMachinePopup
+from CalibrationWidgets.calibrateLengthsPopup    import    CalibrateLengthsPopup
 from Simulation.simulationCanvas                 import    SimulationCanvas
 from kivy.clock                                  import    Clock
 import sys

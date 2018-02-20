@@ -3,12 +3,12 @@
 This allows the user interact with the z-axis when it is the content of a popup
 
 '''
-from   kivy.uix.gridlayout                       import   GridLayout
-from   kivy.properties                           import   ObjectProperty
-from   kivy.properties                           import   StringProperty
-from   kivy.uix.popup                            import   Popup
-from   UIElements.setSprocketsVertical           import   SetSprocketsVertical
-from   UIElements.measureOutChains               import   MeasureOutChains
+from   kivy.uix.gridlayout							import   GridLayout
+from   kivy.properties								import   ObjectProperty
+from   kivy.properties								import   StringProperty
+from   kivy.uix.popup								import   Popup
+from   CalibrationWidgets.setSprocketsVertical		import   SetSprocketsVertical
+from   CalibrationWidgets.measureOutChains			import   MeasureOutChains
 
 class CalibrateLengthsPopup(GridLayout):
     done   = ObjectProperty(None)
