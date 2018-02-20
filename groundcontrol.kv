@@ -669,29 +669,28 @@
 #calibration widgets
 
 <CalibrationTemplate>:
+    cols: 2
+    width: root.width
+    height: root.height
     GridLayout:
-        cols: 2
-        width: root.width
-        height: root.height
-        GridLayout:
-            cols: 1
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: "Text about what to do in this step"
             size_hint_x: leftCol
-            Label:
-                text: "Text about what to do in this step"
-                size_hint_x: leftCol
-            GridLayout:
-                cols: 2
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
         GridLayout:
-            cols: 1
-            size_hint_x: rightCol
-            Label:
-            Button:
-                text: "Thing one"
-            Button:
-                text: 'Thing two'
-            Label:
+            cols: 2
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Button:
+            text: "Thing one"
+        Button:
+            text: 'Thing two'
+        Label:
 
 <CalibrationFrameWidget>:
     cFrameWidgetSpace:cFrameWidgetSpace
@@ -716,26 +715,53 @@
         
 
 <Intro>:
+    cols: 2
+    width: root.width
+    height: root.height
     GridLayout:
-        cols: 2
-        width: root.width
-        height: root.height
-        GridLayout:
-            cols: 1
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: 'This walk-through will guide you through the process of calibrating your Maslow Machine. \n\nClick Begin to start. \n\nYou can move forward and backwards through the walk-through at any time using the Back and Skip buttons\n\nYou can also skip this process entirely and enter your machine dimensions in the Settings window\n\nYour feedback on how to improve this process is more than welcome'
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Label:
+            text: 'The controls you will need\nfor each step will be on here\non the right'
             size_hint_x: leftCol
-            Label:
-                text: 'This walk-through will guide you through the process of calibrating your Maslow Machine. \n\nClick Begin to start. \n\nYou can move forward and backwards through the walk-through at any time using the Back and Skip buttons\n\nYou can also skip this process entirely and enter your machine dimensions in the Settings window\n\nYour feedback on how to improve this process is more than welcome'
+        Button:
+            text: "Begin"
+            on_release: root.on_Exit()
+        Label:
+
+<ChooseKinematicsType>:
+    cols: 2
+    width: root.width
+    height: root.height
+    GridLayout:
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: "Now we're going to select the way the chains attach to the sled. There are currently two options. \n\nThe \"Quadrilateral\" system attaches the chains to the two stationary metal L brackets as shown in the left picture.\nThis is currently the default option. \n\nThe \"Triangular\" system attaches the chains to a system of either linkages or bearings which let the ends of the chains\nrotate around the router bit as shown in the picture on the right.\n\n Please choose an option from the drop down on the right, then press Next"
+            size_hint_x: leftCol
         GridLayout:
-            cols: 1
-            size_hint_x: rightCol
-            Label:
-            Label:
-                text: 'The controls you will need\nfor each step will be on here\non the right'
-                size_hint_x: leftCol
-            Button:
-                text: "Begin"
-                on_release: root.on_Exit()
-            Label:
+            cols: 2
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Quadrilateral Kinematics.JPG"
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Triangular Kinematics.JPG"
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Button:
+            text: 'Quadrilateral'
+            on_release: root.setKinematicsTypeQuad()
+        Button:
+            text: 'Triangular'
+            on_release: root.setKinematicsTypeTri()
+        Label:
 
 <TriangularCalibration>:
     cutBtnT:cutBtnT
