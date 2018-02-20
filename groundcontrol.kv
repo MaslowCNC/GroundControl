@@ -667,6 +667,33 @@
                 # color: [1,0,0,1]
                 on_release: root.stopZMove()
 
+#calibration widgets
+
+<CalibrationTemplate>:
+    GridLayout:
+        cols: 2
+        width: root.width
+        height: root.height
+        GridLayout:
+            cols: 1
+            size_hint_x: leftCol
+            Label:
+                text: "Text about what to do in this step"
+                size_hint_x: leftCol
+            GridLayout:
+                cols: 2
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
+        GridLayout:
+            cols: 1
+            size_hint_x: rightCol
+            Label:
+            Button:
+                text: "Thing one"
+            Button:
+                text: 'Thing two'
+            Label:
+  
 <TriangularCalibration>:
     cutBtnT:cutBtnT
     horzMeasureT1:horzMeasureT1
@@ -1247,6 +1274,8 @@
                     text: 'Finish'
                     on_release: root.done()
                 Label:
+
+#simulation widgets
 
 <SimulationCanvas>:
     motorSpacingError:motorSpacingError
