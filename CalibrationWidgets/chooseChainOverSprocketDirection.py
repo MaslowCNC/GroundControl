@@ -1,13 +1,13 @@
 '''
 
-The widget which lets you choose the proper kinematics type for your system
+The widget which lets you choose which direction your chain passes over the sprocket
 
 '''
 from   kivy.uix.gridlayout                          import   GridLayout
 from   kivy.properties                              import   ObjectProperty
 from   kivy.app                                     import   App
 
-class ChooseKinematicsType(GridLayout):
+class ChooseChainOverSprocketDirection(GridLayout):
     readyToMoveOn   = ObjectProperty(None)
     
     
@@ -17,32 +17,32 @@ class ChooseKinematicsType(GridLayout):
         This function runs when the step is entered
         
         '''
-        print "choose kinematics type on enter ran"
+        print "choose sprocket direction on enter ran"
     
-    def setKinematicsTypeQuad(self):
+    def setChainToTop(self):
         '''
         
-        Write into the settings that the kinematics type is quadrilateral
+        Write into the settings that the chain direction is to the left
         
         '''
-        App.get_running_app().data.config.set('Advanced Settings', 'kinematicsType', 'Quadrilateral')
+        App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', 'Top')
         App.get_running_app().data.config.write()
         self.on_Exit()
     
-    def setKinematicsTypeTri(self):
+    def setChainToBottom(self):
         '''
         
-        Write into the settings that the kinematics type is triangular
+        Write into the settings that the chain direction is to the right
         
         '''
-        App.get_running_app().data.config.set('Advanced Settings', 'kinematicsType', 'Triangular')
+        App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', 'Bottom')
         App.get_running_app().data.config.write()
         self.on_Exit()
     
     def on_Exit(self):
         '''
         
-        This function run when the step is completed
+        This function runs when the step is completed
         
         '''
         print "choose kinematics type on exit ran"

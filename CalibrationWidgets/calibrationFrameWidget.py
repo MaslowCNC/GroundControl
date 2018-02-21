@@ -6,11 +6,13 @@ Each widget which it loads should be largely self contained and either gather a 
 state regardless of the machine's state when the widget begins.
 
 '''
-from   kivy.uix.gridlayout                          import  GridLayout
-from   kivy.properties                              import  ObjectProperty
-from CalibrationWidgets.intro                       import  Intro
-from CalibrationWidgets.chooseKinematicsType        import  ChooseKinematicsType
-from CalibrationWidgets.computeCalibrationSteps     import  ComputeCalibrationSteps
+from   kivy.uix.gridlayout                                  import  GridLayout
+from   kivy.properties                                      import  ObjectProperty
+from CalibrationWidgets.intro                               import  Intro
+from CalibrationWidgets.chooseKinematicsType                import  ChooseKinematicsType
+from CalibrationWidgets.chooseChainOverSprocketDirection    import  ChooseChainOverSprocketDirection
+from CalibrationWidgets.computeCalibrationSteps             import  ComputeCalibrationSteps
+from CalibrationWidgets.setSprocketsVertical                import  SetSprocketsVertical
 
 
 class CalibrationFrameWidget(GridLayout):
@@ -29,10 +31,14 @@ class CalibrationFrameWidget(GridLayout):
         intro =  Intro()
         self.listOfCalibrationSteps.append(intro)
         
+        chooseChainOverSprocketDirection = ChooseChainOverSprocketDirection()
+        self.listOfCalibrationSteps.append(chooseChainOverSprocketDirection)
+        
         chooseKinematicsType = ChooseKinematicsType()
         self.listOfCalibrationSteps.append(chooseKinematicsType)
         
         computeCalibrationSteps = ComputeCalibrationSteps()
+        computeCalibrationSteps.setListOfSteps = self.addSteps
         self.listOfCalibrationSteps.append(computeCalibrationSteps)
         
         self.loadStep(0)
@@ -44,6 +50,47 @@ class CalibrationFrameWidget(GridLayout):
         
         '''
         self.done()
+    
+    def addSteps(self):
+        '''
+        
+        This function will be called when the ComputeCalibrationSteps step is reached. It will compute which steps are needed for a 
+        given frame configuration and add them to the list
+        
+        '''
+        print "the add steps function ran"
+        
+        '''
+        
+        Can we split this into steps first relating to the chain direction over/under and then to kinematics type? I think we can
+        
+        If chain on top of sprockets then:
+            Set to 12'oclock
+            Measure dist between motors
+        
+        If chain on bottom of sprockets  -- For now just print "this is not a supported configuration
+            Set to 12'oclock
+            Measure dist between motors
+            Remove chain
+            Reset to 12 o'clock
+        
+        For either:
+            Extend chains
+            Attach sled
+            Set Z
+        
+        For triangular kinematics:
+            Ask for rotation radius
+            Do triangular test cut
+        
+        For quadrilateral kinematics:
+            Ask for guess of attachment spacing
+            Do quadrilateral test cut
+        
+        '''
+        
+        #Set to 12'oclock
+        
     
     def loadNextStep(self):
         '''

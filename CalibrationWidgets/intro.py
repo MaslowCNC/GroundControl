@@ -1,6 +1,6 @@
 '''
 
-A template for creating a new calibration step widget
+The intro page which explains the calibration process
 
 '''
 from   kivy.uix.gridlayout                          import   GridLayout

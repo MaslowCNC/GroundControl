@@ -8,6 +8,7 @@ class SetSprocketsVertical(Widget):
 
     '''
     data = ObjectProperty(None) #set externally
+    readyToMoveOn   = ObjectProperty(None)
 
     def LeftCW(self):
         degValue = float(self.data.config.get('Advanced Settings',"gearTeeth"))*float(self.data.config.get('Advanced Settings',"chainPitch"))/360.0;
@@ -121,3 +122,20 @@ class SetSprocketsVertical(Widget):
         #mark that the sprockets are straight up
         self.data.gcode_queue.put("B06 L0 R0 ");
         self.carousel.load_next()
+    
+    def on_Enter(self):
+        '''
+        
+        This function runs when the step is entered
+        
+        '''
+        pass
+    
+    def on_Exit(self):
+        '''
+        
+        This function run when the process is completed or quit is pressed
+        
+        '''
+        print "compute calibration steps on exit"
+        self.readyToMoveOn()

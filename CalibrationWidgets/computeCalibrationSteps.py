@@ -1,13 +1,15 @@
 '''
 
-This is the widget which creates a frame around the calibration process providing infrastructure like the forwards and back buttons.
+This widget computes which calibration steps will be needed for a given machine setup
 
 '''
 from   kivy.uix.gridlayout                          import   GridLayout
 from   kivy.properties                              import   ObjectProperty
+from   kivy.app                                     import   App
 
 class ComputeCalibrationSteps(GridLayout):
     readyToMoveOn   = ObjectProperty(None)
+    setListOfSteps  = ObjectProperty(None)
     
     
     def on_Enter(self):
@@ -17,6 +19,25 @@ class ComputeCalibrationSteps(GridLayout):
         
         '''
         print "compute calibration steps on enter"
+        
+        
+        '''
+        chainDir = App.get_running_app().data.config.get('Advanced Settings', 'chainOverSprocket')
+        
+        listOfSteps = []
+        
+        if chainDir == 'Top':
+            print "top recognized"
+            chooseKinematicsType = ChooseKinematicsType()
+            listOfSteps.append(chooseKinematicsType)
+            #set to 12'
+            
+            #measure dist between motors 
+        else:
+            print "bottom recognized"
+        '''
+        self.setListOfSteps()
+        self.on_Exit()
     
     def on_Exit(self):
         '''
