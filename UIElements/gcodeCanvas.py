@@ -49,8 +49,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Window.bind(on_resize = self.centerCanvas)
 
         self.data.bind(gcode = self.updateGcode)                    #Parses self.data.gcode and draws if you change self.data.gcode
-        self.data.bind(gcodeRedraw = self.updateGcode)              #Easy way for other pieces to call for a redraw with no changes
-        self.data.bind(gcodeShift = self.updateGcode)               #No need to reload if the origin is changed, just clear and redraw
+        self.data.bind(gcodeRedraw = self.pupdateGcode)             #Easy way for other pieces to call for a redraw with no changes
+        self.data.bind(gcodeShift = self.pupdateGcode)              #No need to reload if the origin is changed, just clear and redraw
         self.data.bind(gcodeFile = self.centerCanvasAndReloadGcode) #If filename changed, center canvas and reload file
         
         global_variables._keyboard = Window.request_keyboard(self._keyboard_closed, self)
@@ -126,7 +126,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.data.message_queue.put("Message: Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use Actions > Open G-code")
             self.data.gcodeFile = ""
         self.processFile()
-        
+
+    def pupdateGcode(self, *args):
+	self.ProcessFile()
+	
     def processFile(self):
         rawfilters = self.data.gcodeOriginal #Reload Raw...
         
