@@ -1,7 +1,8 @@
-from   kivy.uix.widget                    import   Widget
-from   kivy.properties                    import   ObjectProperty
-from   UIElements.touchNumberInput        import   TouchNumberInput
-from   kivy.uix.popup                     import   Popup
+from   kivy.uix.widget                      import   Widget
+from   kivy.properties                      import   ObjectProperty
+from   UIElements.touchNumberInput          import   TouchNumberInput
+from   kivy.uix.popup                       import   Popup
+from   kivy.app                             import   App
 import global_variables
 
 class MeasureDistBetweenMotors(Widget):
@@ -10,15 +11,7 @@ class MeasureDistBetweenMotors(Widget):
     Provides a standard interface for measuring the distance between the motors. Assumes that both motors are in position zero at the begining
     
     '''
-    data                         =  ObjectProperty(None) #linked externally
-    
-    def on_enter(self):
-        '''
-        
-        Called when the calibration process gets to this step
-        
-        '''
-        pass
+    data                         =   ObjectProperty(None)
     
     def textInputPopup(self, target):
         self.targetWidget = target
@@ -95,7 +88,42 @@ class MeasureDistBetweenMotors(Widget):
     
     def measureLeft(self):
         self.data.gcode_queue.put("B10 L")
+        print "measure left ran"
+    
+    def readMotorSpacing(self, dist):
+        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Bottom':
+            dist *= -1
+
+        dist = dist - 2*6.35                                #subtract off the extra two links
+
+        print "Read motor spacing: " + str(dist)
+        self.data.config.set('Maslow Settings', 'motorSpacingX', str(dist))
+        self.data.config.write()
+        
+        #put some slack in the chain
+        self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B09 L10 ")
+        self.data.gcode_queue.put("G90 ")
+        
+        self.on_Exit()
     
     def pullChainTight(self):
         #pull the left chain tight
         self.data.gcode_queue.put("B11 S50 T3 ")
+    
+    def on_Enter(self):
+        '''
+        
+        This function runs when the step is entered
+        
+        '''
+        self.data = App.get_running_app().data
+        self.data.measureRequest = self.readMotorSpacing
+    
+    def on_Exit(self):
+        '''
+        
+        This function run when the process is completed or quit is pressed
+        
+        '''
+        self.readyToMoveOn()

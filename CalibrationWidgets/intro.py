@@ -5,6 +5,7 @@ The intro page which explains the calibration process
 '''
 from   kivy.uix.gridlayout                          import   GridLayout
 from   kivy.properties                              import   ObjectProperty
+from   kivy.app                                     import   App
 
 class Intro(GridLayout):
     readyToMoveOn   = ObjectProperty(None)
@@ -25,4 +26,7 @@ class Intro(GridLayout):
         
         '''
         print "intro on exit"
+        App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', 'Top')
+        App.get_running_app().data.config.write()
+        App.get_running_app().data.pushSettings()
         self.readyToMoveOn()

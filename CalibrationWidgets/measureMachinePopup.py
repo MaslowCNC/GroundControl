@@ -3,14 +3,14 @@
 This allows the user interact with the z-axis when it is the content of a popup
 
 '''
-from   kivy.uix.gridlayout								import   GridLayout
-from   kivy.properties									import   ObjectProperty
-from   kivy.properties									import   StringProperty
-from   UIElements.touchNumberInput						import   TouchNumberInput
-from   CalibrationWidgets.triangularCalibration			import   TriangularCalibration
-from   CalibrationWidgets.adjustZCalibrationDepth		import   AdjustZCalibrationDepth
-from   CalibrationWidgets.measureDistBetweenMotors		import   MeasureDistBetweenMotors
-from   kivy.uix.popup									import   Popup
+from   kivy.uix.gridlayout                              import   GridLayout
+from   kivy.properties                                  import   ObjectProperty
+from   kivy.properties                                  import   StringProperty
+from   UIElements.touchNumberInput                      import   TouchNumberInput
+from   CalibrationWidgets.triangularCalibration         import   TriangularCalibration
+from   CalibrationWidgets.adjustZCalibrationDepth       import   AdjustZCalibrationDepth
+from   CalibrationWidgets.measureDistBetweenMotors      import   MeasureDistBetweenMotors
+from   kivy.uix.popup                                   import   Popup
 import global_variables
 
 class MeasureMachinePopup(GridLayout):
@@ -193,20 +193,6 @@ class MeasureMachinePopup(GridLayout):
 
     def measureLeft(self):
         self.data.gcode_queue.put("B10 L")
-
-    def readMotorSpacing(self, dist):
-        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Bottom':
-            dist *= -1
-
-        dist = dist - 2*6.35                                #subtract off the extra two links
-
-        print "Read motor spacing: " + str(dist)
-        self.data.config.set('Maslow Settings', 'motorSpacingX', str(dist))
-        self.data.config.write()
-
-        self.extendLeft(15);
-
-        self.carousel.load_next()
 
     def readVerticalOffset(self, dist):
         if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Bottom':

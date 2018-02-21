@@ -13,6 +13,8 @@ from CalibrationWidgets.chooseKinematicsType                import  ChooseKinema
 from CalibrationWidgets.chooseChainOverSprocketDirection    import  ChooseChainOverSprocketDirection
 from CalibrationWidgets.computeCalibrationSteps             import  ComputeCalibrationSteps
 from CalibrationWidgets.setSprocketsVertical                import  SetSprocketsVertical
+from CalibrationWidgets.measureDistBetweenMotors            import  MeasureDistBetweenMotors
+from   kivy.app                                             import   App
 
 
 class CalibrationFrameWidget(GridLayout):
@@ -31,21 +33,24 @@ class CalibrationFrameWidget(GridLayout):
         intro =  Intro()
         self.listOfCalibrationSteps.append(intro)
         
-        chooseChainOverSprocketDirection = ChooseChainOverSprocketDirection()
+        setTo12                                     = SetSprocketsVertical()
+        self.listOfCalibrationSteps.append(setTo12)
+        
+        measureMotorDist                            = MeasureDistBetweenMotors()
+        self.listOfCalibrationSteps.append(measureMotorDist)
+        
+        chooseChainOverSprocketDirection             = ChooseChainOverSprocketDirection()
         self.listOfCalibrationSteps.append(chooseChainOverSprocketDirection)
         
-        chooseKinematicsType = ChooseKinematicsType()
+        chooseKinematicsType                        = ChooseKinematicsType()
         self.listOfCalibrationSteps.append(chooseKinematicsType)
         
-        chooseChainOverSprocketDirection = ChooseChainOverSprocketDirection()
-        self.listOfCalibrationSteps.append(chooseChainOverSprocketDirection)
-        
-        computeCalibrationSteps = ComputeCalibrationSteps()
-        computeCalibrationSteps.setupListOfSteps = self.addSteps
+        computeCalibrationSteps                     = ComputeCalibrationSteps()
+        computeCalibrationSteps.setupListOfSteps    = self.addSteps
         self.listOfCalibrationSteps.append(computeCalibrationSteps)
         
-        chooseKinematicsType = ChooseKinematicsType()
-        self.listOfCalibrationSteps.append(chooseKinematicsType)
+        #Set to 12'oclock
+        #Measure dist between motors
         
         self.loadStep(0)
     
@@ -55,6 +60,7 @@ class CalibrationFrameWidget(GridLayout):
         This function run when the process is completed or quit is pressed
         
         '''
+        App.get_running_app().data.message_queue.put("Message: Notice: Exiting the calibration process early may result in incorrect calibration.")
         self.done()
     
     def addSteps(self):
