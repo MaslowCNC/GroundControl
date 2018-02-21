@@ -959,40 +959,39 @@
 <AdjustZCalibrationDepth>:
     zAxisActiveSwitch:zAxisActiveSwitch
     openZPopupBtn:openZPopupBtn
+    cols: 2
+    width: root.width
+    height: root.height
     GridLayout:
-        cols: 2
-        width: root.width
-        height: root.height
-        GridLayout:
-            cols: 1
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: "Next, we are going to define the home position for the z-axis\n\nIf you have an automatic z-axis installed use the buttons to enable it and adjust the z-axis until the router bit\nbarely touches the surface of the wood. Then press Define Zero\n\nIf you do not have the z-axis installed, adjust your router until the router bit just barely\ntouches the surface of the wood, then press Define Zero"
             size_hint_x: leftCol
-            Label:
-                text: "Next, we are going to define the home position for the z-axis\n\nIf you have an automatic z-axis installed use the buttons to enable it and adjust the z-axis until the router bit\nbarely touches the surface of the wood. Then press Define Zero\n\nIf you do not have the z-axis installed, adjust your router until the router bit just barely\ntouches the surface of the wood, then press Define Zero"
-                size_hint_x: leftCol
-            GridLayout:
-                cols: 2
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
         GridLayout:
-            cols: 1
-            size_hint_x: rightCol
+            cols: 2
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        GridLayout:
+            cols: 2
             Label:
-            GridLayout:
-                cols: 2
-                Label:
-                    text: 'Enable\nAutomatic Z-Axis:'
-                Switch:
-                    on_active: root.enableZaxis()
-                    id: zAxisActiveSwitch
-            Button:
-                text: "Adjust Z-Axis"
-                on_release: root.zAxisPopup()
-                disabled:True
-                id: openZPopupBtn
-            Button:
-                text: 'Define Zero'
-                on_release: root.zeroZ()
-            Label:
+                text: 'Enable\nAutomatic Z-Axis:'
+            Switch:
+                on_active: root.enableZaxis()
+                id: zAxisActiveSwitch
+        Button:
+            text: "Adjust Z-Axis"
+            on_release: root.zAxisPopup()
+            disabled:True
+            id: openZPopupBtn
+        Button:
+            text: 'Define Zero'
+            on_release: root.zeroZ()
+        Label:
 
 <SetSprocketsVertical>:
     #Set sprockets to 12 o'clock
@@ -1070,41 +1069,40 @@
 <MeasureOutChains>:
     leftChainBtn:leftChainBtn
     rightChainBtn:rightChainBtn
+    cols: 2
+    width: root.width
+    height: root.height
     GridLayout:
-        cols: 2
-        width: root.width
-        height: root.height
-        GridLayout:
-            cols: 1
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: root.text
             size_hint_x: leftCol
-            Label:
-                text: root.text
-                size_hint_x: leftCol
-            GridLayout:
-                cols: 2
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Ready To Calibrate Right Sprocket.jpg"
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Sled Attached.jpg"
         GridLayout:
-            cols: 1
-            size_hint_x: rightCol
-            Label:
-            Button:
-                text: '   Extend\nLeft Chain'
-                on_release: root.startCountDownL()
-                id: leftChainBtn
-            Button:
-                text: '   Extend\nRight Chain'
-                on_release: root.startCountDownR()
-                id: rightChainBtn
-            Button:
-                text: 'Stop'
-                on_release: root.stop()
-            Button:
-                text: 'Next'
-                on_release: root.next()
-            Label:
+            cols: 2
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Ready To Calibrate Right Sprocket.jpg"
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Sled Attached.jpg"
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Button:
+            text: '   Extend\nLeft Chain'
+            on_release: root.startCountDownL()
+            id: leftChainBtn
+        Button:
+            text: '   Extend\nRight Chain'
+            on_release: root.startCountDownR()
+            id: rightChainBtn
+        Button:
+            text: 'Stop'
+            on_release: root.stop()
+        Button:
+            text: 'Next'
+            on_release: root.next()
+        Label:
 
 <MeasureMachinePopup>:
     carousel:carousel

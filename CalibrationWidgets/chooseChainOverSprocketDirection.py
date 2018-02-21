@@ -45,5 +45,5 @@ class ChooseChainOverSprocketDirection(GridLayout):
         This function runs when the step is completed
         
         '''
-        print "choose kinematics type on exit ran"
+        
         self.readyToMoveOn()

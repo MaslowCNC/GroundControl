@@ -15,6 +15,8 @@ from CalibrationWidgets.computeCalibrationSteps             import  ComputeCalib
 from CalibrationWidgets.setSprocketsVertical                import  SetSprocketsVertical
 from CalibrationWidgets.measureDistBetweenMotors            import  MeasureDistBetweenMotors
 from CalibrationWidgets.vertDistToMotorsGuess               import  VertDistToMotorsGuess
+from CalibrationWidgets.measureOutChains                    import  MeasureOutChains
+from CalibrationWidgets.adjustZCalibrationDepth             import  AdjustZCalibrationDepth
 from   kivy.app                                             import   App
 
 
@@ -77,20 +79,16 @@ class CalibrationFrameWidget(GridLayout):
         
         Can we split this into steps first relating to the chain direction over/under and then to kinematics type? I think we can
         
-        If chain on top of sprockets then:
-            Set to 12'oclock
-            Measure dist between motors
+        
         
         If chain on bottom of sprockets  -- For now just print "this is not a supported configuration
-            Set to 12'oclock
-            Measure dist between motors
+
             Remove chain
             Reset to 12 o'clock
         
-        For either:
-            Extend chains
-            Attach sled
-            Set Z
+        Extend chains
+        Attach sled
+        Set Z
         
         For triangular kinematics:
             Ask for rotation radius
@@ -102,7 +100,21 @@ class CalibrationFrameWidget(GridLayout):
         
         '''
         
-        #Set to 12'oclock
+        if App.get_running_app().data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
+            print "CHAINS OVER TOP RECOGNIZED"
+        else:
+            #this will be done in a seperate pull request because I would like feedback on how it will work
+            App.get_running_app().data.message_queue.put("Message: You have chosen a configuration which is not currently supported by the calibration process. Check back soon")
+            self.done()
+        
+        #add extend chains
+        measureOutChains                                = MeasureOutChains()
+        self.listOfCalibrationSteps.append(measureOutChains)
+        
+        
+        #add set z
+        adjustZCalibrationDepth                         = AdjustZCalibrationDepth()
+        self.listOfCalibrationSteps.append(adjustZCalibrationDepth)
         
     
     def loadNextStep(self):
@@ -127,16 +139,19 @@ class CalibrationFrameWidget(GridLayout):
     def loadStep(self, stepNumber):
         
         #remove the old widget
-        print "load next step ran"
         try:
             self.cFrameWidgetSpace.remove_widget(self.currentWidget)
         except:
             pass #there was no widget to remove
-            
-        #load the new widget
-        self.currentWidget = self.listOfCalibrationSteps[self.currentStepNumber]
         
-        #initialize the new widget
-        self.currentWidget.readyToMoveOn = self.loadNextStep
-        self.currentWidget.on_Enter()
-        self.cFrameWidgetSpace.add_widget(self.currentWidget)
+        try:
+            #load the new widget
+            self.currentWidget = self.listOfCalibrationSteps[self.currentStepNumber]
+            
+            #initialize the new widget
+            self.currentWidget.readyToMoveOn = self.loadNextStep
+            self.currentWidget.on_Enter()
+            self.cFrameWidgetSpace.add_widget(self.currentWidget)
+        except IndexError:
+            #the calibration has run out of steps
+            pass
