@@ -155,6 +155,13 @@ settings = {
                 "desc": "User defined title for the Macro 2 button",
                 "key": "macro2_title",
                 "default": "Macro 2"
+            },
+            {
+                "type": "string",
+                "title": "Z-Axis Safe Travel Height in MM",
+                "desc": "The vertical distance above the work area to raise the z-axis for safe travel. Used by 'Home', 'Return to Center' and 'z-Axis' settings.",
+                "key": "zAxisSafeHeight",
+                "default": 5,
             }
         ],
     "Advanced Settings":
@@ -208,8 +215,8 @@ settings = {
             {
                 "type": "bool",
                 "title": "Spindle Automation",
-                "desc": "Should the spindle start and stop automatically based on gcode? Leave off for default stepper control.",
-                "key": "zAxisAuto",
+                "desc": "How should the spindle start and stop automatically based on gcode? Leave off for default external servo control, on for external relay control.",
+                "key": "spindleAutomate",
                 "default": 0,
                 "firmwareKey": 17
             },

@@ -109,7 +109,7 @@
         id: gcodecanvas
     BoxLayout:
         orientation: 'vertical'
-        pos: root.width - dp(300), root.height - dp(630)
+        pos: root.width - dp(300), dp(0)
         GridLayout:
             cols: 4
             size_hint: None, None
@@ -273,7 +273,7 @@
             color: .476, .476, .476,1
         ScrollableLabel:
             id: textconsole
-            size: dp(300), dp(200)
+            size: dp(300), root.height - dp(430)
             text: root.consoleText
             size_hint: None, None
 
@@ -371,14 +371,13 @@
                 text: 'Test Motors/Encoders'
                 on_press: root.testMotors()
             Button:
-                text: 'Calibrate Machine Dimensions'
+                text: 'Calibrate'
                 on_release: root.measureMachine()
             Button:
-                text: 'Calibrate Chain Length - Automatic'
+                text: 'Set Chain Length - Automatic'
                 on_release: root.calibrateChainLengths()
             Button:
-                text: 'Calibrate Motors\n-----Obsolete-----'
-                on_release: root.calibrateMotors()
+                text: ' '
                 disabled: True
             Button:
                 text: 'About'
@@ -387,7 +386,7 @@
             Spinner:
                 id: advancedOptions
                 text: "Advanced"
-                values: ["Calibrate Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test"]
+                values: ["Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test"]
                 on_text: root.advancedOptionsFunctions(advancedOptions.text)
 
 <OtherFeatures>:
@@ -667,6 +666,33 @@
                 # color: [1,0,0,1]
                 on_release: root.stopZMove()
 
+#calibration widgets
+
+<CalibrationTemplate>:
+    GridLayout:
+        cols: 2
+        width: root.width
+        height: root.height
+        GridLayout:
+            cols: 1
+            size_hint_x: leftCol
+            Label:
+                text: "Text about what to do in this step"
+                size_hint_x: leftCol
+            GridLayout:
+                cols: 2
+                Image:
+                    source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
+        GridLayout:
+            cols: 1
+            size_hint_x: rightCol
+            Label:
+            Button:
+                text: "Thing one"
+            Button:
+                text: 'Thing two'
+            Label:
+  
 <TriangularCalibration>:
     cutBtnT:cutBtnT
     horzMeasureT1:horzMeasureT1
@@ -688,7 +714,7 @@
             GridLayout:
                 cols: 2
                 Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview Triangular.JPG"
+                    source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview Triangular.jpg"
                     size_hint_x: 0.5
                 Label:
                     text: root.triangularCalText
@@ -1128,9 +1154,9 @@
                 GridLayout:
                     cols: 2
                     Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Quadrilateral Kinematics.JPG"
+                        source: "./Documentation/Calibrate Machine Dimensions/Quadrilateral Kinematics.jpg"
                     Image:
-                        source: "./Documentation/Calibrate Machine Dimensions/Triangular Kinematics.JPG"
+                        source: "./Documentation/Calibrate Machine Dimensions/Triangular Kinematics.jpg"
             GridLayout:
                 cols: 1
                 size_hint_x: rightCol
@@ -1247,6 +1273,8 @@
                     text: 'Finish'
                     on_release: root.done()
                 Label:
+
+#simulation widgets
 
 <SimulationCanvas>:
     motorSpacingError:motorSpacingError

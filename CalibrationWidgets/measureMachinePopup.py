@@ -3,14 +3,14 @@
 This allows the user interact with the z-axis when it is the content of a popup
 
 '''
-from   kivy.uix.gridlayout                       import   GridLayout
-from   kivy.properties                           import   ObjectProperty
-from   kivy.properties                           import   StringProperty
-from   UIElements.touchNumberInput               import   TouchNumberInput
-from   UIElements.triangularCalibration          import   TriangularCalibration
-from   UIElements.adjustZCalibrationDepth        import   AdjustZCalibrationDepth
-from   UIElements.measureDistBetweenMotors       import   MeasureDistBetweenMotors
-from   kivy.uix.popup                            import   Popup
+from   kivy.uix.gridlayout								import   GridLayout
+from   kivy.properties									import   ObjectProperty
+from   kivy.properties									import   StringProperty
+from   UIElements.touchNumberInput						import   TouchNumberInput
+from   CalibrationWidgets.triangularCalibration			import   TriangularCalibration
+from   CalibrationWidgets.adjustZCalibrationDepth		import   AdjustZCalibrationDepth
+from   CalibrationWidgets.measureDistBetweenMotors		import   MeasureDistBetweenMotors
+from   kivy.uix.popup									import   Popup
 import global_variables
 
 class MeasureMachinePopup(GridLayout):

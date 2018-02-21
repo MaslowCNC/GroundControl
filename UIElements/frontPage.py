@@ -124,11 +124,12 @@ class FrontPage(Screen, MakesmithInitFuncs):
         if self.tick>=4:    #Can't do this every time... it's too noisy, so we do it every 5rd time (0.1s).
             self.tick=0
             if self.lasttime <> 0.0:
-				try:
-					delta = sqrt( (xPos-self.lastpos[0])*(xPos-self.lastpos[0]) + (yPos-self.lastpos[1])*(yPos-self.lastpos[1]) + (zPos-self.lastpos[2]) * (zPos-self.lastpos[2]))
-					Vel = delta / (time()-self.lasttime) * 60.0 #In XXXX/minute
-				except:
-					print "unable to compute velocity"
+                try:
+                    delta = sqrt( (xPos-self.lastpos[0])*(xPos-self.lastpos[0]) + (yPos-self.lastpos[1])*(yPos-self.lastpos[1]) + (zPos-self.lastpos[2]) * (zPos-self.lastpos[2]))
+                    Vel = delta / (time()-self.lasttime) * 60.0 #In XXXX/minute
+                except:
+                    print "unable to compute velocity"
+                    Vel = 0
             else:
                 Vel=0
                 
@@ -242,14 +243,14 @@ class FrontPage(Screen, MakesmithInitFuncs):
                 xTarget = float(x.groups()[0])
                 self.previousPosX = xTarget
             else:
-            	xTarget = self.previousPosX
+                xTarget = self.previousPosX
             
             y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if y:
                 yTarget = float(y.groups()[0])
                 self.previousPosY = yTarget
             else:
-            	yTarget = self.previousPosY
+                yTarget = self.previousPosY
             
             self.gcodecanvas.positionIndicator.setPos(xTarget,yTarget,self.data.units)
         except:
@@ -340,10 +341,12 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.data.gcode_queue.put("G90  ")
         self.gcodeVel = "[MAN]"
         
-        if self.units == "INCHES":
-            self.data.gcode_queue.put("G00 Z.25 ")
+        safeHeightMM = float(self.data.config.get('Maslow Settings', 'zAxisSafeHeight'))
+        safeHeightInches = safeHeightMM / 25.5
+        if self.data.units == "INCHES":
+            self.data.gcode_queue.put("G00 Z" + '%.3f'%(safeHeightInches))
         else:
-            self.data.gcode_queue.put("G00 Z5.0 ")
+            self.data.gcode_queue.put("G00 Z" + str(safeHeightMM))
         
         self.data.gcode_queue.put("G00 X" + str(self.data.gcodeShift[0]) + " Y" + str(self.data.gcodeShift[1]) + " ")
         

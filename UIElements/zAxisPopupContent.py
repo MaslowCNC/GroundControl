@@ -104,10 +104,12 @@ class ZAxisPopupContent(GridLayout):
         self.zPopDisable = False
         
         self.setMachineUnits()
-        if self.data.zPopupUnits == "INCHES":
-            self.data.gcode_queue.put("G00 Z.25 ")
+        safeHeightMM = float(self.data.config.get('Maslow Settings', 'zAxisSafeHeight'))
+        safeHeightInches = safeHeightMM / 25.5
+        if self.data.units == "INCHES":
+            self.data.gcode_queue.put("G00 Z" + '%.3f'%(safeHeightInches))
         else:
-            self.data.gcode_queue.put("G00 Z5.0 ")
+            self.data.gcode_queue.put("G00 Z" + str(safeHeightMM))
         self.resetMachineUnits()
 
     def zToZero(self):
@@ -138,9 +140,9 @@ class ZAxisPopupContent(GridLayout):
         '''
         self.setMachineUnits()
         if self.data.units == "INCHES":
-            self.data.gcode_queue.put("G38.2 Z2 F2")    #Only go down 2 inches...
+            self.data.gcode_queue.put("G38.2 Z-.2 F2")    #Only go down 0.2 inches...
         else:
-            self.data.gcode_queue.put("G38.2 Z50 F50")  #Or 50mm.
+            self.data.gcode_queue.put("G38.2 Z-.5 F50")  #Or 0.5mm.
         self.resetMachineUnits()
             
     
