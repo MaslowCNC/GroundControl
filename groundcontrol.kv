@@ -929,6 +929,7 @@
         Label:
 
 <VertDistToMotorsGuess>:
+    enterMeasurement:enterMeasurement
     cols: 2
     width: root.width
     height: root.height
@@ -936,20 +937,23 @@
         cols: 1
         size_hint_x: leftCol
         Label:
-            text: "Text about what to do in this step"
+            text: "Next we need to enter a rough measurement for how far the motors are above the top of the work area\n\nMeasure from the center of the motor shaft to the top of the sheet of plywood\n\nThis measurement is not critical for the accuracy of the machine, but will move the center position up an down."
             size_hint_x: leftCol
         GridLayout:
             cols: 2
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
+                source: "./Documentation/Calibrate Machine Dimensions/Measure Motor Height.jpg"
     GridLayout:
         cols: 1
         size_hint_x: rightCol
         Label:
         Button:
-            text: "Thing one"
+            text: "Enter Measurement"
+            id: enterMeasurement
+            on_release: root.textInputPopup(self)
         Button:
-            text: 'Thing two'
+            text: 'Next'
+            on_release: root.on_Exit()
         Label:
 
 <AdjustZCalibrationDepth>:
