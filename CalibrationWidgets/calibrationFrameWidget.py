@@ -37,9 +37,15 @@ class CalibrationFrameWidget(GridLayout):
         chooseKinematicsType = ChooseKinematicsType()
         self.listOfCalibrationSteps.append(chooseKinematicsType)
         
+        chooseChainOverSprocketDirection = ChooseChainOverSprocketDirection()
+        self.listOfCalibrationSteps.append(chooseChainOverSprocketDirection)
+        
         computeCalibrationSteps = ComputeCalibrationSteps()
-        computeCalibrationSteps.setListOfSteps = self.addSteps
+        computeCalibrationSteps.setupListOfSteps = self.addSteps
         self.listOfCalibrationSteps.append(computeCalibrationSteps)
+        
+        chooseKinematicsType = ChooseKinematicsType()
+        self.listOfCalibrationSteps.append(chooseKinematicsType)
         
         self.loadStep(0)
     

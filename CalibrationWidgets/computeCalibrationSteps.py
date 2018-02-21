@@ -1,15 +1,16 @@
 '''
 
-This widget computes which calibration steps will be needed for a given machine setup
+The widget which lets you choose the proper kinematics type for your system
 
 '''
 from   kivy.uix.gridlayout                          import   GridLayout
 from   kivy.properties                              import   ObjectProperty
 from   kivy.app                                     import   App
+from   kivy.clock                                   import   Clock
 
 class ComputeCalibrationSteps(GridLayout):
-    readyToMoveOn   = ObjectProperty(None)
-    setListOfSteps  = ObjectProperty(None)
+    readyToMoveOn      = ObjectProperty(None)
+    setupListOfSteps   = ObjectProperty(None)
     
     
     def on_Enter(self):
@@ -18,32 +19,15 @@ class ComputeCalibrationSteps(GridLayout):
         This function runs when the step is entered
         
         '''
-        print "compute calibration steps on enter"
-        
-        
-        '''
-        chainDir = App.get_running_app().data.config.get('Advanced Settings', 'chainOverSprocket')
-        
-        listOfSteps = []
-        
-        if chainDir == 'Top':
-            print "top recognized"
-            chooseKinematicsType = ChooseKinematicsType()
-            listOfSteps.append(chooseKinematicsType)
-            #set to 12'
-            
-            #measure dist between motors 
-        else:
-            print "bottom recognized"
-        '''
-        self.setListOfSteps()
-        self.on_Exit()
+        print "choose kinematics type on enter ran"
+        self.setupListOfSteps()
+        Clock.schedule_once(self.on_Exit, 1) #some delay is needed here to let the UI update before the next widget can be loaded
     
-    def on_Exit(self):
+    def on_Exit(self, *args):
         '''
         
-        This function run when the process is completed or quit is pressed
+        This function run when the step is completed
         
         '''
-        print "compute calibration steps on exit"
+        print "choose kinematics type on exit ran"
         self.readyToMoveOn()
