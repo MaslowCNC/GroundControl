@@ -14,6 +14,7 @@ from CalibrationWidgets.chooseChainOverSprocketDirection    import  ChooseChainO
 from CalibrationWidgets.computeCalibrationSteps             import  ComputeCalibrationSteps
 from CalibrationWidgets.setSprocketsVertical                import  SetSprocketsVertical
 from CalibrationWidgets.measureDistBetweenMotors            import  MeasureDistBetweenMotors
+from CalibrationWidgets.vertDistToMotorsGuess               import  VertDistToMotorsGuess
 from   kivy.app                                             import   App
 
 
@@ -45,12 +46,12 @@ class CalibrationFrameWidget(GridLayout):
         chooseKinematicsType                        = ChooseKinematicsType()
         self.listOfCalibrationSteps.append(chooseKinematicsType)
         
+        vertDistGuess                               = VertDistToMotorsGuess()
+        self.listOfCalibrationSteps.append(vertDistGuess)
+        
         computeCalibrationSteps                     = ComputeCalibrationSteps()
         computeCalibrationSteps.setupListOfSteps    = self.addSteps
         self.listOfCalibrationSteps.append(computeCalibrationSteps)
-        
-        #Set to 12'oclock
-        #Measure dist between motors
         
         self.loadStep(0)
     

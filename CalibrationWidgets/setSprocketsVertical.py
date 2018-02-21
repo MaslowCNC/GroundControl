@@ -1,8 +1,8 @@
-from kivy.uix.widget                      import   Widget
-from kivy.properties                      import   ObjectProperty
+from   kivy.uix.gridlayout                import  GridLayout
+from   kivy.properties                    import   ObjectProperty
 from   kivy.app                           import   App
 
-class SetSprocketsVertical(Widget):
+class SetSprocketsVertical(GridLayout):
     '''
 
     Provides a standard interface for making both sprockets point vertically

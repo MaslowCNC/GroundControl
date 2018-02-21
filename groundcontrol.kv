@@ -884,52 +884,73 @@
 <MeasureDistBetweenMotors>
     distToMove:distToMove
     distText:distText
+    cols: 2
     width: root.width
     height: root.height
     GridLayout:
-        cols: 2
-        width: root.width
-        height: root.height
+        cols: 1
+        Label:
+            text: "Rather than using a tape measure to measure the spacing between the motors, we're going to use the chain.\n\nHook the first link from the left chain over the top tooth on the left motor\n\nThen, use the buttons to the right to extend the chain until it can reach the right motor.\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way\n\nHook the third link on the right motor's 12:00 tooth as shown in the picture below\n\nPull the chain tight by pressing Pull Chain Tight. You can use this button repeatedly if needed\n\nPress Measure when the chain is taught"
+            size_hint_x: leftCol
         GridLayout:
-            cols: 1
-            Label:
-                text: "Rather than using a tape measure to measure the spacing between the motors, we're going to use the chain.\n\nHook the first link from the left chain over the top tooth on the left motor\n\nThen, use the buttons to the right to extend the chain until it can reach the right motor.\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way\n\nHook the third link on the right motor's 12:00 tooth as shown in the picture below\n\nPull the chain tight by pressing Pull Chain Tight. You can use this button repeatedly if needed\n\nPress Measure when the chain is taught"
-                size_hint_x: leftCol
-            GridLayout:
-                cols: 3
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Chain On Left Sprocket.jpg"
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Chain Between Sprockets.jpg"
-                Image:
-                    source: "./Documentation/Calibrate Machine Dimensions/Chain On Right Sprocket.jpg"
+            cols: 3
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Chain On Left Sprocket.jpg"
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Chain Between Sprockets.jpg"
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Chain On Right Sprocket.jpg"
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Label:
+            text: "Dist(MM):"
+            id: distText
+        Button:
+            text: "100"
+            on_release: root.textInputPopup(self)
+            id: distToMove
+        Button:
+            text: "Extend"
+            on_release: root.extend()
+        Button:
+            text: "Retract"
+            on_release: root.retract()
+        Button:
+            text: 'Pull Chain Tight'
+            on_release: root.pullChainTight()
+        Button:
+            text: 'Measure'
+            on_release: root.measureLeft()
+        Button:
+            text: "Stop\nMotors"
+            on_release: root.stopCut()
+        Label:
+
+<VertDistToMotorsGuess>:
+    cols: 2
+    width: root.width
+    height: root.height
+    GridLayout:
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: "Text about what to do in this step"
+            size_hint_x: leftCol
         GridLayout:
-            cols: 1
-            size_hint_x: rightCol
-            Label:
-            Label:
-                text: "Dist(MM):"
-                id: distText
-            Button:
-                text: "100"
-                on_release: root.textInputPopup(self)
-                id: distToMove
-            Button:
-                text: "Extend"
-                on_release: root.extend()
-            Button:
-                text: "Retract"
-                on_release: root.retract()
-            Button:
-                text: 'Pull Chain Tight'
-                on_release: root.pullChainTight()
-            Button:
-                text: 'Measure'
-                on_release: root.measureLeft()
-            Button:
-                text: "Stop\nMotors"
-                on_release: root.stopCut()
-            Label:
+            cols: 2
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Button:
+            text: "Thing one"
+        Button:
+            text: 'Thing two'
+        Label:
 
 <AdjustZCalibrationDepth>:
     zAxisActiveSwitch:zAxisActiveSwitch
@@ -971,79 +992,76 @@
 
 <SetSprocketsVertical>:
     #Set sprockets to 12 o'clock
+    cols: 2
     width: root.width
     height: root.height
     GridLayout:
-        cols: 2
-        width: root.width
-        height: root.height
+        cols: 1
+        Label:
+            text: "Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up.\nWhen you are ready, press Set Zero"
+            size_hint_x: leftCol
+        Image:
+            source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.jpg"
+    GridLayout:
+        cols:1
+        size_hint_x: .4
+        GridLayout:
+            cols: 3
+            size_hint_x: .4
+            Label:
+                text: "Left Sprocket"
+                font_size: '20sp'
+            Label:
+            Label:
+            Button:
+                text: '5 deg CCW'
+                on_release: root.LeftCCW5()
+            Button:
+                text: '1 deg CCW'
+                on_release: root.LeftCCW()
+            Button:
+                text: '0.1 deg CCW'
+                on_release: root.LeftCCWpoint1()
+            Button:
+                text: '5 deg CW'
+                on_release: root.LeftCW5()
+            Button:
+                text: '1 deg CW'
+                on_release: root.LeftCW()
+            Button:
+                text: '0.1 deg CW'
+                on_release: root.LeftCWpoint1()
+            Label:
+                text: "Right Sprocket"
+                font_size: '20sp'
+            Label:
+            Label:
+            Button:
+                text: '5 deg CCW'
+                on_release: root.RightCCW5()
+            Button:
+                text: '1 deg CCW'
+                on_release: root.RightCCW()
+            Button:
+                text: '0.1 deg CCW'
+                on_release: root.RightCCWpoint1()
+            Button:
+                text: '5 deg CW'
+                on_release: root.RightCW5()
+            Button:
+                text: '1 deg CW'
+                on_release: root.RightCW()
+            Button:
+                text: '0.1 deg CW'
+                on_release: root.RightCWpoint1()
         GridLayout:
             cols: 1
-            Label:
-                text: "Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up.\nWhen you are ready, press Set Zero"
-                size_hint_x: leftCol
-            Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.jpg"
-        GridLayout:
-            cols:1
             size_hint_x: .4
-            GridLayout:
-                cols: 3
-                size_hint_x: .4
-                Label:
-                    text: "Left Sprocket"
-                    font_size: '20sp'
-                Label:
-                Label:
-                Button:
-                    text: '5 deg CCW'
-                    on_release: root.LeftCCW5()
-                Button:
-                    text: '1 deg CCW'
-                    on_release: root.LeftCCW()
-                Button:
-                    text: '0.1 deg CCW'
-                    on_release: root.LeftCCWpoint1()
-                Button:
-                    text: '5 deg CW'
-                    on_release: root.LeftCW5()
-                Button:
-                    text: '1 deg CW'
-                    on_release: root.LeftCW()
-                Button:
-                    text: '0.1 deg CW'
-                    on_release: root.LeftCWpoint1()
-                Label:
-                    text: "Right Sprocket"
-                    font_size: '20sp'
-                Label:
-                Label:
-                Button:
-                    text: '5 deg CCW'
-                    on_release: root.RightCCW5()
-                Button:
-                    text: '1 deg CCW'
-                    on_release: root.RightCCW()
-                Button:
-                    text: '0.1 deg CCW'
-                    on_release: root.RightCCWpoint1()
-                Button:
-                    text: '5 deg CW'
-                    on_release: root.RightCW5()
-                Button:
-                    text: '1 deg CW'
-                    on_release: root.RightCW()
-                Button:
-                    text: '0.1 deg CW'
-                    on_release: root.RightCWpoint1()
-            GridLayout:
-                cols: 1
-                size_hint_x: .4
-                Label:
-                Button:
-                    text: 'Set Zero'
-                    on_release: root.setZero()
-                Label:
+            Label:
+            Button:
+                text: 'Set Zero'
+                on_release: root.setZero()
+            Label:
 
 <MeasureOutChains>:
     leftChainBtn:leftChainBtn

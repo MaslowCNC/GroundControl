@@ -1,11 +1,11 @@
-from   kivy.uix.widget                      import   Widget
+from   kivy.uix.gridlayout                  import  GridLayout
 from   kivy.properties                      import   ObjectProperty
 from   UIElements.touchNumberInput          import   TouchNumberInput
 from   kivy.uix.popup                       import   Popup
 from   kivy.app                             import   App
 import global_variables
 
-class MeasureDistBetweenMotors(Widget):
+class MeasureDistBetweenMotors(GridLayout):
     '''
     
     Provides a standard interface for measuring the distance between the motors. Assumes that both motors are in position zero at the begining
