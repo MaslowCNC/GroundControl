@@ -17,6 +17,9 @@ from CalibrationWidgets.measureDistBetweenMotors            import  MeasureDistB
 from CalibrationWidgets.vertDistToMotorsGuess               import  VertDistToMotorsGuess
 from CalibrationWidgets.measureOutChains                    import  MeasureOutChains
 from CalibrationWidgets.adjustZCalibrationDepth             import  AdjustZCalibrationDepth
+from CalibrationWidgets.rotationRadiusGuess                 import  RotationRadiusGuess
+from CalibrationWidgets.triangularCalibration                 import  TriangularCalibration
+from CalibrationWidgets.finish                              import  Finish
 from   kivy.app                                             import   App
 
 
@@ -73,37 +76,11 @@ class CalibrationFrameWidget(GridLayout):
         given frame configuration and add them to the list
         
         '''
-        print "the add steps function ran"
-        
-        '''
-        
-        Can we split this into steps first relating to the chain direction over/under and then to kinematics type? I think we can
-        
-        
-        
-        If chain on bottom of sprockets  -- For now just print "this is not a supported configuration
-
-            Remove chain
-            Reset to 12 o'clock
-        
-        Extend chains
-        Attach sled
-        Set Z
-        
-        For triangular kinematics:
-            Ask for rotation radius
-            Do triangular test cut
-        
-        For quadrilateral kinematics:
-            Ask for guess of attachment spacing
-            Do quadrilateral test cut
-        
-        '''
         
         if App.get_running_app().data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
-            print "CHAINS OVER TOP RECOGNIZED"
+            pass
         else:
-            #this will be done in a seperate pull request because I would like feedback on how it will work
+            #this will be done in a separate pull request because I would like feedback on how it will work
             App.get_running_app().data.message_queue.put("Message: You have chosen a configuration which is not currently supported by the calibration process. Check back soon")
             self.done()
         
@@ -111,10 +88,28 @@ class CalibrationFrameWidget(GridLayout):
         measureOutChains                                = MeasureOutChains()
         self.listOfCalibrationSteps.append(measureOutChains)
         
-        
         #add set z
         adjustZCalibrationDepth                         = AdjustZCalibrationDepth()
         self.listOfCalibrationSteps.append(adjustZCalibrationDepth)
+        
+        if App.get_running_app().data.config.get('Advanced Settings', 'kinematicsType') == 'Triangular':
+            #add rotation radius guess
+            rotationRadiusGuess                         = RotationRadiusGuess()
+            self.listOfCalibrationSteps.append(rotationRadiusGuess)
+            #add triangular kinematics
+            triangularCalibration                         = TriangularCalibration()
+            self.listOfCalibrationSteps.append(triangularCalibration)
+        else:
+            #this will be done in a separate pull request because I want to test it carefully
+            #Ask for guess of attachment spacing
+            #Do quadrilateral test cut
+            App.get_running_app().data.message_queue.put("Message: You have chosen a configuration which is not currently supported by the calibration process. Check back soon")
+            self.done()
+        
+        #add finish step
+        finish                                          = Finish()
+        finish.done = self.done
+        self.listOfCalibrationSteps.append(finish)
         
     
     def loadNextStep(self):
