@@ -26,6 +26,10 @@ class Data(EventDispatcher):
     
     #Gcodes contains all of the lines of gcode in the opened file
     gcode      = ObjectProperty([])
+    gcodeOriginal  = StringProperty("")     #Raw file from disk
+    
+    gcodeRedraw = BooleanProperty(False)    #Signal to redraw the g-code from buffers
+    
     version    = '1.07'
     #all of the available COM ports
     comPorts   = []
@@ -46,7 +50,14 @@ class Data(EventDispatcher):
     tolerance  = NumericProperty(0.5)
     gcodeShift = ObjectProperty([0.0,0.0])                          #the amount that the gcode has been shifted
     logger     =  Logger()                                          #the module which records the machines behavior to review later
-    
+
+    #Background image stuff
+    #Persist, No save:
+    backgroundImage = None  #CV2 images for the textures - marked
+    originalimage = None    #and original
+    backgroundLastFile = StringProperty("") #Last file loaded for the background
+    backgroundClock = None                  #And a saver for the Periodic Update clock.
+
     '''
     Flags
     '''
