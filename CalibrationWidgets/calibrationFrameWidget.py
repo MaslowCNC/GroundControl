@@ -18,7 +18,8 @@ from CalibrationWidgets.vertDistToMotorsGuess               import  VertDistToMo
 from CalibrationWidgets.measureOutChains                    import  MeasureOutChains
 from CalibrationWidgets.adjustZCalibrationDepth             import  AdjustZCalibrationDepth
 from CalibrationWidgets.rotationRadiusGuess                 import  RotationRadiusGuess
-from CalibrationWidgets.triangularCalibration                 import  TriangularCalibration
+from CalibrationWidgets.triangularCalibration               import  TriangularCalibration
+from CalibrationWidgets.distBetweenChainBrackets            import  DistBetweenChainBrackets
 from CalibrationWidgets.finish                              import  Finish
 from   kivy.app                                             import   App
 
@@ -97,18 +98,20 @@ class CalibrationFrameWidget(GridLayout):
             rotationRadiusGuess                         = RotationRadiusGuess()
             self.listOfCalibrationSteps.append(rotationRadiusGuess)
             #add triangular kinematics
-            triangularCalibration                         = TriangularCalibration()
+            triangularCalibration                       = TriangularCalibration()
             self.listOfCalibrationSteps.append(triangularCalibration)
         else:
             #this will be done in a separate pull request because I want to test it carefully
             #Ask for guess of attachment spacing
+            distBetweenChainBrackets                    = DistBetweenChainBrackets()
+            self.listOfCalibrationSteps.append(distBetweenChainBrackets)
             #Do quadrilateral test cut
-            App.get_running_app().data.message_queue.put("Message: You have chosen a configuration which is not currently supported by the calibration process. Check back soon")
-            self.done()
+            #App.get_running_app().data.message_queue.put("Message: You have chosen a configuration which is not currently supported by the calibration process. Check back soon")
+            #self.done()
         
         #add finish step
-        finish                                          = Finish()
-        finish.done = self.done
+        finish              = Finish()
+        finish.done         = self.done
         self.listOfCalibrationSteps.append(finish)
         
     

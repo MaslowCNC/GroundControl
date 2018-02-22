@@ -1016,6 +1016,30 @@
             on_release: root.on_Exit()
         Label:
 
+<DistBetweenChainBrackets>:
+    enterMeasurement:enterMeasurement
+    cols: 2
+    width: root.width
+    height: root.height
+    GridLayout:
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: "Next we need to enter a rough estimate for the distance between the points where the chains attach to the sled.\n\nThis estimate will be refined by the calibration process in the next step."
+            size_hint_x: leftCol
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Button:
+            text: "Enter Measurement"
+            id: enterMeasurement
+            on_release: root.textInputPopup(self)
+        Button:
+            text: 'Next'
+            on_release: root.on_Exit()
+        Label:
+
 <SetSprocketsVertical>:
     #Set sprockets to 12 o'clock
     cols: 2
