@@ -237,7 +237,7 @@ class GroundControlApp(App):
     def receivedSetting(self, message):
         '''
         This parses a settings report from the machine, usually received in 
-        resonse to a $$ request.  If the value received does not match the 
+        response to a $$ request.  If the value received does not match the 
         expected value.
         '''
         parameter, position = self.parseFloat(message, 0)
