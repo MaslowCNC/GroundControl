@@ -20,8 +20,9 @@ from CalibrationWidgets.adjustZCalibrationDepth             import  AdjustZCalib
 from CalibrationWidgets.rotationRadiusGuess                 import  RotationRadiusGuess
 from CalibrationWidgets.triangularCalibration               import  TriangularCalibration
 from CalibrationWidgets.distBetweenChainBrackets            import  DistBetweenChainBrackets
+from CalibrationWidgets.quadTestCut                         import  QuadTestCut
 from CalibrationWidgets.finish                              import  Finish
-from   kivy.app                                             import   App
+from   kivy.app                                             import  App
 
 
 class CalibrationFrameWidget(GridLayout):
@@ -106,6 +107,9 @@ class CalibrationFrameWidget(GridLayout):
             distBetweenChainBrackets                    = DistBetweenChainBrackets()
             self.listOfCalibrationSteps.append(distBetweenChainBrackets)
             #Do quadrilateral test cut
+            quadTestCut                                 = QuadTestCut()
+            self.listOfCalibrationSteps.append(quadTestCut)
+            
             #App.get_running_app().data.message_queue.put("Message: You have chosen a configuration which is not currently supported by the calibration process. Check back soon")
             #self.done()
         

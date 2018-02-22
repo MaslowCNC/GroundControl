@@ -21,7 +21,7 @@ class ComputeCalibrationSteps(GridLayout):
         '''
         print "choose kinematics type on enter ran"
         self.setupListOfSteps()
-        Clock.schedule_once(self.on_Exit, 1) #some delay is needed here to let the UI update before the next widget can be loaded
+        Clock.schedule_once(self.on_Exit, 5) #some delay is needed here to let the UI update before the next widget can be loaded
     
     def on_Exit(self, *args):
         '''
