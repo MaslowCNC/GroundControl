@@ -24,6 +24,7 @@ class TriangularCalibration(GridLayout):
         
         '''
         self.data = App.get_running_app().data
+        self.data.pushSettings()                    #update machine settings so that the test cut is accurate
     
     def cutTestPaternTriangular(self):
 
@@ -366,7 +367,7 @@ class TriangularCalibration(GridLayout):
         self.data.gcode_queue.put("G40 ")
         self.data.gcode_queue.put("G0 X0 Y0 ")
 
-        self.carousel.load_slide(self.carousel.slides[11])
+        self.on_Exit()
 
     def stopCut(self):
         self.data.quick_queue.put("!") 
