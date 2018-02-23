@@ -149,6 +149,7 @@ class GroundControlApp(App):
     def computeSettings(self, section, key, value):
         # Update Computed settings
         if key == 'kinematicsType':
+            print "kinematics type change seen"
             if value == 'Quadrilateral':
                 self.config.set('Computed Settings', 'kinematicsTypeComputed', "1")
             else:
@@ -194,6 +195,7 @@ class GroundControlApp(App):
         """
         Respond to changes in the configuration.
         """
+        print "A CONFIGURATION SETTING WAS CHANGED"
         # Update GC things
         if section == "Maslow Settings":
             if key == "COMport":
@@ -240,9 +242,11 @@ class GroundControlApp(App):
         response to a $$ request.  If the value received does not match the 
         expected value.
         '''
+        print message
         parameter, position = self.parseFloat(message, 0)
         value, position = self.parseFloat(message, position)
         if (parameter is not None and value is not None):
+            print "passed on"
             maslowSettings.syncFirmwareKey(int(parameter), value, self.data)
     
     def parseFloat(self, text, position=0):

@@ -375,7 +375,7 @@ settings = {
                 "default": ".nc, .ngc, .text, .gcode"
             }
         ],
-    "Computed Settings": #These are setting calculated from the user inputs on other settings, they are not direclty seen by the user
+    "Computed Settings": #These are setting calculated from the user inputs on other settings, they are not directly seen by the user
         [
             {
                 "type": "string",
@@ -520,9 +520,14 @@ def syncFirmwareKey(firmwareKey, value, data):
         for option in settings[section]:
             if 'firmwareKey' in option and option['firmwareKey'] == firmwareKey:
                 storedValue = data.config.get(section, option['key'])
+                print section
+                print option['key']
+                print "stored value is: " + str(storedValue)
                 if not isClose(float(storedValue), value):
+                    print "value is different and needs to be updated"
                     data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(storedValue))
                 else:
+                    print "value is the same"
                     break
     return
 
