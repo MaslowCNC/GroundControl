@@ -73,6 +73,13 @@ class CalibrationFrameWidget(GridLayout):
         
         '''
         App.get_running_app().data.message_queue.put("Message: Notice: Exiting the calibration process early may result in incorrect calibration.")
+        
+        #remove the old widget
+        try:
+            self.cFrameWidgetSpace.remove_widget(self.currentWidget)
+        except:
+            pass #there was no widget to remove
+        
         self.done()
     
     def addSteps(self):
