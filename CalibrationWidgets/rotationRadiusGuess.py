@@ -87,8 +87,10 @@ class RotationRadiusGuess(GridLayout):
         
         try:
             dist = float(self.enterMeasurement.text)
-            self.data.config.set('Maslow Settings', 'rotationRadius', str(dist))
+            self.data.config.set('Advanced Settings', 'rotationRadius', str(dist))
             self.data.config.write()
+            print "setting rotation radius to: " + str(dist)
+            print self.data.config.get('Advanced Settings', 'rotationRadius')
             self.readyToMoveOn()
         except:
             self.data.message_queue.put("Message: Couldn't convert that to a number...")
