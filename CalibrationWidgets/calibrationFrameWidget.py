@@ -132,7 +132,6 @@ class CalibrationFrameWidget(GridLayout):
         finish              = Finish()
         finish.done         = self.done
         self.listOfCalibrationSteps.append(finish)
-        
     
     def loadNextStep(self):
         '''

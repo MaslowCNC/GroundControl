@@ -102,6 +102,7 @@ class GroundControlApp(App):
         offsetY = float(self.config.get('Advanced Settings', 'homeY'))
         self.data.gcodeShift = [offsetX,offsetY]
         self.data.config  = self.config
+        self.config.add_callback(self.configSettingChange)
         
         '''
         Initializations
@@ -141,10 +142,11 @@ class GroundControlApp(App):
         """
         Add custom section to the default configuration object.
         """
+        
         settings.add_json_panel('Maslow Settings', self.config, data=maslowSettings.getJSONSettingSection('Maslow Settings'))
         settings.add_json_panel('Advanced Settings', self.config, data=maslowSettings.getJSONSettingSection('Advanced Settings'))
         settings.add_json_panel('Ground Control Settings', self.config, data=maslowSettings.getJSONSettingSection("Ground Control Settings"))
-        self.config.add_callback(self.configSettingChange)
+        
 
     def computeSettings(self, section, key, value):
         # Update Computed settings
