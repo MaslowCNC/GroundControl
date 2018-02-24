@@ -98,7 +98,6 @@ class MeasureDistBetweenMotors(GridLayout):
 
         print "Read motor spacing: " + str(dist)
         self.data.config.set('Maslow Settings', 'motorSpacingX', str(dist))
-        self.data.config.write()
         
         #put some slack in the chain
         self.data.gcode_queue.put("G91 ")

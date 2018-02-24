@@ -90,7 +90,6 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         #locate the file
         self.data.gcodeFile = filename
         self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
-        self.data.config.write()
 
         #close the parent popup
         self.parentWidget.close()
@@ -113,7 +112,6 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         #locate the file
         self.data.gcodeFile = ""
         self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
-        self.data.config.write()
 
         #close the parent popup
         self.parentWidget.close()

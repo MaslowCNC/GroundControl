@@ -361,7 +361,6 @@ class FrontPage(Screen, MakesmithInitFuncs):
         self.data.gcodeShift = [self.numericalPosX,self.numericalPosY]
         self.data.config.set('Advanced Settings', 'homeX', str(self.numericalPosX))
         self.data.config.set('Advanced Settings', 'homeY', str(self.numericalPosY))
-        self.data.config.write()
     
     def startRun(self):
         

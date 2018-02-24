@@ -28,7 +28,6 @@ class MeasureOutChains(GridLayout):
             self.data.gcode_queue.queue.clear()
     
     def next(self):
-        self.data.pushSettings() #push settings to machine so it centers properly
         self.data.gcode_queue.put("B15 ")
         self.on_Exit()
     
