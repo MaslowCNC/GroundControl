@@ -129,7 +129,6 @@ class MeasureMachinePopup(GridLayout):
 
         if self.carousel.index == 9:
             #Cut test shape triangular
-            self.data.pushSettings()
             self.stepText = "Step 10 of 10"
             self.goFwdBtn.disabled = False
 
@@ -139,7 +138,6 @@ class MeasureMachinePopup(GridLayout):
 
         if self.carousel.index == 10:
             #Cut test shape quadrilateral
-            self.data.pushSettings()
             self.goFwdBtn.disabled = False
             self.stepText = "Step 10 of 10"
 
@@ -199,7 +197,6 @@ class MeasureMachinePopup(GridLayout):
             dist *= -1
         print "vertical offset measured at: " + str(dist)
         self.data.config.set('Maslow Settings', 'motorOffsetY', str(dist))
-        self.data.config.write()
 
 
         #keep updating the values shown because sometimes it takes a while for the settings to write
@@ -276,7 +273,6 @@ class MeasureMachinePopup(GridLayout):
             return
 
         self.data.config.set('Maslow Settings', 'sledWidth', str(dist))
-        self.data.config.write()
 
         self.carousel.load_next()
 
@@ -309,7 +305,6 @@ class MeasureMachinePopup(GridLayout):
         print self.kinematicsType
 
         self.data.config.set('Advanced Settings', 'kinematicsType', self.kinematicsType)
-        self.data.config.write()
 
         if self.kinematicsType == 'Triangular':
             try:
@@ -320,7 +315,6 @@ class MeasureMachinePopup(GridLayout):
                 #Set up a good initial guess for the radius
                 print "Rotation radius set to 260"
                 self.data.config.set('Advanced Settings', 'rotationRadius', 260)
-                self.data.config.write()
             self.carousel.load_next()
         else:
 
@@ -388,9 +382,7 @@ class MeasureMachinePopup(GridLayout):
             newSledSpacing = float(self.data.config.get('Maslow Settings', 'sledWidth')) + amtToChange
             print "Now trying spacing: " + str(newSledSpacing)
             self.data.config.set('Maslow Settings', 'sledWidth', str(newSledSpacing))
-            self.data.config.write()
             self.cutBtn.disabled = False
-            self.data.pushSettings()
 
     def stopCut(self):
         self.data.quick_queue.put("!")

@@ -88,7 +88,6 @@ class VertDistToMotorsGuess(GridLayout):
         try:
             dist = float(self.enterMeasurement.text)
             self.data.config.set('Maslow Settings', 'motorOffsetY', str(dist))
-            self.data.config.write()
             self.readyToMoveOn()
         except:
             self.data.message_queue.put("Message: Couldn't convert that to a number...")

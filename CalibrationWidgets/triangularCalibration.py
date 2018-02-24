@@ -24,7 +24,6 @@ class TriangularCalibration(GridLayout):
         
         '''
         self.data = App.get_running_app().data
-        self.data.pushSettings()                    #update machine settings so that the test cut is accurate
     
     def cutTestPaternTriangular(self):
 
@@ -357,8 +356,6 @@ class TriangularCalibration(GridLayout):
         self.data.config.set('Maslow Settings', 'motorOffsetY', str(motorYoffsetEst))
         self.data.config.set('Advanced Settings', 'rotationRadius', str(rotationRadiusEst))
         self.data.config.set('Advanced Settings', 'chainSagCorrection', str(chainSagCorrectionEst))
-        self.data.config.write()
-        self.data.pushSettings()
 
         # With new calibration parameters return sled to workspace center
 

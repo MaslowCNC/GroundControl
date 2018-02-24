@@ -47,7 +47,6 @@ class SerialPort(MakesmithInitFuncs):
         
         '''
         self.data.config.set('Makesmith Settings', 'COMport', str(self.data.comport))
-        self.data.config.write()
         
     '''
     
