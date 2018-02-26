@@ -1,12 +1,13 @@
-from   kivy.uix.widget                    import   Widget
+from   kivy.uix.gridlayout                import   GridLayout
 from   kivy.properties                    import   ObjectProperty
 from   kivy.properties                    import   StringProperty
 from   UIElements.touchNumberInput        import   TouchNumberInput
 from   kivy.uix.popup                     import   Popup
+from   kivy.app                           import   App
 import global_variables
 import math
 
-class TriangularCalibration(Widget):
+class TriangularCalibration(GridLayout):
     '''
     
     Provides a standard interface for running the calibration test pattern for triangular kinematics 
@@ -15,7 +16,16 @@ class TriangularCalibration(Widget):
     data                         =  ObjectProperty(None) #linked externally
     numberOfTimesTestCutRun      = -2
     triangularCalText            = StringProperty("")
-
+    
+    def on_Enter(self):
+        '''
+        
+        This function runs when the step is entered
+        
+        '''
+        self.data = App.get_running_app().data
+        self.data.pushSettings()                    #update machine settings so that the test cut is accurate
+    
     def cutTestPaternTriangular(self):
 
         workspaceHeight = float(self.data.config.get('Maslow Settings', 'bedHeight'))
@@ -357,7 +367,7 @@ class TriangularCalibration(Widget):
         self.data.gcode_queue.put("G40 ")
         self.data.gcode_queue.put("G0 X0 Y0 ")
 
-        self.carousel.load_slide(self.carousel.slides[11])
+        self.on_Exit()
 
     def stopCut(self):
         self.data.quick_queue.put("!") 
@@ -371,3 +381,11 @@ class TriangularCalibration(Widget):
             self.unitsBtnT.text = 'Units: inches'
         else:
             self.unitsBtnT.text = 'Units: mm'
+    
+    def on_Exit(self):
+        '''
+        
+        This function run when the step is completed
+        
+        '''
+        self.readyToMoveOn()
