@@ -94,7 +94,6 @@ class GroundControlApp(App):
         if self.config.get('Advanced Settings', 'encoderSteps') == '8148.0':
             self.data.message_queue.put("Message: This update will adjust the the number of encoder pulses per rotation from 8,148 to 8,113 in your settings which improves the positional accuracy.\n\nPerforming a calibration will help you get the most out of this update.")
             self.config.set('Advanced Settings', 'encoderSteps', '8113.73')
-            self.config.write()
         
         self.data.comport = self.config.get('Maslow Settings', 'COMport')
         self.data.gcodeFile = self.config.get('Maslow Settings', 'openFile')
@@ -102,6 +101,7 @@ class GroundControlApp(App):
         offsetY = float(self.config.get('Advanced Settings', 'homeY'))
         self.data.gcodeShift = [offsetX,offsetY]
         self.data.config  = self.config
+        self.config.add_callback(self.configSettingChange)
         
         '''
         Initializations
@@ -141,14 +141,16 @@ class GroundControlApp(App):
         """
         Add custom section to the default configuration object.
         """
+        
         settings.add_json_panel('Maslow Settings', self.config, data=maslowSettings.getJSONSettingSection('Maslow Settings'))
         settings.add_json_panel('Advanced Settings', self.config, data=maslowSettings.getJSONSettingSection('Advanced Settings'))
         settings.add_json_panel('Ground Control Settings', self.config, data=maslowSettings.getJSONSettingSection("Ground Control Settings"))
-        self.config.add_callback(self.configSettingChange)
+        
 
     def computeSettings(self, section, key, value):
         # Update Computed settings
         if key == 'kinematicsType':
+            print "kinematics type change seen"
             if value == 'Quadrilateral':
                 self.config.set('Computed Settings', 'kinematicsTypeComputed', "1")
             else:
@@ -194,6 +196,7 @@ class GroundControlApp(App):
         """
         Respond to changes in the configuration.
         """
+        print "A CONFIGURATION SETTING WAS CHANGED"
         # Update GC things
         if section == "Maslow Settings":
             if key == "COMport":
@@ -240,9 +243,11 @@ class GroundControlApp(App):
         response to a $$ request.  If the value received does not match the 
         expected value.
         '''
+        print message
         parameter, position = self.parseFloat(message, 0)
         value, position = self.parseFloat(message, position)
         if (parameter is not None and value is not None):
+            print "passed on"
             maslowSettings.syncFirmwareKey(int(parameter), value, self.data)
     
     def parseFloat(self, text, position=0):

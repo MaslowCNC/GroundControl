@@ -20,6 +20,7 @@ from CalibrationWidgets.adjustZCalibrationDepth             import  AdjustZCalib
 from CalibrationWidgets.rotationRadiusGuess                 import  RotationRadiusGuess
 from CalibrationWidgets.triangularCalibration               import  TriangularCalibration
 from CalibrationWidgets.distBetweenChainBrackets            import  DistBetweenChainBrackets
+from CalibrationWidgets.reviewMeasurements                  import  ReviewMeasurements
 from CalibrationWidgets.quadTestCut                         import  QuadTestCut
 from CalibrationWidgets.finish                              import  Finish
 from   kivy.app                                             import  App
@@ -56,6 +57,9 @@ class CalibrationFrameWidget(GridLayout):
         vertDistGuess                               = VertDistToMotorsGuess()
         self.listOfCalibrationSteps.append(vertDistGuess)
         
+        reviewMeasurements                          = ReviewMeasurements()
+        self.listOfCalibrationSteps.append(reviewMeasurements)
+        
         computeCalibrationSteps                     = ComputeCalibrationSteps()
         computeCalibrationSteps.setupListOfSteps    = self.addSteps
         self.listOfCalibrationSteps.append(computeCalibrationSteps)
@@ -69,6 +73,13 @@ class CalibrationFrameWidget(GridLayout):
         
         '''
         App.get_running_app().data.message_queue.put("Message: Notice: Exiting the calibration process early may result in incorrect calibration.")
+        
+        #remove the old widget
+        try:
+            self.cFrameWidgetSpace.remove_widget(self.currentWidget)
+        except:
+            pass #there was no widget to remove
+        
         self.done()
     
     def addSteps(self):
@@ -113,11 +124,14 @@ class CalibrationFrameWidget(GridLayout):
             #App.get_running_app().data.message_queue.put("Message: You have chosen a configuration which is not currently supported by the calibration process. Check back soon")
             #self.done()
         
+        #one last review
+        reviewMeasurements                          = ReviewMeasurements()
+        self.listOfCalibrationSteps.append(reviewMeasurements)
+        
         #add finish step
         finish              = Finish()
         finish.done         = self.done
         self.listOfCalibrationSteps.append(finish)
-        
     
     def loadNextStep(self):
         '''

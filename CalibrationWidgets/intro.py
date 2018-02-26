@@ -27,6 +27,4 @@ class Intro(GridLayout):
         '''
         print "intro on exit"
         App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', 'Top')
-        App.get_running_app().data.config.write()
-        App.get_running_app().data.pushSettings()
         self.readyToMoveOn()

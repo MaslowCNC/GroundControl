@@ -805,6 +805,27 @@
     GridLayout:
         cols: 1
 
+<ReviewMeasurements>:
+    cols: 2
+    width: root.width
+    height: root.height
+    measurementsReadout:measurementsReadout
+    GridLayout:
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: ""
+            size_hint_x: leftCol
+            id: measurementsReadout
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Button:
+            text: "Looks Good!"
+            on_release: root.on_Exit()
+        Label:
+
 <TriangularCalibration>:
     cutBtnT:cutBtnT
     horzMeasureT1:horzMeasureT1

@@ -35,8 +35,6 @@ class AdjustZCalibrationDepth(GridLayout):
 
         '''
         self.data.config.set('Maslow Settings', 'zAxis', int(self.zAxisActiveSwitch.active))
-        self.data.config.write()
-        self.data.pushSettings()
         
         #enable and disable the button to open the z-axis popup
         if self.zAxisActiveSwitch.active == True:
