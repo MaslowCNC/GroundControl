@@ -880,6 +880,60 @@
             on_release: root.stopCut()
         Label:
 
+<QuadTestCut>
+    cutBtn:cutBtn
+    enterValues:enterValues
+    horizMeasure:horizMeasure
+    vertMeasure:vertMeasure
+    unitsBtn:unitsBtn
+    enterValues:enterValues
+    cols: 2
+    GridLayout:
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: "To refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short horizontal cuts and two short vertical cuts\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe size of bit used is not critical\nMeasure to any point on the mark as long as you are consistent\n\nThe process will repeat until both measurements are equal to within .5mm\nThe more accurate your measurements, the more accurate your machine will be\n\nPress Cut Test Pattern to begin"
+        GridLayout:
+            cols: 3
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview.jpg"
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Measure Test Shape Horizontal.jpg"
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Measure Test Shape Vertical.jpg"
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Label:
+            text: "Horizontal\nMeasurement:"
+        TextInput:
+            id:horizMeasure
+            disabled: True
+        Label:
+            text: "Vertical\nMeasurement:"
+        TextInput:
+            id: vertMeasure
+            disabled: True
+        Button:
+            text: "MM"
+            on_release: root.switchUnits()
+            id: unitsBtn
+            disabled: True
+        Button:
+            text: "Enter Values"
+            on_release: root.enterTestPaternValues()
+            id: enterValues
+            disabled: True
+        Button:
+            text: "Cut Test\nPattern"
+            id: cutBtn
+            on_release: root.cutTestPatern()
+        Button:
+            text: "Stop\nCut"
+            on_release: root.stopCut()
+        Label:
+
 <MeasureDistBetweenMotors>
     distToMove:distToMove
     distText:distText
@@ -1002,6 +1056,30 @@
         size_hint_x: leftCol
         Label:
             text: "Next we need to enter a rough estimate for the rotation radius.\nThis is the distance from the tip of the chain to the center of the router bit.\n\nFor the ring this distance is 150mm\nFor the wooden linkage kits it is around 260mm\nFor the metal linkage kits it is around 150mm\n\n*These numbers are rough and should be updated*"
+            size_hint_x: leftCol
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Button:
+            text: "Enter Measurement"
+            id: enterMeasurement
+            on_release: root.textInputPopup(self)
+        Button:
+            text: 'Next'
+            on_release: root.on_Exit()
+        Label:
+
+<DistBetweenChainBrackets>:
+    enterMeasurement:enterMeasurement
+    cols: 2
+    width: root.width
+    height: root.height
+    GridLayout:
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: "Next we need to enter a rough estimate for the distance between the points where the chains attach to the sled.\n\nThis estimate will be refined by the calibration process in the next step."
             size_hint_x: leftCol
     GridLayout:
         cols: 1
