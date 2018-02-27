@@ -151,7 +151,13 @@ class SerialPortThread(MakesmithInitFuncs):
                 #Send the next line of gcode to the machine if we're running a program
                 if self.bufferSpace == self.bufferSize and self.machineIsReadyForData: #> len(self.data.gcode[self.data.gcodeIndex]):
                     if self.data.uploadFlag:
-                        self._write(self.data.gcode[self.data.gcodeIndex])
+                        #Skip blank lines
+                        while self.data.gcode[self.data.gcodeIndex].isspace() and self.data.gcodeIndex < len(self.data.gcode):
+                            self.data.gcodeIndex = self.data.gcodeIndex + 1
+                         
+                        #Make sure we didn't fall off the end!
+                        if self.data.gcodeIndex <= len(self.data.gcode):
+                            self._write(self.data.gcode[self.data.gcodeIndex])
                         
                         #increment gcode index
                         if self.data.gcodeIndex + 1 < len(self.data.gcode):

@@ -26,6 +26,10 @@ class Data(EventDispatcher):
     
     #Gcodes contains all of the lines of gcode in the opened file
     gcode      = ObjectProperty([])
+    gcodeOriginal  = StringProperty("")     #Raw file from disk
+    
+    gcodeRedraw = BooleanProperty(False)    #Signal to redraw the g-code from buffers
+    
     version    = '1.07'
     #all of the available COM ports
     comPorts   = []
