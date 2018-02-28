@@ -1,24 +1,26 @@
-from   kivy.uix.widget                    import   Widget
-from   kivy.properties                    import   ObjectProperty
-from   UIElements.touchNumberInput        import   TouchNumberInput
-from   kivy.uix.popup                     import   Popup
+'''
+
+A template for creating a new calibration step widget
+
+'''
+from   kivy.uix.gridlayout                          import   GridLayout
+from   kivy.properties                              import   ObjectProperty
+from   UIElements.touchNumberInput                  import   TouchNumberInput
+from   kivy.uix.popup                               import   Popup
+from   kivy.app                                     import   App
 import global_variables
 
-class MeasureDistBetweenMotors(Widget):
-    '''
+class VertDistToMotorsGuess(GridLayout):
+    readyToMoveOn   = ObjectProperty(None)
     
-    Provides a standard interface for measuring the distance between the motors. Assumes that both motors are in position zero at the begining
     
-    '''
-    data                         =  ObjectProperty(None) #linked externally
-    
-    def on_enter(self):
+    def on_Enter(self):
         '''
         
-        Called when the calibration process gets to this step
+        This function runs when the step is entered
         
         '''
-        pass
+        self.data = App.get_running_app().data
     
     def textInputPopup(self, target):
         self.targetWidget = target
@@ -76,26 +78,18 @@ class MeasureDistBetweenMotors(Widget):
             pass  # If what was entered cannot be converted to a number, leave the value the same
         self._popup.dismiss()
     
-    def stopCut(self):
-        self.data.quick_queue.put("!")
-        with self.data.gcode_queue.mutex:
-            self.data.gcode_queue.queue.clear()
-    
-    def extend(self):
-        dist = float(self.distToMove.text)
-        self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B09 L" + str(dist) + " ")
-        self.data.gcode_queue.put("G90 ")
-    
-    def retract(self):
-        dist = float(self.distToMove.text)
-        self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B09 L" + str(-1*dist) + " ")
-        self.data.gcode_queue.put("G90 ")
-    
-    def measureLeft(self):
-        self.data.gcode_queue.put("B10 L")
-    
-    def pullChainTight(self):
-        #pull the left chain tight
-        self.data.gcode_queue.put("B11 S50 T3 ")
+    def on_Exit(self):
+        '''
+        
+        This function run when the step is completed
+        
+        '''
+        
+        try:
+            dist = float(self.enterMeasurement.text)
+            self.data.config.set('Maslow Settings', 'motorOffsetY', str(dist))
+            self.readyToMoveOn()
+        except:
+            self.data.message_queue.put("Message: Couldn't convert that to a number...")
+        
+        

@@ -1,8 +1,9 @@
-from kivy.uix.widget                      import   Widget
+from   kivy.uix.gridlayout                import   GridLayout
 from kivy.properties                      import   ObjectProperty, StringProperty
 from kivy.clock                           import   Clock
+from   kivy.app                           import   App
 
-class MeasureOutChains(Widget):
+class MeasureOutChains(GridLayout):
     '''
     
     Provides a standard interface for measuring out a known length of both chains
@@ -12,6 +13,15 @@ class MeasureOutChains(Widget):
     text              =  StringProperty("")
     countDownTime     =  0
     
+    def on_Enter(self):
+        '''
+        
+        This function runs when the step is entered
+        
+        '''
+        self.data = App.get_running_app().data
+        self.text =  "Now we are going to measure out the chains and reattach the sled\n\nHook the first link of the right chain on the vertical tooth of the right sprocket\n as shown in the picture below\n\nThe left chain does not need to be moved, it can be left partly extended\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Next\nPressing Next will move the sled to the center of the sheet.\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way"
+    
     def stop(self):
         self.data.quick_queue.put("!") 
         with self.data.gcode_queue.mutex:
@@ -19,7 +29,7 @@ class MeasureOutChains(Widget):
     
     def next(self):
         self.data.gcode_queue.put("B15 ")
-        self.carousel.load_next()
+        self.on_Exit()
     
     '''
     Left Chain
@@ -61,3 +71,12 @@ class MeasureOutChains(Widget):
         else:
             self.rightChainBtn.text = '   Extend\nRight Chain'
             self.data.gcode_queue.put("B02 L0 R1 ")
+    
+    def on_Exit(self):
+        '''
+        
+        This function runs when the step is completed
+        
+        '''
+        
+        self.readyToMoveOn()

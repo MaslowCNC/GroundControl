@@ -26,7 +26,7 @@ class Data(EventDispatcher):
     
     #Gcodes contains all of the lines of gcode in the opened file
     gcode      = ObjectProperty([])
-    version    = '1.06'
+    version    = '1.07'
     #all of the available COM ports
     comPorts   = []
     #This defines which COM port is used
@@ -56,6 +56,8 @@ class Data(EventDispatcher):
     firstTimePosFlag = 0
     #report if the serial connection is open
     connectionStatus = BooleanProperty(0)
+    #is the calibration process currently underway 0 -> false
+    calibrationInProcess = False
     
     '''
     Pointers to Objects
