@@ -3,14 +3,14 @@
 This allows the user interact with the z-axis when it is the content of a popup
 
 '''
-from   kivy.uix.gridlayout								import   GridLayout
-from   kivy.properties									import   ObjectProperty
-from   kivy.properties									import   StringProperty
-from   UIElements.touchNumberInput						import   TouchNumberInput
-from   CalibrationWidgets.triangularCalibration			import   TriangularCalibration
-from   CalibrationWidgets.adjustZCalibrationDepth		import   AdjustZCalibrationDepth
-from   CalibrationWidgets.measureDistBetweenMotors		import   MeasureDistBetweenMotors
-from   kivy.uix.popup									import   Popup
+from   kivy.uix.gridlayout                              import   GridLayout
+from   kivy.properties                                  import   ObjectProperty
+from   kivy.properties                                  import   StringProperty
+from   UIElements.touchNumberInput                      import   TouchNumberInput
+from   CalibrationWidgets.triangularCalibration         import   TriangularCalibration
+from   CalibrationWidgets.adjustZCalibrationDepth       import   AdjustZCalibrationDepth
+from   CalibrationWidgets.measureDistBetweenMotors      import   MeasureDistBetweenMotors
+from   kivy.uix.popup                                   import   Popup
 import global_variables
 
 class MeasureMachinePopup(GridLayout):
@@ -129,7 +129,6 @@ class MeasureMachinePopup(GridLayout):
 
         if self.carousel.index == 9:
             #Cut test shape triangular
-            self.data.pushSettings()
             self.stepText = "Step 10 of 10"
             self.goFwdBtn.disabled = False
 
@@ -139,7 +138,6 @@ class MeasureMachinePopup(GridLayout):
 
         if self.carousel.index == 10:
             #Cut test shape quadrilateral
-            self.data.pushSettings()
             self.goFwdBtn.disabled = False
             self.stepText = "Step 10 of 10"
 
@@ -194,26 +192,11 @@ class MeasureMachinePopup(GridLayout):
     def measureLeft(self):
         self.data.gcode_queue.put("B10 L")
 
-    def readMotorSpacing(self, dist):
-        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Bottom':
-            dist *= -1
-
-        dist = dist - 2*6.35                                #subtract off the extra two links
-
-        print "Read motor spacing: " + str(dist)
-        self.data.config.set('Maslow Settings', 'motorSpacingX', str(dist))
-        self.data.config.write()
-
-        self.extendLeft(15);
-
-        self.carousel.load_next()
-
     def readVerticalOffset(self, dist):
         if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Bottom':
             dist *= -1
         print "vertical offset measured at: " + str(dist)
         self.data.config.set('Maslow Settings', 'motorOffsetY', str(dist))
-        self.data.config.write()
 
 
         #keep updating the values shown because sometimes it takes a while for the settings to write
@@ -290,7 +273,6 @@ class MeasureMachinePopup(GridLayout):
             return
 
         self.data.config.set('Maslow Settings', 'sledWidth', str(dist))
-        self.data.config.write()
 
         self.carousel.load_next()
 
@@ -323,7 +305,6 @@ class MeasureMachinePopup(GridLayout):
         print self.kinematicsType
 
         self.data.config.set('Advanced Settings', 'kinematicsType', self.kinematicsType)
-        self.data.config.write()
 
         if self.kinematicsType == 'Triangular':
             try:
@@ -334,7 +315,6 @@ class MeasureMachinePopup(GridLayout):
                 #Set up a good initial guess for the radius
                 print "Rotation radius set to 260"
                 self.data.config.set('Advanced Settings', 'rotationRadius', 260)
-                self.data.config.write()
             self.carousel.load_next()
         else:
 
@@ -402,9 +382,7 @@ class MeasureMachinePopup(GridLayout):
             newSledSpacing = float(self.data.config.get('Maslow Settings', 'sledWidth')) + amtToChange
             print "Now trying spacing: " + str(newSledSpacing)
             self.data.config.set('Maslow Settings', 'sledWidth', str(newSledSpacing))
-            self.data.config.write()
             self.cutBtn.disabled = False
-            self.data.pushSettings()
 
     def stopCut(self):
         self.data.quick_queue.put("!")

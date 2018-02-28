@@ -1,13 +1,15 @@
-from kivy.uix.widget                      import   Widget
-from kivy.properties                      import   ObjectProperty
+from   kivy.uix.gridlayout                import  GridLayout
+from   kivy.properties                    import   ObjectProperty
+from   kivy.app                           import   App
 
-class SetSprocketsVertical(Widget):
+class SetSprocketsVertical(GridLayout):
     '''
 
     Provides a standard interface for making both sprockets point vertically
 
     '''
-    data = ObjectProperty(None) #set externally
+    data            = ObjectProperty(None)
+    readyToMoveOn   = ObjectProperty(None)
 
     def LeftCW(self):
         degValue = float(self.data.config.get('Advanced Settings',"gearTeeth"))*float(self.data.config.get('Advanced Settings',"chainPitch"))/360.0;
@@ -120,4 +122,21 @@ class SetSprocketsVertical(Widget):
     def setZero(self):
         #mark that the sprockets are straight up
         self.data.gcode_queue.put("B06 L0 R0 ");
-        self.carousel.load_next()
+        self.on_Exit()
+    
+    def on_Enter(self):
+        '''
+        
+        This function runs when the step is entered
+        
+        '''
+        self.data = App.get_running_app().data
+    
+    def on_Exit(self):
+        '''
+        
+        This function run when the process is completed or quit is pressed
+        
+        '''
+        print "set sprocket vertical on exit"
+        self.readyToMoveOn()

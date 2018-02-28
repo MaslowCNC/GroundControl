@@ -20,7 +20,6 @@ class ConnectMenu(FloatLayout, MakesmithInitFuncs):
     def connect(self, *args):
         
         self.data.config.set('Maslow Settings', 'COMport', str(self.data.comport))
-        self.data.config.write()
         
         #close the parent popup
         self.parentWidget.close()

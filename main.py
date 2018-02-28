@@ -94,7 +94,6 @@ class GroundControlApp(App):
         if self.config.get('Advanced Settings', 'encoderSteps') == '8148.0':
             self.data.message_queue.put("Message: This update will adjust the the number of encoder pulses per rotation from 8,148 to 8,113 in your settings which improves the positional accuracy.\n\nPerforming a calibration will help you get the most out of this update.")
             self.config.set('Advanced Settings', 'encoderSteps', '8113.73')
-            self.config.write()
         
         self.data.comport = self.config.get('Maslow Settings', 'COMport')
         self.data.gcodeFile = self.config.get('Maslow Settings', 'openFile')
@@ -102,6 +101,7 @@ class GroundControlApp(App):
         offsetY = float(self.config.get('Advanced Settings', 'homeY'))
         self.data.gcodeShift = [offsetX,offsetY]
         self.data.config  = self.config
+        self.config.add_callback(self.configSettingChange)
         
         '''
         Initializations
@@ -141,10 +141,11 @@ class GroundControlApp(App):
         """
         Add custom section to the default configuration object.
         """
+        
         settings.add_json_panel('Maslow Settings', self.config, data=maslowSettings.getJSONSettingSection('Maslow Settings'))
         settings.add_json_panel('Advanced Settings', self.config, data=maslowSettings.getJSONSettingSection('Advanced Settings'))
         settings.add_json_panel('Ground Control Settings', self.config, data=maslowSettings.getJSONSettingSection("Ground Control Settings"))
-        self.config.add_callback(self.configSettingChange)
+        
 
     def computeSettings(self, section, key, value):
         # Update Computed settings
@@ -237,7 +238,7 @@ class GroundControlApp(App):
     def receivedSetting(self, message):
         '''
         This parses a settings report from the machine, usually received in 
-        resonse to a $$ request.  If the value received does not match the 
+        response to a $$ request.  If the value received does not match the 
         expected value.
         '''
         parameter, position = self.parseFloat(message, 0)
@@ -288,14 +289,14 @@ class GroundControlApp(App):
                 if message[1:4] == "PE:":
                     self.setErrorOnScreen(message)
                 elif message[1:8] == "Measure":
-                    print "measure seen"
-                    print message
                     measuredDist = float(message[9:len(message)-3])
                     self.data.measureRequest(measuredDist)
             elif message[0:13] == "Maslow Paused":
                 self.data.uploadFlag = 0
                 self.writeToTextConsole(message)
             elif message[0:8] == "Message:":
+                if self.data.calibrationInProcess:
+                    break
                 self.previousUploadStatus = self.data.uploadFlag 
                 self.data.uploadFlag = 0
                 try:
