@@ -56,6 +56,8 @@ class Data(EventDispatcher):
     firstTimePosFlag = 0
     #report if the serial connection is open
     connectionStatus = BooleanProperty(0)
+    #is the calibration process currently underway 0 -> false
+    calibrationInProcess = False
     
     '''
     Pointers to Objects

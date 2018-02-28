@@ -17,7 +17,7 @@ class ChooseKinematicsType(GridLayout):
         This function runs when the step is entered
         
         '''
-        print "choose kinematics type on enter ran"
+        
     
     def setKinematicsTypeQuad(self):
         '''
@@ -25,7 +25,7 @@ class ChooseKinematicsType(GridLayout):
         Write into the settings that the kinematics type is quadrilateral
         
         '''
-        print "set quad"
+        
         App.get_running_app().data.config.set('Advanced Settings', 'kinematicsType', 'Quadrilateral')
         self.on_Exit()
     
@@ -35,7 +35,7 @@ class ChooseKinematicsType(GridLayout):
         Write into the settings that the kinematics type is triangular
         
         '''
-        print "set tri"
+        
         App.get_running_app().data.config.set('Advanced Settings', 'kinematicsType', 'Triangular')
         self.on_Exit()
     
@@ -45,5 +45,5 @@ class ChooseKinematicsType(GridLayout):
         This function run when the step is completed
         
         '''
-        print "choose kinematics type on exit ran"
+        
         self.readyToMoveOn()
