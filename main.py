@@ -150,7 +150,6 @@ class GroundControlApp(App):
     def computeSettings(self, section, key, value):
         # Update Computed settings
         if key == 'kinematicsType':
-            print "kinematics type change seen"
             if value == 'Quadrilateral':
                 self.config.set('Computed Settings', 'kinematicsTypeComputed', "1")
             else:
@@ -196,7 +195,6 @@ class GroundControlApp(App):
         """
         Respond to changes in the configuration.
         """
-        print "A CONFIGURATION SETTING WAS CHANGED"
         # Update GC things
         if section == "Maslow Settings":
             if key == "COMport":
@@ -243,11 +241,9 @@ class GroundControlApp(App):
         response to a $$ request.  If the value received does not match the 
         expected value.
         '''
-        print message
         parameter, position = self.parseFloat(message, 0)
         value, position = self.parseFloat(message, position)
         if (parameter is not None and value is not None):
-            print "passed on"
             maslowSettings.syncFirmwareKey(int(parameter), value, self.data)
     
     def parseFloat(self, text, position=0):
@@ -293,14 +289,14 @@ class GroundControlApp(App):
                 if message[1:4] == "PE:":
                     self.setErrorOnScreen(message)
                 elif message[1:8] == "Measure":
-                    print "measure seen"
-                    print message
                     measuredDist = float(message[9:len(message)-3])
                     self.data.measureRequest(measuredDist)
             elif message[0:13] == "Maslow Paused":
                 self.data.uploadFlag = 0
                 self.writeToTextConsole(message)
             elif message[0:8] == "Message:":
+                if self.data.calibrationInProcess:
+                    break
                 self.previousUploadStatus = self.data.uploadFlag 
                 self.data.uploadFlag = 0
                 try:

@@ -88,6 +88,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         Close The calibration Pop-up
         
         '''
+        self.data.calibrationInProcess = False
         self._popup.dismiss()
     
     def launchSimulation(self):

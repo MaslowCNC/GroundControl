@@ -38,6 +38,8 @@ class CalibrationFrameWidget(GridLayout):
         
         '''
         
+        App.get_running_app().data.calibrationInProcess = True
+        
         #generate the first two steps because they are always the same
         intro =  Intro()
         self.listOfCalibrationSteps.append(intro)
@@ -72,6 +74,7 @@ class CalibrationFrameWidget(GridLayout):
         This function run when the process is completed or quit is pressed
         
         '''
+        App.get_running_app().data.calibrationInProcess = False
         App.get_running_app().data.message_queue.put("Message: Notice: Exiting the calibration process early may result in incorrect calibration.")
         
         #remove the old widget
