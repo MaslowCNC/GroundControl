@@ -8,21 +8,9 @@ state regardless of the machine's state when the widget begins.
 '''
 from   kivy.uix.gridlayout                                  import  GridLayout
 from   kivy.properties                                      import  ObjectProperty
-from CalibrationWidgets.intro                               import  Intro
-from CalibrationWidgets.chooseKinematicsType                import  ChooseKinematicsType
-from CalibrationWidgets.chooseChainOverSprocketDirection    import  ChooseChainOverSprocketDirection
-from CalibrationWidgets.computeCalibrationSteps             import  ComputeCalibrationSteps
 from CalibrationWidgets.setSprocketsVertical                import  SetSprocketsVertical
-from CalibrationWidgets.measureDistBetweenMotors            import  MeasureDistBetweenMotors
-from CalibrationWidgets.vertDistToMotorsGuess               import  VertDistToMotorsGuess
 from CalibrationWidgets.measureOutChains                    import  MeasureOutChains
-from CalibrationWidgets.adjustZCalibrationDepth             import  AdjustZCalibrationDepth
-from CalibrationWidgets.rotationRadiusGuess                 import  RotationRadiusGuess
-from CalibrationWidgets.triangularCalibration               import  TriangularCalibration
-from CalibrationWidgets.distBetweenChainBrackets            import  DistBetweenChainBrackets
-from CalibrationWidgets.reviewMeasurements                  import  ReviewMeasurements
-from CalibrationWidgets.quadTestCut                         import  QuadTestCut
-from CalibrationWidgets.finish                              import  Finish
+from CalibrationWidgets.finishSetChainLengths               import  FinishSetChainLengths
 from   kivy.app                                             import  App
 
 
@@ -46,6 +34,10 @@ class SetChainLengthsFrameWidget(GridLayout):
         
         measureOutChains =  MeasureOutChains()
         self.listOfCalibrationSteps.append(measureOutChains)
+        
+        finishSetChainLengths =  FinishSetChainLengths()
+        finishSetChainLengths.done         = self.done
+        self.listOfCalibrationSteps.append(finishSetChainLengths)
         
         
         
