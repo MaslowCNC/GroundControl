@@ -715,6 +715,29 @@
                 text: "Quit"
                 on_release: root.on_Exit()
 
+<SetChainLengthsFrameWidget>:
+    cFrameWidgetSpace:cFrameWidgetSpace
+    cols: 1
+    size: root.size
+    pos:  root.pos
+    GridLayout:
+        rows: 2
+        width: root.width
+        height: root.height
+        id: cFrameWidgetSpace
+        GridLayout:
+            cols: 3
+            size_hint_y: .1
+            Button:
+                text: "Back"
+                on_release: root.back()
+            Button:
+                text: "Skip"
+                on_release: root.loadNextStep()
+            Button:
+                text: "Quit"
+                on_release: root.on_Exit()
+
 <Intro>:
     cols: 2
     width: root.width
@@ -1235,6 +1258,25 @@
         size_hint_x: leftCol
         Label:
             text: "Congratulations! Your calibration is complete."
+            size_hint_x: leftCol
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Button:
+            text: "Finish"
+            on_release: root.closePopup()
+        Label:
+        
+<FinishSetChainLengths>:
+    cols: 2
+    width: root.width
+    height: root.height
+    GridLayout:
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: "Congratulations! Your chains have been set to a known length."
             size_hint_x: leftCol
     GridLayout:
         cols: 1

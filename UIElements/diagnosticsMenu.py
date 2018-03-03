@@ -1,11 +1,11 @@
-from kivy.uix.floatlayout                        import    FloatLayout
-from DataStructures.makesmithInitFuncs           import    MakesmithInitFuncs
-from UIElements.scrollableTextPopup              import    ScrollableTextPopup
-from kivy.uix.popup                              import    Popup
-from CalibrationWidgets.calibrationFrameWidget   import    CalibrationFrameWidget
-from CalibrationWidgets.calibrateLengthsPopup    import    CalibrateLengthsPopup
-from Simulation.simulationCanvas                 import    SimulationCanvas
-from kivy.clock                                  import    Clock
+from kivy.uix.floatlayout                           import    FloatLayout
+from DataStructures.makesmithInitFuncs              import    MakesmithInitFuncs
+from UIElements.scrollableTextPopup                 import    ScrollableTextPopup
+from kivy.uix.popup                                 import    Popup
+from CalibrationWidgets.calibrationFrameWidget      import    CalibrationFrameWidget
+from CalibrationWidgets.setChainLengthsFrameWidget  import    SetChainLengthsFrameWidget
+from Simulation.simulationCanvas                    import    SimulationCanvas
+from kivy.clock                                     import    Clock
 import sys
 
 class Diagnostics(FloatLayout, MakesmithInitFuncs):
@@ -49,9 +49,8 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         #establish known initial conditions
         self.data.gcode_queue.put("B06 L0 R0 ");
         
-        self.popupContent      = CalibrateLengthsPopup(done=self.dismissMeasureMachinePopup)
-        
-        self.popupContent.establishDataConnection(self.data)
+        self.popupContent      = SetChainLengthsFrameWidget(done=self.dismissCalibrationPopup)
+        self.popupContent.on_Enter()
         
         self._popup = Popup(title="Calibrate Chain Lengths", content=self.popupContent,
                             size_hint=(0.85, 0.95), auto_dismiss = False)
