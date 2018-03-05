@@ -118,6 +118,10 @@ class MeasureDistBetweenMotors(GridLayout):
         '''
         self.data = App.get_running_app().data
         self.data.measureRequest = self.readMotorSpacing
+        
+        self.originalChainOverSproketDir = App.get_running_app().data.config.get('Advanced Settings', 'chainOverSprocket')
+        
+        App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', 'Top')
     
     def on_Exit(self):
         '''
@@ -125,4 +129,7 @@ class MeasureDistBetweenMotors(GridLayout):
         This function run when the process is completed or quit is pressed
         
         '''
+        
+        App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', self.originalChainOverSproketDir)
+        
         self.readyToMoveOn()

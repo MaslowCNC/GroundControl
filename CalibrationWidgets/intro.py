@@ -26,5 +26,4 @@ class Intro(GridLayout):
         
         '''
         
-        App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', 'Top')
         self.readyToMoveOn()

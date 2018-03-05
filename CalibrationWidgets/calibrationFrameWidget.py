@@ -45,12 +45,6 @@ class CalibrationFrameWidget(GridLayout):
         intro =  Intro()
         self.listOfCalibrationSteps.append(intro)
         
-        setTo12                                     = SetSprocketsVertical()
-        self.listOfCalibrationSteps.append(setTo12)
-        
-        measureMotorDist                            = MeasureDistBetweenMotors()
-        self.listOfCalibrationSteps.append(measureMotorDist)
-        
         chooseChainOverSprocketDirection             = ChooseChainOverSprocketDirection()
         self.listOfCalibrationSteps.append(chooseChainOverSprocketDirection)
         
@@ -59,6 +53,12 @@ class CalibrationFrameWidget(GridLayout):
         
         vertDistGuess                               = VertDistToMotorsGuess()
         self.listOfCalibrationSteps.append(vertDistGuess)
+        
+        setTo12                                     = SetSprocketsVertical()
+        self.listOfCalibrationSteps.append(setTo12)
+        
+        measureMotorDist                            = MeasureDistBetweenMotors()
+        self.listOfCalibrationSteps.append(measureMotorDist)
         
         reviewMeasurements                          = ReviewMeasurements()
         self.listOfCalibrationSteps.append(reviewMeasurements)
