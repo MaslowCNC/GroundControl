@@ -78,6 +78,14 @@ class VertDistToMotorsGuess(GridLayout):
             pass  # If what was entered cannot be converted to a number, leave the value the same
         self._popup.dismiss()
     
+    def enterValues(self):
+        try:
+            dist = float(self.enterMeasurement.text)
+            self.data.config.set('Maslow Settings', 'motorOffsetY', str(dist))
+            self.readyToMoveOn()
+        except:
+            self.data.message_queue.put("Message: Couldn't convert that to a number...")
+    
     def on_Exit(self):
         '''
         
@@ -85,11 +93,6 @@ class VertDistToMotorsGuess(GridLayout):
         
         '''
         
-        try:
-            dist = float(self.enterMeasurement.text)
-            self.data.config.set('Maslow Settings', 'motorOffsetY', str(dist))
-            self.readyToMoveOn()
-        except:
-            self.data.message_queue.put("Message: Couldn't convert that to a number...")
+        pass
         
         

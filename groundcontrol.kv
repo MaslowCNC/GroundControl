@@ -756,7 +756,7 @@
             size_hint_x: leftCol
         Button:
             text: "Begin"
-            on_release: root.on_Exit()
+            on_release: root.finished()
         Label:
 
 <ChooseKinematicsType>:
@@ -823,7 +823,7 @@
         cols: 1
         size_hint_x: leftCol
         Label:
-            text: "The correct calibration procedure for you machine is being generated...please wait"
+            text: "The correct calibration procedure for your machine is being generated...please wait"
             size_hint_x: leftCol
     GridLayout:
         cols: 1
@@ -843,7 +843,7 @@
         Label:
         Button:
             text: "Next"
-            on_release: root.on_Exit()
+            on_release: root.loadNextStep()
         Label:
 
 <ReviewMeasurements>:
@@ -864,7 +864,7 @@
         Label:
         Button:
             text: "Looks Good!"
-            on_release: root.on_Exit()
+            on_release: root.loadNextStep()
         Label:
 
 <TriangularCalibration>:
@@ -1068,7 +1068,7 @@
             on_release: root.textInputPopup(self)
         Button:
             text: 'Next'
-            on_release: root.on_Exit()
+            on_release: root.enterValues()
         Label:
 
 <AdjustZCalibrationDepth>:
@@ -1129,7 +1129,7 @@
             on_release: root.textInputPopup(self)
         Button:
             text: 'Next'
-            on_release: root.on_Exit()
+            on_release: root.enterValues()
         Label:
 
 <DistBetweenChainBrackets>:
@@ -1153,7 +1153,7 @@
             on_release: root.textInputPopup(self)
         Button:
             text: 'Next'
-            on_release: root.on_Exit()
+            on_release: root.enterValue()
         Label:
 
 <SetSprocketsVertical>:

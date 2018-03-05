@@ -19,9 +19,9 @@ class ComputeCalibrationSteps(GridLayout):
         This function runs when the step is entered
         
         '''
-        print "choose kinematics type on enter ran"
+        
         self.setupListOfSteps()
-        Clock.schedule_once(self.on_Exit, 5) #some delay is needed here to let the UI update before the next widget can be loaded
+        Clock.schedule_once(self.readyToMoveOn, 5) #some delay is needed here to let the UI update before the next widget can be loaded
     
     def on_Exit(self, *args):
         '''
@@ -29,5 +29,4 @@ class ComputeCalibrationSteps(GridLayout):
         This function run when the step is completed
         
         '''
-        print "choose kinematics type on exit ran"
-        self.readyToMoveOn()
+        pass

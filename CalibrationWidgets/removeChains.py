@@ -19,6 +19,9 @@ class RemoveChains(GridLayout):
         '''
         pass
     
+    def loadNextStep(self):
+        self.readyToMoveOn()
+    
     def on_Exit(self):
         '''
         
@@ -26,4 +29,4 @@ class RemoveChains(GridLayout):
         
         '''
         
-        self.readyToMoveOn()
+        pass

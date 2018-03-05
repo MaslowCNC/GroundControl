@@ -19,6 +19,9 @@ class Intro(GridLayout):
         '''
         pass
     
+    def finished(self):
+        self.readyToMoveOn()
+    
     def on_Exit(self):
         '''
         
@@ -26,4 +29,4 @@ class Intro(GridLayout):
         
         '''
         
-        self.readyToMoveOn()
+        pass

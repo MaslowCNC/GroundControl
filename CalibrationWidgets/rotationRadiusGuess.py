@@ -78,13 +78,7 @@ class RotationRadiusGuess(GridLayout):
             pass  # If what was entered cannot be converted to a number, leave the value the same
         self._popup.dismiss()
     
-    def on_Exit(self):
-        '''
-        
-        This function run when the step is completed
-        
-        '''
-        
+    def enterValues(self):
         try:
             dist = float(self.enterMeasurement.text)
             self.data.config.set('Advanced Settings', 'rotationRadius', str(dist))
@@ -93,5 +87,14 @@ class RotationRadiusGuess(GridLayout):
             self.readyToMoveOn()
         except:
             self.data.message_queue.put("Message: Couldn't convert that to a number...")
+    
+    def on_Exit(self):
+        '''
+        
+        This function run when the step is completed
+        
+        '''
+        
+        pass
         
         

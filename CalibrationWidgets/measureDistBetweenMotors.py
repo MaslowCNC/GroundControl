@@ -104,7 +104,7 @@ class MeasureDistBetweenMotors(GridLayout):
         self.data.gcode_queue.put("B09 L10 ")
         self.data.gcode_queue.put("G90 ")
         
-        self.on_Exit()
+        self.readyToMoveOn()
     
     def pullChainTight(self):
         #pull the left chain tight
@@ -130,6 +130,7 @@ class MeasureDistBetweenMotors(GridLayout):
         
         '''
         
+        print "measure dist on exit ran"
+        
         App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', self.originalChainOverSproketDir)
         
-        self.readyToMoveOn()

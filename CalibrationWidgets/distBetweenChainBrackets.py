@@ -78,10 +78,10 @@ class DistBetweenChainBrackets(GridLayout):
             pass  # If what was entered cannot be converted to a number, leave the value the same
         self._popup.dismiss()
     
-    def on_Exit(self):
+    def enterValue(self):
         '''
         
-        This function run when the step is completed
+        Update the setting from the entered value
         
         '''
         
@@ -91,5 +91,12 @@ class DistBetweenChainBrackets(GridLayout):
             self.readyToMoveOn()
         except:
             self.data.message_queue.put("Message: Couldn't convert that to a number...")
+    
+    def on_Exit(self):
+        '''
         
+        This function run when the step is completed
         
+        '''
+        
+        pass

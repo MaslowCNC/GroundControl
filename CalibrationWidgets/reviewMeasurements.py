@@ -24,6 +24,7 @@ class ReviewMeasurements(GridLayout):
         tempString = tempString + "\nDistance between motors: " + self.data.config.get('Maslow Settings', 'motorSpacingX') + "mm"
         tempString = tempString + "\nVertical motor offset: " + self.data.config.get('Maslow Settings', 'motorOffsetY') + "mm"
         tempString = tempString + "\nKinematics type: " + self.data.config.get('Advanced Settings', 'kinematicsType')
+        tempString = tempString + "\nChain over direction: " + self.data.config.get('Advanced Settings', 'chainOverSprocket')
         if self.data.config.get('Advanced Settings', 'kinematicsType') == 'Triangular':
             tempString = tempString + "\nRotation radius: " + self.data.config.get('Advanced Settings', 'rotationRadius') + "mm"
             tempString = tempString + "\nChain sag correction value: " + self.data.config.get('Advanced Settings', 'chainSagCorrection')
@@ -32,10 +33,13 @@ class ReviewMeasurements(GridLayout):
         
         self.measurementsReadout.text = tempString
     
+    def loadNextStep(self):
+        self.readyToMoveOn()
+    
     def on_Exit(self):
         '''
         
         This function run when the step is completed
         
         '''
-        self.readyToMoveOn()
+        pass

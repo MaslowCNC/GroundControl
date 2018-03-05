@@ -82,7 +82,7 @@ class QuadTestCut(GridLayout):
         acceptableTolerance = .5
 
         if abs(dif) < acceptableTolerance:               #if we're fully calibrated
-            self.on_Exit()
+            self.readyToMoveOn()
         else:
             amtToChange = .9*dif
             newSledSpacing = float(self.data.config.get('Maslow Settings', 'sledWidth')) + amtToChange
@@ -101,4 +101,4 @@ class QuadTestCut(GridLayout):
         This function run when the step is completed
         
         '''
-        self.readyToMoveOn()
+        pass

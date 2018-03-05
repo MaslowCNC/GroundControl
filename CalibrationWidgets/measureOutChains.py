@@ -38,7 +38,7 @@ class MeasureOutChains(GridLayout):
     
     def next(self):
         self.data.gcode_queue.put("B15 ")
-        self.on_Exit()
+        self.readyToMoveOn()
     
     '''
     Left Chain
@@ -88,4 +88,4 @@ class MeasureOutChains(GridLayout):
         
         '''
         
-        self.readyToMoveOn()
+        pass

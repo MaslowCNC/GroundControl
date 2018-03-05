@@ -70,7 +70,7 @@ class AdjustZCalibrationDepth(GridLayout):
         else:
             self.data.gcode_queue.put("G00 Z5.0 ") #these should use safe retract settings
         
-        self.on_Exit()
+        self.self.readyToMoveOn()()
     
     def on_Exit(self):
         '''
@@ -79,4 +79,4 @@ class AdjustZCalibrationDepth(GridLayout):
         
         '''
         
-        self.readyToMoveOn()
+        pass
