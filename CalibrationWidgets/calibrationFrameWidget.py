@@ -166,7 +166,7 @@ class CalibrationFrameWidget(GridLayout):
         
         #remove the old widget
         try:
-            self.cFrameWidgetSpace.on_Exit()
+            self.currentWidget.on_Exit()
             self.cFrameWidgetSpace.remove_widget(self.currentWidget)
         except:
             pass #there was no widget to remove

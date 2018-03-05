@@ -21,7 +21,10 @@ class ComputeCalibrationSteps(GridLayout):
         '''
         
         self.setupListOfSteps()
-        Clock.schedule_once(self.readyToMoveOn, 5) #some delay is needed here to let the UI update before the next widget can be loaded
+        Clock.schedule_once(self.loadNextStep, 5) #some delay is needed here to let the UI update before the next widget can be loaded
+    
+    def loadNextStep(self, *args):
+        self.readyToMoveOn()
     
     def on_Exit(self, *args):
         '''
