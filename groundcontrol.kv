@@ -828,6 +828,26 @@
     GridLayout:
         cols: 1
 
+
+<RemoveChains>:
+    cols: 2
+    width: root.width
+    height: root.height
+    GridLayout:
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: 'Now we need to remove the chains from the machine so that we can put them back on\nin the correct direction for your bottom feeding configuration.\n\nRemove the chain from the sprocket, then press Next'
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Button:
+            text: "Next"
+            on_release: root.on_Exit()
+        Label:
+
+
 <ReviewMeasurements>:
     cols: 2
     width: root.width
