@@ -828,7 +828,6 @@
     GridLayout:
         cols: 1
 
-
 <RemoveChains>:
     cols: 2
     width: root.width
@@ -846,7 +845,6 @@
             text: "Next"
             on_release: root.on_Exit()
         Label:
-
 
 <ReviewMeasurements>:
     cols: 2
@@ -1234,6 +1232,7 @@
 <MeasureOutChains>:
     leftChainBtn:leftChainBtn
     rightChainBtn:rightChainBtn
+    leftImg:leftImg
     cols: 2
     width: root.width
     height: root.height
@@ -1246,7 +1245,7 @@
         GridLayout:
             cols: 2
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Ready To Calibrate Right Sprocket.jpg"
+                id: leftImg
             Image:
                 source: "./Documentation/Calibrate Machine Dimensions/Sled Attached.jpg"
     GridLayout:
@@ -1254,11 +1253,11 @@
         size_hint_x: rightCol
         Label:
         Button:
-            text: '   Extend\nLeft Chain'
+            text: '   Adjust\nLeft Chain'
             on_release: root.startCountDownL()
             id: leftChainBtn
         Button:
-            text: '   Extend\nRight Chain'
+            text: '   Adjust\nRight Chain'
             on_release: root.startCountDownR()
             id: rightChainBtn
         Button:
