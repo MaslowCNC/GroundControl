@@ -26,6 +26,7 @@ class DistBetweenChainBrackets(GridLayout):
         self.targetWidget = target
 
         self.popupContent = TouchNumberInput(done=self.dismiss_popup, data = self.data)
+        self.popupContent.forceUnitsMM()
         self._popup = Popup(title="Set distance between chain mounting points", content=self.popupContent,
                             size_hint=(0.9, 0.9))
         self._popup.open()
