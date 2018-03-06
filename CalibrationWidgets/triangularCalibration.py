@@ -364,7 +364,7 @@ class TriangularCalibration(GridLayout):
         self.data.gcode_queue.put("G40 ")
         self.data.gcode_queue.put("G0 X0 Y0 ")
 
-        self.on_Exit()
+        self.readyToMoveOn()
 
     def stopCut(self):
         self.data.quick_queue.put("!") 
@@ -385,4 +385,4 @@ class TriangularCalibration(GridLayout):
         This function run when the step is completed
         
         '''
-        self.readyToMoveOn()
+        pass

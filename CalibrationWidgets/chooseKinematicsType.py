@@ -27,7 +27,7 @@ class ChooseKinematicsType(GridLayout):
         '''
         
         App.get_running_app().data.config.set('Advanced Settings', 'kinematicsType', 'Quadrilateral')
-        self.on_Exit()
+        self.readyToMoveOn()
     
     def setKinematicsTypeTri(self):
         '''
@@ -37,7 +37,7 @@ class ChooseKinematicsType(GridLayout):
         '''
         
         App.get_running_app().data.config.set('Advanced Settings', 'kinematicsType', 'Triangular')
-        self.on_Exit()
+        self.readyToMoveOn()
     
     def on_Exit(self):
         '''
@@ -46,4 +46,4 @@ class ChooseKinematicsType(GridLayout):
         
         '''
         
-        self.readyToMoveOn()
+        pass
