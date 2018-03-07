@@ -1,13 +1,13 @@
 '''
 
-The intro page which explains the calibration process
+Instructions to remove the chains from the sprockets
 
 '''
 from   kivy.uix.gridlayout                          import   GridLayout
 from   kivy.properties                              import   ObjectProperty
 from   kivy.app                                     import   App
 
-class Intro(GridLayout):
+class RemoveChains(GridLayout):
     readyToMoveOn   = ObjectProperty(None)
     
     
@@ -19,7 +19,7 @@ class Intro(GridLayout):
         '''
         pass
     
-    def finished(self):
+    def loadNextStep(self):
         self.readyToMoveOn()
     
     def on_Exit(self):

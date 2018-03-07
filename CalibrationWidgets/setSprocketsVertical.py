@@ -122,7 +122,7 @@ class SetSprocketsVertical(GridLayout):
     def setZero(self):
         #mark that the sprockets are straight up
         self.data.gcode_queue.put("B06 L0 R0 ");
-        self.on_Exit()
+        self.readyToMoveOn()
     
     def on_Enter(self):
         '''
@@ -138,5 +138,5 @@ class SetSprocketsVertical(GridLayout):
         This function run when the process is completed or quit is pressed
         
         '''
-        print "set sprocket vertical on exit"
-        self.readyToMoveOn()
+        pass
+        

@@ -62,6 +62,16 @@ class TouchNumberInput(GridLayout):
         '''
         self.textInput.text = self.textInput.text + text
     
+    def forceUnitsMM(self):
+        '''
+        
+        Forces the popup into the MM units and disables the ability to use the popup to switch units
+        
+        '''
+        
+        self.unitsBtn.text = 'MM'
+        self.unitsBtn.disabled = True
+    
     def switchUnits(self):
         '''
         
