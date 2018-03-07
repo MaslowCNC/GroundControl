@@ -26,7 +26,7 @@ class ChooseChainOverSprocketDirection(GridLayout):
         
         '''
         App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', 'Top')
-        self.on_Exit()
+        self.readyToMoveOn()
     
     def setChainToBottom(self):
         '''
@@ -35,7 +35,7 @@ class ChooseChainOverSprocketDirection(GridLayout):
         
         '''
         App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', 'Bottom')
-        self.on_Exit()
+        self.readyToMoveOn()
     
     def on_Exit(self):
         '''
@@ -44,4 +44,4 @@ class ChooseChainOverSprocketDirection(GridLayout):
         
         '''
         
-        self.readyToMoveOn()
+        pass

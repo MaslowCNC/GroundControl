@@ -16,6 +16,7 @@ from CalibrationWidgets.setSprocketsVertical                import  SetSprockets
 from CalibrationWidgets.measureDistBetweenMotors            import  MeasureDistBetweenMotors
 from CalibrationWidgets.vertDistToMotorsGuess               import  VertDistToMotorsGuess
 from CalibrationWidgets.measureOutChains                    import  MeasureOutChains
+from CalibrationWidgets.removeChains                        import  RemoveChains
 from CalibrationWidgets.adjustZCalibrationDepth             import  AdjustZCalibrationDepth
 from CalibrationWidgets.rotationRadiusGuess                 import  RotationRadiusGuess
 from CalibrationWidgets.triangularCalibration               import  TriangularCalibration
@@ -44,12 +45,6 @@ class CalibrationFrameWidget(GridLayout):
         intro =  Intro()
         self.listOfCalibrationSteps.append(intro)
         
-        setTo12                                     = SetSprocketsVertical()
-        self.listOfCalibrationSteps.append(setTo12)
-        
-        measureMotorDist                            = MeasureDistBetweenMotors()
-        self.listOfCalibrationSteps.append(measureMotorDist)
-        
         chooseChainOverSprocketDirection             = ChooseChainOverSprocketDirection()
         self.listOfCalibrationSteps.append(chooseChainOverSprocketDirection)
         
@@ -58,6 +53,12 @@ class CalibrationFrameWidget(GridLayout):
         
         vertDistGuess                               = VertDistToMotorsGuess()
         self.listOfCalibrationSteps.append(vertDistGuess)
+        
+        setTo12                                     = SetSprocketsVertical()
+        self.listOfCalibrationSteps.append(setTo12)
+        
+        measureMotorDist                            = MeasureDistBetweenMotors()
+        self.listOfCalibrationSteps.append(measureMotorDist)
         
         reviewMeasurements                          = ReviewMeasurements()
         self.listOfCalibrationSteps.append(reviewMeasurements)
@@ -94,11 +95,17 @@ class CalibrationFrameWidget(GridLayout):
         '''
         
         if App.get_running_app().data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
+            #if we're using the top system no extra steps are needed
             pass
         else:
-            #this will be done in a separate pull request because I would like feedback on how it will work
-            App.get_running_app().data.message_queue.put("Message: You have chosen a configuration which is not currently supported by the calibration process. Check back soon")
-            self.done()
+            #if we're using the bottom method we need to remove the chain now and put it back at 12 o'clock
+            
+            removeChains                                 = RemoveChains()
+            self.listOfCalibrationSteps.append(removeChains)
+            
+            setTo12                                     = SetSprocketsVertical()
+            self.listOfCalibrationSteps.append(setTo12)
+            
         
         #add extend chains
         measureOutChains                                = MeasureOutChains()
@@ -159,6 +166,7 @@ class CalibrationFrameWidget(GridLayout):
         
         #remove the old widget
         try:
+            self.currentWidget.on_Exit()
             self.cFrameWidgetSpace.remove_widget(self.currentWidget)
         except:
             pass #there was no widget to remove
