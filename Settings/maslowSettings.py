@@ -222,6 +222,14 @@ settings = {
             },
             {
                 "type": "string",
+                "title": "Max Feedrate",
+                "desc": "The maximum feedrate in mm/min that machine is capable of sustaining.  Setting this value too high will cause movements to start before the prior movement finishes.",
+                "key": "maxFeedrate",
+                "default": 700,
+                "firmwareKey": 15
+            },
+            {
+                "type": "string",
                 "title": "Home Position X Coordinate",
                 "desc": "The X coordinate of the home position",
                 "key": "homeX",
