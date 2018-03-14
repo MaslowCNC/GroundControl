@@ -1,4 +1,7 @@
-Maslow CNC - Ground Control
+# Ground Control
+
+Ground Control is the program which allows you to control the Maslow CNC machine.
+
 ======================
 
 ## Overview
