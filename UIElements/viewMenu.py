@@ -47,6 +47,17 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
                             size_hint=(0.9, 0.9))
         self._popup.open()
     
+    def clear_gcode(self):
+        '''
+        
+        Clear gcode
+        
+        '''
+        self.data.gcodeFile = ""
+        
+        #close the parent popup
+        self.parentWidget.close()
+
     def reloadGcode(self):
         '''
         
@@ -79,7 +90,6 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         #locate the file
         self.data.gcodeFile = filename
         self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
-        self.data.config.write()
 
         #close the parent popup
         self.parentWidget.close()
@@ -90,6 +100,19 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         Reset the gcode canvas view. Most of the work is done in the .kv file.
         
         '''
+        #close the parent popup
+        self.parentWidget.close()
+    
+    def clear_gcode(self):
+        '''
+        
+        Reset the gcode canvas view. Most of the work is done in the .kv file.
+        
+        '''
+        #locate the file
+        self.data.gcodeFile = ""
+        self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
+
         #close the parent popup
         self.parentWidget.close()
     

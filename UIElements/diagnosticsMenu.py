@@ -1,11 +1,11 @@
-from kivy.uix.floatlayout                        import    FloatLayout
-from DataStructures.makesmithInitFuncs           import    MakesmithInitFuncs
-from UIElements.scrollableTextPopup              import    ScrollableTextPopup
-from kivy.uix.popup                              import    Popup
-from UIElements.measureMachinePopup              import    MeasureMachinePopup
-from UIElements.calibrateLengthsPopup            import    CalibrateLengthsPopup
-from Simulation.simulationCanvas                 import    SimulationCanvas
-from kivy.clock                                  import    Clock
+from kivy.uix.floatlayout                           import    FloatLayout
+from DataStructures.makesmithInitFuncs              import    MakesmithInitFuncs
+from UIElements.scrollableTextPopup                 import    ScrollableTextPopup
+from kivy.uix.popup                                 import    Popup
+from CalibrationWidgets.calibrationFrameWidget      import    CalibrationFrameWidget
+from CalibrationWidgets.setChainLengthsFrameWidget  import    SetChainLengthsFrameWidget
+from Simulation.simulationCanvas                    import    SimulationCanvas
+from kivy.clock                                     import    Clock
 import sys
 
 class Diagnostics(FloatLayout, MakesmithInitFuncs):
@@ -49,9 +49,8 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         #establish known initial conditions
         self.data.gcode_queue.put("B06 L0 R0 ");
         
-        self.popupContent      = CalibrateLengthsPopup(done=self.dismissMeasureMachinePopup)
-        
-        self.popupContent.establishDataConnection(self.data)
+        self.popupContent      = SetChainLengthsFrameWidget(done=self.dismissCalibrationPopup)
+        self.popupContent.on_Enter()
         
         self._popup = Popup(title="Calibrate Chain Lengths", content=self.popupContent,
                             size_hint=(0.85, 0.95), auto_dismiss = False)
@@ -70,24 +69,25 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         Clock.schedule_once(self.data.pushSettings, 6)
         self.parentWidget.close()
     
-    def measureMachine(self):
+    def calibrateMachine(self):
         '''
         
         Spawns a walk through that helps the user measure the machine's dimensions
         
         '''
-        self.popupContent      = MeasureMachinePopup(done=self.dismissMeasureMachinePopup)
-        self.popupContent.establishDataConnection(self.data)
-        self._popup = Popup(title="Setup Machine Dimensions", content=self.popupContent,
-                            size_hint=(0.85, 0.95), auto_dismiss = False)
+        self.popupContent       = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
+        self.popupContent.on_Enter()
+        self._popup = Popup(title="Calibration", content=self.popupContent,
+                            size_hint=(0.95, 0.95), auto_dismiss = False)
         self._popup.open()
     
-    def dismissMeasureMachinePopup(self):
+    def dismissCalibrationPopup(self):
         '''
         
-        Close The measure machine Pop-up
+        Close The calibration Pop-up
         
         '''
+        self.data.calibrationInProcess = False
         self._popup.dismiss()
     
     def launchSimulation(self):
@@ -113,7 +113,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         
         if   text == "Test Feedback System":
             self.testFeedbackSystem()
-        elif text == "Calibrate Chain Length - Manual":
+        elif text == "Set Chain Length - Manual":
             self.manualCalibrateChainLengths()
         elif text == "Wipe EEPROM":
             self.wipeEEPROM()
