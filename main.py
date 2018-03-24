@@ -295,7 +295,8 @@ class GroundControlApp(App):
                 self.data.uploadFlag = 0
                 self.writeToTextConsole(message)
             elif message[0:8] == "Message:":
-                if self.data.calibrationInProcess:
+                print message
+                if self.data.calibrationInProcess and message[0:15] == "Message: Unable":
                     break
                 self.previousUploadStatus = self.data.uploadFlag 
                 self.data.uploadFlag = 0
