@@ -295,7 +295,7 @@ class GroundControlApp(App):
                 self.data.uploadFlag = 0
                 self.writeToTextConsole(message)
             elif message[0:8] == "Message:":
-                if self.data.calibrationInProcess:
+                if self.data.calibrationInProcess and message[0:15] == "Message: Unable":   #this suppresses the annoying messages about invalid chain lengths during the calibration process
                     break
                 self.previousUploadStatus = self.data.uploadFlag 
                 self.data.uploadFlag = 0
