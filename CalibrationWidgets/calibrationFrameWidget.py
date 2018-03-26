@@ -45,9 +45,6 @@ class CalibrationFrameWidget(GridLayout):
         intro =  Intro()
         self.listOfCalibrationSteps.append(intro)
         
-        chooseChainOverSprocketDirection             = ChooseChainOverSprocketDirection()
-        self.listOfCalibrationSteps.append(chooseChainOverSprocketDirection)
-        
         chooseKinematicsType                        = ChooseKinematicsType()
         self.listOfCalibrationSteps.append(chooseKinematicsType)
         
@@ -59,6 +56,9 @@ class CalibrationFrameWidget(GridLayout):
         
         measureMotorDist                            = MeasureDistBetweenMotors()
         self.listOfCalibrationSteps.append(measureMotorDist)
+        
+        chooseChainOverSprocketDirection             = ChooseChainOverSprocketDirection()
+        self.listOfCalibrationSteps.append(chooseChainOverSprocketDirection)
         
         reviewMeasurements                          = ReviewMeasurements()
         self.listOfCalibrationSteps.append(reviewMeasurements)
