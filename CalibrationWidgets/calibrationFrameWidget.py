@@ -107,23 +107,32 @@ class CalibrationFrameWidget(GridLayout):
             self.listOfCalibrationSteps.append(setTo12)
             
         
-        #add extend chains
-        measureOutChains                                = MeasureOutChains()
-        self.listOfCalibrationSteps.append(measureOutChains)
-        
-        #add set z
-        adjustZCalibrationDepth                         = AdjustZCalibrationDepth()
-        self.listOfCalibrationSteps.append(adjustZCalibrationDepth)
-        
         if App.get_running_app().data.config.get('Advanced Settings', 'kinematicsType') == 'Triangular':
             #add rotation radius guess
             rotationRadiusGuess                         = RotationRadiusGuess()
             self.listOfCalibrationSteps.append(rotationRadiusGuess)
+            
+            #add extend chains
+            measureOutChains                                = MeasureOutChains()
+            self.listOfCalibrationSteps.append(measureOutChains)
+            
+            #add set z
+            adjustZCalibrationDepth                         = AdjustZCalibrationDepth()
+            self.listOfCalibrationSteps.append(adjustZCalibrationDepth)
+            
             #add triangular kinematics
             triangularCalibration                       = TriangularCalibration()
             self.listOfCalibrationSteps.append(triangularCalibration)
         else:
-            #this will be done in a separate pull request because I want to test it carefully
+            
+            #add extend chains
+            measureOutChains                                = MeasureOutChains()
+            self.listOfCalibrationSteps.append(measureOutChains)
+            
+            #add set z
+            adjustZCalibrationDepth                         = AdjustZCalibrationDepth()
+            self.listOfCalibrationSteps.append(adjustZCalibrationDepth)
+            
             #Ask for guess of attachment spacing
             distBetweenChainBrackets                    = DistBetweenChainBrackets()
             self.listOfCalibrationSteps.append(distBetweenChainBrackets)
