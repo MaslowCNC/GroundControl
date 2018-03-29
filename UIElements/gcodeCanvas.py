@@ -328,7 +328,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
 
             arcLen = abs(angle1 - angle2)
             if abs(angle1 - angle2) == 0:
-                arcLen = 360
+                arcLen = 6.28313530718
 
             i = 0
             while abs(i) < arcLen:
