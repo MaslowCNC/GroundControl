@@ -407,12 +407,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             
             x = re.search("X(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if x:
-                xTarget = float(x.groups()[0]) + self.data.gcodeShift[0]
+                xTarget = '%f' % (float(x.groups()[0]) + self.data.gcodeShift[0])
                 gCodeLine = gCodeLine[0:x.start()+1] + str(xTarget) + gCodeLine[x.end():]
             
             y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if y:
-                yTarget = float(y.groups()[0]) + self.data.gcodeShift[1]
+                yTarget = '%f' % (float(y.groups()[0]) + self.data.gcodeShift[1])
                 gCodeLine = gCodeLine[0:y.start()+1] + str(yTarget) + gCodeLine[y.end():]
             
             return gCodeLine
