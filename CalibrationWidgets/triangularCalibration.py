@@ -41,6 +41,8 @@ class TriangularCalibration(GridLayout):
 
         self.data.gcode_queue.put("G91 ") # Switch to relative mode
 
+        self.data.gcode_queue.put("M3 ") # Turn on the spindle
+
         self.data.gcode_queue.put("G0 X-" + str((workspaceWidth/2)-254) + " Y+" + str((workspaceHeight/2)-241.3) + " ")  # Move to first cut point
         self.data.gcode_queue.put("G1 Z-7 F500 ")
         self.data.gcode_queue.put("G1 Y-25.4 ") # Cut 25.4mm vertical mark
@@ -58,6 +60,8 @@ class TriangularCalibration(GridLayout):
         self.data.gcode_queue.put("G1 Z-7 ")
         self.data.gcode_queue.put("G1 Y-25.4 ") # Cut 25.4mm vertical mark
         self.data.gcode_queue.put("G1 Z7 ")
+
+        self.data.gcode_queue.put("M5 ") # Turn off the spindle
 
         self.data.gcode_queue.put("G90 ") # Switch back to absolute mode
         self.data.gcode_queue.put("G0 X0 Y0 ") # Move to home location
