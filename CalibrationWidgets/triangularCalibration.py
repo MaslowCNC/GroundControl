@@ -159,8 +159,8 @@ class TriangularCalibration(GridLayout):
 
         # Configure iteration parameters
 
-        acceptableTolerance = .001
-        numberOfIterations = 1000
+        acceptableTolerance = 0.001
+        numberOfIterations = 5000
         motorYcoordCorrectionScale = 0.5
         rotationRadiusCorrectionScale = 0.5
         motorSpacingCorrectionScale = 1
@@ -276,7 +276,7 @@ class TriangularCalibration(GridLayout):
 
         # Iterate until error tolerance is achieved or maximum number of iterations occurs
 
-        while (((abs(ChainErrorCut1) >= acceptableTolerance ) or (abs(ChainErrorCut2) >= acceptableTolerance) or (abs(ChainErrorCut3) >= acceptableTolerance ) or (abs(ChainErrorCut4) >= acceptableTolerance ) or (abs(ChainErrorCut5) >= acceptableTolerance ) or (abs(ChainErrorCut6) >= acceptableTolerance )) and (n < numberOfIterations)):
+        while (((abs(ChainErrorCut1) >= acceptableTolerance ) or (abs(ChainErrorCut2) >= acceptableTolerance) or (abs(ChainErrorCut3) >= acceptableTolerance ) or (abs(ChainErrorCut4) >= acceptableTolerance ) or (abs(ChainErrorCut5 + ChainErrorCut6) >= (acceptableTolerance * 2) )) and (n < numberOfIterations)):
             n += 1
 
             # Calculate chain lengths for current estimated parameters
@@ -377,12 +377,14 @@ class TriangularCalibration(GridLayout):
             # When we get close to correct values for motorYcoord and rotationRadius begin calibrating for motor spacing and chain sag
 
             if (abs(ChainErrorCut1) < 1 and abs(ChainErrorCut2) < 1):
-                motorSpacingEst -= ChainErrorCut5 * motorSpacingCorrectionScale
-                cut56YoffsetEst += ((ChainErrorCut5 + ChainErrorCut6) / 2) * cut56YoffsetCorrectionScale
                 chainSagCorrectionEst -= ChainErrorCut4 * chainSagCorrectionCorrectionScale
                 cut34YoffsetEst += ((ChainErrorCut3 + ChainErrorCut4) / 2) * cut34YoffsetCorrectionScale
                 if (chainSagCorrectionEst < 0):
                     chainSagCorrectionEst = 0
+                if (abs(ChainErrorCut3) < 1 and abs(ChainErrorCut4) < 1):
+                    if (abs(ChainErrorCut5 + ChainErrorCut6) >= (acceptableTolerance * 2)):
+                        motorSpacingEst -= ((ChainErrorCut5 + ChainErrorCut6) / 2) * motorSpacingCorrectionScale
+                    cut56YoffsetEst += ((ChainErrorCut5 + ChainErrorCut6) / 2) * cut56YoffsetCorrectionScale
 
             # If we get unrealistic values, reset and try again with smaller steps
 
