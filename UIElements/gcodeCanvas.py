@@ -327,6 +327,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 direction = 1
             
             arcLen = abs(angle1 - angle2)
+            if abs(angle1 - angle2) == 0:
+                arcLen = 6.28313530718
             
             i = 0
             while abs(i) < arcLen:
@@ -402,16 +404,27 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         try:
             gCodeLine = gCodeLine.upper() + " "
-            
             x = re.search("X(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if x:
-                xTarget = float(x.groups()[0]) + self.data.gcodeShift[0]
-                gCodeLine = gCodeLine[0:x.start()+1] + str(xTarget) + gCodeLine[x.end():]
+#                 xTarget = '%f' % (float(x.groups()[0]) + self.data.gcodeShift[0]) # not used any more...
+                eNtnX = re.sub('\-?\d\.|\d*e-','',str(abs(float(x.groups()[0]) + self.data.gcodeShift[0]))) # strip off everything but the decimal part or e-notation exponent
+                e = re.search(".*e-", str(abs(float(x.groups()[0]) + self.data.gcodeShift[0])))
+                if e:
+                    fmtX = "%0%.%sf" % eNtnX  # if e-notation, use the exponent from the e notation
+                else:
+                    fmtX = "%0%.%sf" % len(eNtnX) # use the number of digits after the decimal place
+                gCodeLine = gCodeLine[0:x.start()+1] + (fmtX % (float(x.groups()[0]) + self.data.gcodeShift[0])) + gCodeLine[x.end():]
             
             y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if y:
-                yTarget = float(y.groups()[0]) + self.data.gcodeShift[1]
-                gCodeLine = gCodeLine[0:y.start()+1] + str(yTarget) + gCodeLine[y.end():]
+#                 yTarget = '%f' % (float(y.groups()[0]) + self.data.gcodeShift[1]) # not used any more...
+                eNtnY = re.sub('\-?\d\.|\d*e-','',str(abs(float(y.groups()[0]) + self.data.gcodeShift[1])))
+                e = re.search(".*e-", str(abs(float(y.groups()[0]) + self.data.gcodeShift[1])))
+                if e:
+                    fmtY = "%0%.%sf" % eNtnY
+                else:
+                    fmtY = "%0%.%sf" % len(eNtnY)
+                gCodeLine = gCodeLine[0:y.start()+1] + (fmtY % (float(y.groups()[0]) + self.data.gcodeShift[1])) + gCodeLine[y.end():]
             
             return gCodeLine
         except ValueError:
