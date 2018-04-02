@@ -12,7 +12,7 @@ From within Ground Control, you can move the machine to where you want to begin 
 
 At present, the UI looks like this:
 
-![UI](/Documentation/GroundControl.JPG)
+![UI](/Documentation/GroundControl.jpg)
 
 Ground Control is written in [Python](https://www.python.org/). It was chosen because it has good cross platform support and is relatively simple to work with.
 
