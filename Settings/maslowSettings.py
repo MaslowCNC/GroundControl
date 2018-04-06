@@ -204,8 +204,8 @@ settings = {
             },
             {
                 "type": "options",
-                "title": "Side of Motor Sprockets That Chains Go to Sled",
-                "desc": "On which side of the motor sprockets the chains connect to the sled",
+                "title": "Top/Bottom Chain Feed",
+                "desc": "On which side of the motor sprockets do the chains leave from to connect to the sled",
                 "options": ["Top", "Bottom"],
                 "default": "Top",
                 "key": "chainOverSprocket"
