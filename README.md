@@ -40,9 +40,9 @@ For help installing binaries, see the [installation guides](https://github.com/M
 
 ## Documentation
 
-Ground control documentation is available on the [project wiki](/wiki).
+Ground control documentation is available on the [project wiki](https://github.com/MaslowCNC/GroundControl/wiki).
 
-For help in using Ground Control, see the [users guide](/wiki/Ground-Control-Users-Guide).
+For help in using Ground Control, see the [users guide](https://github.com/MaslowCNC/GroundControl/wiki/Ground-Control-Users-Guide).
 
 ## Development Setup
 
