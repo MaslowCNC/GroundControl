@@ -9,7 +9,8 @@ import global_variables
 class ManualCalibration(GridLayout):
     '''
     
-    Provides a standard interface for running the calibration test pattern for triangular kinematics 
+    Provides a quick way to get a machine going. This is not intended to be a replacement for the calibration process, just a quick way to get
+    someone past the frustration of not being able to calibrate.
     
     '''
     data                        =  ObjectProperty(None) #linked externally
@@ -55,6 +56,8 @@ class ManualCalibration(GridLayout):
             self.data.config.set('Maslow Settings', 'motorOffsetY', str(motorsVertical))
             self.data.config.set('Maslow Settings', 'motorSpacingX', str(motorsDist))
             self.data.config.set('Advanced Settings', 'rotationRadius', str(rotationRadius))
+            self.data.config.set('Advanced Settings', 'kinematicsType', 'Triangular')
+            self.data.config.set('Advanced Settings', 'chainOverSprocket', 'Bottom')
             
             self.loadNextStep()
             
