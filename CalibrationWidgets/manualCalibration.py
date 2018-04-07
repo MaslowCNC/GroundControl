@@ -47,10 +47,6 @@ class ManualCalibration(GridLayout):
                 rotationRadius  = rotationRadius*25.4
                 motorsVertical  = motorsVertical*25.4
             
-            print motorsDist
-            print rotationRadius
-            print motorsVertical
-            
             # Update machine parameters
 
             self.data.config.set('Maslow Settings', 'motorOffsetY', str(motorsVertical))
