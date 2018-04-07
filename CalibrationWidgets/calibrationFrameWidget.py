@@ -25,6 +25,7 @@ from CalibrationWidgets.reviewMeasurements                  import  ReviewMeasur
 from CalibrationWidgets.quadTestCut                         import  QuadTestCut
 from CalibrationWidgets.finish                              import  Finish
 from CalibrationWidgets.finishSetChainLengths               import  FinishSetChainLengths
+from CalibrationWidgets.manualCalibration                   import  ManualCalibration
 from   kivy.app                                             import  App
 
 
@@ -116,6 +117,26 @@ class CalibrationFrameWidget(GridLayout):
         #add triangular kinematics
         triangularCalibration                       = TriangularCalibration()
         self.listOfCalibrationSteps.append(triangularCalibration)
+        
+        #one last review
+        reviewMeasurements                          = ReviewMeasurements()
+        self.listOfCalibrationSteps.append(reviewMeasurements)
+        
+        #add finish step
+        finish              = Finish()
+        finish.done         = self.done
+        self.listOfCalibrationSteps.append(finish)
+    
+    def setupManualCalibration(self):
+        '''
+        
+        Calling this function sets up the calibration process to show an option to enter manual machine dimensions
+        
+        '''
+        
+        #add triangular kinematics
+        manualCalibration                       = ManualCalibration()
+        self.listOfCalibrationSteps.append(manualCalibration)
         
         #one last review
         reviewMeasurements                          = ReviewMeasurements()

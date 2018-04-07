@@ -378,10 +378,9 @@
                 on_release: root.calibrateChainLengths()
             Button:
                 text: 'Manual Calibration'
-                disabled: False
+                on_release: root.manualCalibration()
             Button:
                 text: 'About'
-                disabled: False
                 on_release: root.about()
             Spinner:
                 id: advancedOptions
@@ -940,6 +939,51 @@
             text: "Stop\nCut"
             halign: "center"
             on_release: root.stopCut()
+        Label:
+
+<ManualCalibration>:
+    motorsDist:motorsDist
+    rotationRadius:rotationRadius
+    vertMeasure:vertMeasure
+    enterValuesT:enterValues
+    unitsBtnT:unitsBtn
+
+    cols: 2
+    width: root.width
+    height: root.height
+    GridLayout:
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: "This option lets you enter the dimensions of your machine manually which can be faster and\neasier than the automatic calibration process, but the results might be less accurate"
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Label:
+            text: "Distance Between Motors:"
+            halign: "center"
+        TextInput:
+            id: motorsDist
+        Label:
+            text: "Rotation Radius:"
+            halign: "center"
+        TextInput:
+            id: rotationRadius
+        Label:
+            text: "Distance from top of workspace to motors:"
+            halign: "center"
+        TextInput:
+            id: vertMeasure
+        Button:
+            text: "Units: mm"
+            on_release: root.switchUnits()
+            id: unitsBtn
+        Button:
+            text: "Enter Values"
+            halign: "center"
+            on_release: root.enterValues()
+            id: enterValues
         Label:
 
 <QuadTestCut>
