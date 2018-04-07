@@ -106,6 +106,26 @@ class CalibrationFrameWidget(GridLayout):
         finishSetChainLengths.done         = self.done
         self.listOfCalibrationSteps.append(finishSetChainLengths)
     
+    def setupJustTriangularTestCuts(self):
+        '''
+        
+        Calling this function sets up the calibration process to show just the steps cut the triangular test pattern
+        
+        '''
+        
+        #add triangular kinematics
+        triangularCalibration                       = TriangularCalibration()
+        self.listOfCalibrationSteps.append(triangularCalibration)
+        
+        #one last review
+        reviewMeasurements                          = ReviewMeasurements()
+        self.listOfCalibrationSteps.append(reviewMeasurements)
+        
+        #add finish step
+        finish              = Finish()
+        finish.done         = self.done
+        self.listOfCalibrationSteps.append(finish)
+    
     def addSteps(self):
         '''
         
@@ -159,9 +179,7 @@ class CalibrationFrameWidget(GridLayout):
             #Do quadrilateral test cut
             quadTestCut                                 = QuadTestCut()
             self.listOfCalibrationSteps.append(quadTestCut)
-            
-            #App.get_running_app().data.message_queue.put("Message: You have chosen a configuration which is not currently supported by the calibration process. Check back soon")
-            #self.done()
+        
         
         #one last review
         reviewMeasurements                          = ReviewMeasurements()

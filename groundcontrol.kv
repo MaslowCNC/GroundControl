@@ -377,8 +377,8 @@
                 text: 'Set Chain Length - Automatic'
                 on_release: root.calibrateChainLengths()
             Button:
-                text: ' '
-                disabled: True
+                text: 'Manual Calibration'
+                disabled: False
             Button:
                 text: 'About'
                 disabled: False
@@ -386,7 +386,7 @@
             Spinner:
                 id: advancedOptions
                 text: "Advanced"
-                values: ["Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test"]
+                values: ["Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test", "Run Triangular Test Cut Pattern"]
                 on_text: root.advancedOptionsFunctions(advancedOptions.text)
 
 <OtherFeatures>:

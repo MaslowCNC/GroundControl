@@ -59,6 +59,36 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
                             size_hint=(0.85, 0.95), auto_dismiss = False)
         self._popup.open()
     
+    def runJustTriangularCuts(self):
+        '''
+        
+        This function is called when the "Run Triangular Test Cuts" button under advanced options is pressed
+        
+        '''
+        
+        self.popupContent       = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
+        self.popupContent.setupJustTriangularTestCuts()
+        self.popupContent.on_Enter()
+        
+        self._popup = Popup(title="Calibrate Chain Lengths", content=self.popupContent,
+                            size_hint=(0.85, 0.95), auto_dismiss = False)
+        self._popup.open()
+    
+    def manualCalibration(self):
+        '''
+        
+        This function is called when the "Run Triangular Test Cuts" button under advanced options is pressed
+        
+        '''
+        
+        self.popupContent       = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
+        self.popupContent.setupManualCalibration()
+        self.popupContent.on_Enter()
+        
+        self._popup = Popup(title="Calibrate Chain Lengths", content=self.popupContent,
+                            size_hint=(0.85, 0.95), auto_dismiss = False)
+        self._popup.open()
+    
     def manualCalibrateChainLengths(self):
         self.data.gcode_queue.put("B08 ")
         self.parentWidget.close()
@@ -125,3 +155,5 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
             self.launchSimulation()
         elif text == "Load Calibration Benchmark Test":
             self.loadCalibrationBenchmarkTest()
+        elif text == "Run Triangular Test Cut Pattern":
+            self.runJustTriangularCuts()
