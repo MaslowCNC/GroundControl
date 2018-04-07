@@ -24,6 +24,7 @@ from CalibrationWidgets.distBetweenChainBrackets            import  DistBetweenC
 from CalibrationWidgets.reviewMeasurements                  import  ReviewMeasurements
 from CalibrationWidgets.quadTestCut                         import  QuadTestCut
 from CalibrationWidgets.finish                              import  Finish
+from CalibrationWidgets.finishSetChainLengths               import  FinishSetChainLengths
 from   kivy.app                                             import  App
 
 
@@ -41,7 +42,28 @@ class CalibrationFrameWidget(GridLayout):
         
         App.get_running_app().data.calibrationInProcess = True
         
-        #generate the first two steps because they are always the same
+        self.loadStep(0)
+    
+    def on_Exit(self):
+        '''
+        
+        This function run when the process is completed or quit is pressed
+        
+        '''
+        App.get_running_app().data.calibrationInProcess = False
+        App.get_running_app().data.message_queue.put("Message: Notice: Exiting the calibration process early may result in incorrect calibration.")
+        
+        #remove the old widget
+        try:
+            self.cFrameWidgetSpace.remove_widget(self.currentWidget)
+        except:
+            pass #there was no widget to remove
+        
+        self.done()
+    
+    def setupFullCalibration(self):
+        
+        #load the first steps in the calibration process because they are always the same
         intro =  Intro()
         self.listOfCalibrationSteps.append(intro)
         
@@ -66,25 +88,23 @@ class CalibrationFrameWidget(GridLayout):
         computeCalibrationSteps                     = ComputeCalibrationSteps()
         computeCalibrationSteps.setupListOfSteps    = self.addSteps
         self.listOfCalibrationSteps.append(computeCalibrationSteps)
-        
-        self.loadStep(0)
     
-    def on_Exit(self):
+    def setupJustChainsCalibration(self):
         '''
         
-        This function run when the process is completed or quit is pressed
+        Calling this function sets up the calibration process to show just the steps to calibrate the chain lengths
         
         '''
-        App.get_running_app().data.calibrationInProcess = False
-        App.get_running_app().data.message_queue.put("Message: Notice: Exiting the calibration process early may result in incorrect calibration.")
+        #load steps
+        setSprocketsVertical =  SetSprocketsVertical()
+        self.listOfCalibrationSteps.append(setSprocketsVertical)
         
-        #remove the old widget
-        try:
-            self.cFrameWidgetSpace.remove_widget(self.currentWidget)
-        except:
-            pass #there was no widget to remove
+        measureOutChains =  MeasureOutChains()
+        self.listOfCalibrationSteps.append(measureOutChains)
         
-        self.done()
+        finishSetChainLengths =  FinishSetChainLengths()
+        finishSetChainLengths.done         = self.done
+        self.listOfCalibrationSteps.append(finishSetChainLengths)
     
     def addSteps(self):
         '''
