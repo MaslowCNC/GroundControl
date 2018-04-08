@@ -43,6 +43,7 @@ class CalibrationFrameWidget(GridLayout):
         
         App.get_running_app().data.calibrationInProcess = True
         
+        
         self.loadStep(0)
     
     def on_Exit(self):
@@ -63,6 +64,9 @@ class CalibrationFrameWidget(GridLayout):
         self.done()
     
     def setupFullCalibration(self):
+        
+        #ensure that there are no widgets in the deck when we start
+        self.listOfCalibrationSteps = []
         
         #load the first steps in the calibration process because they are always the same
         intro =  Intro()
@@ -96,6 +100,10 @@ class CalibrationFrameWidget(GridLayout):
         Calling this function sets up the calibration process to show just the steps to calibrate the chain lengths
         
         '''
+        
+        #ensure that there are no widgets in the deck when we start
+        self.listOfCalibrationSteps = []
+        
         #load steps
         setSprocketsVertical =  SetSprocketsVertical()
         self.listOfCalibrationSteps.append(setSprocketsVertical)
@@ -113,6 +121,9 @@ class CalibrationFrameWidget(GridLayout):
         Calling this function sets up the calibration process to show just the steps cut the triangular test pattern
         
         '''
+        
+        #ensure that there are no widgets in the deck when we start
+        self.listOfCalibrationSteps = []
         
         #add triangular kinematics
         triangularCalibration                       = TriangularCalibration()
@@ -133,6 +144,9 @@ class CalibrationFrameWidget(GridLayout):
         Calling this function sets up the calibration process to show an option to enter manual machine dimensions
         
         '''
+        
+        #ensure that there are no widgets in the deck when we start
+        self.listOfCalibrationSteps = []
         
         #add triangular kinematics
         manualCalibration                       = ManualCalibration()
