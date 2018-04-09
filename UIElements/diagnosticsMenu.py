@@ -156,9 +156,12 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         currentSettingsFile = App.get_running_app().get_application_config()
         newSettingsFile = currentSettingsFile.replace("groundcontrol","groundcontrolbackup" + time.strftime("%Y%m%d-%H%M%S"))
         
-        print newSettingsFile
-        
         os.rename(currentSettingsFile, newSettingsFile)
+        
+        #close ground control
+        app = App.get_running_app()
+        app.stop()
+        
         
     def advancedOptionsFunctions(self, text):
         
