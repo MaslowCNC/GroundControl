@@ -5,7 +5,10 @@ from kivy.uix.popup                                 import    Popup
 from CalibrationWidgets.calibrationFrameWidget      import    CalibrationFrameWidget
 from Simulation.simulationCanvas                    import    SimulationCanvas
 from kivy.clock                                     import    Clock
+from   kivy.app                                     import    App
 import sys
+import os
+import time
 
 class Diagnostics(FloatLayout, MakesmithInitFuncs):
     
@@ -143,6 +146,20 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self.data.gcodeFile = "./gcodeForTesting/Calibration Benchmark Test.nc"
         self.parentWidget.close()
     
+    def resetAllSettings(self):
+        '''
+        
+        Renames the groundcontrol.ini file which resets all the settings to the default values
+        
+        '''
+        
+        currentSettingsFile = App.get_running_app().get_application_config()
+        newSettingsFile = currentSettingsFile.replace("groundcontrol","groundcontrolbackup" + time.strftime("%Y%m%d-%H%M%S"))
+        
+        print newSettingsFile
+        
+        os.rename(currentSettingsFile, newSettingsFile)
+        
     def advancedOptionsFunctions(self, text):
         
         if   text == "Test Feedback System":
@@ -157,3 +174,5 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
             self.loadCalibrationBenchmarkTest()
         elif text == "Run Triangular Test Cut Pattern":
             self.runJustTriangularCuts()
+        elif text == "Reset settings to defaults":
+            self.resetAllSettings()
