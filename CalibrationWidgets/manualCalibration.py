@@ -47,13 +47,17 @@ class ManualCalibration(GridLayout):
                 rotationRadius  = rotationRadius*25.4
                 motorsVertical  = motorsVertical*25.4
             
+            if self.chooseKinematics.text != 'Triangular':
+                self.data.message_queue.put("Message: Quadrilateral kinematics not yet supported by manual calibration")
+                return
+            
             # Update machine parameters
 
             self.data.config.set('Maslow Settings', 'motorOffsetY', str(motorsVertical))
             self.data.config.set('Maslow Settings', 'motorSpacingX', str(motorsDist))
             self.data.config.set('Advanced Settings', 'rotationRadius', str(rotationRadius))
             self.data.config.set('Advanced Settings', 'kinematicsType', 'Triangular')
-            self.data.config.set('Advanced Settings', 'chainOverSprocket', 'Bottom')
+            self.data.config.set('Advanced Settings', 'chainOverSprocket', self.chooseFeedDir.text)
             
             self.loadNextStep()
             

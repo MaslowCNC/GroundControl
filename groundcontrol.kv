@@ -947,6 +947,8 @@
     vertMeasure:vertMeasure
     enterValuesT:enterValues
     unitsBtnT:unitsBtn
+    chooseFeedDir:chooseFeedDir
+    chooseKinematics:chooseKinematics
 
     cols: 2
     width: root.width
@@ -955,7 +957,7 @@
         cols: 1
         size_hint_x: leftCol
         Label:
-            text: "This option lets you enter the dimensions of your machine manually which can be faster and\neasier than the automatic calibration process, but the results might be less accurate\n\n\nUsing this calibration approach will automatically set your chain feed to bottom and kinematics type to triangular"
+            text: "This option lets you enter the dimensions of your machine manually which can be faster and\neasier than the automatic calibration process, but the results might be less accurate"
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -979,6 +981,20 @@
             text: "Units: mm"
             on_release: root.switchUnits()
             id: unitsBtn
+        Label:
+            text: "Kinematics type:"
+            halign: "center"
+        Spinner:
+            id: chooseKinematics
+            text: "Triangular"
+            values: ["Triangular", "Quadrilateral"]
+        Label:
+            text: "Chain Feed:"
+            halign: "center"
+        Spinner:
+            id: chooseFeedDir
+            text: "Top"
+            values: ["Top", "Bottom"]
         Button:
             text: "Enter Values"
             halign: "center"
