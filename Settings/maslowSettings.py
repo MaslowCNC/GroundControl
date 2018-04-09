@@ -189,9 +189,23 @@ settings = {
                 "default": 6.35
             },
             {
+                "type": "string",
+                "title": "Chain Tolerance, Left Chain",
+                "desc": "The tolerance adjustment for the left chain length, in percent",
+                "key": "leftChainTolerance",
+                "default": 0
+            },
+            {
+                "type": "string",
+                "title": "Chain Tolerance, Right Chain",
+                "desc": "The tolerance adjustment for the right chain length, in percent",
+                "key": "rightChainTolerance",
+                "default": 0
+            },
+            {
                 "type": "options",
-                "title": "Side of Motor Sprockets That Chains Go to Sled",
-                "desc": "On which side of the motor sprockets the chains connect to the sled",
+                "title": "Top/Bottom Chain Feed",
+                "desc": "On which side of the motor sprockets do the chains leave from to connect to the sled",
                 "options": ["Top", "Bottom"],
                 "default": "Top",
                 "key": "chainOverSprocket"
@@ -474,6 +488,16 @@ settings = {
                 "type": "string",
                 "key": "fPWMComputed",
                 "firmwareKey": 39
+            },
+            {
+                "type": "string",
+                "key": "distPerRotLeftChainTolerance",
+                "firmwareKey": 40
+            },
+            {
+                "type": "string",
+                "key": "distPerRotRightChainTolerance",
+                "firmwareKey": 41
             }
         ]
 }
