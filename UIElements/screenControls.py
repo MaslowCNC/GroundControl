@@ -28,7 +28,7 @@ class ScreenControls(FloatLayout, MakesmithInitFuncs):
         '''
         
         #force the settings panel to update
-        #App.get_running_app().destroy_settings()
+        App.get_running_app().destroy_settings()
         
         #open the settings panel
         App.get_running_app().open_settings()
