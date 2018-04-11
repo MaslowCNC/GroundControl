@@ -92,9 +92,6 @@ class MeasureDistBetweenMotors(GridLayout):
         print "measure left ran"
     
     def readMotorSpacing(self, dist):
-        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Bottom':
-            dist *= -1
-
         dist = dist - 2*6.35                                #subtract off the extra two links
 
         print "Read motor spacing: " + str(dist)
