@@ -208,8 +208,11 @@ class GroundControlApp(App):
 
     def configSettingChange(self, section, key, value):
         """
+        
         Respond to changes in the configuration.
+        
         """
+        
         # Update GC things
         if section == "Maslow Settings":
             if key == "COMport":
