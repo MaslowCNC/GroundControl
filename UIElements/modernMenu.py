@@ -77,6 +77,8 @@ class ModernMenu(Widget):
                     ml.callback = partial(self.parent.parent.parent.moveToPos, self.xPosition, self.yPosition)
                 if ml.text == '[color=3333ff]Mark Here[/color]':
                     ml.callback = partial(self.parent.parent.parent.createMark, self.xPosition, self.yPosition)
+                if ml.text == '[color=3333ff]Set Home[/color]':
+                    ml.callback = partial(self.parent.parent.parent.setHome, self.xPosition, self.yPosition)
             except:
                 print "unable to link circular menu functions"
             self.animation.start(ml)

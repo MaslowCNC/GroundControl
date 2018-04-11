@@ -40,7 +40,7 @@
             id: actionsBtn
         ButtonTemplate:
             text: "Settings"
-            funcToCallOnRelease: app.open_settings
+            funcToCallOnRelease: root.openSettings
             id: settingsBtn
 
 <GcodeCanvas>:
@@ -67,9 +67,10 @@
                 radius=10,
                 creation_timeout=.2,
                 choices=[
-                dict(text='[color=3333ff]Move Here[/color]', markup = True, index=1, callback=root.updateGcode),
-                dict(text='Position Text Placeholder' , markup = True, index=2, callback=root.doNothing),
-                dict(text='[color=3333ff]Mark Here[/color]', markup = True, index=3, callback=root.updateGcode)])
+                dict(text='[color=3333ff]Move Here[/color]', markup = True, index=1),
+                dict(text='Position Text Placeholder'      , markup = True, index=2),
+                dict(text='[color=3333ff]Set Home[/color]' , markup = True, index=3),
+                dict(text='[color=3333ff]Mark Here[/color]', markup = True, index=4)])
 
 <FrontPage>:
     textconsole:textconsole
@@ -377,16 +378,15 @@
                 text: 'Set Chain Length - Automatic'
                 on_release: root.calibrateChainLengths()
             Button:
-                text: ' '
-                disabled: True
+                text: 'Manual Calibration'
+                on_release: root.manualCalibration()
             Button:
                 text: 'About'
-                disabled: False
                 on_release: root.about()
             Spinner:
                 id: advancedOptions
                 text: "Advanced"
-                values: ["Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test"]
+                values: ["Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test", "Run Triangular Test Cut Pattern", "Reset settings to defaults"]
                 on_text: root.advancedOptionsFunctions(advancedOptions.text)
 
 <OtherFeatures>:
@@ -772,9 +772,9 @@
         GridLayout:
             cols: 2
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Quadrilateral Kinematics.JPG"
+                source: "./Documentation/Calibrate Machine Dimensions/Quadrilateral Kinematics.jpg"
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Triangular Kinematics.JPG"
+                source: "./Documentation/Calibrate Machine Dimensions/Triangular Kinematics.jpg"
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -940,6 +940,67 @@
             text: "Stop\nCut"
             halign: "center"
             on_release: root.stopCut()
+        Label:
+
+<ManualCalibration>:
+    motorsDist:motorsDist
+    rotationRadius:rotationRadius
+    vertMeasure:vertMeasure
+    enterValuesT:enterValues
+    unitsBtnT:unitsBtn
+    chooseFeedDir:chooseFeedDir
+    chooseKinematics:chooseKinematics
+
+    cols: 2
+    width: root.width
+    height: root.height
+    GridLayout:
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: "This option lets you enter the dimensions of your machine manually which can be faster and\neasier than the automatic calibration process, but the results might be less accurate"
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Label:
+            text: "Distance Between Motors:"
+            halign: "center"
+        TextInput:
+            id: motorsDist
+        Label:
+            text: "Rotation Radius:"
+            halign: "center"
+        TextInput:
+            id: rotationRadius
+        Label:
+            text: "Distance from top of workspace to motors:"
+            halign: "center"
+        TextInput:
+            id: vertMeasure
+        Button:
+            text: "Units: mm"
+            on_release: root.switchUnits()
+            id: unitsBtn
+        Label:
+            text: "Kinematics type:"
+            halign: "center"
+        Spinner:
+            id: chooseKinematics
+            text: "Triangular"
+            values: ["Triangular", "Quadrilateral"]
+        Label:
+            text: "Chain Feed:"
+            halign: "center"
+        Spinner:
+            id: chooseFeedDir
+            text: "Top"
+            values: ["Top", "Bottom"]
+        Button:
+            text: "Enter Values"
+            halign: "center"
+            on_release: root.enterValues()
+            id: enterValues
         Label:
 
 <QuadTestCut>
