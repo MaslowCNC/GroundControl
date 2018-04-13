@@ -3,10 +3,12 @@ from DataStructures.makesmithInitFuncs              import    MakesmithInitFuncs
 from UIElements.scrollableTextPopup                 import    ScrollableTextPopup
 from kivy.uix.popup                                 import    Popup
 from CalibrationWidgets.calibrationFrameWidget      import    CalibrationFrameWidget
-from CalibrationWidgets.setChainLengthsFrameWidget  import    SetChainLengthsFrameWidget
 from Simulation.simulationCanvas                    import    SimulationCanvas
 from kivy.clock                                     import    Clock
+from   kivy.app                                     import    App
 import sys
+import os
+import time
 
 class Diagnostics(FloatLayout, MakesmithInitFuncs):
     
@@ -46,10 +48,44 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self._popup.dismiss()
         
     def calibrateChainLengths(self):
-        #establish known initial conditions
-        self.data.gcode_queue.put("B06 L0 R0 ");
+        '''
         
-        self.popupContent      = SetChainLengthsFrameWidget(done=self.dismissCalibrationPopup)
+        This function is called when the "Calibrate Chain Lengths Automatic" button is pressed under the Actions window
+        
+        '''
+        
+        self.popupContent       = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
+        self.popupContent.setupJustChainsCalibration()
+        self.popupContent.on_Enter()
+        
+        self._popup = Popup(title="Calibrate Chain Lengths", content=self.popupContent,
+                            size_hint=(0.85, 0.95), auto_dismiss = False)
+        self._popup.open()
+    
+    def runJustTriangularCuts(self):
+        '''
+        
+        This function is called when the "Run Triangular Test Cuts" button under advanced options is pressed
+        
+        '''
+        
+        self.popupContent       = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
+        self.popupContent.setupJustTriangularTestCuts()
+        self.popupContent.on_Enter()
+        
+        self._popup = Popup(title="Calibrate Chain Lengths", content=self.popupContent,
+                            size_hint=(0.85, 0.95), auto_dismiss = False)
+        self._popup.open()
+    
+    def manualCalibration(self):
+        '''
+        
+        This function is called when the "Run Triangular Test Cuts" button under advanced options is pressed
+        
+        '''
+        
+        self.popupContent       = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
+        self.popupContent.setupManualCalibration()
         self.popupContent.on_Enter()
         
         self._popup = Popup(title="Calibrate Chain Lengths", content=self.popupContent,
@@ -76,6 +112,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         
         '''
         self.popupContent       = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
+        self.popupContent.setupFullCalibration()
         self.popupContent.on_Enter()
         self._popup = Popup(title="Calibration", content=self.popupContent,
                             size_hint=(0.95, 0.95), auto_dismiss = False)
@@ -109,6 +146,23 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self.data.gcodeFile = "./gcodeForTesting/Calibration Benchmark Test.nc"
         self.parentWidget.close()
     
+    def resetAllSettings(self):
+        '''
+        
+        Renames the groundcontrol.ini file which resets all the settings to the default values
+        
+        '''
+        
+        currentSettingsFile = App.get_running_app().get_application_config()
+        newSettingsFile = currentSettingsFile.replace("groundcontrol","groundcontrolbackup" + time.strftime("%Y%m%d-%H%M%S"))
+        
+        os.rename(currentSettingsFile, newSettingsFile)
+        
+        #close ground control
+        app = App.get_running_app()
+        app.stop()
+        
+        
     def advancedOptionsFunctions(self, text):
         
         if   text == "Test Feedback System":
@@ -121,3 +175,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
             self.launchSimulation()
         elif text == "Load Calibration Benchmark Test":
             self.loadCalibrationBenchmarkTest()
+        elif text == "Run Triangular Test Cut Pattern":
+            self.runJustTriangularCuts()
+        elif text == "Reset settings to defaults":
+            self.resetAllSettings()

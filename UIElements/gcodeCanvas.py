@@ -360,6 +360,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         Move the machine to a point selected on the screen
         
         '''
+        
         if self.data.units == 'MM':
             scaleFactor = 1
         else:
@@ -389,6 +390,25 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         marker.setPos(xTarget, yTarget, self.data.units)
         marker.color = (0,1,0)
         self.scatterInstance.add_widget(marker)
+    
+    def setHome(self, xPosition, yPosition, *args):
+        '''
+        
+        Set the home position to the location set in the long press menu
+        
+        '''
+        
+        if self.data.units == 'MM':
+            scaleFactor = 1
+        else:
+            scaleFactor = 25.4
+        
+        xPosition = xPosition/scaleFactor
+        yPosition = yPosition/scaleFactor
+        
+        self.data.gcodeShift = [xPosition,yPosition]
+        self.data.config.set('Advanced Settings', 'homeX', str(xPosition))
+        self.data.config.set('Advanced Settings', 'homeY', str(yPosition))
     
     def doNothing(self, *args):
         '''

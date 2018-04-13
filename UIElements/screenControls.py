@@ -3,6 +3,7 @@ from kivy.uix.popup                            import   Popup
 from UIElements.otherFeatures                  import   OtherFeatures
 from DataStructures.makesmithInitFuncs         import   MakesmithInitFuncs
 from UIElements.buttonTemplate                 import   ButtonTemplate
+from kivy.app                                  import   App
 
 
 class ScreenControls(FloatLayout, MakesmithInitFuncs):
@@ -18,6 +19,19 @@ class ScreenControls(FloatLayout, MakesmithInitFuncs):
         self.actionsBtn.textColor                = self.data.fontColor
         self.settingsBtn.btnBackground           = self.data.iconPath + 'Generic.png'
         self.settingsBtn.textColor               = self.data.fontColor
+    
+    def openSettings(self):
+        '''
+        
+        Open the settings panel to manually change settings
+        
+        '''
+        
+        #force the settings panel to update
+        App.get_running_app().destroy_settings()
+        
+        #open the settings panel
+        App.get_running_app().open_settings()
     
     def show_actions(self):
         '''
