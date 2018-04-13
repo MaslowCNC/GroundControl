@@ -329,6 +329,24 @@ class GroundControlApp(App):
                 if global_variables._keyboard:
                     global_variables._keyboard.bind(on_key_down=self.keydown_popup)
                     self._popup.bind(on_dismiss=self.ondismiss_popup)
+            elif message[0:6] == "ALARM:":
+                self.previousUploadStatus = self.data.uploadFlag 
+                self.data.uploadFlag = 0
+                try:
+                    self._popup.dismiss()                                           #close any open popup
+                except:
+                    pass                                                            #there wasn't a popup to close
+                content = NotificationPopup(continueOn = self.dismiss_popup_continue, text = message[7:])
+                if sys.platform.startswith('darwin'):
+                    self._popup = Popup(title="Alarm Notification: ", content=content,
+                            auto_dismiss=False, size=(360,240), size_hint=(.3, .3))
+                else:
+                    self._popup = Popup(title="Alarm Notification: ", content=content,
+                            auto_dismiss=False, size=(360,240), size_hint=(None, None))
+                self._popup.open()
+                if global_variables._keyboard:
+                    global_variables._keyboard.bind(on_key_down=self.keydown_popup)
+                    self._popup.bind(on_dismiss=self.ondismiss_popup)
             elif message[0:8] == "Firmware":
                 self.data.logger.writeToLog("Ground Control Version " + str(self.data.version) + "\n")
                 self.writeToTextConsole("Ground Control " + str(self.data.version) + "\r\n" + message + "\r\n")
