@@ -117,7 +117,7 @@ settings = {
                 "type": "options",
                 "title": "Color Scheme",
                 "desc": "Switch between the light and dark color schemes. Restarting GC is needed for this change to take effect",
-                "options": ["Light", "Dark"],
+                "options": ["Light", "Dark", "DarkGreyBlue"],
                 "key": "colorScheme",
                 "default": "Light"
             },
