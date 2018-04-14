@@ -73,7 +73,7 @@ class GroundControlApp(App):
             Window.clearcolor                = (0, 0, 0, 1)
             self.data.posIndicatorColor      =  [1,1,1]
             self.data.targetInicatorColor    =  [1,0,0]
-         elif self.config.get('Maslow Settings', 'colorScheme') == 'DarkGreyBlue':
+        elif self.config.get('Maslow Settings', 'colorScheme') == 'DarkGreyBlue':
             self.data.iconPath               = './Images/Icons/darkgreyblue/'
             self.data.fontColor              = '[color=000000]'
             self.data.drawingColor           = [1,1,1]
