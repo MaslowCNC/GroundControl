@@ -73,6 +73,14 @@ class GroundControlApp(App):
             Window.clearcolor                = (0, 0, 0, 1)
             self.data.posIndicatorColor      =  [1,1,1]
             self.data.targetInicatorColor    =  [1,0,0]
+         elif self.config.get('Maslow Settings', 'colorScheme') == 'DarkGreyBlue':
+            self.data.iconPath               = './Images/Icons/darkgreyblue/'
+            self.data.fontColor              = '[color=000000]'
+            self.data.drawingColor           = [1,1,1]
+            Window.clearcolor                = (0.06, 0.10, 0.2, 1)
+            self.data.posIndicatorColor      =  [0.51,0.93,0.97]
+            self.data.targetInicatorColor = [1,0,0]
+
         
         
         Window.maximize()
