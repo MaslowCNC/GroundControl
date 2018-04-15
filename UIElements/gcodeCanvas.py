@@ -170,12 +170,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         mat = Matrix().translate(Window.width/2, Window.height/2, 0)
         self.scatterInstance.transform = mat
         
-        scale = self.data.config.get('Ground Control Settings', 'viewScale')
         anchor = (0,0)
-        if sys.platform.startswith('darwin'):
-            mat = Matrix().scale(.9, .9, 1)
-        else:
-            mat = Matrix().scale(.45, .45, 1)
+        scale = self.data.config.get('Ground Control Settings', 'viewScale')
         mat = Matrix().scale(dp(scale), dp(scale), 1)
 
         self.scatterInstance.apply_transform(mat, anchor)
