@@ -19,6 +19,7 @@ from UIElements.modernMenu                   import ModernMenu
 import re
 import math
 import global_variables
+import sys
 
 class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
@@ -169,7 +170,11 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.scatterInstance.transform = mat
         
         anchor = (0,0)
-        mat = Matrix().scale(.45, .45, 1)
+        if sys.platform.startswith('darwin'):
+            mat = Matrix().scale(.9, .9, 1)
+        else:
+            mat = Matrix().scale(.45, .45, 1)
+
         self.scatterInstance.apply_transform(mat, anchor)
 
     def on_touch_up(self, touch, *args):
