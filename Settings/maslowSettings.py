@@ -364,6 +364,14 @@ settings = {
                 "options": ["490Hz", "4,100Hz", "31,000Hz"],
                 "default": "490Hz",
                 "key": "fPWM",
+            },
+            {
+                "type": "string",
+                "title": "Position Error Limit",
+                "desc": "If the position of the sled varies from the expected position by more than this amount, cutting wil be stopped. Program must be restarted to take effect.",
+                "key": "positionErrorLimit",
+                "default": 2.0,
+                "firmwareKey": 42
             }
         ],
     "Ground Control Settings":
