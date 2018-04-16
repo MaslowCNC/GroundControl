@@ -395,6 +395,13 @@ settings = {
                 "desc": "Valid file extensions for Ground Control to open. Comma separated list.",
                 "key": "validExtensions",
                 "default": ".nc, .ngc, .text, .gcode"
+            },
+            {
+                "type": "string",
+                "title": "Reset View Scale",
+                "desc": "Zoom scale for 'Reset View' command.",
+                "key": "viewScale",
+                "default": ".45"
             }
         ],
     "Computed Settings": #These are setting calculated from the user inputs on other settings, they are not direclty seen by the user
