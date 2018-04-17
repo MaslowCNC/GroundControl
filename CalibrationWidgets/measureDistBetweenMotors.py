@@ -119,7 +119,11 @@ class MeasureDistBetweenMotors(GridLayout):
         
         self.originalChainOverSproketDir = App.get_running_app().data.config.get('Advanced Settings', 'chainOverSprocket')
         
+        #pretend we are in the "Top" configuration during this step
         App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', 'Top')
+        
+        #set the threshold for warning that the machine is off target to 200mm esentially turning it off. We dont' want this to trigger when pulling the chain tight
+        self.data.gcode_queue.put("$42=200 ")
     
     def on_Exit(self):
         '''
@@ -128,7 +132,9 @@ class MeasureDistBetweenMotors(GridLayout):
         
         '''
         
-        print "measure dist on exit ran"
         
+        #Restore original chain over sprocket direction
         App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', self.originalChainOverSproketDir)
+        #restore all settings to the values stored in the current settings file 
+        self.data.gcode_queue.put("$$ ")
         
