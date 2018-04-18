@@ -460,8 +460,9 @@ class GroundControlApp(App):
             
             self.frontpage.gcodecanvas.positionIndicator.setError(0, self.data.units)
             self.data.logger.writeErrorValueToLog(avgError)
-            
-            self.frontpage.gcodecanvas.targetIndicator.setPos(self.xval - .5*rightErrorValueAsFloat + .5*leftErrorValueAsFloat, self.yval - .5*rightErrorValueAsFloat - .5*leftErrorValueAsFloat,self.data.units)
+
+            if not self.data.gcodeJump:
+                self.frontpage.gcodecanvas.targetIndicator.setPos(self.xval - .5*rightErrorValueAsFloat + .5*leftErrorValueAsFloat, self.yval - .5*rightErrorValueAsFloat - .5*leftErrorValueAsFloat,self.data.units)
             
             
         except:

@@ -151,16 +151,51 @@ class SerialPortThread(MakesmithInitFuncs):
                 #Send the next line of gcode to the machine if we're running a program
                 if self.bufferSpace == self.bufferSize and self.machineIsReadyForData: #> len(self.data.gcode[self.data.gcodeIndex]):
                     if self.data.uploadFlag:
-                        self._write(self.data.gcode[self.data.gcodeIndex])
-                        
-                        #increment gcode index
-                        if self.data.gcodeIndex + 1 < len(self.data.gcode):
-                            self.data.gcodeIndex = self.data.gcodeIndex + 1
+                        if self.data.gcodeJump:
+                            #we are executing a G-Code Jump... we need to stuff a couple of commands here - 1. Go to Traverse Height 
+                            safeHeightMM = float(self.data.config.get('Maslow Settings', 'zAxisSafeHeight'))
+                            safeHeightInches = safeHeightMM / 25.5
+                            if self.data.units == "INCHES":
+                                self.data.gcode_queue.put("G00 Z" + '%.3f'%(safeHeightInches))
+                            else:
+                                self.data.gcode_queue.put("G00 Z" + str(safeHeightMM))
+                            
+                            #2. Go to target position
+                            gCodeLine = self.data.gcode[self.data.gcodeIndex]
+                            try:
+                                x = re.search("X(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+                                if x:
+                                    xTarget = float(x.groups()[0])
+                                    self.previousPosX = xTarget
+                                else:
+                                    xTarget = self.previousPosX
+                                
+                                y = re.search("Y(?=.)([+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
+                                if y:
+                                    yTarget = float(y.groups()[0])
+                                    self.previousPosY = yTarget
+                                else:
+                                    yTarget = self.previousPosY
+                                
+                            except:
+                                print "Unable to find position for new gcode line"
+                                
+                            self.data.gcode_queue.put("G00 X%.3f Y%.3f "%(xTarget, yTarget))
+                            
+                            #We get to start pulling from the gcode after we're safely at the new spot
+                            self.data.gcodeJump=False
+                            
                         else:
-                            self.data.uploadFlag = 0
-                            self.data.gcodeIndex = 0
-                            print "Gcode Ended"
-                
+                            self._write(self.data.gcode[self.data.gcodeIndex])
+                            
+                            #increment gcode index
+                            if self.data.gcodeIndex + 1 < len(self.data.gcode):
+                                self.data.gcodeIndex = self.data.gcodeIndex + 1
+                            else:
+                                self.data.uploadFlag = 0
+                                self.data.gcodeIndex = 0
+                                print "Gcode Ended"
+                    
                 
                 
                 
