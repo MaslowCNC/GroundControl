@@ -17,7 +17,11 @@ class Intro(GridLayout):
         This function runs when the step is entered
         
         '''
-        pass
+        
+        self.data = App.get_running_app().data
+        
+        if self.data.connectionStatus == False:
+            self.data.message_queue.put("Message: The calibration process requres the machine to be connected. To connect to the machine choose Actions -> Ports and select the same port used to install the firmware")
     
     def finished(self):
         self.readyToMoveOn()

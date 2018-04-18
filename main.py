@@ -73,6 +73,14 @@ class GroundControlApp(App):
             Window.clearcolor                = (0, 0, 0, 1)
             self.data.posIndicatorColor      =  [1,1,1]
             self.data.targetInicatorColor    =  [1,0,0]
+        elif self.config.get('Maslow Settings', 'colorScheme') == 'DarkGreyBlue':
+            self.data.iconPath               = './Images/Icons/darkgreyblue/'
+            self.data.fontColor              = '[color=000000]'
+            self.data.drawingColor           = [1,1,1]
+            Window.clearcolor                = (0.06, 0.10, 0.2, 1)
+            self.data.posIndicatorColor      =  [0.51,0.93,0.97]
+            self.data.targetInicatorColor = [1,0,0]
+
         
         
         Window.maximize()
@@ -327,6 +335,24 @@ class GroundControlApp(App):
                             auto_dismiss=False, size=(360,240), size_hint=(.3, .3))
                 else:
                     self._popup = Popup(title="Notification: ", content=content,
+                            auto_dismiss=False, size=(360,240), size_hint=(None, None))
+                self._popup.open()
+                if global_variables._keyboard:
+                    global_variables._keyboard.bind(on_key_down=self.keydown_popup)
+                    self._popup.bind(on_dismiss=self.ondismiss_popup)
+            elif message[0:6] == "ALARM:":
+                self.previousUploadStatus = self.data.uploadFlag 
+                self.data.uploadFlag = 0
+                try:
+                    self._popup.dismiss()                                           #close any open popup
+                except:
+                    pass                                                            #there wasn't a popup to close
+                content = NotificationPopup(continueOn = self.dismiss_popup_continue, text = message[7:])
+                if sys.platform.startswith('darwin'):
+                    self._popup = Popup(title="Alarm Notification: ", content=content,
+                            auto_dismiss=False, size=(360,240), size_hint=(.3, .3))
+                else:
+                    self._popup = Popup(title="Alarm Notification: ", content=content,
                             auto_dismiss=False, size=(360,240), size_hint=(None, None))
                 self._popup.open()
                 if global_variables._keyboard:

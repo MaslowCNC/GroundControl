@@ -117,7 +117,7 @@ settings = {
                 "type": "options",
                 "title": "Color Scheme",
                 "desc": "Switch between the light and dark color schemes. Restarting GC is needed for this change to take effect",
-                "options": ["Light", "Dark"],
+                "options": ["Light", "Dark", "DarkGreyBlue"],
                 "key": "colorScheme",
                 "default": "Light"
             },
@@ -364,6 +364,14 @@ settings = {
                 "options": ["490Hz", "4,100Hz", "31,000Hz"],
                 "default": "490Hz",
                 "key": "fPWM",
+            },
+            {
+                "type": "string",
+                "title": "Position Error Limit",
+                "desc": "If the position of the sled varies from the expected position by more than this amount, cutting wil be stopped. Program must be restarted to take effect.",
+                "key": "positionErrorLimit",
+                "default": 2.0,
+                "firmwareKey": 42
             }
         ],
     "Ground Control Settings":
@@ -395,6 +403,13 @@ settings = {
                 "desc": "Valid file extensions for Ground Control to open. Comma separated list.",
                 "key": "validExtensions",
                 "default": ".nc, .ngc, .text, .gcode"
+            },
+            {
+                "type": "string",
+                "title": "Reset View Scale",
+                "desc": "Zoom scale for 'Reset View' command.",
+                "key": "viewScale",
+                "default": ".45"
             }
         ],
     "Computed Settings": #These are setting calculated from the user inputs on other settings, they are not direclty seen by the user
