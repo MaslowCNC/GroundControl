@@ -8,6 +8,7 @@ Config.set('input', 'mouse', 'mouse,disable_multitouch')
 Config.set('graphics', 'minimum_width', '620')
 Config.set('graphics', 'minimum_height', '440')
 Config.set('kivy', 'exit_on_escape', '0')
+Config.set('graphics', 'multisamples', '0')
 from kivy.app                   import App
 from kivy.uix.gridlayout        import GridLayout
 from kivy.uix.floatlayout       import FloatLayout
@@ -102,6 +103,10 @@ class GroundControlApp(App):
         if self.config.get('Advanced Settings', 'encoderSteps') == '8148.0':
             self.data.message_queue.put("Message: This update will adjust the the number of encoder pulses per rotation from 8,148 to 8,113 in your settings which improves the positional accuracy.\n\nPerforming a calibration will help you get the most out of this update.")
             self.config.set('Advanced Settings', 'encoderSteps', '8113.73')
+        #up the maximum feedrate
+        if self.config.get('Advanced Settings', 'maxFeedrate') == '700':
+            self.data.message_queue.put("Message: This update will increase the maximum feedrate of your machine. You can adjust this value under the Advanced settings.")
+            self.config.set('Advanced Settings', 'maxFeedrate', '800')
         
         self.data.comport = self.config.get('Maslow Settings', 'COMport')
         self.data.gcodeFile = self.config.get('Maslow Settings', 'openFile')
