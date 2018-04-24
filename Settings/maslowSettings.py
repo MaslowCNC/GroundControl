@@ -569,6 +569,17 @@ def syncFirmwareKey(firmwareKey, value, data):
         for option in settings[section]:
             if 'firmwareKey' in option and option['firmwareKey'] == firmwareKey:
                 storedValue = data.config.get(section, option['key'])
+
+		if (option['key'] == "spindleAutomate"):
+                    if (storedValue == "Servo"):
+                        storedValue = 1
+                    elif (storedValue == "Relay_High"):
+                        storedValue = 2
+                    elif (storedValue == "Relay_Low"):
+                        storedValue = 3
+                    else:
+                        storedValue = 0
+
                 if not isClose(float(storedValue), value):
                     data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(storedValue))
                 else:
