@@ -227,11 +227,12 @@ settings = {
                 "firmwareKey": 20
             },
             {
-                "type": "bool",
+                "type": "options",
                 "title": "Spindle Automation",
-                "desc": "How should the spindle start and stop automatically based on gcode? Leave off for default external servo control, on for external relay control.",
+                "desc": "How should the spindle start and stop automatically based on gcode? Leave off for none, or set external servo control, or external relay control, active high or low.",
                 "key": "spindleAutomate",
-                "default": 0,
+		"options": ["None", "Servo", "Relay_High", "Relay_Low"],
+                "default": "None",
                 "firmwareKey": 17
             },
             {
