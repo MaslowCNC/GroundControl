@@ -240,6 +240,16 @@ class GroundControlApp(App):
         if section == "Advanced Settings":
             if (key == "truncate") or (key == "digits"):
                 self.frontpage.gcodecanvas.reloadGcode()
+            if (key == "spindleAutomate"):
+                if (value == "Servo"):
+                    value = 1
+                elif (value == "Relay_High"):
+                    value = 2
+                elif (value == "Relay_Low"):
+                    value = 3
+                else:
+                    value = 0
+	
         
         # Update Computed Settings
         self.computeSettings(section, key, value)
