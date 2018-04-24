@@ -239,7 +239,7 @@ settings = {
                 "title": "Max Feedrate",
                 "desc": "The maximum feedrate in mm/min that machine is capable of sustaining.  Setting this value too high will cause movements to start before the prior movement finishes.",
                 "key": "maxFeedrate",
-                "default": 700,
+                "default": 800,
                 "firmwareKey": 15
             },
             {
