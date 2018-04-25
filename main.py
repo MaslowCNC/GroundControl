@@ -107,6 +107,7 @@ class GroundControlApp(App):
         if self.config.get('Advanced Settings', 'maxFeedrate') == '700':
             self.data.message_queue.put("Message: This update will increase the maximum feedrate of your machine. You can adjust this value under the Advanced settings.")
             self.config.set('Advanced Settings', 'maxFeedrate', '800')
+            self.config.write()
         
         self.data.comport = self.config.get('Maslow Settings', 'COMport')
         self.data.gcodeFile = self.config.get('Maslow Settings', 'openFile')
