@@ -117,7 +117,7 @@ settings = {
                 "type": "options",
                 "title": "Color Scheme",
                 "desc": "Switch between the light and dark color schemes. Restarting GC is needed for this change to take effect",
-                "options": ["Light", "Dark"],
+                "options": ["Light", "Dark", "DarkGreyBlue"],
                 "key": "colorScheme",
                 "default": "Light"
             },
@@ -227,11 +227,12 @@ settings = {
                 "firmwareKey": 20
             },
             {
-                "type": "bool",
+                "type": "options",
                 "title": "Spindle Automation",
-                "desc": "How should the spindle start and stop automatically based on gcode? Leave off for default external servo control, on for external relay control.",
+                "desc": "How should the spindle start and stop automatically based on gcode? Leave off for none, or set external servo control, or external relay control, active high or low.",
                 "key": "spindleAutomate",
-                "default": 0,
+		"options": ["None", "Servo", "Relay_High", "Relay_Low"],
+                "default": "None",
                 "firmwareKey": 17
             },
             {
@@ -239,7 +240,7 @@ settings = {
                 "title": "Max Feedrate",
                 "desc": "The maximum feedrate in mm/min that machine is capable of sustaining.  Setting this value too high will cause movements to start before the prior movement finishes.",
                 "key": "maxFeedrate",
-                "default": 700,
+                "default": 800,
                 "firmwareKey": 15
             },
             {
@@ -364,6 +365,14 @@ settings = {
                 "options": ["490Hz", "4,100Hz", "31,000Hz"],
                 "default": "490Hz",
                 "key": "fPWM",
+            },
+            {
+                "type": "string",
+                "title": "Position Error Limit",
+                "desc": "If the position of the sled varies from the expected position by more than this amount, cutting wil be stopped. Program must be restarted to take effect.",
+                "key": "positionErrorLimit",
+                "default": 2.0,
+                "firmwareKey": 42
             }
         ],
     "Ground Control Settings":
@@ -395,6 +404,13 @@ settings = {
                 "desc": "Valid file extensions for Ground Control to open. Comma separated list.",
                 "key": "validExtensions",
                 "default": ".nc, .ngc, .text, .gcode"
+            },
+            {
+                "type": "string",
+                "title": "Reset View Scale",
+                "desc": "Zoom scale for 'Reset View' command.",
+                "key": "viewScale",
+                "default": ".45"
             }
         ],
     "Computed Settings": #These are setting calculated from the user inputs on other settings, they are not direclty seen by the user
@@ -553,6 +569,17 @@ def syncFirmwareKey(firmwareKey, value, data):
         for option in settings[section]:
             if 'firmwareKey' in option and option['firmwareKey'] == firmwareKey:
                 storedValue = data.config.get(section, option['key'])
+
+		if (option['key'] == "spindleAutomate"):
+                    if (storedValue == "Servo"):
+                        storedValue = 1
+                    elif (storedValue == "Relay_High"):
+                        storedValue = 2
+                    elif (storedValue == "Relay_Low"):
+                        storedValue = 3
+                    else:
+                        storedValue = 0
+
                 if not isClose(float(storedValue), value):
                     data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(storedValue))
                 else:
