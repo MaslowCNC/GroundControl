@@ -175,18 +175,18 @@ class GroundControlApp(App):
 
             if self.config.has_option('Advanced Settings', 'leftChainTolerance'):
                 distPerRotLeftChainTolerance = (1 + (float(self.config.get('Advanced Settings', 'leftChainTolerance')) / 100)) * float(self.config.get('Advanced Settings', 'gearTeeth')) * float(self.config.get('Advanced Settings', 'chainPitch'))
-                self.config.set('Computed Settings', "distPerRotLeftChainTolerance", str(distPerRotLeftChainTolerance))
+                self.config.set('Computed Settings', "distPerRotLeftChainTolerance", str("{0:.5f}".format(distPerRotLeftChainTolerance)))
             if self.config.has_option('Advanced Settings', 'rightChainTolerance'):
                 distPerRotRightChainTolerance = (1 + (float(self.config.get('Advanced Settings', 'rightChainTolerance')) / 100)) * float(self.config.get('Advanced Settings', 'gearTeeth')) * float(self.config.get('Advanced Settings', 'chainPitch'))
-                self.config.set('Computed Settings', "distPerRotRightChainTolerance", str(distPerRotRightChainTolerance))
+                self.config.set('Computed Settings', "distPerRotRightChainTolerance", str("{0:.5f}".format(distPerRotRightChainTolerance)))
         
         elif key == 'leftChainTolerance' and self.config.has_option('Advanced Settings', 'leftChainTolerance') and self.config.has_option('Computed Settings', 'distPerRot'):
             distPerRotLeftChainTolerance = (1 + (float(self.config.get('Advanced Settings', 'leftChainTolerance')) / 100)) * float(self.config.get('Computed Settings', 'distPerRot'))
-            self.config.set('Computed Settings', "distPerRotLeftChainTolerance", str(distPerRotLeftChainTolerance))
+            self.config.set('Computed Settings', "distPerRotLeftChainTolerance", str("{0:.5f}".format(distPerRotLeftChainTolerance)))
         
         elif key == 'rightChainTolerance' and self.config.has_option('Advanced Settings', 'rightChainTolerance') and self.config.has_option('Computed Settings', 'distPerRot'):
             distPerRotRightChainTolerance = (1 + (float(self.config.get('Advanced Settings', 'rightChainTolerance')) / 100)) * float(self.config.get('Computed Settings', 'distPerRot'))
-            self.config.set('Computed Settings', "distPerRotRightChainTolerance", str(distPerRotRightChainTolerance))
+            self.config.set('Computed Settings', "distPerRotRightChainTolerance", str("{0:.5f}".format(distPerRotRightChainTolerance)))
         
         elif key == 'enablePosPIDValues':
             for key in ('KpPos', 'KiPos', 'KdPos', 'propWeight'):
@@ -250,7 +250,7 @@ class GroundControlApp(App):
                     value = 3
                 else:
                     value = 0
-	
+    
         
         # Update Computed Settings
         self.computeSettings(section, key, value)
