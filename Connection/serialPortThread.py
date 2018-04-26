@@ -17,7 +17,7 @@ class SerialPortThread(MakesmithInitFuncs):
     
     machineIsReadyForData      = False # Tracks whether last command was acked
     lastWriteTime              = time.time()
-    bufferSize                 = 256                #The total size of the arduino buffer
+    bufferSize                 = 126                #The total size of the arduino buffer
     bufferSpace                = bufferSize         #The amount of space currently available in the buffer
     lengthOfLastLineStack      =  deque()
     
@@ -98,7 +98,7 @@ class SerialPortThread(MakesmithInitFuncs):
         if float(serial.VERSION[0]) < 3:
             self.data.message_queue.put("Pyserial version 3.x is needed, version " + serial.VERSION + " is installed")
         
-        weAreBufferingLines = self.data.config.get('Maslow Settings', "bufferOn")
+        weAreBufferingLines = bool(int(self.data.config.get('Maslow Settings', "bufferOn")))
         
         try:
             #print("connecting")
@@ -166,9 +166,14 @@ class SerialPortThread(MakesmithInitFuncs):
                         command = self.data.gcode_queue.get_nowait() + " "
                         self._write(command)
                 
-                #Send the next line of gcode to the machine if we're running a program
-                if self.bufferSpace == self.bufferSize and self.machineIsReadyForData: #> len(self.data.gcode[self.data.gcodeIndex]):
-                    self.sendNextLine()
+                #Send the next line of gcode to the machine if we're running a program. Will send lines to buffer if there is space
+                #and the feature is turned on
+                if weAreBufferingLines:
+                    if self.bufferSpace > len(self.data.gcode[self.data.gcodeIndex]): #if there is space in the buffer keep sending lines
+                        self.sendNextLine()
+                else:
+                    if self.bufferSpace == self.bufferSize and self.machineIsReadyForData: #if the receive buffer is empty and the machine has acked the last line complete
+                        self.sendNextLine()
                 
                 
                                             #Check for serial connection loss

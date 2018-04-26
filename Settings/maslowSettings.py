@@ -166,7 +166,7 @@ settings = {
             {
                 "type": "bool",
                 "title": "Buffer Gcode",
-                "desc": "Buffer gcode on arduino to increase execution speed. Requres restart to take effect.",
+                "desc": "Buffer gcode on arduino to increase execution speed. Requres restart to take effect. Experimental.",
                 "key": "bufferOn",
                 "default": 0
             }
