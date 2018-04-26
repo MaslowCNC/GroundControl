@@ -218,6 +218,7 @@ settings = {
                 "default": 1650,
                 "firmwareKey": 11
             },
+            {
                 "type": "string",
                 "title": "Chain Length",
                 "desc": "The length in mm of your chains, used to define the kinematics search space",
