@@ -162,6 +162,13 @@ settings = {
                 "desc": "The vertical distance above the work area to raise the z-axis for safe travel. Used by 'Home', 'Return to Center' and 'z-Axis' settings.",
                 "key": "zAxisSafeHeight",
                 "default": 5,
+            },
+            {
+                "type": "bool",
+                "title": "Buffer Gcode",
+                "desc": "Buffer gcode on arduino to increase execution speed. Requres restart to take effect.",
+                "key": "bufferOn",
+                "default": 0
             }
         ],
     "Advanced Settings":

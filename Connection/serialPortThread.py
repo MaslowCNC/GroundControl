@@ -75,12 +75,30 @@ class SerialPortThread(MakesmithInitFuncs):
         else:
             self.data.gcode_queue.put('G21 ')
     
+    def sendNextLine(self):
+        '''
+            Sends the next line of gcode to the machine
+        '''
+        
+        if self.data.uploadFlag:
+            self._write(self.data.gcode[self.data.gcodeIndex])
+            
+            #increment gcode index
+            if self.data.gcodeIndex + 1 < len(self.data.gcode):
+                self.data.gcodeIndex = self.data.gcodeIndex + 1
+            else:
+                self.data.uploadFlag = 0
+                self.data.gcodeIndex = 0
+                print "Gcode Ended"
+    
     def getmessage (self):
         #opens a serial connection called self.serialInstance
         
         #check for serial version being > 3
         if float(serial.VERSION[0]) < 3:
             self.data.message_queue.put("Pyserial version 3.x is needed, version " + serial.VERSION + " is installed")
+        
+        weAreBufferingLines = self.data.config.get('Maslow Settings', "bufferOn")
         
         try:
             #print("connecting")
@@ -150,20 +168,7 @@ class SerialPortThread(MakesmithInitFuncs):
                 
                 #Send the next line of gcode to the machine if we're running a program
                 if self.bufferSpace == self.bufferSize and self.machineIsReadyForData: #> len(self.data.gcode[self.data.gcodeIndex]):
-                    if self.data.uploadFlag:
-                        self._write(self.data.gcode[self.data.gcodeIndex])
-                        
-                        #increment gcode index
-                        if self.data.gcodeIndex + 1 < len(self.data.gcode):
-                            self.data.gcodeIndex = self.data.gcodeIndex + 1
-                        else:
-                            self.data.uploadFlag = 0
-                            self.data.gcodeIndex = 0
-                            print "Gcode Ended"
-                
-                
-                
-                
+                    self.sendNextLine()
                 
                 
                                             #Check for serial connection loss
