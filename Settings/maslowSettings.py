@@ -212,6 +212,14 @@ settings = {
             },
             {
                 "type": "string",
+                "title": "Extend Chain Distance",
+                "desc": "The length in mm that will be extended during chain calibration",
+                "key": "chainExtendLength",
+                "default": 1650,
+                "firmwareKey": 11
+            },
+            {
+                "type": "string",
                 "title": "Chain Length",
                 "desc": "The length in mm of your chains, used to define the kinematics search space",
                 "key": "chainLength",
