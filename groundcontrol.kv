@@ -386,7 +386,7 @@
             Spinner:
                 id: advancedOptions
                 text: "Advanced"
-                values: ["Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test", "Run Triangular Test Cut Pattern", "Reset settings to defaults"]
+                values: ["Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test", "Run Triangular Test Cut Pattern", "Reset settings to defaults", "Compute chain calibration factors"]
                 on_text: root.advancedOptionsFunctions(advancedOptions.text)
 
 <OtherFeatures>:
@@ -942,6 +942,38 @@
             on_release: root.stopCut()
         Label:
 
+<EnterDistanceBetweenMotors>:
+    motorsDist:motorsDist
+    unitsBtnT:unitsBtn
+
+    cols: 2
+    width: root.width
+    height: root.height
+    GridLayout:
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: "Enter the distance from the outside edge of one motor to the other. {picture coming soon}"
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Label:
+            text: "Distance Between Motors:"
+            halign: "center"
+        TextInput:
+            id: motorsDist
+        Button:
+            text: "Units: mm"
+            on_release: root.switchUnits()
+            id: unitsBtn
+        Button:
+            text: "Enter Values"
+            halign: "center"
+            on_release: root.enterValues()
+            id: enterValues
+        Label:
+        
 <ManualCalibration>:
     motorsDist:motorsDist
     rotationRadius:rotationRadius
@@ -1099,6 +1131,38 @@
         Button:
             text: 'Measure'
             on_release: root.measureLeft()
+        Button:
+            text: "Stop\nMotors"
+            on_release: root.stopCut()
+        Label:
+
+<MeasureOneChain>
+    cols: 2
+    width: root.width
+    height: root.height
+    GridLayout:
+        cols: 1
+        Label:
+            text: "Now that we know the distance between the motors we can check the tolerances on the chains.\n\nExtend the chain, hook it on the oposit motor, then press measure"
+            size_hint_x: leftCol
+        GridLayout:
+            cols: 3
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Chain On Left Sprocket.jpg"
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Chain Between Sprockets.jpg"
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Chain On Right Sprocket.jpg"
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Button:
+            text: "Extend"
+            on_release: root.extend()
+        Button:
+            text: 'Measure'
+            on_release: root.measure()
         Button:
             text: "Stop\nMotors"
             on_release: root.stopCut()

@@ -84,7 +84,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         
         '''
         
-        self.popupContent       = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
+        self.popupContent = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
         self.popupContent.setupManualCalibration()
         self.popupContent.on_Enter()
         
@@ -162,7 +162,21 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         app = App.get_running_app()
         app.stop()
         
+    def measureChainTolerances(self):
+        '''
         
+        Chains can stretch over time and with use. This process computes the true length of your chains.
+        
+        '''
+        
+        self.popupContent = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
+        self.popupContent.setupMeasureChainTolerances()
+        self.popupContent.on_Enter()
+        
+        self._popup = Popup(title="Measure Chain Tolerances", content=self.popupContent,
+                            size_hint=(0.85, 0.95), auto_dismiss = False)
+        self._popup.open()
+    
     def advancedOptionsFunctions(self, text):
         
         if   text == "Test Feedback System":
@@ -179,3 +193,6 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
             self.runJustTriangularCuts()
         elif text == "Reset settings to defaults":
             self.resetAllSettings()
+            self.runJustTriangularCuts()
+        elif text == "Compute chain calibration factors":
+            self.measureChainTolerances()
