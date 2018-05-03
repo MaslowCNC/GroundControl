@@ -942,6 +942,29 @@
             on_release: root.stopCut()
         Label:
 
+<ComputeChainCorrectionFactors>:
+    selfText:selfText
+
+    cols: 2
+    width: root.width
+    height: root.height
+    GridLayout:
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: "placeholder text"
+            id: selfText
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Button:
+            text: "Looks\nGood"
+            halign: "center"
+            on_release: root.loadNextStep()
+            id: enterValues
+        Label:
+        
 <EnterDistanceBetweenMotors>:
     motorsDist:motorsDist
     unitsBtnT:unitsBtn

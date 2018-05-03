@@ -6,10 +6,10 @@ from   kivy.uix.popup                     import   Popup
 from   kivy.app                           import   App
 import global_variables
 
-class EnterDistanceBetweenMotors(GridLayout):
+class ComputeChainCorrectionFactors(GridLayout):
     '''
     
-    Enter the manually measured distance between the motors.
+    Compute the chain correction factors based on values entered prevously.
     
     '''
     data                        =  ObjectProperty(None) #linked externally
@@ -22,36 +22,13 @@ class EnterDistanceBetweenMotors(GridLayout):
         
         '''
         self.data = App.get_running_app().data
-    
-    def switchUnits(self):
-        if self.unitsBtnT.text == 'Units: mm':
-            self.unitsBtnT.text = 'Units: inches'
-        else:
-            self.unitsBtnT.text = 'Units: mm'
-    
-    def enterValues(self):
-        '''
         
-        Manually enter the machine dimensions
+        print "Entering the compute values section"
+        self.selfText.text = "When measured manually: " + str(self.data.motorsDist) + "\nWhen measured with the left chain:" + str(self.data.leftChainMeasurement) + "\nWhen measured with the right chain:" + str(self.data.rightChainMeasurement)
         
-        '''
-        try:
-            motorsDist      = float(self.motorsDist.text)
-            
-            #convert from inches to mm if needed
-            if self.unitsBtnT.text == 'Units: inches':
-                motorsDist      = motorsDist*25.4
-            
-            #subtract off the width of the motors
-            
-            motorsDist = motorsDist - 40.4
-            
-            self.data.motorsDist = motorsDist
-            
-            self.loadNextStep()
-            
-        except Exception as e:
-            print e
+        print self.data.motorsDist
+        print self.data.leftChainMeasurement
+        print self.data.rightChainMeasurement
     
     def loadNextStep(self):
         self.readyToMoveOn()

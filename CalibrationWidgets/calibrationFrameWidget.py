@@ -28,6 +28,7 @@ from CalibrationWidgets.finishSetChainLengths               import  FinishSetCha
 from CalibrationWidgets.manualCalibration                   import  ManualCalibration
 from CalibrationWidgets.enterDistanceBetweenMotors          import  EnterDistanceBetweenMotors
 from CalibrationWidgets.measureOneChain                     import  MeasureOneChain
+from CalibrationWidgets.computeChainCorrectionFactors       import  ComputeChainCorrectionFactors
 from   kivy.app                                             import  App
 
 
@@ -182,7 +183,8 @@ class CalibrationFrameWidget(GridLayout):
         self.listOfCalibrationSteps.append(setTo12)
         
         #extend left chain and pull tight to measure
-        measureOneChain                                          = MeasureOneChain('L')
+        measureOneChain                                  = MeasureOneChain()
+        measureOneChain.setDirection('L')
         self.listOfCalibrationSteps.append(measureOneChain)
         
         #set to 12
@@ -190,10 +192,18 @@ class CalibrationFrameWidget(GridLayout):
         self.listOfCalibrationSteps.append(setTo12)
         
         #extend right chain and pull tight to measure
-        measureOneChain                                          = MeasureOneChain('R')
+        measureOneChain                                  = MeasureOneChain()
+        measureOneChain.setDirection('R')
         self.listOfCalibrationSteps.append(measureOneChain)
         
         #compute values
+        computeChainCorrectionFactors                    = ComputeChainCorrectionFactors()
+        self.listOfCalibrationSteps.append(computeChainCorrectionFactors)
+        
+        #finish
+        finish              = Finish()
+        finish.done         = self.done
+        self.listOfCalibrationSteps.append(finish)
     
     def addSteps(self):
         '''

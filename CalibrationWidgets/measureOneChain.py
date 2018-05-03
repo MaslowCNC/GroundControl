@@ -5,14 +5,17 @@ from   kivy.uix.popup                       import   Popup
 from   kivy.app                             import   App
 import global_variables
 
-class MeasureOneChain(GridLayout, direction):
+class MeasureOneChain(GridLayout):
     '''
     
     Provides a standard interface for measuring the distance between the motors. Assumes that both motors are in position zero at the begining
     
     '''
     data                         =   ObjectProperty(None)
+    direction = 'L'
     
+    def setDirection(self, direction):
+        self.direction = direction
     
     def stopCut(self):
         self.data.quick_queue.put("!")
@@ -22,32 +25,36 @@ class MeasureOneChain(GridLayout, direction):
     def extend(self):
         dist = self.data.motorsDist + 25 #extend a little extra to make it easy to hook on
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B09 " + direction + str(dist) + " ")
+        self.data.gcode_queue.put("B09 " + self.direction + str(dist) + " ")
         self.data.gcode_queue.put("G90 ")
     
     def measure(self):
         
         self.pullChainTight()
         
-        self.data.gcode_queue.put("B10 " + direction)
-        print "measured chain as"
+        self.data.gcode_queue.put("B10 " + self.direction)
+        
     
     def readMotorSpacing(self, dist):
         dist = dist - 2*6.35                                #subtract off the extra two links
 
         print "Read motor spacing: " + str(dist)
-        self.data.config.set('Maslow Settings', 'motorSpacingX', str(dist))
         
         #put some slack in the chain
         self.data.gcode_queue.put("G91 ")
-        self.data.gcode_queue.put("B09 " + direction + "10 ")
+        self.data.gcode_queue.put("B09 " + self.direction + "10 ")
         self.data.gcode_queue.put("G90 ")
+        
+        if self.direction == 'L':
+            self.data.leftChainMeasurement = dist
+        else:
+            self.data.rightChainMeasurement = dist
         
         self.readyToMoveOn()
     
     def pullChainTight(self):
         #pull the left chain tight
-        self.data.gcode_queue.put("B11 S50 T3 ")
+        self.data.gcode_queue.put("B11 S150 T3 " + self.direction)
     
     def on_Enter(self):
         '''
