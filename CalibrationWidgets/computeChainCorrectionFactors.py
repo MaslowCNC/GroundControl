@@ -23,12 +23,21 @@ class ComputeChainCorrectionFactors(GridLayout):
         '''
         self.data = App.get_running_app().data
         
-        print "Entering the compute values section"
-        self.selfText.text = "When measured manually: " + str(self.data.motorsDist) + "\nWhen measured with the left chain:" + str(self.data.leftChainMeasurement) + "\nWhen measured with the right chain:" + str(self.data.rightChainMeasurement)
+        try:
         
-        print self.data.motorsDist
-        print self.data.leftChainMeasurement
-        print self.data.rightChainMeasurement
+            leftCorrectionFactor = (abs(self.data.motorsDist - self.data.leftChainMeasurement)/self.data.leftChainMeasurement)*100.0
+            rightCorrectionFactor = (abs(self.data.motorsDist - self.data.rightChainMeasurement)/self.data.rightChainMeasurement)*100.0
+            
+            self.selfText.text = ("When measured manually: " + str(self.data.motorsDist) 
+                + "\nWhen measured with the left chain:" + str(self.data.leftChainMeasurement) 
+                + "\nWhen measured with the right chain:" + str(self.data.rightChainMeasurement)
+                + "\nLeft chain correction factor: " + str(leftCorrectionFactor)
+                + "\nRight chain correction factor: " + str(rightCorrectionFactor)
+                + "\nNote that right now nothing is done with these values"
+                )
+        except:
+            self.selfText.text = "unable to compute correction factors"
+        
     
     def loadNextStep(self):
         self.readyToMoveOn()

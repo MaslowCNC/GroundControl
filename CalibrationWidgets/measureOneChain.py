@@ -3,6 +3,7 @@ from   kivy.properties                      import   ObjectProperty
 from   UIElements.touchNumberInput          import   TouchNumberInput
 from   kivy.uix.popup                       import   Popup
 from   kivy.app                             import   App
+from   kivy.clock                           import   Clock
 import global_variables
 
 class MeasureOneChain(GridLayout):
@@ -37,6 +38,7 @@ class MeasureOneChain(GridLayout):
         
         self.pullChainTight()
         
+        #requeust a measurement
         self.data.gcode_queue.put("B10 " + self.direction)
         
     
@@ -55,6 +57,9 @@ class MeasureOneChain(GridLayout):
         else:
             self.data.rightChainMeasurement = dist
         
+        Clock.schedule_once(self.dummyFunc, 5)
+    
+    def dummyFunc(self, *args):
         self.readyToMoveOn()
     
     def pullChainTight(self):
@@ -84,7 +89,6 @@ class MeasureOneChain(GridLayout):
         This function run when the process is completed or quit is pressed
         
         '''
-        
         
         #Restore original chain over sprocket direction
         App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', self.originalChainOverSproketDir)
