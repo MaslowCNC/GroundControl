@@ -16,6 +16,11 @@ class MeasureOneChain(GridLayout):
     
     def setDirection(self, direction):
         self.direction = direction
+        
+        if self.direction == 'L':
+            self.mainText.text = "Now that we know the distance between the motors we can check the tolerances on the chains.\n\nExtend the left chain, hook it on the oposit motor, then press measure"
+        else:
+            self.mainText.text = "Now again with the right chain (the miror or what we did before).\n\nExtend the right chain, hook it on the oposit motor, then press measure"
     
     def stopCut(self):
         self.data.quick_queue.put("!")

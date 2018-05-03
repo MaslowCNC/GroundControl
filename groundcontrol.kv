@@ -1163,11 +1163,13 @@
     cols: 2
     width: root.width
     height: root.height
+    mainText:mainText
     GridLayout:
         cols: 1
         Label:
-            text: "Now that we know the distance between the motors we can check the tolerances on the chains.\n\nExtend the chain, hook it on the oposit motor, then press measure"
+            text: " "
             size_hint_x: leftCol
+            id: mainText
         GridLayout:
             cols: 3
             Image:
