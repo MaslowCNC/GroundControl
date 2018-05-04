@@ -3,7 +3,6 @@ from   kivy.properties                      import   ObjectProperty
 from   UIElements.touchNumberInput          import   TouchNumberInput
 from   kivy.uix.popup                       import   Popup
 from   kivy.app                             import   App
-from   kivy.clock                           import   Clock
 import global_variables
 
 class MeasureOneChain(GridLayout):
@@ -57,9 +56,6 @@ class MeasureOneChain(GridLayout):
         else:
             self.data.rightChainMeasurement = dist
         
-        Clock.schedule_once(self.dummyFunc, 5)
-    
-    def dummyFunc(self, *args):
         self.readyToMoveOn()
     
     def pullChainTight(self):
