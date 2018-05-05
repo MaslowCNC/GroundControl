@@ -26,6 +26,9 @@ from CalibrationWidgets.quadTestCut                         import  QuadTestCut
 from CalibrationWidgets.finish                              import  Finish
 from CalibrationWidgets.finishSetChainLengths               import  FinishSetChainLengths
 from CalibrationWidgets.manualCalibration                   import  ManualCalibration
+from CalibrationWidgets.enterDistanceBetweenMotors          import  EnterDistanceBetweenMotors
+from CalibrationWidgets.measureOneChain                     import  MeasureOneChain
+from CalibrationWidgets.computeChainCorrectionFactors       import  ComputeChainCorrectionFactors
 from   kivy.app                                             import  App
 
 
@@ -148,7 +151,7 @@ class CalibrationFrameWidget(GridLayout):
         #ensure that there are no widgets in the deck when we start
         self.listOfCalibrationSteps = []
         
-        #add triangular kinematics
+        #add manual calibation card
         manualCalibration                       = ManualCalibration()
         self.listOfCalibrationSteps.append(manualCalibration)
         
@@ -157,6 +160,47 @@ class CalibrationFrameWidget(GridLayout):
         self.listOfCalibrationSteps.append(reviewMeasurements)
         
         #add finish step
+        finish              = Finish()
+        finish.done         = self.done
+        self.listOfCalibrationSteps.append(finish)
+    
+    def setupMeasureChainTolerances(self):
+        '''
+        
+        Calling this function sets up the process with the cards to measure the chain tolerances
+        
+        '''
+        
+        #ensure that there are no widgets in the deck when we start
+        self.listOfCalibrationSteps = []
+        
+        #enter manual measurement of distance between motors
+        enterDistanceBetweenMotors                       = EnterDistanceBetweenMotors()
+        self.listOfCalibrationSteps.append(enterDistanceBetweenMotors)
+        
+        #set to 12
+        setTo12                                          = SetSprocketsVertical()
+        self.listOfCalibrationSteps.append(setTo12)
+        
+        #extend left chain and pull tight to measure
+        measureOneChain                                  = MeasureOneChain()
+        measureOneChain.setDirection('L')
+        self.listOfCalibrationSteps.append(measureOneChain)
+        
+        #set to 12
+        setTo12                                          = SetSprocketsVertical()
+        self.listOfCalibrationSteps.append(setTo12)
+        
+        #extend right chain and pull tight to measure
+        measureOneChain                                  = MeasureOneChain()
+        measureOneChain.setDirection('R')
+        self.listOfCalibrationSteps.append(measureOneChain)
+        
+        #compute values
+        computeChainCorrectionFactors                    = ComputeChainCorrectionFactors()
+        self.listOfCalibrationSteps.append(computeChainCorrectionFactors)
+        
+        #finish
         finish              = Finish()
         finish.done         = self.done
         self.listOfCalibrationSteps.append(finish)
