@@ -31,9 +31,8 @@ class ComputeChainCorrectionFactors(GridLayout):
             self.selfText.text = ("When measured manually: " + str(self.data.motorsDist) 
                 + "\nWhen measured with the left chain:" + str(self.data.leftChainMeasurement) 
                 + "\nWhen measured with the right chain:" + str(self.data.rightChainMeasurement)
-                + "\nLeft chain correction factor: " + str(self.leftCorrectionFactor)
+                + "\n\nLeft chain correction factor: " + str(self.leftCorrectionFactor)
                 + "\nRight chain correction factor: " + str(self.rightCorrectionFactor)
-                + "\nNote that right now nothing is done with these values"
                 )
         except:
             self.selfText.text = "unable to compute correction factors"

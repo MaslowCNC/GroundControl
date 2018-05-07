@@ -29,6 +29,7 @@ from CalibrationWidgets.manualCalibration                   import  ManualCalibr
 from CalibrationWidgets.enterDistanceBetweenMotors          import  EnterDistanceBetweenMotors
 from CalibrationWidgets.measureOneChain                     import  MeasureOneChain
 from CalibrationWidgets.computeChainCorrectionFactors       import  ComputeChainCorrectionFactors
+from CalibrationWidgets.wipeOldCorrectionValues             import  WipeOldCorrectionValues
 from   kivy.app                                             import  App
 
 
@@ -177,6 +178,10 @@ class CalibrationFrameWidget(GridLayout):
         #enter manual measurement of distance between motors
         enterDistanceBetweenMotors                       = EnterDistanceBetweenMotors()
         self.listOfCalibrationSteps.append(enterDistanceBetweenMotors)
+        
+        #enter manual measurement of distance between motors
+        wipeOldCorrectionValues                       = WipeOldCorrectionValues()
+        self.listOfCalibrationSteps.append(wipeOldCorrectionValues)
         
         #set to 12
         setTo12                                          = SetSprocketsVertical()
