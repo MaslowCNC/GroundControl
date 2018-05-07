@@ -25,21 +25,24 @@ class ComputeChainCorrectionFactors(GridLayout):
         
         try:
         
-            leftCorrectionFactor = (abs(self.data.motorsDist - self.data.leftChainMeasurement)/self.data.leftChainMeasurement)*100.0
-            rightCorrectionFactor = (abs(self.data.motorsDist - self.data.rightChainMeasurement)/self.data.rightChainMeasurement)*100.0
+            self.leftCorrectionFactor = (abs(self.data.motorsDist - self.data.leftChainMeasurement)/self.data.leftChainMeasurement)*100.0
+            self.rightCorrectionFactor = (abs(self.data.motorsDist - self.data.rightChainMeasurement)/self.data.rightChainMeasurement)*100.0
             
             self.selfText.text = ("When measured manually: " + str(self.data.motorsDist) 
                 + "\nWhen measured with the left chain:" + str(self.data.leftChainMeasurement) 
                 + "\nWhen measured with the right chain:" + str(self.data.rightChainMeasurement)
-                + "\nLeft chain correction factor: " + str(leftCorrectionFactor)
-                + "\nRight chain correction factor: " + str(rightCorrectionFactor)
+                + "\nLeft chain correction factor: " + str(self.leftCorrectionFactor)
+                + "\nRight chain correction factor: " + str(self.rightCorrectionFactor)
                 + "\nNote that right now nothing is done with these values"
                 )
         except:
             self.selfText.text = "unable to compute correction factors"
-        
     
     def loadNextStep(self):
+        
+        self.data.config.set('Advanced Settings', 'leftChainTolerance', self.leftCorrectionFactor)
+        self.data.config.set('Advanced Settings', 'rightChainTolerance', self.rightCorrectionFactor)
+        
         self.readyToMoveOn()
     
     def on_Exit(self):
