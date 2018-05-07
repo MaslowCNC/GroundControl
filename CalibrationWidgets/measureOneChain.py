@@ -60,7 +60,7 @@ class MeasureOneChain(GridLayout):
     
     def pullChainTight(self):
         #pull the left chain tight
-        self.data.gcode_queue.put("B11 S150 T3 " + self.direction)
+        self.data.gcode_queue.put("B11 S255 T3 " + self.direction)
     
     def on_Enter(self):
         '''

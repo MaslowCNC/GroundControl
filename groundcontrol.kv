@@ -976,7 +976,7 @@
         cols: 1
         size_hint_x: leftCol
         Label:
-            text: "Enter the distance from the outside edge of one motor to the other. {picture coming soon}"
+            text: "Enter the distance from the outside edge of one motor to the outside edge of the other motor.\n\nWe measure to the edge because it is easier.\n\n{picture coming soon}"
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -994,6 +994,27 @@
             text: "Enter Values"
             halign: "center"
             on_release: root.enterValues()
+            id: enterValues
+        Label:
+   
+   
+<WipeOldCorrectionValues>:
+    cols: 2
+    width: root.width
+    height: root.height
+    GridLayout:
+        cols: 1
+        size_hint_x: leftCol
+        Label:
+            text: "We need to wipe any existing values for the chain correction values before computing new ones.\n\nThis step will set the values to 0"
+    GridLayout:
+        cols: 1
+        size_hint_x: rightCol
+        Label:
+        Button:
+            text: "Wipe Current\nValues"
+            halign: "center"
+            on_release: root.wipeOldSettings()
             id: enterValues
         Label:
         
