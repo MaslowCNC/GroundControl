@@ -997,7 +997,6 @@
             id: enterValues
         Label:
    
-   
 <WipeOldCorrectionValues>:
     cols: 2
     width: root.width
@@ -1170,11 +1169,8 @@
             text: "Retract"
             on_release: root.retract()
         Button:
-            text: 'Pull Chain Tight'
-            on_release: root.pullChainTight()
-        Button:
-            text: 'Measure'
-            on_release: root.measureLeft()
+            text: 'Pull Chain Tight\nand Measure'
+            on_release: root.pullChainTightAndMeasure()
         Button:
             text: "Stop\nMotors"
             on_release: root.stopCut()

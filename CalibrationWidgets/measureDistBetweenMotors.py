@@ -87,9 +87,6 @@ class MeasureDistBetweenMotors(GridLayout):
         self.data.gcode_queue.put("B09 L" + str(-1*dist) + " ")
         self.data.gcode_queue.put("G90 ")
     
-    def measureLeft(self):
-        self.data.gcode_queue.put("B10 L")
-        print "measure left ran"
     
     def readMotorSpacing(self, dist):
         dist = dist - 2*6.35                                #subtract off the extra two links
@@ -104,9 +101,11 @@ class MeasureDistBetweenMotors(GridLayout):
         
         self.readyToMoveOn()
     
-    def pullChainTight(self):
+    def pullChainTightAndMeasure(self):
         #pull the left chain tight
-        self.data.gcode_queue.put("B11 S150 T3 L ")
+        self.data.gcode_queue.put("B11 S255 T3 L ")
+        #request a measurement
+        self.data.gcode_queue.put("B10 L")
     
     def on_Enter(self):
         '''
