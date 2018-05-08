@@ -996,8 +996,7 @@
             on_release: root.enterValues()
             id: enterValues
         Label:
-   
-   
+
 <WipeOldCorrectionValues>:
     cols: 2
     width: root.width
@@ -1391,6 +1390,9 @@
             Button:
                 text: '0.1 deg CW'
                 on_release: root.RightCWpoint1()
+            Button:
+                text: "Automatic"
+                on_release: root.setVerticalAutomatic()
         GridLayout:
             cols: 1
             size_hint_x: .4
