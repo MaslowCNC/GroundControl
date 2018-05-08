@@ -103,9 +103,11 @@ class MeasureDistBetweenMotors(GridLayout):
         
         self.readyToMoveOn()
     
-    def pullChainTight(self):
+    def pullChainTightAndMeasure(self):
         #pull the left chain tight
-        self.data.gcode_queue.put("B11 S150 T3 L ")
+        self.data.gcode_queue.put("B11 S255 T3 L ")
+        #request a measurement
+        self.data.gcode_queue.put("B10 L")
     
     def on_Enter(self):
         '''
