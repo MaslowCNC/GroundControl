@@ -332,7 +332,10 @@ class GroundControlApp(App):
                     self.setErrorOnScreen(message)
                 elif message[1:8] == "Measure":
                     measuredDist = float(message[9:len(message)-3])
-                    self.data.measureRequest(measuredDist)
+                    try:
+                        self.data.measureRequest(measuredDist)
+                    except:
+                        print "No function has requested a measurement"
             elif message[0:13] == "Maslow Paused":
                 self.data.uploadFlag = 0
                 self.writeToTextConsole(message)
