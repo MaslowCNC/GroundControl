@@ -169,8 +169,11 @@ class SerialPortThread(MakesmithInitFuncs):
                 #Send the next line of gcode to the machine if we're running a program. Will send lines to buffer if there is space
                 #and the feature is turned on
                 if weAreBufferingLines:
-                    if self.bufferSpace > len(self.data.gcode[self.data.gcodeIndex]): #if there is space in the buffer keep sending lines
-                        self.sendNextLine()
+                    try:
+                        if self.bufferSpace > len(self.data.gcode[self.data.gcodeIndex]): #if there is space in the buffer keep sending lines
+                            self.sendNextLine()
+                    except IndexError:
+                        print "index error when reading gcode" #we don't want the whole serial thread to close if the gcode can't be sent because of an index error (file deleted...etc)
                 else:
                     if self.bufferSpace == self.bufferSize and self.machineIsReadyForData: #if the receive buffer is empty and the machine has acked the last line complete
                         self.sendNextLine()
