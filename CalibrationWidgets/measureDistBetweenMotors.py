@@ -87,6 +87,8 @@ class MeasureDistBetweenMotors(GridLayout):
         self.data.gcode_queue.put("B09 L" + str(-1*dist) + " ")
         self.data.gcode_queue.put("G90 ")
     
+    def measureLeft(self):
+        self.data.gcode_queue.put("B10 L")
     
     def readMotorSpacing(self, dist):
         dist = dist - 2*6.35                                #subtract off the extra two links
