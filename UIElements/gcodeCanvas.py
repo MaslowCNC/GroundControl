@@ -38,6 +38,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
     prependString = "G01 "
     
+    maxNumberOfLinesToRead = 300000
+    
     
     
     def initialize(self):
@@ -551,7 +553,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.loadNextLine()
         
         #Repeat until end of file
-        if self.lineNumber < min(len(self.data.gcode),60000):
+        if self.lineNumber < min(len(self.data.gcode),self.maxNumberOfLinesToRead):
             Clock.schedule_once(self.callBackMechanism)
     
     def updateGcode(self, *args):
@@ -573,8 +575,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.clearGcode()
         
         #Check to see if file is too large to load
-        if len(self.data.gcode) > 60000:
-            errorText = "The current file contains " + str(len(self.data.gcode)) + " lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first 60000 lines are shown here.\nThe complete program will cut if you choose to do so."
+        if len(self.data.gcode) > self.maxNumberOfLinesToRead:
+            errorText = "The current file contains " + str(len(self.data.gcode)) + " lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first " + self.maxNumberOfLinesToRead + "lines are shown here.\nThe complete program will cut if you choose to do so unless the home position is moved from (0,0)."
             print errorText
             self.data.message_queue.put("Message: " + errorText)
         
