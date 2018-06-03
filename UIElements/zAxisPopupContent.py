@@ -27,7 +27,7 @@ class ZAxisPopupContent(GridLayout):
             self.data.zPopupUnits = self.data.units
         self.unitsBtn.text = self.data.zPopupUnits
         if self.data.zPush is not None:
-            self.zCutLabel = "Re-Plunge to\n"+'%.2f '%(self.data.zPush)+self.data.zPushUnits[:2]
+            self.zCutLabel = "Re-Plunge to\n"+'%.3f '%(self.data.zPush)+self.data.zPushUnits[:2]
             self.zPopDisable=False
             
     def setMachineUnits(self, units=None):
@@ -65,7 +65,7 @@ class ZAxisPopupContent(GridLayout):
             self.data.zPopupUnits = "INCHES"
             self.data.zStepSizeVal=float(self.distBtn.text)/25.4
         
-        self.distBtn.text = "%.2f"%self.data.zStepSizeVal
+        self.distBtn.text = "%.3f"%self.data.zStepSizeVal
         self.unitsBtn.text = self.data.zPopupUnits
     
     def goThere(self):
@@ -100,7 +100,7 @@ class ZAxisPopupContent(GridLayout):
         #Save the current "cut" point
         self.data.zPush = self.data.zReadoutPos
         self.data.zPushUnits = self.data.units
-        self.zCutLabel = "Re-Plunge to\n"+'%.2f '%(self.data.zPush)+self.data.zPushUnits[:2]
+        self.zCutLabel = "Re-Plunge to\n"+'%.3f '%(self.data.zPush)+self.data.zPushUnits[:2]
         self.zPopDisable = False
         
         self.setMachineUnits()
@@ -164,7 +164,7 @@ class ZAxisPopupContent(GridLayout):
         try:
             tempfloat = float(self.popupContent.textInput.text)
             self.data.zStepSizeVal=tempfloat  # Update displayed text using standard numeric format
-            self.distBtn.text = "%.2f"%tempfloat
+            self.distBtn.text = "%.3f"%tempfloat
         except ValueError:
             pass                                                             #If what was entered cannot be converted to a number, leave the value the same
         self._popup.dismiss()
