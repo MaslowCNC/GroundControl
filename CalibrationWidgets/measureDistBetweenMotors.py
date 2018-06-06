@@ -123,8 +123,8 @@ class MeasureDistBetweenMotors(GridLayout):
         #pretend we are in the "Top" configuration during this step
         App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', 'Top')
         
-        #set the threshold for warning that the machine is off target to 200mm esentially turning it off. We dont' want this to trigger when pulling the chain tight
-        self.data.gcode_queue.put("$42=200 ")
+        #set the threshold for warning that the machine is off target to 200mm essentially turning it off. We don't want this to trigger when pulling the chain tight
+        self.data.gcode_queue.put("$42=2000 ")
     
     def on_Exit(self):
         '''
