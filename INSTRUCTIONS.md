@@ -13,5 +13,3 @@ Click below for instructions to install Ground Control on your system:
 Here is the [Ground Control Users Guide](https://github.com/MaslowCNC/GroundControl/wiki/Ground-Control-Users-Guide)
 
 ![Maslow Ground Control](https://raw.githubusercontent.com/MaslowCNC/GroundControl/master/mainpicture.jpg)
-
-Next Step: [Frame Assembly](https://github.com/MaslowCNC/Mechanics/wiki/Choose-A-Frame-Design)
