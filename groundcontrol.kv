@@ -1,4 +1,4 @@
-#:kivy 1.9.9
+#kivy 1.9.9
 
 #<Widget>:
 #This can be used to create boxes around each widget to clarify positioning issues. It is only for debug
@@ -604,7 +604,7 @@
                 text: "Absolute"
                 size_hint_y: 0.2
             Button:
-                text: "%.3f"%app.data.zStepSizeVal
+                text: "%.2f"%app.data.zStepSizeVal
                 id: distBtn
                 on_release: root.setDist()
             Button:
@@ -1339,13 +1339,17 @@
         cols:1
         size_hint_x: .4
         GridLayout:
-            cols: 3
+            cols: 4
             size_hint_x: .4
             Label:
                 text: "Left Sprocket"
                 font_size: '20sp'
             Label:
             Label:
+            Label:
+            Button:
+                text: '360 deg CCW'
+                on_release: root.LeftCCW360()
             Button:
                 text: '5 deg CCW'
                 on_release: root.LeftCCW5()
@@ -1355,6 +1359,9 @@
             Button:
                 text: '0.1 deg CCW'
                 on_release: root.LeftCCWpoint1()
+            Button:
+                text: '360 deg CW'
+                on_release: root.LeftCW360()
             Button:
                 text: '5 deg CW'
                 on_release: root.LeftCW5()
@@ -1369,6 +1376,10 @@
                 font_size: '20sp'
             Label:
             Label:
+            Label:
+            Button:
+                text: '360 deg CCW'
+                on_release: root.RightCCW360()
             Button:
                 text: '5 deg CCW'
                 on_release: root.RightCCW5()
@@ -1379,6 +1390,9 @@
                 text: '0.1 deg CCW'
                 on_release: root.RightCCWpoint1()
             Button:
+                text: '360 deg CW'
+                on_release: root.RightCW360()
+            Button:
                 text: '5 deg CW'
                 on_release: root.RightCW5()
             Button:
@@ -1387,6 +1401,10 @@
             Button:
                 text: '0.1 deg CW'
                 on_release: root.RightCWpoint1()
+            Label:
+            Label:
+            Label:
+            Label:
             Button:
                 text: "Automatic"
                 on_release: root.setVerticalAutomatic()
