@@ -1,6 +1,6 @@
 {
     "ModerationLevel": "communityManaged",
     "Facilitator": "barboursmith",
-    "Category": "maslow",
-    "DownloadTarget": "test"
+    "DownloadTarget": "test",
+    "Category": "maslow"
 }
