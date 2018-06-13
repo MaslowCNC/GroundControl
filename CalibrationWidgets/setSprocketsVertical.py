@@ -14,6 +14,42 @@ class SetSprocketsVertical(GridLayout):
     leftChainLength = 0
     rightchainLength = 0
 
+    def LeftCW360(self):
+        degValue = float(self.data.config.get('Advanced Settings',"gearTeeth"))*float(self.data.config.get('Advanced Settings',"chainPitch"))/1.0;
+        self.data.gcode_queue.put("G91 ")
+        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
+            self.data.gcode_queue.put("B09 L"+str(degValue)+" ")
+        else:
+            self.data.gcode_queue.put("B09 L-"+str(degValue)+" ")
+        self.data.gcode_queue.put("G90 ")
+
+    def RightCW360(self):
+        degValue = float(self.data.config.get('Advanced Settings',"gearTeeth"))*float(self.data.config.get('Advanced Settings',"chainPitch"))/1.0;
+        self.data.gcode_queue.put("G91 ")
+        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
+            self.data.gcode_queue.put("B09 R-"+str(degValue)+" ")
+        else:
+            self.data.gcode_queue.put("B09 R"+str(degValue)+" ")
+        self.data.gcode_queue.put("G90 ")
+
+    def LeftCCW360(self):
+        degValue = float(self.data.config.get('Advanced Settings',"gearTeeth"))*float(self.data.config.get('Advanced Settings',"chainPitch"))/1.0;
+        self.data.gcode_queue.put("G91 ")
+        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
+            self.data.gcode_queue.put("B09 L-"+str(degValue)+" ")
+        else:
+            self.data.gcode_queue.put("B09 L"+str(degValue)+" ")
+        self.data.gcode_queue.put("G90 ")
+
+    def RightCCW360(self):
+        degValue = float(self.data.config.get('Advanced Settings',"gearTeeth"))*float(self.data.config.get('Advanced Settings',"chainPitch"))/1.0;
+        self.data.gcode_queue.put("G91 ")
+        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
+            self.data.gcode_queue.put("B09 R"+str(degValue)+" ")
+        else:
+            self.data.gcode_queue.put("B09 R-"+str(degValue)+" ")
+        self.data.gcode_queue.put("G90 ")
+
     def LeftCW(self):
         degValue = float(self.data.config.get('Advanced Settings',"gearTeeth"))*float(self.data.config.get('Advanced Settings',"chainPitch"))/360.0;
         self.data.gcode_queue.put("G91 ")

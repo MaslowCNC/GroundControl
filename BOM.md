@@ -1,1 +1,1 @@
-Edit this file to add a bill of materials to the project
+Ground Control is free and open and always will be!
