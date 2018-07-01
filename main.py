@@ -8,6 +8,7 @@ Config.set('input', 'mouse', 'mouse,disable_multitouch')
 Config.set('graphics', 'minimum_width', '620')
 Config.set('graphics', 'minimum_height', '440')
 Config.set('kivy', 'exit_on_escape', '0')
+Config.set('graphics', 'multisamples', '0')
 from kivy.app                   import App
 from kivy.uix.gridlayout        import GridLayout
 from kivy.uix.floatlayout       import FloatLayout
@@ -73,6 +74,14 @@ class GroundControlApp(App):
             Window.clearcolor                = (0, 0, 0, 1)
             self.data.posIndicatorColor      =  [1,1,1]
             self.data.targetInicatorColor    =  [1,0,0]
+        elif self.config.get('Maslow Settings', 'colorScheme') == 'DarkGreyBlue':
+            self.data.iconPath               = './Images/Icons/darkgreyblue/'
+            self.data.fontColor              = '[color=000000]'
+            self.data.drawingColor           = [1,1,1]
+            Window.clearcolor                = (0.06, 0.10, 0.2, 1)
+            self.data.posIndicatorColor      =  [0.51,0.93,0.97]
+            self.data.targetInicatorColor = [1,0,0]
+
         
         
         Window.maximize()
@@ -94,6 +103,11 @@ class GroundControlApp(App):
         if self.config.get('Advanced Settings', 'encoderSteps') == '8148.0':
             self.data.message_queue.put("Message: This update will adjust the the number of encoder pulses per rotation from 8,148 to 8,113 in your settings which improves the positional accuracy.\n\nPerforming a calibration will help you get the most out of this update.")
             self.config.set('Advanced Settings', 'encoderSteps', '8113.73')
+        #up the maximum feedrate
+        if self.config.get('Advanced Settings', 'maxFeedrate') == '700':
+            self.data.message_queue.put("Message: This update will increase the maximum feedrate of your machine. You can adjust this value under the Advanced settings.")
+            self.config.set('Advanced Settings', 'maxFeedrate', '800')
+            self.config.write()
         
         self.data.comport = self.config.get('Maslow Settings', 'COMport')
         self.data.gcodeFile = self.config.get('Maslow Settings', 'openFile')
@@ -158,6 +172,21 @@ class GroundControlApp(App):
         elif (key == 'gearTeeth' or key == 'chainPitch') and self.config.has_option('Advanced Settings', 'gearTeeth') and self.config.has_option('Advanced Settings', 'chainPitch'):
             distPerRot = float(self.config.get('Advanced Settings', 'gearTeeth')) * float(self.config.get('Advanced Settings', 'chainPitch'))
             self.config.set('Computed Settings', "distPerRot", str(distPerRot))
+
+            if self.config.has_option('Advanced Settings', 'leftChainTolerance'):
+                distPerRotLeftChainTolerance = (1 + (float(self.config.get('Advanced Settings', 'leftChainTolerance')) / 100)) * float(self.config.get('Advanced Settings', 'gearTeeth')) * float(self.config.get('Advanced Settings', 'chainPitch'))
+                self.config.set('Computed Settings', "distPerRotLeftChainTolerance", str("{0:.5f}".format(distPerRotLeftChainTolerance)))
+            if self.config.has_option('Advanced Settings', 'rightChainTolerance'):
+                distPerRotRightChainTolerance = (1 + (float(self.config.get('Advanced Settings', 'rightChainTolerance')) / 100)) * float(self.config.get('Advanced Settings', 'gearTeeth')) * float(self.config.get('Advanced Settings', 'chainPitch'))
+                self.config.set('Computed Settings', "distPerRotRightChainTolerance", str("{0:.5f}".format(distPerRotRightChainTolerance)))
+        
+        elif key == 'leftChainTolerance' and self.config.has_option('Advanced Settings', 'leftChainTolerance') and self.config.has_option('Computed Settings', 'distPerRot'):
+            distPerRotLeftChainTolerance = (1 + (float(self.config.get('Advanced Settings', 'leftChainTolerance')) / 100)) * float(self.config.get('Computed Settings', 'distPerRot'))
+            self.config.set('Computed Settings', "distPerRotLeftChainTolerance", str("{0:.5f}".format(distPerRotLeftChainTolerance)))
+        
+        elif key == 'rightChainTolerance' and self.config.has_option('Advanced Settings', 'rightChainTolerance') and self.config.has_option('Computed Settings', 'distPerRot'):
+            distPerRotRightChainTolerance = (1 + (float(self.config.get('Advanced Settings', 'rightChainTolerance')) / 100)) * float(self.config.get('Computed Settings', 'distPerRot'))
+            self.config.set('Computed Settings', "distPerRotRightChainTolerance", str("{0:.5f}".format(distPerRotRightChainTolerance)))
         
         elif key == 'enablePosPIDValues':
             for key in ('KpPos', 'KiPos', 'KdPos', 'propWeight'):
@@ -193,8 +222,11 @@ class GroundControlApp(App):
 
     def configSettingChange(self, section, key, value):
         """
+        
         Respond to changes in the configuration.
+        
         """
+        
         # Update GC things
         if section == "Maslow Settings":
             if key == "COMport":
@@ -209,6 +241,16 @@ class GroundControlApp(App):
         if section == "Advanced Settings":
             if (key == "truncate") or (key == "digits"):
                 self.frontpage.gcodecanvas.reloadGcode()
+            if (key == "spindleAutomate"):
+                if (value == "Servo"):
+                    value = 1
+                elif (value == "Relay_High"):
+                    value = 2
+                elif (value == "Relay_Low"):
+                    value = 3
+                else:
+                    value = 0
+    
         
         # Update Computed Settings
         self.computeSettings(section, key, value)
@@ -290,12 +332,15 @@ class GroundControlApp(App):
                     self.setErrorOnScreen(message)
                 elif message[1:8] == "Measure":
                     measuredDist = float(message[9:len(message)-3])
-                    self.data.measureRequest(measuredDist)
+                    try:
+                        self.data.measureRequest(measuredDist)
+                    except:
+                        print "No function has requested a measurement"
             elif message[0:13] == "Maslow Paused":
                 self.data.uploadFlag = 0
                 self.writeToTextConsole(message)
             elif message[0:8] == "Message:":
-                if self.data.calibrationInProcess:
+                if self.data.calibrationInProcess and message[0:15] == "Message: Unable":   #this suppresses the annoying messages about invalid chain lengths during the calibration process
                     break
                 self.previousUploadStatus = self.data.uploadFlag 
                 self.data.uploadFlag = 0
@@ -309,6 +354,24 @@ class GroundControlApp(App):
                             auto_dismiss=False, size=(360,240), size_hint=(.3, .3))
                 else:
                     self._popup = Popup(title="Notification: ", content=content,
+                            auto_dismiss=False, size=(360,240), size_hint=(None, None))
+                self._popup.open()
+                if global_variables._keyboard:
+                    global_variables._keyboard.bind(on_key_down=self.keydown_popup)
+                    self._popup.bind(on_dismiss=self.ondismiss_popup)
+            elif message[0:6] == "ALARM:":
+                self.previousUploadStatus = self.data.uploadFlag 
+                self.data.uploadFlag = 0
+                try:
+                    self._popup.dismiss()                                           #close any open popup
+                except:
+                    pass                                                            #there wasn't a popup to close
+                content = NotificationPopup(continueOn = self.dismiss_popup_continue, text = message[7:])
+                if sys.platform.startswith('darwin'):
+                    self._popup = Popup(title="Alarm Notification: ", content=content,
+                            auto_dismiss=False, size=(360,240), size_hint=(.3, .3))
+                else:
+                    self._popup = Popup(title="Alarm Notification: ", content=content,
                             auto_dismiss=False, size=(360,240), size_hint=(None, None))
                 self._popup.open()
                 if global_variables._keyboard:

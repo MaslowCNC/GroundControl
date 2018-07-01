@@ -89,12 +89,8 @@ class MeasureDistBetweenMotors(GridLayout):
     
     def measureLeft(self):
         self.data.gcode_queue.put("B10 L")
-        print "measure left ran"
     
     def readMotorSpacing(self, dist):
-        if self.data.config.get('Advanced Settings', 'chainOverSprocket') == 'Bottom':
-            dist *= -1
-
         dist = dist - 2*6.35                                #subtract off the extra two links
 
         print "Read motor spacing: " + str(dist)
@@ -107,9 +103,11 @@ class MeasureDistBetweenMotors(GridLayout):
         
         self.readyToMoveOn()
     
-    def pullChainTight(self):
+    def pullChainTightAndMeasure(self):
         #pull the left chain tight
-        self.data.gcode_queue.put("B11 S50 T3 ")
+        self.data.gcode_queue.put("B11 S255 T3 L ")
+        #request a measurement
+        self.data.gcode_queue.put("B10 L")
     
     def on_Enter(self):
         '''
@@ -122,7 +120,11 @@ class MeasureDistBetweenMotors(GridLayout):
         
         self.originalChainOverSproketDir = App.get_running_app().data.config.get('Advanced Settings', 'chainOverSprocket')
         
+        #pretend we are in the "Top" configuration during this step
         App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', 'Top')
+        
+        #set the threshold for warning that the machine is off target to 200mm essentially turning it off. We don't want this to trigger when pulling the chain tight
+        self.data.gcode_queue.put("$42=2000 ")
     
     def on_Exit(self):
         '''
@@ -131,7 +133,9 @@ class MeasureDistBetweenMotors(GridLayout):
         
         '''
         
-        print "measure dist on exit ran"
         
+        #Restore original chain over sprocket direction
         App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', self.originalChainOverSproketDir)
+        #restore all settings to the values stored in the current settings file 
+        self.data.gcode_queue.put("$$ ")
         

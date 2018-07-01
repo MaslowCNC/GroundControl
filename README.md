@@ -12,7 +12,7 @@ From within Ground Control, you can move the machine to where you want to begin 
 
 At present, the UI looks like this:
 
-![UI](/Documentation/GroundControl.JPG)
+![UI](/Documentation/GroundControl.jpg)
 
 Ground Control is written in [Python](https://www.python.org/). It was chosen because it has good cross platform support and is relatively simple to work with.
 
@@ -40,9 +40,9 @@ For help installing binaries, see the [installation guides](https://github.com/M
 
 ## Documentation
 
-Ground control documentation is available on the [project wiki](/wiki).
+Ground control documentation is available on the [project wiki](https://github.com/MaslowCNC/GroundControl/wiki).
 
-For help in using Ground Control, see the [users guide](/wiki/Ground-Control-Users-Guide).
+For help in using Ground Control, see the [users guide](https://github.com/MaslowCNC/GroundControl/wiki/Ground-Control-Users-Guide).
 
 ## Development Setup
 

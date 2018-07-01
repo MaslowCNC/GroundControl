@@ -15,10 +15,12 @@ from UIElements.viewMenu                     import ViewMenu
 from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
 from UIElements.modernMenu                   import ModernMenu
+from kivy.metrics                            import dp
 
 import re
 import math
 import global_variables
+import sys
 
 class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     
@@ -35,6 +37,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
     absoluteFlag = 0
     
     prependString = "G01 "
+    
+    maxNumberOfLinesToRead = 300000
     
     
     
@@ -169,7 +173,9 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.scatterInstance.transform = mat
         
         anchor = (0,0)
-        mat = Matrix().scale(.45, .45, 1)
+        scale = self.data.config.get('Ground Control Settings', 'viewScale')
+        mat = Matrix().scale(dp(scale), dp(scale), 1)
+
         self.scatterInstance.apply_transform(mat, anchor)
 
     def on_touch_up(self, touch, *args):
@@ -327,6 +333,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 direction = 1
             
             arcLen = abs(angle1 - angle2)
+            if abs(angle1 - angle2) == 0:
+                arcLen = 6.28313530718
             
             i = 0
             while abs(i) < arcLen:
@@ -358,6 +366,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         Move the machine to a point selected on the screen
         
         '''
+        
         if self.data.units == 'MM':
             scaleFactor = 1
         else:
@@ -388,6 +397,25 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         marker.color = (0,1,0)
         self.scatterInstance.add_widget(marker)
     
+    def setHome(self, xPosition, yPosition, *args):
+        '''
+        
+        Set the home position to the location set in the long press menu
+        
+        '''
+        
+        if self.data.units == 'MM':
+            scaleFactor = 1
+        else:
+            scaleFactor = 25.4
+        
+        xPosition = xPosition/scaleFactor
+        yPosition = yPosition/scaleFactor
+        
+        self.data.gcodeShift = [xPosition,yPosition]
+        self.data.config.set('Advanced Settings', 'homeX', str(xPosition))
+        self.data.config.set('Advanced Settings', 'homeY', str(yPosition))
+    
     def doNothing(self, *args):
         '''
         
@@ -402,16 +430,27 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         try:
             gCodeLine = gCodeLine.upper() + " "
-            
             x = re.search("X(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if x:
-                xTarget = float(x.groups()[0]) + self.data.gcodeShift[0]
-                gCodeLine = gCodeLine[0:x.start()+1] + str(xTarget) + gCodeLine[x.end():]
+#                 xTarget = '%f' % (float(x.groups()[0]) + self.data.gcodeShift[0]) # not used any more...
+                eNtnX = re.sub('\-?\d\.|\d*e-','',str(abs(float(x.groups()[0]) + self.data.gcodeShift[0]))) # strip off everything but the decimal part or e-notation exponent
+                e = re.search(".*e-", str(abs(float(x.groups()[0]) + self.data.gcodeShift[0])))
+                if e:
+                    fmtX = "%0%.%sf" % eNtnX  # if e-notation, use the exponent from the e notation
+                else:
+                    fmtX = "%0%.%sf" % len(eNtnX) # use the number of digits after the decimal place
+                gCodeLine = gCodeLine[0:x.start()+1] + (fmtX % (float(x.groups()[0]) + self.data.gcodeShift[0])) + gCodeLine[x.end():]
             
             y = re.search("Y(?=.)(([ ]*)?[+-]?([0-9]*)(\.([0-9]+))?)", gCodeLine)
             if y:
-                yTarget = float(y.groups()[0]) + self.data.gcodeShift[1]
-                gCodeLine = gCodeLine[0:y.start()+1] + str(yTarget) + gCodeLine[y.end():]
+#                 yTarget = '%f' % (float(y.groups()[0]) + self.data.gcodeShift[1]) # not used any more...
+                eNtnY = re.sub('\-?\d\.|\d*e-','',str(abs(float(y.groups()[0]) + self.data.gcodeShift[1])))
+                e = re.search(".*e-", str(abs(float(y.groups()[0]) + self.data.gcodeShift[1])))
+                if e:
+                    fmtY = "%0%.%sf" % eNtnY
+                else:
+                    fmtY = "%0%.%sf" % len(eNtnY)
+                gCodeLine = gCodeLine[0:y.start()+1] + (fmtY % (float(y.groups()[0]) + self.data.gcodeShift[1])) + gCodeLine[y.end():]
             
             return gCodeLine
         except ValueError:
@@ -514,7 +553,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.loadNextLine()
         
         #Repeat until end of file
-        if self.lineNumber < min(len(self.data.gcode),60000):
+        if self.lineNumber < min(len(self.data.gcode),self.maxNumberOfLinesToRead):
             Clock.schedule_once(self.callBackMechanism)
     
     def updateGcode(self, *args):
@@ -536,8 +575,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         self.clearGcode()
         
         #Check to see if file is too large to load
-        if len(self.data.gcode) > 60000:
-            errorText = "The current file contains " + str(len(self.data.gcode)) + " lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first 60000 lines are shown here.\nThe complete program will cut if you choose to do so."
+        if len(self.data.gcode) > self.maxNumberOfLinesToRead:
+            errorText = "The current file contains " + str(len(self.data.gcode)) + " lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first " + self.maxNumberOfLinesToRead + "lines are shown here.\nThe complete program will cut if you choose to do so unless the home position is moved from (0,0)."
             print errorText
             self.data.message_queue.put("Message: " + errorText)
         

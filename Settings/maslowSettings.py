@@ -117,7 +117,7 @@ settings = {
                 "type": "options",
                 "title": "Color Scheme",
                 "desc": "Switch between the light and dark color schemes. Restarting GC is needed for this change to take effect",
-                "options": ["Light", "Dark"],
+                "options": ["Light", "Dark", "DarkGreyBlue"],
                 "key": "colorScheme",
                 "default": "Light"
             },
@@ -162,6 +162,13 @@ settings = {
                 "desc": "The vertical distance above the work area to raise the z-axis for safe travel. Used by 'Home', 'Return to Center' and 'z-Axis' settings.",
                 "key": "zAxisSafeHeight",
                 "default": 5,
+            },
+            {
+                "type": "bool",
+                "title": "Buffer Gcode",
+                "desc": "Buffer gcode on arduino to increase execution speed. Requres restart to take effect. Experimental.",
+                "key": "bufferOn",
+                "default": 0
             }
         ],
     "Advanced Settings":
@@ -189,12 +196,34 @@ settings = {
                 "default": 6.35
             },
             {
+                "type": "string",
+                "title": "Chain Tolerance, Left Chain",
+                "desc": "The tolerance adjustment for the left chain length, in percent",
+                "key": "leftChainTolerance",
+                "default": 0
+            },
+            {
+                "type": "string",
+                "title": "Chain Tolerance, Right Chain",
+                "desc": "The tolerance adjustment for the right chain length, in percent",
+                "key": "rightChainTolerance",
+                "default": 0
+            },
+            {
                 "type": "options",
-                "title": "Side of Motor Sprockets That Chains Go to Sled",
-                "desc": "On which side of the motor sprockets the chains connect to the sled",
+                "title": "Top/Bottom Chain Feed",
+                "desc": "On which side of the motor sprockets do the chains leave from to connect to the sled",
                 "options": ["Top", "Bottom"],
                 "default": "Top",
                 "key": "chainOverSprocket"
+            },
+            {
+                "type": "string",
+                "title": "Extend Chain Distance",
+                "desc": "The length in mm that will be extended during chain calibration",
+                "key": "chainExtendLength",
+                "default": 1650,
+                "firmwareKey": 11
             },
             {
                 "type": "string",
@@ -213,11 +242,12 @@ settings = {
                 "firmwareKey": 20
             },
             {
-                "type": "bool",
+                "type": "options",
                 "title": "Spindle Automation",
-                "desc": "How should the spindle start and stop automatically based on gcode? Leave off for default external servo control, on for external relay control.",
+                "desc": "How should the spindle start and stop automatically based on gcode? Leave off for none, or set external servo control, or external relay control, active high or low.",
                 "key": "spindleAutomate",
-                "default": 0,
+		"options": ["None", "Servo", "Relay_High", "Relay_Low"],
+                "default": "None",
                 "firmwareKey": 17
             },
             {
@@ -225,7 +255,7 @@ settings = {
                 "title": "Max Feedrate",
                 "desc": "The maximum feedrate in mm/min that machine is capable of sustaining.  Setting this value too high will cause movements to start before the prior movement finishes.",
                 "key": "maxFeedrate",
-                "default": 700,
+                "default": 800,
                 "firmwareKey": 15
             },
             {
@@ -350,6 +380,14 @@ settings = {
                 "options": ["490Hz", "4,100Hz", "31,000Hz"],
                 "default": "490Hz",
                 "key": "fPWM",
+            },
+            {
+                "type": "string",
+                "title": "Position Error Limit",
+                "desc": "If the position of the sled varies from the expected position by more than this amount, cutting wil be stopped. Program must be restarted to take effect.",
+                "key": "positionErrorLimit",
+                "default": 2.0,
+                "firmwareKey": 42
             }
         ],
     "Ground Control Settings":
@@ -381,6 +419,13 @@ settings = {
                 "desc": "Valid file extensions for Ground Control to open. Comma separated list.",
                 "key": "validExtensions",
                 "default": ".nc, .ngc, .text, .gcode"
+            },
+            {
+                "type": "string",
+                "title": "Reset View Scale",
+                "desc": "Zoom scale for 'Reset View' command.",
+                "key": "viewScale",
+                "default": ".45"
             }
         ],
     "Computed Settings": #These are setting calculated from the user inputs on other settings, they are not direclty seen by the user
@@ -474,6 +519,16 @@ settings = {
                 "type": "string",
                 "key": "fPWMComputed",
                 "firmwareKey": 39
+            },
+            {
+                "type": "string",
+                "key": "distPerRotLeftChainTolerance",
+                "firmwareKey": 40
+            },
+            {
+                "type": "string",
+                "key": "distPerRotRightChainTolerance",
+                "firmwareKey": 41
             }
         ]
 }
@@ -489,7 +544,8 @@ def getJSONSettingSection(section):
     for option in options:
         option['section'] = section
         if 'desc' in option and 'default' in option:
-            option['desc'] += "\ndefault setting: " + str(option['default'])
+            if not "default setting:" in option['desc']:                            #check to see if the default text has already been added
+                option['desc'] += "\ndefault setting: " + str(option['default'])
     return json.dumps(options)
 
 def getDefaultValueSection(section):
@@ -528,6 +584,17 @@ def syncFirmwareKey(firmwareKey, value, data):
         for option in settings[section]:
             if 'firmwareKey' in option and option['firmwareKey'] == firmwareKey:
                 storedValue = data.config.get(section, option['key'])
+
+		if (option['key'] == "spindleAutomate"):
+                    if (storedValue == "Servo"):
+                        storedValue = 1
+                    elif (storedValue == "Relay_High"):
+                        storedValue = 2
+                    elif (storedValue == "Relay_Low"):
+                        storedValue = 3
+                    else:
+                        storedValue = 0
+
                 if not isClose(float(storedValue), value):
                     data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(storedValue))
                 else:

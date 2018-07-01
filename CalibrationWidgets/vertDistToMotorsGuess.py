@@ -82,7 +82,11 @@ class VertDistToMotorsGuess(GridLayout):
     def enterValues(self):
         try:
             dist = float(self.enterMeasurement.text)
-            self.data.config.set('Maslow Settings', 'motorOffsetY', str(dist))
+            
+            if dist > 300:
+                self.data.config.set('Maslow Settings', 'motorOffsetY', str(dist))
+            else:
+                self.data.message_queue.put("Message: Warning: The value you entered for the distance between the motors and the top of the work area is very small. This may cause too much strain on the motors at the top of the sheet.")
             self.readyToMoveOn()
         except:
             self.data.message_queue.put("Message: Couldn't convert that to a number...")
