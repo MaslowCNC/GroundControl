@@ -81,18 +81,22 @@ class ViewMenu(GridLayout, MakesmithInitFuncs):
         
         '''
         
-        filename = instance.selection[0]
-        print(filename)
+        try:        
+            filename = instance.selection[0]
+        except IndexError:
+            print("must choose a file...")
+        else:
+            print(filename)
         
-        #close the open file popup
-        self.dismiss_popup()
+            #close the open file popup
+            self.dismiss_popup()
         
-        #locate the file
-        self.data.gcodeFile = filename
-        self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
+            #locate the file
+            self.data.gcodeFile = filename
+            self.data.config.set('Maslow Settings', 'openFile', str(self.data.gcodeFile))
 
-        #close the parent popup
-        self.parentWidget.close()
+            #close the parent popup
+            self.parentWidget.close()
     
     def resetView(self):
         '''
