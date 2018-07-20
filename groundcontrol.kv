@@ -747,17 +747,17 @@
         size_hint_x: leftCol
         Label:
             text: 'This walk-through will guide you through the process of calibrating your Maslow Machine. \n\nYou can move forward and backwards through the walk-through at any time using the Back and Skip buttons\n\nYou can also skip this process entirely and enter your machine dimensions in the Settings window\n\nYour feedback on how to improve this process is more than welcome\n\nClick Begin to start. '
+            text_size: self.size
+            valign: 'middle'
     GridLayout:
         cols: 1
-        width:dp(150)
-        size_hint_x: None
+        size_hint_x: rightCol
         Label:
         Label:
-            text: 'The controls you will need\nfor each step will be on here\non the right'
+            text: 'The controls you will need for each step will be on here on the right'
+            text_size: self.size
         Button:
             text: "Begin"
-            size_hint_y: None
-            height:dp(75)
             on_release: root.finished()
         Label:
 
@@ -771,6 +771,8 @@
         Label:
             text: "Now we're going to select the way the chains attach to the sled. There are currently two options. \n\nThe \"Quadrilateral\" system attaches the chains to the two stationary metal L brackets as shown in the left picture.\nThis is currently the default option. \n\nThe \"Triangular\" system attaches the chains to a system of either linkages or bearings which let the ends of the chains\nrotate around the router bit as shown in the picture on the right.\n\n Please choose an option on the right."
             size_hint_x: leftCol
+            text_size: self.size
+            valign: 'middle'
         GridLayout:
             cols: 2
             Image:
@@ -799,6 +801,8 @@
         Label:
             text: "Now we're going to select the direction in which the chains pass over the sprocket.\n\nDo your chains come from the top of the sprocket and connect to the sled as shown in the picture on the left\nor come from the bottom of the sprocket to connect to the machine as shown in the picture on the right?"
             size_hint_x: leftCol
+            text_size: self.size
+            valign: 'middle'
         GridLayout:
             cols: 2
             Image:
@@ -827,6 +831,8 @@
         Label:
             text: "The correct calibration procedure for your machine is being generated...please wait"
             size_hint_x: leftCol
+            text_size: self.size
+            valign: 'middle'
     GridLayout:
         cols: 1
 
@@ -839,6 +845,8 @@
         size_hint_x: leftCol
         Label:
             text: 'Now we need to remove the chains from the machine so that we can put them back on\nin the correct direction for your bottom feeding configuration.\n\nRemove the chain from the sprocket, then press Next'
+            text_size: self.size
+            valign: 'middle'
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -860,6 +868,8 @@
             text: ""
             size_hint_x: leftCol
             id: measurementsReadout
+            text_size: self.size
+            valign: 'middle'
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -886,6 +896,8 @@
         size_hint_x: leftCol
         Label:
             text: "To refine these measurements we're going to cut a test shape. The test shape consists of five cuts.\n\nCuts 1 and 2 will be short vertical cuts in the upper left and right corners of the work area.\nCuts 3 and 4 will be short vertical cuts in the lower left and right corners of the work area.\nCut 5 will be a short horizontal cut attached to cut 2.\n\nBased on the distances between these cuts we can dial in the machine settings.\n\nFor the first measurement, measure from the left edge of cut 1 to the left edge of cut 2.\n\nFor the second measurement, measure from the left edge of cut 3 to the left edge of cut 4.\n\nFor the third measurement, measure from the top edge of the work area to the top edge of cut 5.\n\nEnter the diameter of the bit used to make the cuts (1/4\" = 6.35 mm).\n\nThe more accurate your measurements, the more accurate your machine will be.\n\nPress Cut Test Pattern to begin."
+            text_size: self.size
+            valign: 'middle'
         GridLayout:
             cols: 2
             Image:
@@ -956,6 +968,8 @@
         Label:
             text: "placeholder text"
             id: selfText
+            text_size: self.size
+            valign: 'middle'
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -979,6 +993,8 @@
         size_hint_x: leftCol
         Label:
             text: "Enter the distance from the outside edge of one motor to the outside edge of the other motor.\n\nWe measure to the edge because it is easier.\n\n{picture coming soon}"
+            text_size: self.size
+            valign: 'middle'
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -1008,6 +1024,8 @@
         size_hint_x: leftCol
         Label:
             text: "We need to wipe any existing values for the chain correction values before computing new ones.\n\nThis step will set the values to 0"
+            text_size: self.size
+            valign: 'middle'
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -1035,7 +1053,9 @@
         cols: 1
         size_hint_x: leftCol
         Label:
-            text: "This option lets you enter the dimensions of your machine manually which can be faster and\neasier than the automatic calibration process, but the results might be less accurate"
+            text: "This option lets you enter the dimensions of your machine manually which can be faster and easier than the automatic calibration process, but the results might be less accurate"
+            text_size: self.size
+            valign: 'middle'
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -1093,6 +1113,9 @@
         size_hint_x: leftCol
         Label:
             text: "To refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short horizontal cuts and two short vertical cuts\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe size of bit used is not critical\nMeasure to any point on the mark as long as you are consistent\n\nThe process will repeat until both measurements are equal to within .5mm\nThe more accurate your measurements, the more accurate your machine will be\n\nPress Cut Test Pattern to begin"
+            
+            text_size: self.size
+            valign: 'middle'
         GridLayout:
             cols: 3
             Image:
@@ -1145,6 +1168,8 @@
         Label:
             text: "Rather than using a tape measure to measure the spacing between the motors, we're going to use the chain.\n\nHook the first link from the left chain over the top tooth on the left motor as shown in the picture below,\nthen use the 'Extend' button repeatedly to extend the chain until it can reach the right motor.\nHint - you can use the distance button to set the length of chain moved for each Extend/Retract action.\n\nOnce the chain has enough slack to reach the right motor, hook the third link on the right motor's 12:00 tooth as shown in the picture below.\nUse the 'Retract' button to take out sufficient slack to make the chain nearly tight.\nHint - update the distance value to move the chain a short distance to remove most but not all of the slack.\n\nFinally, use the 'Pull Chain Tight and Measure' button to then pull the chain tight and take a measurement.\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way."
             size_hint_x: leftCol
+            text_size: self.size
+            valign: 'middle'
         GridLayout:
             cols: 3
             Image:
@@ -1189,6 +1214,8 @@
             text: " "
             size_hint_x: leftCol
             id: mainText
+            text_size: self.size
+            valign: 'middle'
         GridLayout:
             cols: 3
             Image:
@@ -1223,6 +1250,8 @@
         Label:
             text: "Next we need to enter a rough measurement for how far the motors are above the top of the work area\n\nMeasure from the center of the motor shaft to the top of the sheet of plywood\n\nThis measurement is not critical for the accuracy of the machine, but will move the center position up and down."
             size_hint_x: leftCol
+            text_size: self.size
+            valign: 'middle'
         GridLayout:
             cols: 2
             Image:
@@ -1252,6 +1281,8 @@
         Label:
             text: "Next, we are going to define the home position for the z-axis\n\nIf you have an automatic z-axis installed use the buttons to enable it and adjust the z-axis until the router bit\nbarely touches the surface of the wood. Then press Define Zero\n\nIf you do not have the z-axis installed, adjust your router until the router bit just barely\ntouches the surface of the wood, then press Define Zero"
             size_hint_x: leftCol
+            text_size: self.size
+            valign: 'middle'
         GridLayout:
             cols: 2
             Image:
@@ -1288,6 +1319,8 @@
         Label:
             text: "Next we need to enter a rough estimate for the rotation radius.\nThis is the distance from the tip of the chain to the center of the router bit.\n\nFor the ring this distance is 140mm\nFor the wooden linkage kits it is around 260mm\nFor the metal linkage kits it is around 150mm\n\n*These numbers are rough and should be updated*"
             size_hint_x: leftCol
+            text_size: self.size
+            valign: 'middle'
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -1312,6 +1345,8 @@
         Label:
             text: "Next we need to enter a rough estimate for the distance between the points where the chains attach to the sled.\n\nThis estimate will be refined by the calibration process in the next step."
             size_hint_x: leftCol
+            text_size: self.size
+            valign: 'middle'
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -1335,6 +1370,8 @@
         Label:
             text: "Orient each sprocket so that one tooth faces straight up in the 12:00 o'clock position.\n\nIt is important to start with the sprockets in a known configuration. \nUse the buttons to the right to rotate each sprocket so that one tooth points straight up.\nWhen you are ready, press Set Zero"
             size_hint_x: leftCol
+            text_size: self.size
+            valign: 'middle'
         Image:
             source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.jpg"
     GridLayout:
@@ -1432,6 +1469,8 @@
         Label:
             text: root.text
             size_hint_x: leftCol
+            text_size: self.size
+            valign: 'middle'
         GridLayout:
             cols: 2
             Image:
@@ -1471,6 +1510,8 @@
         Label:
             text: "Congratulations! Your calibration is complete."
             size_hint_x: leftCol
+            text_size: self.size
+            valign: 'middle'
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -1490,6 +1531,8 @@
         Label:
             text: "Congratulations! Your chains have been set to a known length."
             size_hint_x: leftCol
+            text_size: self.size
+            valign: 'middle'
     GridLayout:
         cols: 1
         size_hint_x: rightCol
