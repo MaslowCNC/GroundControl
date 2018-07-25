@@ -14,6 +14,12 @@ Click below for instructions to install Ground Control on your system:
 
 - [Raspberry Pi](https://github.com/MaslowCNC/GroundControl/wiki/Raspberry-Pi)
 
+### Please note:
+
+The first time you open Ground Control you will need to tell it how to connect to your machine. Click **Actions** in the top left corner of the screen, click the **Ports** drop down to select the same port you chose when uploading the firmware, then press **Connect**. Your choice will be remembered so you do not need to do this step again.
+
+![choose a port](https://raw.githubusercontent.com/MaslowCNC/GroundControl/master/Documentation/Choose%20Port.png)
+
 Here is the [Ground Control Users Guide](https://github.com/MaslowCNC/GroundControl/wiki/Ground-Control-Users-Guide)
 
 ![Maslow Ground Control](https://raw.githubusercontent.com/MaslowCNC/GroundControl/master/mainpicture.jpg)
