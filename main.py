@@ -206,6 +206,7 @@ class GroundControlApp(App):
                 else:
                     value = maslowSettings.getDefaultValue('Advanced Settings', key)
                 self.config.set('Computed Settings', key + "Main", value)
+            #updated computed values for z-axis
             for key in ('KpVZ', 'KiVZ', 'KdVZ'):
                 self.config.set('Computed Settings', key, value)
         
