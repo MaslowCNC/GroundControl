@@ -197,6 +197,10 @@ class GroundControlApp(App):
                 self.config.set('Computed Settings', key + "Main", value)
             #updated computed values for z-axis
             for key in ('KpPosZ', 'KiPosZ', 'KdPosZ', 'propWeightZ'):
+                if int(self.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
+                    value = float(self.config.get('Advanced Settings', key))
+                else:
+                    value = maslowSettings.getDefaultValue('Advanced Settings', key)
                 self.config.set('Computed Settings', key, value)
 
         elif key == 'enableVPIDValues':
@@ -208,6 +212,10 @@ class GroundControlApp(App):
                 self.config.set('Computed Settings', key + "Main", value)
             #updated computed values for z-axis
             for key in ('KpVZ', 'KiVZ', 'KdVZ'):
+                if int(self.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
+                    value = float(self.config.get('Advanced Settings', key))
+                else:
+                    value = maslowSettings.getDefaultValue('Advanced Settings', key)
                 self.config.set('Computed Settings', key, value)
         
         elif key == 'chainOverSprocket':
