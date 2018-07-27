@@ -196,7 +196,7 @@ class GroundControlApp(App):
                     value = maslowSettings.getDefaultValue('Advanced Settings', key)
                 self.config.set('Computed Settings', key + "Main", value)
             #updated computed values for z-axis
-            for key in ('KpPosZ', 'KiPosZ', 'KdPosZ', 'propWeight'):
+            for key in ('KpPosZ', 'KiPosZ', 'KdPosZ', 'propWeightZ'):
                 self.config.set('Computed Settings', key, value)
 
         elif key == 'enableVPIDValues':
