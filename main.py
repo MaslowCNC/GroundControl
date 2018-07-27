@@ -196,7 +196,7 @@ class GroundControlApp(App):
                     value = maslowSettings.getDefaultValue('Advanced Settings', key)
                 self.config.set('Computed Settings', key + "Main", value)
             #updated computed values for z-axis
-            for key in ('KpPosZ', 'KiPosZ', 'KdPosZ', 'propWeightZ'):
+            for key in ('KpPosZ', 'KiPosZ', 'KdPosZ'):
                 if int(self.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
                     value = float(self.config.get('Advanced Settings', key))
                 else:
