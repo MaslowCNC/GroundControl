@@ -193,6 +193,5 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
             self.runJustTriangularCuts()
         elif text == "Reset settings to defaults":
             self.resetAllSettings()
-            self.runJustTriangularCuts()
         elif text == "Compute chain calibration factors":
             self.measureChainTolerances()

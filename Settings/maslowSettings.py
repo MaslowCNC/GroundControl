@@ -340,6 +340,27 @@ settings = {
             },
             {
                 "type": "string",
+                "title": "Kp Position Z-Axis",
+                "desc": "The proportional constant for the position Z-Axis PID controller",
+                "key": "KpPosZ",
+                "default": 1300
+            },
+            {
+                "type": "string",
+                "title": "Ki Position Z-Axis",
+                "desc": "The integral constant for the position Z-Axis PID controller",
+                "key": "KiPosZ",
+                "default": 0
+            },
+            {
+                "type": "string",
+                "title": "Kd Position Z-Axis",
+                "desc": "The derivative constant for the position Z-Axis PID controller",
+                "key": "KdPosZ",
+                "default": 34
+            },
+            {
+                "type": "string",
                 "title": "Proportional Weighting",
                 "desc": "The ratio of Proportional on Error (1) to Proportional on Measure (0)",
                 "key": "propWeight",
@@ -371,6 +392,27 @@ settings = {
                 "title": "Kd Velocity",
                 "desc": "The derivative constant for the velocity PID controller",
                 "key": "KdV",
+                "default": .28
+            },
+            {
+                "type": "string",
+                "title": "Kp Velocity Z-Axis",
+                "desc": "The proportional constant for the Z-axis velocity PID controller",
+                "key": "KpVZ",
+                "default": 5
+            },
+            {
+                "type": "string",
+                "title": "Ki Velocity Z-Axis",
+                "desc": "The integral constant for the Z-axis velocity PID controller",
+                "key": "KiVZ",
+                "default": 0
+            },
+            {
+                "type": "string",
+                "title": "Kd Velocity Z-Axis",
+                "desc": "The derivative constant for the Z-axis velocity PID controller",
+                "key": "KdVZ",
                 "default": .28
             },
             {
