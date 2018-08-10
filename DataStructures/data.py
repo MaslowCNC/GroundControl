@@ -26,7 +26,7 @@ class Data(EventDispatcher):
     
     #Gcodes contains all of the lines of gcode in the opened file
     gcode      = ObjectProperty([])
-    version    = '1.19'
+    version    = '1.20'
     #all of the available COM ports
     comPorts   = []
     #This defines which COM port is used
