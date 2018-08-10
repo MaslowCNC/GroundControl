@@ -21,7 +21,7 @@ import math
 import global_variables
 import sys
 import re
-
+import json
 
 '''
 
@@ -43,6 +43,7 @@ from DataStructures.data          import   Data
 from Connection.nonVisibleWidgets import   NonVisibleWidgets
 from UIElements.notificationPopup import   NotificationPopup
 from Settings                     import   maslowSettings
+from UIElements.backgroundMenu    import   BackgroundMenu
 '''
 
 Main UI Program
@@ -116,6 +117,24 @@ class GroundControlApp(App):
         self.data.gcodeShift = [offsetX,offsetY]
         self.data.config  = self.config
         self.config.add_callback(self.configSettingChange)
+
+        #Image Processing
+        self.data.backgroundFile = self.config.get('Background Settings', 'backgroundFile')
+        self.data.backgroundTLHSV = json.loads(self.config.get('Background Settings', 'tlhsv'))
+        self.data.backgroundTRHSV = json.loads(self.config.get('Background Settings', 'trhsv'))
+        self.data.backgroundBLHSV = json.loads(self.config.get('Background Settings', 'blhsv'))
+        self.data.backgroundBRHSV = json.loads(self.config.get('Background Settings', 'brhsv'))
+        self.data.backgroundTLPOS = json.loads(self.config.get('Background Settings', 'tlpos'))
+        self.data.backgroundTRPOS = json.loads(self.config.get('Background Settings', 'trpos'))
+        self.data.backgroundBLPOS = json.loads(self.config.get('Background Settings', 'blpos'))
+        self.data.backgroundBRPOS = json.loads(self.config.get('Background Settings', 'brpos'))
+        self.data.backgroundTLCENT = json.loads(self.config.get('Background Settings', 'tlcent'))
+        self.data.backgroundTRCENT = json.loads(self.config.get('Background Settings', 'trcent'))
+        self.data.backgroundBLCENT = json.loads(self.config.get('Background Settings', 'blcent'))
+        self.data.backgroundBRCENT = json.loads(self.config.get('Background Settings', 'brcent'))
+        if self.data.backgroundFile!="":
+            self.data.centers = [self.data.backgroundTLCENT, self.data.backgroundTRCENT, self.data.backgroundBLCENT, self.data.backgroundBRCENT]
+            BackgroundMenu(self.data).processBackground()
         
         '''
         Initializations

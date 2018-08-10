@@ -27,6 +27,7 @@
 <ScreenControls>:
     actionsBtn:actionsBtn
     settingsBtn:settingsBtn
+    backgroundBtn:backgroundBtn
 
     BoxLayout:
         orientation: 'horizontal'
@@ -42,6 +43,23 @@
             text: "Settings"
             funcToCallOnRelease: root.openSettings
             id: settingsBtn
+        ButtonTemplate:
+            text: "Background"
+            funcToCallOnRelease: root.open_background
+            id: backgroundBtn
+		ButtonTemplate:
+			size_hint: None, 1
+			width: dp(60)
+			name: backgroundLightBtn
+			text: "+"
+			funcToCallOnPress: root.brighten_background
+			id: backgroundLightBtn
+		ButtonTemplate:
+			size_hint: None,1
+			width: dp(60)
+			text: "-"
+			funcToCallOnPress: root.darken_background
+			id: backgroundDarkBtn
 
 <GcodeCanvas>:
     scatterObject:scatterObject
@@ -1842,6 +1860,142 @@
             Button:
                 text: "Recompute"
                 on_release: root.recompute()
+
+<BackgroundMenu>:
+    cols:1
+    size: root.size
+    pos: root.pos
+    Button:
+        text: 'Open Background'
+        on_release: root.openBackground()
+	Button:
+		text: 'Re-pick Alignment'
+		on_release: root.realignBackground()
+		disabled: app.data.originalimage is None
+    Button:
+        text: 'Update Background'
+        on_release: root.reloadBackground()
+    Button:
+        text: 'Remove Background'
+        on_release: root.clear_background()
+    Button:
+        text: 'Settings...'
+        on_release: root.openBackgroundSettings()
+    Button:
+        text: 'Close'
+        on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
+        on_release: root.close()
+					
+<BackgroundPickDlg>
+	cols:1
+	size: root.size
+	pos: root.pos
+	#Top Bar
+	GridLayout:
+		cols: 3
+		size_hint_y: None
+		Label:
+			text: root.instructionText
+			text_size: self.width, self.height
+			font_size: sp(self.height)/sp(3)
+			halign: 'left'
+			valign: 'middle'
+		Button:
+			size_hint_x: None
+			text: 'Clear'
+			on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
+			on_release: root.clear()
+		Button:
+			size_hint_x: None
+			text: 'Close'
+			on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
+			on_release: root.closeit()
+	#Underneath
+	Widget:
+		text: 'Foo'	#For some reason self.Drawing doesn't work, so I search for this tag.  ToDo: Fix this.
+		id: Drawing	#I suppose I should use a Scatter Object, but I'm not sure how.
+		#on_touch_down: root.touched		#For some reason, these don't get called.  But if there's no function behind them, it explodes.
+		#on_touch_move: root.touchmove		#So I do it with a Bind...
+		#on_touch_up: root.untouched
+		canvas:
+			Color:
+				rgba: 1, 1, 1, 1
+			Rectangle:
+				pos: self.pos
+				size: self.size
+					
+<BackgroundSettingsDlg>:
+	tlpos:tlpos	#Make these controls accessible to the code
+	trpos:trpos
+	blpos:blpos
+	brpos:brpos
+	tlhsv:tlhsv
+	trhsv:trhsv
+	blhsv:blhsv
+	brhsv:brhsv
+    tlcent:tlcent
+	trcent:trcent
+	blcent:blcent
+	brcent:brcent
+	cols: 1
+	GridLayout:
+		cols:4
+		Label:
+			text: "Location"
+		Label:
+			text: "Dist from Center (mm)"
+		Label:
+			text: "HSV limits (for auto-align)"
+        Label:
+			text: "Corners of image (for manual-align)"
+		Label:
+			text: "Top-Left:"
+		TextInput:
+			id: tlpos
+			text: root.backgroundTLPOS
+		TextInput:
+			id: tlhsv
+			text: root.backgroundTLHSV
+        TextInput:
+			id: tlcent
+			text: root.backgroundTLCENT
+		Label:
+			text: "Top-Right:"
+		TextInput:
+			id: trpos
+			text: root.backgroundTRPOS
+		TextInput:
+			id: trhsv
+			text: root.backgroundTRHSV
+        TextInput:
+			id: trcent
+			text: root.backgroundTRCENT
+		Label:
+			text: "Bottom-Left:"
+		TextInput:
+			id: blpos
+			text: root.backgroundBLPOS
+		TextInput:
+			id: blhsv
+			text: root.backgroundBLHSV
+        TextInput:
+			id: blcent
+			text: root.backgroundBLCENT
+		Label:
+			text: "Bottom-Right:"
+		TextInput:
+			id: brpos
+			text: root.backgroundBRPOS
+		TextInput:
+			id: brhsv
+			text: root.backgroundBRHSV
+        TextInput:
+			id: brcent
+			text: root.backgroundBRCENT
+	Button:
+		size_hint_y:.1
+		text: 'Close'
+		on_press: root.closeit()
 
 <TestPoint>
 
