@@ -168,6 +168,7 @@ class GroundControlApp(App):
         config.setdefaults('Maslow Settings', maslowSettings.getDefaultValueSection('Maslow Settings'))
         config.setdefaults('Advanced Settings', maslowSettings.getDefaultValueSection('Advanced Settings'))
         config.setdefaults('Ground Control Settings', maslowSettings.getDefaultValueSection('Ground Control Settings'))
+        config.setdefaults('Background Settings', maslowSettings.getDefaultValueSection('Background Settings'))
         config.remove_callback(self.computeSettings)
         
     def build_settings(self, settings):
