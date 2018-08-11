@@ -47,6 +47,14 @@ class Data(EventDispatcher):
     gcodeShift = ObjectProperty([0.0,0.0])                          #the amount that the gcode has been shifted
     logger     =  Logger()                                          #the module which records the machines behavior to review later
     
+    #Background image stuff
+    #Persist, No save:
+    backgroundImage = None  #CV2 images for the textures - marked
+    originalimage = None    #and original
+    backgroundAlignment = []
+    backgroundManualReg = []
+    gcodeRedraw = BooleanProperty(False)    #Signal to redraw the g-code from buffers
+    
     '''
     Flags
     '''

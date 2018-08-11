@@ -16,6 +16,8 @@ from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
 from UIElements.modernMenu                   import ModernMenu
 from kivy.metrics                            import dp
+from kivy.graphics.texture                   import Texture
+from kivy.graphics							 import Rectangle
 
 import re
 import math
@@ -53,7 +55,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Window.bind(on_resize = self.centerCanvas)
 
         self.data.bind(gcode = self.updateGcode)
-        self.data.bind(gcodeShift = self.reloadGcode)
+        self.data.bind(gcodeRedraw = self.reloadGcode)             #Easy way for other pieces to call for a redraw with no changes
+        self.data.bind(gcodeShift = self.reloadGcode)              #No need to reload if the origin is changed, just clear and redraw
         self.data.bind(gcodeFile = self.centerCanvasAndReloadGcode)
         
         global_variables._keyboard = Window.request_keyboard(self._keyboard_closed, self)
@@ -162,7 +165,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         except:
             self.data.message_queue.put("Message: Cannot reopen gcode file. It may have been moved or deleted. To locate it or open a different file use Actions > Open G-code")
             self.data.gcodeFile = ""
-    
+        
     def centerCanvas(self, *args):
         '''
         
@@ -202,6 +205,29 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
  
         with self.scatterObject.canvas:
             Color(.47, .47, .47)
+            img = self.data.backgroundImage
+            
+            if img is not None: #If img is None, then no background.  Skip this mess.
+                print "DrawBkgrnd"
+                w=int(img.shape[0])
+                h=int(img.shape[1])
+                #For a canvas, it goes in as a texture on a rectangle, so make the texture
+                texture = Texture.create(size=(h,w))
+
+                buf = img.tobytes() # then, convert the array to a ubyte string
+                texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte') # and blit the buffer -- note that OpenCV format is BGR
+
+                #The coordinates are for the bottom-left corner.  This code duplicates the backgroundMenu:processBackground logic
+                TL = self.data.backgroundAlignment[0]
+                TR = self.data.backgroundAlignment[1]
+                BL = self.data.backgroundAlignment[2]
+                BR = self.data.backgroundAlignment[3]
+                
+                leftmost = min(TL[0],BL[0])
+                rightmost=max(TR[0],BR[0])
+                topmost=max(TL[1],TR[1])
+                botmost=min(BL[1],BR[1])
+                Rectangle(texture=texture, pos=(leftmost,botmost), size=(rightmost-leftmost, topmost-botmost))
 
             #create the bounding box
             height = float(self.data.config.get('Maslow Settings', 'bedHeight'))
@@ -555,7 +581,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         #Repeat until end of file
         if self.lineNumber < min(len(self.data.gcode),self.maxNumberOfLinesToRead):
             Clock.schedule_once(self.callBackMechanism)
-    
+
     def updateGcode(self, *args):
         '''
         
@@ -565,6 +591,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         '''
         
         #reset variables 
+        self.data.gcodeRedraw=False #Reset the redraw flag
         self.xPosition = self.data.gcodeShift[0]*self.canvasScaleFactor
         self.yPosition = self.data.gcodeShift[1]*self.canvasScaleFactor
         self.zPosition = 0
