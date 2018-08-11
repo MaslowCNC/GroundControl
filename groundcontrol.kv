@@ -51,13 +51,13 @@
 			size_hint: None, 1
 			width: dp(60)
 			name: backgroundLightBtn
-			text: "+"
+			text: "-"
 			funcToCallOnPress: root.brighten_background
 			id: backgroundLightBtn
 		ButtonTemplate:
 			size_hint: None,1
 			width: dp(60)
-			text: "-"
+			text: "+"
 			funcToCallOnPress: root.darken_background
 			id: backgroundDarkBtn
 
@@ -1925,73 +1925,47 @@
 				size: self.size
 					
 <BackgroundSettingsDlg>:
-	tlpos:tlpos	#Make these controls accessible to the code
-	trpos:trpos
-	blpos:blpos
-	brpos:brpos
-	tlhsv:tlhsv
-	trhsv:trhsv
-	blhsv:blhsv
-	brhsv:brhsv
-    tlcent:tlcent
-	trcent:trcent
-	blcent:blcent
-	brcent:brcent
 	cols: 1
 	GridLayout:
-		cols:4
+		cols:3
 		Label:
 			text: "Location"
 		Label:
 			text: "Dist from Center (mm)"
-		Label:
-			text: "HSV limits (for auto-align)"
         Label:
-			text: "Corners of image (for manual-align)"
+			text: "Corners of sheet (for manual-align)"
 		Label:
 			text: "Top-Left:"
 		TextInput:
 			id: tlpos
 			text: root.backgroundTLPOS
-		TextInput:
-			id: tlhsv
-			text: root.backgroundTLHSV
         TextInput:
-			id: tlcent
-			text: root.backgroundTLCENT
+			id: tlmanualreg
+			text: root.backgroundTLManualReg
 		Label:
 			text: "Top-Right:"
 		TextInput:
 			id: trpos
 			text: root.backgroundTRPOS
-		TextInput:
-			id: trhsv
-			text: root.backgroundTRHSV
         TextInput:
-			id: trcent
-			text: root.backgroundTRCENT
+			id: trmanualreg
+			text: root.backgroundTRManualReg
 		Label:
 			text: "Bottom-Left:"
 		TextInput:
 			id: blpos
 			text: root.backgroundBLPOS
-		TextInput:
-			id: blhsv
-			text: root.backgroundBLHSV
         TextInput:
-			id: blcent
-			text: root.backgroundBLCENT
+			id: blmanualreg
+			text: root.backgroundBLManualReg
 		Label:
 			text: "Bottom-Right:"
 		TextInput:
 			id: brpos
 			text: root.backgroundBRPOS
-		TextInput:
-			id: brhsv
-			text: root.backgroundBRHSV
         TextInput:
-			id: brcent
-			text: root.backgroundBRCENT
+			id: brmanualreg
+			text: root.backgroundBRManualReg
 	Button:
 		size_hint_y:.1
 		text: 'Close'

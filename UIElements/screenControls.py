@@ -14,57 +14,44 @@ def adjust_background(self, increment):
     '''
     img = self.data.backgroundImage
     if img is not None:
-        img = img.astype('int16')       #Expand the range
-        img += increment                #Do the math
-        np.clip(img, 0, 255, out=img)   #Clip the image (no wrapping!)
-        img = img.astype('uint8')       #Convert it back
-        self.data.backgroundImage = img #Reset it
+        img = img.astype('int16')        # Expand the range
+        img += increment                 # Do the math
+        np.clip(img, 0, 255, out=img)    # Clip the image (no wrapping!)
+        img = img.astype('uint8')        # Convert it back
+        self.data.backgroundImage = img  # Reset it
+        # Trigger a reload
+    self.data.gcodeRedraw = True
         
-        #Trigger a reload
-    self.data.gcodeRedraw=True
-
 
 class ScreenControls(FloatLayout, MakesmithInitFuncs):
-    
-    
     def setButtonAppearance(self):
         '''
-        
         Called on creation to set up links to button background textures
-        
         '''
-        self.actionsBtn.btnBackground            = self.data.iconPath + 'Generic.png'
-        self.actionsBtn.textColor                = self.data.fontColor
-        self.settingsBtn.btnBackground           = self.data.iconPath + 'Generic.png'
-        self.settingsBtn.textColor               = self.data.fontColor
-
-        #For some reason, my +/- buttons didn't work with the old way, so I'll set everything.
+        self.actionsBtn.btnBackground = self.data.iconPath + 'Generic.png'
+        self.actionsBtn.textColor = self.data.fontColor
+        self.settingsBtn.btnBackground = self.data.iconPath + 'Generic.png'
+        self.settingsBtn.textColor = self.data.fontColor
+        # For some reason, my +/- buttons didn't work with the old way
+        # so I'll set everything.
         for widget in self.walk():
             if "ButtonTemplate"in str(type(widget)):
-                widget.btnBackground            = self.data.iconPath + 'Generic.png'
-                widget.textColor                = self.data.fontColor
-         
+                widget.btnBackground = self.data.iconPath + 'Generic.png'
+                widget.textColor = self.data.fontColor
     
     def openSettings(self):
         '''
-        
         Open the settings panel to manually change settings
-        
         '''
-        
-        #force the settings panel to update
+        # Force the settings panel to update
         App.get_running_app().destroy_settings()
-        
-        #open the settings panel
+        # Open the settings panel
         App.get_running_app().open_settings()
     
     def show_actions(self):
         '''
-        
         Open A Pop-up To Allow User Actions
-        
         Creates a new pop-up allows the user to do things like open a file.
-        
         '''
         content = OtherFeatures()
         content.setUpData(self.data)
@@ -86,17 +73,18 @@ class ScreenControls(FloatLayout, MakesmithInitFuncs):
         content = BackgroundMenu(self.data)
         content.setUpData(self.data)
         content.close = self.close_actions
-        self._popup = Popup(title="Background Picture", content=content, size_hint = (0.5,0.5))
+        self._popup = Popup(title="Background Picture", content=content,
+                            size_hint=(0.5, 0.5))
         self._popup.open()
         
     def brighten_background(self):
         '''
         Brighten the background
         '''
-        adjust_background(self,20)
+        adjust_background(self, 20)
         
     def darken_background(self):
         '''
         Darken the background
         '''
-        adjust_background(self,-20)
+        adjust_background(self, -20)

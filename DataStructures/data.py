@@ -51,9 +51,8 @@ class Data(EventDispatcher):
     #Persist, No save:
     backgroundImage = None  #CV2 images for the textures - marked
     originalimage = None    #and original
-    backgroundLastFile = StringProperty("") #Last file loaded for the background
-    backgroundClock = None                  #And a saver for the Periodic Update clock.
-    centers = []
+    backgroundAlignment = []
+    backgroundManualReg = []
     gcodeRedraw = BooleanProperty(False)    #Signal to redraw the g-code from buffers
     
     '''

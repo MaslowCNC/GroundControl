@@ -218,10 +218,10 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
                 texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte') # and blit the buffer -- note that OpenCV format is BGR
 
                 #The coordinates are for the bottom-left corner.  This code duplicates the backgroundMenu:processBackground logic
-                TL=self.data.backgroundTLPOS
-                TR=self.data.backgroundTRPOS
-                BL=self.data.backgroundBLPOS
-                BR=self.data.backgroundBRPOS
+                TL = self.data.backgroundAlignment[0]
+                TR = self.data.backgroundAlignment[1]
+                BL = self.data.backgroundAlignment[2]
+                BR = self.data.backgroundAlignment[3]
                 
                 leftmost = min(TL[0],BL[0])
                 rightmost=max(TR[0],BR[0])
