@@ -416,6 +416,13 @@ settings = {
                 "default": .28
             },
             {
+                "type": "string",
+                "title": "Proportional Weighting for Z-Axis",
+                "desc": "The ratio of Proportional on Error (1) to Proportional on Measure (0)",
+                "key": "propWeightZ",
+                "default": 1
+            },
+            {
                 "type": "options",
                 "title": "PWM frequency for motor control",
                 "desc": "The PWM frequence used for motor speed control",
@@ -470,7 +477,7 @@ settings = {
                 "default": ".45"
             }
         ],
-    "Computed Settings": #These are setting calculated from the user inputs on other settings, they are not direclty seen by the user
+    "Computed Settings": #These are setting calculated from the user inputs on other settings, they are not directly seen by the user
         [
             {
                 "type": "string",
