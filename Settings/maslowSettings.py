@@ -572,6 +572,23 @@ settings = {
                 "key": "distPerRotRightChainTolerance",
                 "firmwareKey": 41
             }
+        ],
+    "Background Settings":
+        [
+            {
+                "type": "string",
+                "title": "Background File or Directory",
+                "desc": "Current background file",
+                "key": "backgroundFile",
+                "default": ""
+            },
+            {
+                "type": "list",
+                "title": "Manual Registration",
+                "desc": "Relative corner coords for image correction",
+                "key": "manualReg",
+                "default": []
+            },
         ]
 }
 
