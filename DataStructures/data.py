@@ -47,6 +47,12 @@ class Data(EventDispatcher):
     gcodeShift = ObjectProperty([0.0,0.0])                          #the amount that the gcode has been shifted
     logger     =  Logger()                                          #the module which records the machines behavior to review later
     
+    # Background image stuff, persist but not saved
+    backgroundFile = None
+    backgroundTexture = None
+    backgroundManualReg = []
+    backgroundRedraw = BooleanProperty(False)
+    
     '''
     Flags
     '''
