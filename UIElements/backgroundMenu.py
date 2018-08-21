@@ -21,6 +21,8 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
     def updateAlignmentInConfig(self):
         self.data.config.set('Background Settings', 'manualReg',
                              self.data.backgroundManualReg)
+        self.data.config.set('Background Settings', 'backgroundfile',
+                             str(self.data.backgroundFile))
         self.data.config.write()
 
     def openBackground(self):
@@ -121,9 +123,6 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
             filename = instance.path
         # Save the file in the config...
         self.data.backgroundFile = filename
-        self.data.config.set('Background Settings',
-                             'backgroundfile', str(self.data.backgroundFile))
-        self.data.config.write()
         # close the open file popup
         self.dismiss_popup()
         # new image loaded so clear manual alignment centers
