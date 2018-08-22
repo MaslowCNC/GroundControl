@@ -16,6 +16,8 @@ from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
 from UIElements.modernMenu                   import ModernMenu
 from kivy.metrics                            import dp
+from kivy.graphics.texture                   import Texture
+from kivy.graphics							 import Rectangle
 
 import re
 import math
@@ -53,7 +55,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Window.bind(on_resize = self.centerCanvas)
 
         self.data.bind(gcode = self.updateGcode)
-        self.data.bind(gcodeShift = self.reloadGcode)
+        self.data.bind(backgroundRedraw = self.updateGcode)
+        self.data.bind(gcodeShift = self.reloadGcode)              #No need to reload if the origin is changed, just clear and redraw
         self.data.bind(gcodeFile = self.centerCanvasAndReloadGcode)
         
         global_variables._keyboard = Window.request_keyboard(self._keyboard_closed, self)
@@ -215,6 +218,12 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Line(points = (-width/2,0,width/2,0), dash_offset = 5, group='workspace')
             Line(points = (0, -height/2,0,height/2), dash_offset = 5, group='workspace')
     
+            texture = self.data.backgroundTexture
+            if texture is not None:
+                Rectangle(texture=texture, pos=(-width/2, -height/2), 
+                          size=(width, height),
+                          tex_coords=self.data.backgroundManualReg)
+
     def drawLine(self,gCodeLine,command):
         '''
         
@@ -565,6 +574,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         '''
         
         #reset variables 
+        self.data.backgroundRedraw = False
         self.xPosition = self.data.gcodeShift[0]*self.canvasScaleFactor
         self.yPosition = self.data.gcodeShift[1]*self.canvasScaleFactor
         self.zPosition = 0
