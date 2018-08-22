@@ -21,7 +21,7 @@ import math
 import global_variables
 import sys
 import re
-
+import json
 
 '''
 
@@ -43,6 +43,7 @@ from DataStructures.data          import   Data
 from Connection.nonVisibleWidgets import   NonVisibleWidgets
 from UIElements.notificationPopup import   NotificationPopup
 from Settings                     import   maslowSettings
+from UIElements.backgroundMenu    import   BackgroundMenu
 '''
 
 Main UI Program
@@ -116,6 +117,14 @@ class GroundControlApp(App):
         self.data.gcodeShift = [offsetX,offsetY]
         self.data.config  = self.config
         self.config.add_callback(self.configSettingChange)
+
+        # Background image setup
+        self.data.backgroundFile = self.config.get('Background Settings',
+                                                   'backgroundFile')
+        self.data.backgroundManualReg = json.loads(
+                        self.config.get('Background Settings', 'manualReg'))
+        if self.data.backgroundFile != "":
+            BackgroundMenu(self.data).processBackground()
         
         '''
         Initializations
@@ -149,6 +158,7 @@ class GroundControlApp(App):
         config.setdefaults('Maslow Settings', maslowSettings.getDefaultValueSection('Maslow Settings'))
         config.setdefaults('Advanced Settings', maslowSettings.getDefaultValueSection('Advanced Settings'))
         config.setdefaults('Ground Control Settings', maslowSettings.getDefaultValueSection('Ground Control Settings'))
+        config.setdefaults('Background Settings', maslowSettings.getDefaultValueSection('Background Settings'))
         config.remove_callback(self.computeSettings)
         
     def build_settings(self, settings):
@@ -196,7 +206,7 @@ class GroundControlApp(App):
                     value = maslowSettings.getDefaultValue('Advanced Settings', key)
                 self.config.set('Computed Settings', key + "Main", value)
             #updated computed values for z-axis
-            for key in ('KpPosZ', 'KiPosZ', 'KdPosZ'):
+            for key in ('KpPosZ', 'KiPosZ', 'KdPosZ', 'propWeightZ'):
                 if int(self.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
                     value = float(self.config.get('Advanced Settings', key))
                 else:

@@ -4,6 +4,7 @@ from UIElements.otherFeatures                  import   OtherFeatures
 from DataStructures.makesmithInitFuncs         import   MakesmithInitFuncs
 from UIElements.buttonTemplate                 import   ButtonTemplate
 from kivy.app                                  import   App
+from UIElements.backgroundMenu                 import   BackgroundMenu
 
 
 class ScreenControls(FloatLayout, MakesmithInitFuncs):
@@ -15,10 +16,12 @@ class ScreenControls(FloatLayout, MakesmithInitFuncs):
         Called on creation to set up links to button background textures
         
         '''
-        self.actionsBtn.btnBackground            = self.data.iconPath + 'Generic.png'
-        self.actionsBtn.textColor                = self.data.fontColor
-        self.settingsBtn.btnBackground           = self.data.iconPath + 'Generic.png'
-        self.settingsBtn.textColor               = self.data.fontColor
+        self.actionsBtn.btnBackground = self.data.iconPath + 'Generic.png'
+        self.actionsBtn.textColor = self.data.fontColor
+        self.settingsBtn.btnBackground = self.data.iconPath + 'Generic.png'
+        self.settingsBtn.textColor = self.data.fontColor
+        self.backgroundBtn.btnBackground = self.data.iconPath + 'Generic.png'
+        self.backgroundBtn.textColor = self.data.fontColor
     
     def openSettings(self):
         '''
@@ -53,3 +56,14 @@ class ScreenControls(FloatLayout, MakesmithInitFuncs):
         Close pop-up
         '''
         self._popup.dismiss()
+    
+    def open_background(self):
+        '''
+        Open A Pop-up To Manage the Canvas Background
+        '''
+        content = BackgroundMenu(self.data)
+        content.setUpData(self.data)
+        content.close = self.close_actions
+        self._popup = Popup(title="Background Picture", content=content,
+                            size_hint=(0.5, 0.5))
+        self._popup.open()

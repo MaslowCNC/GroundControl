@@ -26,7 +26,7 @@ class Data(EventDispatcher):
     
     #Gcodes contains all of the lines of gcode in the opened file
     gcode      = ObjectProperty([])
-    version    = '1.19'
+    version    = '1.20'
     #all of the available COM ports
     comPorts   = []
     #This defines which COM port is used
@@ -46,6 +46,12 @@ class Data(EventDispatcher):
     tolerance  = NumericProperty(0.5)
     gcodeShift = ObjectProperty([0.0,0.0])                          #the amount that the gcode has been shifted
     logger     =  Logger()                                          #the module which records the machines behavior to review later
+    
+    # Background image stuff, persist but not saved
+    backgroundFile = None
+    backgroundTexture = None
+    backgroundManualReg = []
+    backgroundRedraw = BooleanProperty(False)
     
     '''
     Flags
