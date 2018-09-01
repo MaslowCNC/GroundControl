@@ -55,7 +55,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Window.bind(on_resize = self.centerCanvas)
 
         self.data.bind(gcode = self.updateGcode)
-        self.data.bind(backgroundRedraw = self.updateGcode)
+        self.data.bind(backgroundRedraw = self.reloadGcode)
         self.data.bind(gcodeShift = self.reloadGcode)              #No need to reload if the origin is changed, just clear and redraw
         self.data.bind(gcodeFile = self.centerCanvasAndReloadGcode)
         
