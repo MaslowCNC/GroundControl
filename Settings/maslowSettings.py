@@ -321,7 +321,7 @@ settings = {
                 "type": "string",
                 "title": "Top Beam Tilt (Experimental)",
                 "desc": "Experimental adjustment for top beam tilt in degrees\\ndefault setting: %s",
-                "key": "chainSagCorrection",
+                "key": "topBeamTilt",
                 "default": 0,
                 "firmwareKey": 43
             },
