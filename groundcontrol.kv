@@ -1697,6 +1697,8 @@
     rotationRadiusLabel:rotationRadiusLabel
     chainSagCorrectionOffset:chainSagCorrectionOffset
     chainSagCorrectionLabel:chainSagCorrectionLabel
+    topBeamTilt:topBeamTilt
+    topBeamTiltLabel:topBeamTiltLabel
     kinematicsSelect:kinematicsSelect
 
     rows: 3
@@ -1830,6 +1832,18 @@
                 value: 0
                 disabled: root.isQuadKinematics
                 id: chainSagCorrectionOffset
+            Label:
+                text: "Top Beam Tilt"
+                text_size: self.width, self.height
+                font_size: sp(self.height)/sp(3)
+                disabled: root.isQuadKinematics
+                id: topBeamTiltLabel
+            Slider:
+                min: -.2
+                max:.2
+                value: 0
+                disabled: root.isQuadKinematics
+                id: topBeamTilt
             Label:
                 text: "Grid Size: 150mm"
                 text_size: self.width, self.height

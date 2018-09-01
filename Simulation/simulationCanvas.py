@@ -39,7 +39,7 @@ class SimulationCanvas(GridLayout):
         self.rightChainOffset.bind(value=self.onSliderChange)
         self.rotationRadiusOffset.bind(value=self.onSliderChange)
         self.chainSagCorrectionOffset.bind(value=self.onSliderChange)
-
+        self.topBeamTilt.bind(value=self.onSliderChange)
         self.vertCGDist.bind(value=self.onSliderChange)
         self.gridSize.bind(value=self.onSliderChange)
         
@@ -83,6 +83,7 @@ class SimulationCanvas(GridLayout):
         self.rightChainOffset.value = 0
         self.rotationRadiusOffset.value = 0
         self.chainSagCorrectionOffset.value = 0
+        self.topBeamTilt.value = 0
         self.gridSize.value=300
 
     def recompute(self):
@@ -390,12 +391,15 @@ class SimulationCanvas(GridLayout):
 
         self.distortedKinematics.chain2Offset = int(self.rightChainOffset.value)
         self.rightChainOffsetLabel.text = "Right Chain\nSlipped Links: " + "%.2f" % self.rightChainOffset.value + "links"
-        
+
         self.distortedKinematics.rotationDiskRadius = self.correctKinematics.rotationDiskRadius + self.rotationRadiusOffset.value
         self.rotationRadiusLabel.text = "Rotation Radius\nSpacing Error: " + "%.2f" % self.rotationRadiusOffset.value + "mm"
 
         self.distortedKinematics.chainSagCorrection = self.correctKinematics.chainSagCorrection + self.chainSagCorrectionOffset.value
         self.chainSagCorrectionLabel.text = "Chain Sag\Correction Error: " + "%.2f" % self.chainSagCorrectionOffset.value
+
+        self.distortedKinematics.topBeamTilt = self.correctKinematics.topBeamTilt + self.topBeamTilt.value
+        self.topBeamTiltLabel.text = "Top Beam Tilt: " + "%.2f" % self.topBeamTilt.value
 
         #self.machineLabel.text = "distance between sled attachments ideal: "+str(self.correctKinematics.l)+" actual: "+str(self.distortedKinematics.l)+"mm\nvertical distance between sled attachments and bit ideal: "+str(self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.s)+"mm\nvertical distance between sled attachments and CG ideal: "+str(self.correctKinematics.h3+self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.h3+self.distortedKinematics.s)+"mm\ndistance between motors ideal: "+str(self.correctKinematics.D)+" actual: "+str(self.distortedKinematics.D)+"mm"
 
