@@ -1,7 +1,7 @@
 '''
 
-This file provides a single dict which contains all of the details about the 
-various settings.  It also has a number of helper functions for interacting 
+This file provides a single dict which contains all of the details about the
+various settings.  It also has a number of helper functions for interacting
 and using the data in this dict.
 
 '''
@@ -21,7 +21,7 @@ This is the settings dict.  Its structure is:
             "desc": "A description of the setting",
             "key": "keyName", //this has to be a valid keyname
             "default": "default value",
-            "firmwareKey": 12   // if this is a setting in the firmware, this 
+            "firmwareKey": 12   // if this is a setting in the firmware, this
                                 // is the integer value of that setting
         },
         {...}
@@ -318,6 +318,14 @@ settings = {
                 "firmwareKey": 37
             },
             {
+                "type": "string",
+                "title": "Top Beam Tilt (Experimental)",
+                "desc": "Experimental adjustment for top beam tilt in degrees\\ndefault setting: %s",
+                "key": "chainSagCorrection",
+                "default": 0,
+                "firmwareKey": 43
+            },
+            {
                 "type": "bool",
                 "title": "Enable Custom Positional PID Values",
                 "desc": "Enable using custom values for the positional PID controller. Turning this off will return to the default values",
@@ -608,7 +616,7 @@ settings = {
 
 def getJSONSettingSection(section):
     '''
-    This generates a JSON string which is used to construct the Kivy config 
+    This generates a JSON string which is used to construct the Kivy config
     panel
     '''
     options = []
@@ -623,7 +631,7 @@ def getJSONSettingSection(section):
 
 def getDefaultValueSection(section):
     '''
-    Returns a dict with the settings keys as the key and the default value 
+    Returns a dict with the settings keys as the key and the default value
     of that setting as the value for the section specified
     '''
     ret = {}
@@ -676,10 +684,9 @@ def syncFirmwareKey(firmwareKey, value, data):
 
 def isClose(a, b, rel_tol=1e-06):
     '''
-    Takes two values and returns true if values are close enough in value 
-    such that the difference between them is less than the significant 
+    Takes two values and returns true if values are close enough in value
+    such that the difference between them is less than the significant
     figure specified by rel_tol.  Useful for comparing float values on
     arduino adapted from https://stackoverflow.com/a/33024979
     '''
     return abs(a-b) <= rel_tol * max(abs(a), abs(b))
-    
