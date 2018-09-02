@@ -312,7 +312,7 @@ settings = {
             {
                 "type": "string",
                 "title": "Chain Sag Correction Value for Triangular Kinematics",
-                "desc": "The scaled value computed by the calibration process to calculate chain sag based on sled weight, chain weight, and workspace angle\\ndefault setting: %s",
+                "desc": "The scaled value computed by the calibration process to calculate chain sag based on sled weight, chain weight, and workspace angle",
                 "key": "chainSagCorrection",
                 "default": 0,
                 "firmwareKey": 37
@@ -320,7 +320,7 @@ settings = {
             {
                 "type": "string",
                 "title": "Top Beam Tilt (Experimental)",
-                "desc": "Experimental adjustment for top beam tilt in degrees\\ndefault setting: %s",
+                "desc": "Experimental adjustment for top beam tilt in degrees",
                 "key": "topBeamTilt",
                 "default": 0,
                 "firmwareKey": 43
