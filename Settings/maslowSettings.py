@@ -175,6 +175,13 @@ settings = {
         [
             {
                 "type": "string",
+                "title": "Max touch Z-axis plunge",
+                "desc": "Max depth the z axis should plunge in order to find the touch probe",
+                "key": "maxTouchProbePlungeDistance",
+                "default": 0.0,
+	    },
+            {
+                "type": "string",
                 "title": "Encoder Steps per Revolution",
                 "desc": "The number of encoder steps per revolution of the left or right motor",
                 "key": "encoderSteps",
