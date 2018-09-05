@@ -58,8 +58,7 @@ class BackgroundMenu(GridLayout, MakesmithInitFuncs):
         self.close()
 
     def processBackground(self):
-        if self.data.backgroundFile == "" or os.path.isdir(
-                                                self.data.backgroundFile):
+        if self.data.backgroundFile == "" or os.path.isdir(self.data.backgroundFile) or not os.path.isfile(self.data.backgroundFile):
             self.data.backgroundTexture = None
             self.data.backgroundManualReg = []
             self.updateAlignmentInConfig()

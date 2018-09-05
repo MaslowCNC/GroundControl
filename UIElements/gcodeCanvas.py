@@ -17,7 +17,7 @@ from kivy.core.window                        import Window
 from UIElements.modernMenu                   import ModernMenu
 from kivy.metrics                            import dp
 from kivy.graphics.texture                   import Texture
-from kivy.graphics							 import Rectangle
+from kivy.graphics                           import Rectangle
 
 import re
 import math
@@ -55,7 +55,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             Window.bind(on_resize = self.centerCanvas)
 
         self.data.bind(gcode = self.updateGcode)
-        self.data.bind(backgroundRedraw = self.updateGcode)
+        self.data.bind(backgroundRedraw = self.reloadGcode)
         self.data.bind(gcodeShift = self.reloadGcode)              #No need to reload if the origin is changed, just clear and redraw
         self.data.bind(gcodeFile = self.centerCanvasAndReloadGcode)
         
@@ -118,8 +118,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         
         filename = self.data.gcodeFile
         if filename is "": #Blank the g-code if we're loading "nothing"
-			self.data.gcode = ""
-			return
+            self.data.gcode = ""
+            return
 
         try:
             filterfile = open(filename, 'r')
