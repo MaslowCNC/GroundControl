@@ -139,10 +139,12 @@ class ZAxisPopupContent(GridLayout):
         Probe for Zero Z
         '''
         self.setMachineUnits()
+	plungeDepth = self.data.config.get('Advanced Settings', 'maxTouchProbePlungeDistance')
+
         if self.data.units == "INCHES":
-            self.data.gcode_queue.put("G38.2 Z-.2 F2")    #Only go down 0.2 inches...
+            self.data.gcode_queue.put("G20 G90 G38.2 Z-" + plungeDepth + " F1 G20 G90 M02")   
         else:
-            self.data.gcode_queue.put("G38.2 Z-5 F50")  #Or 5mm.
+            self.data.gcode_queue.put("G21 G90 G38.2 Z-" + plungeDepth + " F1 G21 G90 M02")  
         self.resetMachineUnits()
             
     
