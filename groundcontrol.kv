@@ -1119,7 +1119,7 @@
         size_hint_x: leftCol
         Label:
             text: "To refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short horizontal cuts and two short vertical cuts\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe size of bit used is not critical\nMeasure to any point on the mark as long as you are consistent\n\nThe process will repeat until both measurements are equal to within .5mm\nThe more accurate your measurements, the more accurate your machine will be\n\nPress Cut Test Pattern to begin"
-            
+
             text_size: self.size
             valign: 'middle'
         GridLayout:
@@ -1697,6 +1697,12 @@
     rotationRadiusLabel:rotationRadiusLabel
     chainSagCorrectionOffset:chainSagCorrectionOffset
     chainSagCorrectionLabel:chainSagCorrectionLabel
+    topBeamTilt:topBeamTilt
+    topBeamTiltLabel:topBeamTiltLabel
+    leftChainTolerance:leftChainTolerance
+    leftChainToleranceLabel:leftChainToleranceLabel
+    rightChainTolerance:rightChainTolerance
+    rightChainToleranceLabel:rightChainToleranceLabel
     kinematicsSelect:kinematicsSelect
 
     rows: 3
@@ -1831,6 +1837,42 @@
                 disabled: root.isQuadKinematics
                 id: chainSagCorrectionOffset
             Label:
+                text: "Top Beam Tilt"
+                text_size: self.width, self.height
+                font_size: sp(self.height)/sp(3)
+                disabled: root.isQuadKinematics
+                id: topBeamTiltLabel
+            Slider:
+                min: -.2
+                max:.2
+                value: 0
+                disabled: root.isQuadKinematics
+                id: topBeamTilt
+            Label:
+                text: "Left Chain Tolerance"
+                text_size: self.width, self.height
+                font_size: sp(self.height)/sp(3)
+                disabled: root.isQuadKinematics
+                id: leftChainToleranceLabel
+            Slider:
+                min: 0
+                max:0.05
+                value: 0
+                disabled: root.isQuadKinematics
+                id: leftChainTolerance
+            Label:
+                text: "Right Chain Tolerance"
+                text_size: self.width, self.height
+                font_size: sp(self.height)/sp(3)
+                disabled: root.isQuadKinematics
+                id: rightChainToleranceLabel
+            Slider:
+                min: 0
+                max:0.1
+                value: 0
+                disabled: root.isQuadKinematics
+                id: rightChainTolerance
+            Label:
                 text: "Grid Size: 150mm"
                 text_size: self.width, self.height
                 font_size: sp(self.height)/sp(3)
@@ -1840,6 +1882,7 @@
                 max:300
                 value: 300
                 id: gridSize
+
 
             Button:
                 text: "Reset All"
@@ -1869,7 +1912,7 @@
         text: 'Close'
         on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
         on_release: root.close()
-					
+
 <BackgroundPickDlg>
     imWidg:imWidg
     cols: 1
