@@ -318,6 +318,14 @@ settings = {
                 "firmwareKey": 37
             },
             {
+                "type": "bool",
+                "title": "Use Calibration Error Matrix (Experimental)",
+                "desc": "Enable modifying x,y coordinates during calculations to account for errors determined by optical calibration",
+                "key": "enableOpticalCalibration",
+                "default": 0,
+                "firmwareKey:": 44
+            },
+            {
                 "type": "string",
                 "title": "Top Beam Tilt (Experimental)",
                 "desc": "Experimental adjustment for top beam tilt in degrees",
@@ -593,6 +601,12 @@ settings = {
                 "type": "string",
                 "key": "distPerRotRightChainTolerance",
                 "firmwareKey": 41
+            },
+            {
+                "type": "string",
+                "key": "xyErrorArray",
+                "default": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+                "firmwareKey": 45
             }
         ],
     "Background Settings":
@@ -675,8 +689,10 @@ def syncFirmwareKey(firmwareKey, value, data):
                         storedValue = 3
                     else:
                         storedValue = 0
-
-                if not isClose(float(storedValue), value):
+                if ( (firmwareKey == 45) ):
+                    if (storedValue != ""):
+                        sendErrorArray(firmwareKey, storedValue)
+                elif not isClose(float(storedValue), value):
                     data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(storedValue))
                 else:
                     break
@@ -690,3 +706,54 @@ def isClose(a, b, rel_tol=1e-06):
     arduino adapted from https://stackoverflow.com/a/33024979
     '''
     return abs(a-b) <= rel_tol * max(abs(a), abs(b))
+
+def parseErrorArray(value):
+
+    #not the best programming, but I think it'll work
+    xErrors = [[0 for x in range(15)] for y in range(31)]
+    yErrors = [[0 for x in range(15)] for y in range(32)]
+
+    index = 0
+    xCounter = 0
+    yCounter = 0
+    val = ""
+    while (index < len(value) ):
+        while ( (index < len(value) ) and ( value[index] != ',') ):
+            val += value[index]
+            index += 1
+        index += 1
+        xErrors[xCounter][yCounter] = int(val)
+        #print str(xCounter)+", "+str(yCounter)+", "+str(xErrors[xCounter][yCounter])
+        val=""
+        xCounter += 1
+        if (xCounter == 31):
+            xCounter = 0
+            yCounter += 1
+        if (yCounter == 15):
+            xCounter = 0
+            yCounter = 0
+            while ( (index < len(value) ) and ( value[index] != ',') ):
+                val += value[index]
+                index += 1
+            index += 1
+            yErrors[xCounter][yCounter]
+            val=""
+            xCounter += 1
+            if (xCounter == 31):
+                xCounter = 0
+                yCounter += 1
+            if (yCounter == 15):
+                break;
+
+    return xErrors, yErrors
+
+def sendErrorArray(firmwareKey, value):
+    # parse out the array from string and then send them using the $O command
+    xErrors, yErrors = parseErrorArray(value)
+
+
+    # now send the array:
+
+    for x in range(0, 31):
+        for y in range (0, 15):
+            data.gcode_queue.put("$O=" + str(x)+","+str(y)+","+str(xErrors[x][y])+","+str(yErrors[x][y])+" ")

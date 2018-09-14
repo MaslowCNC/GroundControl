@@ -391,7 +391,7 @@
             Spinner:
                 id: advancedOptions
                 text: "Advanced"
-                values: ["Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test", "Run Triangular Test Cut Pattern", "Reset settings to defaults", "Compute chain calibration factors"]
+                values: ["Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test", "Run Triangular Test Cut Pattern", "Reset settings to defaults", "Compute chain calibration factors", "Optical Calibration"]
                 on_text: root.advancedOptionsFunctions(advancedOptions.text)
 
 <OtherFeatures>:
@@ -2030,3 +2030,80 @@
         self.parent.center_y +
         sin(self.opacity * self.index * 2 * pi / self.siblings) * self.radius
         ) if (self.size and self.parent and self.parent.children) else (0, 0)
+
+<OpticalCalibrationCanvas>:
+    rows: 3
+    Label:
+        text: "This calibration routine is designed to utilize a camera to assess errors"
+        size_hint_y:.1
+    GridLayout:
+        cols:2
+        BoxLayout:
+            orientation: 'vertical'
+            KivyCamera:
+                id: KivyCamera
+                resolution: (640,480)
+                play:True
+        BoxLayout:
+            orientation: 'vertical'
+            MeasuredImage:
+                id: MeasuredImage
+                resolution: (640,480)
+                play:True
+    GridLayout:
+        cols:2
+        GridLayout:
+            rows: 5
+            Label:
+                id: OpticalCalibrationDistance
+                text: "Pixels/Inch: (Please Calibrate)"
+        GridLayout:
+            rows: 5
+            GridLayout:
+                cols: 3
+                Button:
+                    text: "Calibrate"
+                    on_release: root.on_Measure(True)
+                Button:
+                    id: OpticalCalibrationMeasureButton
+                    text: "Measure"
+                    on_release: root.on_Measure(False)
+                    disabled: True
+                Button:
+                    text: "Exit"
+                    on_release: root.do_Exit()
+            GridLayout:
+                cols: 3
+                Label:
+                    text: "Move To:"
+                Label:
+                Label:
+                Button:
+                    text: "[-2,+2]"
+                    on_release: root.on_MoveandMeasure(False,0,0)
+                Button:
+                    text: "[0,+2]"
+                    on_release: root.on_MoveandMeasure(False,1,0)
+                Button:
+                    text: "[+2,+2]"
+                    on_release: root.on_MoveandMeasure(False,2,0)
+
+                Button:
+                    text: "[-2,0]"
+                    on_release: root.on_MoveandMeasure(False,0,1)
+                Button:
+                    text: "[0,0]"
+                    on_release: root.on_MoveandMeasure(False,1,1)
+                Button:
+                    text: "[+2,0]"
+                    on_release: root.on_MoveandMeasure(False,2,1)
+
+                Button:
+                    text: "[-2,-2]"
+                    on_release: root.on_MoveandMeasure(False,0,2)
+                Button:
+                    text: "[0,-2]"
+                    on_release: root.on_MoveandMeasure(False,1,2)
+                Button:
+                    text: "[+2,-2]"
+                    on_release: root.on_MoveandMeasure(False,2,2)
