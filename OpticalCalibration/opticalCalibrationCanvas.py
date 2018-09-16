@@ -7,6 +7,7 @@ from kivy.core.window                        import Window
 from kivy.graphics.transformation            import Matrix
 from kivy.clock                              import Clock
 from kivy.uix.image                          import Image
+from kivy.app                                import   App
 from Settings                                import maslowSettings
 from functools                               import partial
 from scipy.spatial                           import distance as dist
@@ -18,6 +19,7 @@ import cv2
 import time
 import re
 import math
+import global_variables
 
 class KivyCamera(Image):
     def __init__(self, **kwargs):
@@ -69,22 +71,25 @@ class OpticalCalibrationCanvas(GridLayout):
     refObj = None
     D = 0
     done = ObjectProperty(None)
-    currentX, currentX = 0, 0
+    currentX, currentY = 0, 0
     calX = 0
     calY = 0
-    matrixSize = (3, 3)
+    matrixSize = (31, 15)
     calErrorsX = np.zeros(matrixSize)
     calErrorsY = np.zeros(matrixSize)
-    calPositionsX = [ -2, 0, 2 ]
-    calPositionsY = [ +2, 0, -2 ]
+    _calErrorsX = np.zeros(matrixSize)
+    _calErrorsY = np.zeros(matrixSize)
+
     markerWidth         = 0.5*25.4
+    inAutoMode = False
+    inAutoModeForFirstTime = True
+
 
     #def initialize(self):
 
     def initialize(self):
-#        App.get_running_app().data.config.set('Advanced Settings', 'chainOverSprocket', 'Top')
         xyErrors = self.data.config.get('Computed Settings', 'xyErrorArray')
-        xErrors, yErrors = maslowSettings.parseErrorArray(xyErrors)
+        self.calErrorsX, self.calErrorsY = maslowSettings.parseErrorArray(xyErrors, True)
         #print str(xErrors[2][0])
         self.capture = cv2.VideoCapture(0)
         if self.capture.isOpened():
@@ -105,22 +110,22 @@ class OpticalCalibrationCanvas(GridLayout):
             self.capture = None
             self.parent.parent.parent.dismiss()
 
-    def on_MoveandMeasure(self, doCalibrate, posX, posY):
-        if posX != None:
+    def on_MoveandMeasure(self, doCalibrate, _posX, _posY):
+        if _posX != None:
             #move to posX, posY.. put in absolute mode
-            self.currentX = posX
-            self.currentY = posY
-            posX=self.calPositionsX[posX]
-            posY=self.calPositionsY[posY]
-
-            print posX
-            print posY
+            self.currentX = _posX#+15
+            self.currentY = _posY#7-_posY
+            print "_posX="+str(_posX)+", _posY="+str(_posY)
+            posX = _posX*3.0
+            posY = _posY*3.0
+            #posX=self.calPositionsX[posX]
+            #posY=self.calPositionsY[posY]
+            print "posX="+str(posX)+", _posY="+str(posY)
             if posY >= -18 and posY <= 18  and posX >= -42 and posX <= 42:
                 print "Moving to:[{}, {}]".format(posX,posY)
                 self.data.units = "INCHES"
                 self.data.gcode_queue.put("G20 ")
                 self.data.gcode_queue.put("G90  ")
-                self.data.gcode_queue.put("G17  ")
                 self.data.gcode_queue.put("G0 X"+str(posX)+" Y"+str(posY)+"  ")
                 self.data.gcode_queue.put("G91  ")
                 if doCalibrate:
@@ -130,6 +135,21 @@ class OpticalCalibrationCanvas(GridLayout):
                 #request a measurement
                 self.data.gcode_queue.put("B10 L")
 
+    def on_AutoMeasure(self):
+        self.inAutoMode = True
+        if (self.inAutoModeForFirstTime==True):
+            self.currentX=-1
+            self.currentY=1
+            self.inAutoModeForFirstTime=False
+        else:
+            self.currentX += 1
+            if (self.currentX==2):
+                self.currentX = -1
+                self.currentY -= 1
+        if (self.currentY!=-2):
+            self.on_MoveandMeasure(False, self.currentX, self.currentY)
+        else:
+            self.inAutoMode = False
 
     def on_MeasureandCalibrate(self, dist):
         print "MeasureandCalibrate"
@@ -194,9 +214,9 @@ class OpticalCalibrationCanvas(GridLayout):
                     print "Distance = "
                     print self.D
                     self.ids.OpticalCalibrationMeasureButton.disabled = False
+                    self.ids.OpticalCalibrationAutoMeasureButton.disabled = False
                     self.ids.OpticalCalibrationDistance.text = "mm/Pixel: {:.3f}".format(self.D)
-
-                print "here"
+                    self.inAutoModeForFirstTime = True
 
 		cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
 
@@ -213,22 +233,45 @@ class OpticalCalibrationCanvas(GridLayout):
                 cv2.line(orig, (xA, yA), (int(xB), int(yB)), colors[0], 2)
                 Dist = dist.euclidean((xA, yA), (xB, yB)) / self.D
                 Dx = dist.euclidean((xA,0), (xB,0))/self.D
+                if (xA>xB):
+                    Dx *= -1
                 Dy = dist.euclidean((0,yA), (0,yB))/self.D
+                if (yA<yB):
+                    Dy *= -1
                 (mX, mY) = self.midpoint((xA, yA), (xB, yB))
-                cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}in".format(Dx,Dy,Dist), (int(mX), int(mY - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+                cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}mm".format(Dx,Dy,Dist), (int(mX), int(mY - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
                 if doCalibrate:
                     print "At calX,calY"
                     self.calX=Dx
                     self.calY=Dy
                 else:
-                    self.calErrorsX[self.currentX][self.currentY] = Dx-self.calX
-                    self.calErrorsY[self.currentX][self.currentY] = Dy-self.calY
+                    self.calErrorsX[self.currentX+15][7-self.currentY] = Dx#-self.calX
+                    self.calErrorsY[self.currentX+15][7-self.currentY] = Dy#-self.calY
 
-                self.ids.OpticalCalibrationDistance.text = "Pixel\Inch: {:.3f}\nCal Error({:.3f},{:.3f})\n".format(self.D, self.calX, self.calY)
-                self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] [{:.3f},{:.3f}] [{:.3f},{:.3f}]\n".format(self.calErrorsX[0][0], self.calErrorsY[0][0], self.calErrorsX[1][0], self.calErrorsY[1][0], self.calErrorsX[2][0], self.calErrorsY[2][0])
-                self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] [{:.3f},{:.3f}] [{:.3f},{:.3f}]\n".format(self.calErrorsX[0][1], self.calErrorsY[0][1], self.calErrorsX[1][1], self.calErrorsY[1][1], self.calErrorsX[2][1], self.calErrorsY[2][1])
-                self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] [{:.3f},{:.3f}] [{:.3f},{:.3f}]\n".format(self.calErrorsX[0][2], self.calErrorsY[0][2], self.calErrorsX[1][2], self.calErrorsY[1][2], self.calErrorsX[2][2], self.calErrorsY[2][2])
+                self.ids.OpticalCalibrationDistance.text = "Pixel\mm: {:.3f}\nCal Error({:.3f},{:.3f})\n".format(self.D, self.calX, self.calY)
+                self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] [{:.3f},{:.3f}] [{:.3f},{:.3f}]\n".format(self.calErrorsX[14][6], self.calErrorsY[14][6], self.calErrorsX[15][6], self.calErrorsY[15][6], self.calErrorsX[16][6], self.calErrorsY[16][6])
+                self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] [{:.3f},{:.3f}] [{:.3f},{:.3f}]\n".format(self.calErrorsX[14][7], self.calErrorsY[14][7], self.calErrorsX[15][7], self.calErrorsY[15][7], self.calErrorsX[16][7], self.calErrorsY[16][7])
+                self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] [{:.3f},{:.3f}] [{:.3f},{:.3f}]\n".format(self.calErrorsX[14][8], self.calErrorsY[14][8], self.calErrorsX[15][8], self.calErrorsY[15][8], self.calErrorsX[16][8], self.calErrorsY[16][8])
 
             print "Updating MeasuredImage"
             #cv2.imshow("Image", orig)
             self.ids.MeasuredImage.update(orig)
+            if (self.inAutoMode):
+                self.on_AutoMeasure()
+
+    def on_SaveAndSend(self):
+        _str = ""
+        _strcomma = ""
+        for z in range(2):
+            for y in range(15):
+                for x in range(31):
+                    if ((x==30) and (y==14) and (z==1)):
+                        _strcomma = ""
+                    else:
+                        _strcomma = ","
+                    if (z==0):
+                        _str += str(int(self.calErrorsX[x][y]*1000))+_strcomma
+                    else:
+                        _str += str(int(self.calErrorsY[x][y]*1000))+_strcomma
+        print _str
+        App.get_running_app().data.config.set('Computed Settings', 'xyErrorArray', _str)

@@ -2060,7 +2060,7 @@
         GridLayout:
             rows: 5
             GridLayout:
-                cols: 3
+                cols: 4
                 Button:
                     text: "Calibrate"
                     on_release: root.on_Measure(True)
@@ -2069,6 +2069,14 @@
                     text: "Measure"
                     on_release: root.on_Measure(False)
                     disabled: True
+                Button:
+                    id: OpticalCalibrationAutoMeasureButton
+                    text: "Automatic"
+                    on_release: root.on_AutoMeasure()
+                    disabled: True
+                Button:
+                    text: "Save and Send"
+                    on_release: root.on_SaveAndSend()
                 Button:
                     text: "Exit"
                     on_release: root.do_Exit()
@@ -2079,31 +2087,31 @@
                 Label:
                 Label:
                 Button:
-                    text: "[-2,+2]"
-                    on_release: root.on_MoveandMeasure(False,0,0)
+                    text: "[-1,+1]"
+                    on_release: root.on_MoveandMeasure(False,-1,1)
                 Button:
-                    text: "[0,+2]"
-                    on_release: root.on_MoveandMeasure(False,1,0)
-                Button:
-                    text: "[+2,+2]"
-                    on_release: root.on_MoveandMeasure(False,2,0)
-
-                Button:
-                    text: "[-2,0]"
+                    text: "[0,+1]"
                     on_release: root.on_MoveandMeasure(False,0,1)
                 Button:
-                    text: "[0,0]"
+                    text: "[+1,+1]"
                     on_release: root.on_MoveandMeasure(False,1,1)
-                Button:
-                    text: "[+2,0]"
-                    on_release: root.on_MoveandMeasure(False,2,1)
 
                 Button:
-                    text: "[-2,-2]"
-                    on_release: root.on_MoveandMeasure(False,0,2)
+                    text: "[-1,0]"
+                    on_release: root.on_MoveandMeasure(False,-1,0)
                 Button:
-                    text: "[0,-2]"
-                    on_release: root.on_MoveandMeasure(False,1,2)
+                    text: "[0,0]"
+                    on_release: root.on_MoveandMeasure(False,0,0)
                 Button:
-                    text: "[+2,-2]"
-                    on_release: root.on_MoveandMeasure(False,2,2)
+                    text: "[+1,0]"
+                    on_release: root.on_MoveandMeasure(False,1,0)
+
+                Button:
+                    text: "[-1,-1]"
+                    on_release: root.on_MoveandMeasure(False,-1,-1)
+                Button:
+                    text: "[0,-1]"
+                    on_release: root.on_MoveandMeasure(False,0,-1)
+                Button:
+                    text: "[+1,-1]"
+                    on_release: root.on_MoveandMeasure(False,1,-1)
