@@ -2060,7 +2060,7 @@
         GridLayout:
             rows: 5
             GridLayout:
-                cols: 4
+                cols: 5
                 Button:
                     text: "Calibrate"
                     on_release: root.on_Measure(True)
@@ -2071,12 +2071,18 @@
                     disabled: True
                 Button:
                     id: OpticalCalibrationAutoMeasureButton
-                    text: "Automatic"
-                    on_release: root.on_AutoMeasure()
+                    text: "Auto Home"
+                    on_release: root.on_AutoHome()
                     disabled: True
                 Button:
                     text: "Save and Send"
                     on_release: root.on_SaveAndSend()
+                Button:
+                    text: "Wipe Controller"
+                    on_release: root.on_WipeController()
+                Button:
+                    text: "Center On Square"
+                    on_release: root.on_CenterOnSquare()
                 Button:
                     text: "Exit"
                     on_release: root.do_Exit()
@@ -2088,30 +2094,39 @@
                 Label:
                 Button:
                     text: "[-1,+1]"
-                    on_release: root.on_MoveandMeasure(False,-1,1)
+                    #on_release: root.on_MoveandMeasure(False,-1,1)
+                    on_release: root.on_HomeToPos(-1,1)
                 Button:
                     text: "[0,+1]"
-                    on_release: root.on_MoveandMeasure(False,0,1)
+                    #on_release: root.on_MoveandMeasure(False,0,1)
+                    on_release: root.on_HomeToPos(0,1)
                 Button:
                     text: "[+1,+1]"
-                    on_release: root.on_MoveandMeasure(False,1,1)
+                    #on_release: root.on_MoveandMeasure(False,1,1)
+                    on_release: root.on_HomeToPos(1,1)
 
                 Button:
                     text: "[-1,0]"
-                    on_release: root.on_MoveandMeasure(False,-1,0)
+                    #on_release: root.on_MoveandMeasure(False,-1,0)
+                    on_release: root.on_HomeToPos(-1,0)
                 Button:
                     text: "[0,0]"
-                    on_release: root.on_MoveandMeasure(False,0,0)
+                    #on_release: root.on_MoveandMeasure(False,0,0)
+                    on_release: root.on_HomeToPos(0,0)
                 Button:
                     text: "[+1,0]"
-                    on_release: root.on_MoveandMeasure(False,1,0)
+                    #on_release: root.on_MoveandMeasure(False,1,0)
+                    on_release: root.on_HomeToPos(1,0)
 
                 Button:
                     text: "[-1,-1]"
-                    on_release: root.on_MoveandMeasure(False,-1,-1)
+                    #on_release: root.on_MoveandMeasure(False,-1,-1)
+                    on_release: root.on_HomeToPos(-1,-1)
                 Button:
                     text: "[0,-1]"
-                    on_release: root.on_MoveandMeasure(False,0,-1)
+                    #on_release: root.on_MoveandMeasure(False,0,-1)
+                    on_release: root.on_HomeToPos(0,-1)
                 Button:
                     text: "[+1,-1]"
-                    on_release: root.on_MoveandMeasure(False,1,-1)
+                    #on_release: root.on_MoveandMeasure(False,1,-1)
+                    on_release: root.on_HomeToPos(1,-1)
