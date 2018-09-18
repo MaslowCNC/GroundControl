@@ -7,7 +7,10 @@ from kivy.core.window                        import Window
 from kivy.graphics.transformation            import Matrix
 from kivy.clock                              import Clock
 from kivy.uix.image                          import Image
-from kivy.app                                import   App
+from kivy.app                                import App
+from kivy.uix.popup                          import Popup
+from kivy.uix.label                          import Label
+from UIElements.notificationPopup            import NotificationPopup
 from Settings                                import maslowSettings
 from functools                               import partial
 from scipy.spatial                           import distance as dist
@@ -19,6 +22,7 @@ import cv2
 import time
 import re
 import math
+import sys
 import global_variables
 
 class KivyCamera(Image):
@@ -202,19 +206,16 @@ class OpticalCalibrationCanvas(GridLayout):
                 yA = int(height/2)
 
                 orig = image.copy()
+                #orig = edged.copy()
+                #orig = cv2.cvtColor(orig, cv2.COLOR_GRAY2BGR)
                 #find max contours
                 maxArea = 0
                 for cTest in cnts:
                     if (cv2.contourArea(cTest)>maxArea):
                         maxArea = cv2.contourArea(cTest)
                         c = cTest
-                #for c in cnts:
-			# if the contour is not sufficiently large, ignore it
-                    #if cv2.contourArea(c) < 100:
-                    #	continue
                 #make sure contour is large enough
                 if cv2.contourArea(c)>1000:
-
                     #approximate to a square (i.e., four contour segments)
                     tolerance = 0.01
                     while True:
@@ -222,21 +223,14 @@ class OpticalCalibrationCanvas(GridLayout):
                         if len(c)==4:
                             break
                         tolerance = tolerance+0.01
-
                     # compute the rotated bounding box of the contour
                     box = cv2.minAreaRect(c)
+                    angle = box[-1]
                     box = cv2.cv.BoxPoints(box) if imutils.is_cv2() else cv2.boxPoints(box)
                     box = np.array(box, dtype="int")
-
-                    # order the points in the contour such that they appear
-                    # in top-left, top-right, bottom-right, and bottom-left
-                    # order, then draw the outline of the rotated bounding
-                    # box
                     box = perspective.order_points(box)
-
-			# compute the center of the bounding box
-                    cX = np.average(box[:, 0])
-                    cY = np.average(box[:, 1])
+                    xB = np.average(box[:, 0])
+                    yB = np.average(box[:, 1])
 
                     if doCalibrate:
                         (tl, tr, br, bl) = box
@@ -244,33 +238,29 @@ class OpticalCalibrationCanvas(GridLayout):
                         (trbrX, trbrY) = self.midpoint(tr, br)
 
                         self.D = dist.euclidean((tlblX,tlblY),(trbrX,trbrY))/self.markerWidth
-                        print "Distance = "
-                        print self.D
                         self.ids.OpticalCalibrationMeasureButton.disabled = False
                         self.ids.OpticalCalibrationAutoMeasureButton.disabled = False
-                        self.ids.OpticalCalibrationDistance.text = "mm/Pixel: {:.3f}".format(self.D)
+                        self.ids.OpticalCalibrationDistance.text = "pixels/mm: {:.3f}".format(self.D)
                         self.inAutoModeForFirstTime = True
 
                     cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
 
-                    # stack the reference coordinates and the object coordinates
-                    # to include the object center
-                    objCoords = np.vstack([box, (cX, cY)])
+                    cv2.circle(orig, (int(xA), int(yA)), 10, colors[0], 1)
+                    cv2.line(orig, (xA, yA-15), (xA, yA+15), colors[0], 1)
+                    cv2.line(orig, (xA-15, yA), (xA+15, yA), colors[0], 1)
+                    cos = math.cos(angle*3.141592/180.0)
+                    sin = math.sin(angle*3.141592/180.0)
+                    cv2.circle(orig, (int(xB), int(yB)), 10, colors[3], 1)
+                    cv2.line(orig, (int(xB-15*cos), int(yB-15*sin)), (int(xB+15*cos), int(yB+15*sin)), colors[3], 1)
+                    cv2.line(orig, (int(xB-15*sin), int(yB+15*cos)), (int(xB+15*sin), int(yB-15*cos)), colors[3], 1)
 
-                    #for ((xB, yB), color) in zip(objCoords, colors):
-                    # draw circles corresponding to the current points and
-                    # connect them with a line
-                    xB = cX
-                    yB = cY
-                    cv2.circle(orig, (int(xB), int(yB)), 5, colors[0], -1)
-                    cv2.line(orig, (xA, yA), (int(xB), int(yB)), colors[0], 2)
                     Dist = dist.euclidean((xA, yA), (xB, yB)) / self.D
                     Dx = dist.euclidean((xA,0), (xB,0))/self.D
                     if (xA>xB):
-                        Dx *= -1
+                        Dx *= -1.0
                     Dy = dist.euclidean((0,yA), (0,yB))/self.D
                     if (yA<yB):
-                        Dy *= -1
+                        Dy *= -1.0
                     (mX, mY) = self.midpoint((xA, yA), (xB, yB))
                     dxList = np.append(dxList, [Dx])
                     dyList = np.append(dxList, [Dy])
@@ -283,30 +273,34 @@ class OpticalCalibrationCanvas(GridLayout):
                     myList[x] = mY
                     diList[x] = Dist
 
-        avgDx, stdDx = self.removeOutliersAndAverage(dxList, 0.05)
-        avgDy, stdDy = self.removeOutliersAndAverage(dyList, 0.05)
-        avgMx, stdMx = self.removeOutliersAndAverage(mxList, 0.05)
-        avgMy, stdMy = self.removeOutliersAndAverage(myList, 0.05)
-        avgDi, stdDi = self.removeOutliersAndAverage(diList, 0.05)
-        cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}mm".format(avgDx,avgDy,Dist), (int(avgMx), int(avgMy - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
-        if doCalibrate:
-            print "At calX,calY"
-            self.calX=avgDx
-            self.calY=avgDy
+        if dxList.ndim != 0 :
+            avgDx, stdDx = self.removeOutliersAndAverage(dxList, 0.05)
+            avgDy, stdDy = self.removeOutliersAndAverage(dyList, 0.05)
+            avgMx, stdMx = self.removeOutliersAndAverage(mxList, 0.05)
+            avgMy, stdMy = self.removeOutliersAndAverage(myList, 0.05)
+            avgDi, stdDi = self.removeOutliersAndAverage(diList, 0.05)
+            cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}, {:.3f}mm".format(avgDx,avgDy,avgDi,stdDi), (int(avgMx), int(avgMy - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+            if doCalibrate:
+                print "At calX,calY"
+                self.calX=avgDx
+                self.calY=avgDy
+            else:
+                self.calErrorsX[self.currentX+15][7-self.currentY] = avgDx#-self.calX
+                self.calErrorsY[self.currentX+15][7-self.currentY] = avgDy#-self.calY
+
+            self.ids.OpticalCalibrationDistance.text = "Pixel\mm: {:.3f}\nCal Error({:.3f},{:.3f})\n".format(self.D, self.calX, self.calY)
+            self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] [{:.3f},{:.3f}] [{:.3f},{:.3f}]\n".format(self.calErrorsX[14][6], self.calErrorsY[14][6], self.calErrorsX[15][6], self.calErrorsY[15][6], self.calErrorsX[16][6], self.calErrorsY[16][6])
+            self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] [{:.3f},{:.3f}] [{:.3f},{:.3f}]\n".format(self.calErrorsX[14][7], self.calErrorsY[14][7], self.calErrorsX[15][7], self.calErrorsY[15][7], self.calErrorsX[16][7], self.calErrorsY[16][7])
+            self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] [{:.3f},{:.3f}] [{:.3f},{:.3f}]\n".format(self.calErrorsX[14][8], self.calErrorsY[14][8], self.calErrorsX[15][8], self.calErrorsY[15][8], self.calErrorsX[16][8], self.calErrorsY[16][8])
+
+            print "Updating MeasuredImage"
+            #cv2.imshow("Image", orig)
+            self.ids.MeasuredImage.update(orig)
+            if (self.inAutoMode):
+                self.on_AutoMeasure()
         else:
-            self.calErrorsX[self.currentX+15][7-self.currentY] = avgDx#-self.calX
-            self.calErrorsY[self.currentX+15][7-self.currentY] = avgDy#-self.calY
-
-        self.ids.OpticalCalibrationDistance.text = "Pixel\mm: {:.3f}\nCal Error({:.3f},{:.3f})\n".format(self.D, self.calX, self.calY)
-        self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] [{:.3f},{:.3f}] [{:.3f},{:.3f}]\n".format(self.calErrorsX[14][6], self.calErrorsY[14][6], self.calErrorsX[15][6], self.calErrorsY[15][6], self.calErrorsX[16][6], self.calErrorsY[16][6])
-        self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] [{:.3f},{:.3f}] [{:.3f},{:.3f}]\n".format(self.calErrorsX[14][7], self.calErrorsY[14][7], self.calErrorsX[15][7], self.calErrorsY[15][7], self.calErrorsX[16][7], self.calErrorsY[16][7])
-        self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] [{:.3f},{:.3f}] [{:.3f},{:.3f}]\n".format(self.calErrorsX[14][8], self.calErrorsY[14][8], self.calErrorsX[15][8], self.calErrorsY[15][8], self.calErrorsX[16][8], self.calErrorsY[16][8])
-
-        print "Updating MeasuredImage"
-        #cv2.imshow("Image", orig)
-        self.ids.MeasuredImage.update(orig)
-        if (self.inAutoMode):
-            self.on_AutoMeasure()
+            popup=Popup(title="Error", content = Label(text="Could not find square"), size_hint=(None,None), size=(400,400))
+            popup.open()
 
     def removeOutliersAndAverage(self, data, _tolerance):
         mean = np.mean(data)
@@ -410,18 +404,19 @@ class OpticalCalibrationCanvas(GridLayout):
         #    self.HomingY = 0.0
         #    self.inHomingModeForFirstTime = False
         print "Analyzing Images"
-        dxList = [-9999.9 for x in range(10)]
-        dyList = [-9999.9 for x in range(10)]
-        mxList = [-9999.9 for x in range(10)]
-        myList = [-9999.9 for x in range(10)]
-        diList = [-9999.9 for x in range(10)]
-        for x in range(10):
+        dxList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
+        dyList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
+        mxList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
+        myList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
+        diList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
+
+        for x in range(10):  #review 10 images
             ret, image = self.ids.KivyCamera.getCapture()
             if ret:
                 self.ids.MeasuredImage.update(image)
                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                 gray = cv2.GaussianBlur(gray, (5, 5), 0)
-                edged = cv2.Canny(gray, 50, 100)
+                edged = cv2.Canny(gray, 175, 200) #up thresholds
                 edged = cv2.dilate(edged, None, iterations=1)
                 edged = cv2.erode(edged, None, iterations=1)
                 cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL,
@@ -434,10 +429,20 @@ class OpticalCalibrationCanvas(GridLayout):
                 xA = int(width/2)
                 yA = int(height/2)
 
-                orig = image.copy()
-                for c in cnts:
-                    if cv2.contourArea(c) < 100:
-			continue
+                maxArea = 0
+                for cTest in cnts:
+                    if (cv2.contourArea(cTest)>maxArea):
+                        maxArea = cv2.contourArea(cTest)
+                        c = cTest
+                if cv2.contourArea(c)>1000:
+                    #approximate to a square (i.e., four contour segments)
+                    tolerance = 0.01
+                    while True:
+                        c = cv2.approxPolyDP(c, tolerance*cv2.arcLength(c,True), True)
+                        if len(c)==4:
+                            break
+                        tolerance = tolerance+0.01
+
                     box = cv2.minAreaRect(c)
                     box = cv2.cv.BoxPoints(box) if imutils.is_cv2() else cv2.boxPoints(box)
                     box = np.array(box, dtype="int")
@@ -458,38 +463,43 @@ class OpticalCalibrationCanvas(GridLayout):
                     if (yA<yB):
                         Dy *= -1
                     (mX, mY) = self.midpoint((xA, yA), (xB, yB))
-                    dxList[x] = Dx
+                    dxList = np.append(dxList, [Dx])
+                    dyList = np.append(dxList, [Dy])
+                    mxList = np.append(dxList, [mX])
+                    myList = np.append(dxList, [mY])
+                    diList = np.append(dxList, [Dist])
+
                     dyList[x] = Dy
                     mxList[x] = mX
                     myList[x] = mY
                     diList[x] = Dist
 
-        averagedx = self.removeOutliersAndAverage(dxList, 0.05)
-        averagedy = self.removeOutliersAndAverage(dyList, 0.05)
-        averagemx = self.removeOutliersAndAverage(mxList, 0.05)
-        averagemy = self.removeOutliersAndAverage(myList, 0.05)
-        averagedi = self.removeOutliersAndAverage(diList, 0.05)
-
-        cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}mm".format(averagedx,averagedy,Dist), (int(averagemx), int(averagemy - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
-        self.ids.MeasuredImage.update(orig)
-        self.HomingX += averagedx#-self.calX
-        self.HomingY += averagedy#-self.calY
-        print "testing location"
-        if ((abs(averagedx)>=0.25) or (abs(averagedy)>=0.25)):
-            print "Adjusting Location"
-            self.HomeIn()
-        else:
-            print "Averagedx="+str(averagedx)+", Averagedy="+str(averagedy)
-            print str(self.HomingPosX+15)+", "+str(7-self.HomingPosY)+", "+str(self.HomingX)
-            self.calErrorsX[self.HomingPosX+15][7-self.HomingPosY] = self.HomingX
-            self.calErrorsY[self.HomingPosX+15][7-self.HomingPosY] = self.HomingY
-            self.ids.OpticalCalibrationDistance.text = "Pixel\mm: {:.3f}\nCal Error({:.3f},{:.3f})\n".format(self.D, self.calX, self.calY)
-            for y in range(self.HomingRange,self.HomingRange*-1-1,-1):
-                for x in range(self.HomingRange*-1,self.HomingRange+1):
-                    if (abs(y)<=7):
-                        self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] ".format(self.calErrorsX[x+15][7-y], self.calErrorsY[x+15][7-y])
-                self.ids.OpticalCalibrationDistance.text +="\n"
-            if (self.inAutoMode):
-                self.on_AutoHome()
+        if dxList.ndim != 0 :
+            avgDx, stdDx = self.removeOutliersAndAverage(dxList, 0.05)
+            avgDy, stdDy = self.removeOutliersAndAverage(dyList, 0.05)
+            avgMx, stdMx = self.removeOutliersAndAverage(mxList, 0.05)
+            avgMy, stdMy = self.removeOutliersAndAverage(myList, 0.05)
+            avgDi, stdDi = self.removeOutliersAndAverage(diList, 0.05)
+            cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}mm".format(avgDx,avgDy,Dist), (int(avgMx), int(avgMy - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+            self.ids.MeasuredImage.update(orig)
+            self.HomingX += avgDx#-self.calX
+            self.HomingY += avgDdy#-self.calY
+            print "testing location"
+            if ((abs(averagedx)>=0.25) or (abs(averagedy)>=0.25)):
+                print "Adjusting Location"
+                self.HomeIn()
             else:
-                print "Done"
+                print "Averagedx="+str(averagedx)+", Averagedy="+str(averagedy)
+                print str(self.HomingPosX+15)+", "+str(7-self.HomingPosY)+", "+str(self.HomingX)
+                self.calErrorsX[self.HomingPosX+15][7-self.HomingPosY] = self.HomingX
+                self.calErrorsY[self.HomingPosX+15][7-self.HomingPosY] = self.HomingY
+                self.ids.OpticalCalibrationDistance.text = "Pixel\mm: {:.3f}\nCal Error({:.3f},{:.3f})\n".format(self.D, self.calX, self.calY)
+                for y in range(self.HomingRange,self.HomingRange*-1-1,-1):
+                    for x in range(self.HomingRange*-1,self.HomingRange+1):
+                        if (abs(y)<=7):
+                            self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] ".format(self.calErrorsX[x+15][7-y], self.calErrorsY[x+15][7-y])
+                    self.ids.OpticalCalibrationDistance.text +="\n"
+                if (self.inAutoMode):
+                    self.on_AutoHome()
+                else:
+                    print "Done"
