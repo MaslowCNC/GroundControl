@@ -176,11 +176,11 @@ class OpticalCalibrationCanvas(GridLayout):
     def on_Measure(self, doCalibrate):
         print "here at measure"
         self.counter += 1
-        dxList = [-9999.9 for x in range(10)]
-        dyList = [-9999.9 for x in range(10)]
-        mxList = [-9999.9 for x in range(10)]
-        myList = [-9999.9 for x in range(10)]
-        diList = [-9999.9 for x in range(10)]
+        dxList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
+        dyList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
+        mxList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
+        myList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
+        diList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
         for x in range(10):
             ret, image = self.ids.KivyCamera.getCapture()
             if ret:
@@ -189,11 +189,10 @@ class OpticalCalibrationCanvas(GridLayout):
                 self.ids.MeasuredImage.update(image)
                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                 gray = cv2.GaussianBlur(gray, (5, 5), 0)
-                edged = cv2.Canny(gray, 50, 100)
+                edged = cv2.Canny(gray, 175, 200)  #50, 100
                 edged = cv2.dilate(edged, None, iterations=1)
                 edged = cv2.erode(edged, None, iterations=1)
-                cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL,
-	           cv2.CHAIN_APPROX_SIMPLE)
+                cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
                 cnts = cnts[0] if imutils.is_cv2() else cnts[1]
                 (cnts, _) = contours.sort_contours(cnts)
                 colors = ((0, 0, 255), (240, 0, 159), (0, 165, 255), (255, 255, 0), (255, 0, 255))
@@ -203,11 +202,26 @@ class OpticalCalibrationCanvas(GridLayout):
                 yA = int(height/2)
 
                 orig = image.copy()
-                for c in cnts:
+                #find max contours
+                maxArea = 0
+                for cTest in cnts:
+                    if (cv2.contourArea(cTest)>maxArea):
+                        maxArea = cv2.contourArea(cTest)
+                        c = cTest
+                #for c in cnts:
 			# if the contour is not sufficiently large, ignore it
+                    #if cv2.contourArea(c) < 100:
+                    #	continue
+                #make sure contour is large enough
+                if cv2.contourArea(c)>1000:
 
-                    if cv2.contourArea(c) < 100:
-			continue
+                    #approximate to a square (i.e., four contour segments)
+                    tolerance = 0.01
+                    while True:
+                        c = cv2.approxPolyDP(c, tolerance*cv2.arcLength(c,True), True)
+                        if len(c)==4:
+                            break
+                        tolerance = tolerance+0.01
 
                     # compute the rotated bounding box of the contour
                     box = cv2.minAreaRect(c)
@@ -223,7 +237,6 @@ class OpticalCalibrationCanvas(GridLayout):
 			# compute the center of the bounding box
                     cX = np.average(box[:, 0])
                     cY = np.average(box[:, 1])
-
 
                     if doCalibrate:
                         (tl, tr, br, bl) = box
@@ -259,25 +272,30 @@ class OpticalCalibrationCanvas(GridLayout):
                     if (yA<yB):
                         Dy *= -1
                     (mX, mY) = self.midpoint((xA, yA), (xB, yB))
-                    dxList[x] = Dx
+                    dxList = np.append(dxList, [Dx])
+                    dyList = np.append(dxList, [Dy])
+                    mxList = np.append(dxList, [mX])
+                    myList = np.append(dxList, [mY])
+                    diList = np.append(dxList, [Dist])
+
                     dyList[x] = Dy
                     mxList[x] = mX
                     myList[x] = mY
                     diList[x] = Dist
 
-        averagedx = self.removeOutliersAndAverage(dxList, 0.05)
-        averagedy = self.removeOutliersAndAverage(dyList, 0.05)
-        averagemx = self.removeOutliersAndAverage(mxList, 0.05)
-        averagemy = self.removeOutliersAndAverage(myList, 0.05)
-        averagedi = self.removeOutliersAndAverage(diList, 0.05)
-        cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}mm".format(averagedx,averagedy,Dist), (int(averagemx), int(averagemy - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+        avgDx, stdDx = self.removeOutliersAndAverage(dxList, 0.05)
+        avgDy, stdDy = self.removeOutliersAndAverage(dyList, 0.05)
+        avgMx, stdMx = self.removeOutliersAndAverage(mxList, 0.05)
+        avgMy, stdMy = self.removeOutliersAndAverage(myList, 0.05)
+        avgDi, stdDi = self.removeOutliersAndAverage(diList, 0.05)
+        cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}mm".format(avgDx,avgDy,Dist), (int(avgMx), int(avgMy - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
         if doCalibrate:
             print "At calX,calY"
-            self.calX=averagedx
-            self.calY=averagedy
+            self.calX=avgDx
+            self.calY=avgDy
         else:
-            self.calErrorsX[self.currentX+15][7-self.currentY] = averagedx#-self.calX
-            self.calErrorsY[self.currentX+15][7-self.currentY] = averagedy#-self.calY
+            self.calErrorsX[self.currentX+15][7-self.currentY] = avgDx#-self.calX
+            self.calErrorsY[self.currentX+15][7-self.currentY] = avgDy#-self.calY
 
         self.ids.OpticalCalibrationDistance.text = "Pixel\mm: {:.3f}\nCal Error({:.3f},{:.3f})\n".format(self.D, self.calX, self.calY)
         self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] [{:.3f},{:.3f}] [{:.3f},{:.3f}]\n".format(self.calErrorsX[14][6], self.calErrorsY[14][6], self.calErrorsX[15][6], self.calErrorsY[15][6], self.calErrorsX[16][6], self.calErrorsY[16][6])
@@ -291,6 +309,12 @@ class OpticalCalibrationCanvas(GridLayout):
             self.on_AutoMeasure()
 
     def removeOutliersAndAverage(self, data, _tolerance):
+        mean = np.mean(data)
+        sd = np.std(data)
+
+        tArray = [x for x in data if ( (x > mean-2.0*sd) and (x<mean+2.0*sd))]
+        return np.average(tArray), np.std(tArray)
+
         goodData = []
         for x in data:
             if (abs(x+9999.9) < 0.1):  # to be safe
