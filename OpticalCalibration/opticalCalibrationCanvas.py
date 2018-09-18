@@ -83,12 +83,13 @@ class OpticalCalibrationCanvas(GridLayout):
     markerWidth         = 0.5*25.4
     inAutoMode = False
     inAutoModeForFirstTime = True
-    inHomingModeForFirstTime = True
+    HomingScanDirection = 1
     HomingX = 0.0
     HomingY = 0.0
     HomingPosx = 0
     HomingPosY = 0
     HomingRange = 2
+    counter =0
 
     #def initialize(self):
 
@@ -102,6 +103,10 @@ class OpticalCalibrationCanvas(GridLayout):
         else:
             print "Failed to open camera"
 
+    def stopCut(self):
+        self.data.quick_queue.put("!")
+        with self.data.gcode_queue.mutex:
+            self.data.gcode_queue.queue.clear()
 
     def on_stop(self):
         self.capture.release()
@@ -170,6 +175,7 @@ class OpticalCalibrationCanvas(GridLayout):
 
     def on_Measure(self, doCalibrate):
         print "here at measure"
+        self.counter += 1
         dxList = [-9999.9 for x in range(10)]
         dyList = [-9999.9 for x in range(10)]
         mxList = [-9999.9 for x in range(10)]
@@ -178,6 +184,8 @@ class OpticalCalibrationCanvas(GridLayout):
         for x in range(10):
             ret, image = self.ids.KivyCamera.getCapture()
             if ret:
+                #cv2.imwrite("image"+str(self.counter)+"-"+str(x)+".png",image)
+                #self.counter += 1
                 self.ids.MeasuredImage.update(image)
                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                 gray = cv2.GaussianBlur(gray, (5, 5), 0)
@@ -322,7 +330,7 @@ class OpticalCalibrationCanvas(GridLayout):
         self.data.gcode_queue.put("$RST=O ")
 
     def on_AutoHome(self):
-        self.inAutoMode = True
+
         minX = self.HomingRange*-1
         if (minX<-7):
             minY=7
@@ -331,14 +339,22 @@ class OpticalCalibrationCanvas(GridLayout):
         maxX = self.HomingRange
         maxY = minY * -1
 
-        if (self.inAutoModeForFirstTime==True):
+        if self.inAutoMode == False:
+            self.HomingX = 0.0
+            self.HomingY = 0.0
+            self.HomingPosx = 0
+            self.HomingPosY = 0
             self.HomingPosX=minX
             self.HomingPosY=minY
-            self.inAutoModeForFirstTime=False
+            self.inAutoMode = True
         else:
-            self.HomingPosX += 1
-            if (self.HomingPosX==maxX+1):
-                self.HomingPosX = minX
+            self.HomingPosX += self.HomingScanDirection
+            if ((self.HomingPosX==maxX+1) or (self.HomingPosX==minX-1)):
+                if self.HomingPosX == maxX+1:
+                    self.HomingPosX = maxX
+                else:
+                    self.HomingPosX = minX
+                self.HomingScanDirection *= -1
                 self.HomingPosY -= 1
         if (self.HomingPosY!=maxY-1):
             self.HomeIn()
@@ -440,6 +456,7 @@ class OpticalCalibrationCanvas(GridLayout):
             self.HomeIn()
         else:
             print "Averagedx="+str(averagedx)+", Averagedy="+str(averagedy)
+            print str(self.HomingPosX+15)+", "+str(7-self.HomingPosY)+", "+str(self.HomingX)
             self.calErrorsX[self.HomingPosX+15][7-self.HomingPosY] = self.HomingX
             self.calErrorsY[self.HomingPosX+15][7-self.HomingPosY] = self.HomingY
             self.ids.OpticalCalibrationDistance.text = "Pixel\mm: {:.3f}\nCal Error({:.3f},{:.3f})\n".format(self.D, self.calX, self.calY)
@@ -448,6 +465,7 @@ class OpticalCalibrationCanvas(GridLayout):
                     if (abs(y)<=7):
                         self.ids.OpticalCalibrationDistance.text += "[{:.3f},{:.3f}] ".format(self.calErrorsX[x+15][7-y], self.calErrorsY[x+15][7-y])
                 self.ids.OpticalCalibrationDistance.text +="\n"
-
             if (self.inAutoMode):
                 self.on_AutoHome()
+            else:
+                print "Done"

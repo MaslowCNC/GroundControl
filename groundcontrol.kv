@@ -2086,6 +2086,11 @@
                 Button:
                     text: "Exit"
                     on_release: root.do_Exit()
+                Button:
+                    text: "Stop!"
+                    halign: "center"
+                    on_release: root.stopCut()
+                    background_color: (1,.2,.2,1)
             GridLayout:
                 cols: 3
                 Label:
