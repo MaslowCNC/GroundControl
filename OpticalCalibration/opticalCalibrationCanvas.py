@@ -180,11 +180,11 @@ class OpticalCalibrationCanvas(GridLayout):
     def on_Measure(self, doCalibrate):
         print "here at measure"
         self.counter += 1
-        dxList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
-        dyList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
-        mxList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
-        myList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
-        diList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
+        dxList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
+        dyList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
+        mxList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
+        myList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
+        diList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
         for x in range(10):
             ret, image = self.ids.KivyCamera.getCapture()
             if ret:
@@ -193,9 +193,11 @@ class OpticalCalibrationCanvas(GridLayout):
                 self.ids.MeasuredImage.update(image)
                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                 gray = cv2.GaussianBlur(gray, (5, 5), 0)
-                edged = cv2.Canny(gray, 175, 200)  #50, 100
+                edged = cv2.Canny(gray, 50, 100)  #50, 100
                 edged = cv2.dilate(edged, None, iterations=1)
                 edged = cv2.erode(edged, None, iterations=1)
+                #cv2.imshow("Canny", edged)
+                #cv2.waitKey(0)
                 cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
                 cnts = cnts[0] if imutils.is_cv2() else cnts[1]
                 (cnts, _) = contours.sort_contours(cnts)
@@ -220,7 +222,7 @@ class OpticalCalibrationCanvas(GridLayout):
                     tolerance = 0.01
                     while True:
                         c = cv2.approxPolyDP(c, tolerance*cv2.arcLength(c,True), True)
-                        if len(c)==4:
+                        if len(c)<=4 or tolerance>0.5:
                             break
                         tolerance = tolerance+0.01
                     # compute the rotated bounding box of the contour
@@ -262,24 +264,31 @@ class OpticalCalibrationCanvas(GridLayout):
                     if (yA<yB):
                         Dy *= -1.0
                     (mX, mY) = self.midpoint((xA, yA), (xB, yB))
-                    dxList = np.append(dxList, [Dx])
-                    dyList = np.append(dxList, [Dy])
-                    mxList = np.append(dxList, [mX])
-                    myList = np.append(dxList, [mY])
-                    diList = np.append(dxList, [Dist])
-
+                    dxList[x] = Dx
                     dyList[x] = Dy
                     mxList[x] = mX
                     myList[x] = mY
                     diList[x] = Dist
+                    self.ids.MeasuredImage.update(orig)
+        print "--dxList--"
+        print dxList
+        print "--dyList--"
+        print dyList
+        print "--mxList--"
+        print mxList
+        print "--myList--"
+        print myList
 
         if dxList.ndim != 0 :
-            avgDx, stdDx = self.removeOutliersAndAverage(dxList, 0.05)
-            avgDy, stdDy = self.removeOutliersAndAverage(dyList, 0.05)
-            avgMx, stdMx = self.removeOutliersAndAverage(mxList, 0.05)
-            avgMy, stdMy = self.removeOutliersAndAverage(myList, 0.05)
-            avgDi, stdDi = self.removeOutliersAndAverage(diList, 0.05)
-            cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}, {:.3f}mm".format(avgDx,avgDy,avgDi,stdDi), (int(avgMx), int(avgMy - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+            avgDx, stdDx = self.removeOutliersAndAverage(dxList)
+            avgDy, stdDy = self.removeOutliersAndAverage(dyList)
+            avgMx, stdMx = self.removeOutliersAndAverage(mxList)
+            avgMy, stdMy = self.removeOutliersAndAverage(myList)
+            avgDi, stdDi = self.removeOutliersAndAverage(diList)
+            print "AvgMx:"+str(avgMx)+", AvgMy:"+str(avgMy)
+            print "AvgDx:"+str(avgDx)+", AvgDy:"+str(avgDy)
+            print "AvgDi:"+str(avgDi)
+            cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}, {:.3f}mm".format(avgDx,avgDy,avgDi,stdDi), (int(avgMx-20), int(avgMy - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
             if doCalibrate:
                 print "At calX,calY"
                 self.calX=avgDx
@@ -302,30 +311,14 @@ class OpticalCalibrationCanvas(GridLayout):
             popup=Popup(title="Error", content = Label(text="Could not find square"), size_hint=(None,None), size=(400,400))
             popup.open()
 
-    def removeOutliersAndAverage(self, data, _tolerance):
+    def removeOutliersAndAverage(self, data):
         mean = np.mean(data)
+        print "mean:"+str(mean)
         sd = np.std(data)
-
+        print "sd:"+str(sd)
         tArray = [x for x in data if ( (x > mean-2.0*sd) and (x<mean+2.0*sd))]
         return np.average(tArray), np.std(tArray)
 
-        goodData = []
-        for x in data:
-            if (abs(x+9999.9) < 0.1):  # to be safe
-                print "Dropping bad read"
-            else:
-                goodData.append(x)
-        average = np.average(goodData)
-        return average
-        tolerance = 0.250 #abs(average*_tolerance) #try this
-        returnData = []
-        print "average="+str(average)
-        for x in goodData:
-            if abs(average-x)<tolerance:
-                returnData.append(x)
-            else:
-                print "dropping "+str(x)
-        return np.average(returnData)
 
     def on_SaveAndSend(self):
         _str = ""
@@ -378,6 +371,7 @@ class OpticalCalibrationCanvas(GridLayout):
             self.HomeIn()
         else:
             self.inAutoMode = False
+            print "Calibration Completed"
 
 
 
@@ -404,23 +398,24 @@ class OpticalCalibrationCanvas(GridLayout):
         #    self.HomingY = 0.0
         #    self.inHomingModeForFirstTime = False
         print "Analyzing Images"
-        dxList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
-        dyList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
-        mxList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
-        myList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
-        diList = np.empty([],dtype=float)#[-9999.9 for x in range(10)]
+        dxList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
+        dyList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
+        mxList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
+        myList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
+        diList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
 
+        print "here"
         for x in range(10):  #review 10 images
+            #print x
             ret, image = self.ids.KivyCamera.getCapture()
             if ret:
                 self.ids.MeasuredImage.update(image)
                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                 gray = cv2.GaussianBlur(gray, (5, 5), 0)
-                edged = cv2.Canny(gray, 175, 200) #up thresholds
+                edged = cv2.Canny(gray, 50, 100)
                 edged = cv2.dilate(edged, None, iterations=1)
                 edged = cv2.erode(edged, None, iterations=1)
-                cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL,
-	           cv2.CHAIN_APPROX_SIMPLE)
+                cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                 cnts = cnts[0] if imutils.is_cv2() else cnts[1]
                 (cnts, _) = contours.sort_contours(cnts)
                 colors = ((0, 0, 255), (240, 0, 159), (0, 165, 255), (255, 255, 0), (255, 0, 255))
@@ -429,6 +424,7 @@ class OpticalCalibrationCanvas(GridLayout):
                 xA = int(width/2)
                 yA = int(height/2)
 
+                orig = image.copy()
                 maxArea = 0
                 for cTest in cnts:
                     if (cv2.contourArea(cTest)>maxArea):
@@ -439,22 +435,26 @@ class OpticalCalibrationCanvas(GridLayout):
                     tolerance = 0.01
                     while True:
                         c = cv2.approxPolyDP(c, tolerance*cv2.arcLength(c,True), True)
-                        if len(c)==4:
+                        if len(c)<=4 or tolerance>0.5:
                             break
                         tolerance = tolerance+0.01
-
+                    #print str(x)+"a"
                     box = cv2.minAreaRect(c)
+                    angle = box[-1]
                     box = cv2.cv.BoxPoints(box) if imutils.is_cv2() else cv2.boxPoints(box)
                     box = np.array(box, dtype="int")
                     box = perspective.order_points(box)
-                    cX = np.average(box[:, 0])
-                    cY = np.average(box[:, 1])
+                    xB = np.average(box[:, 0])
+                    yB = np.average(box[:, 1])
                     cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
-                    objCoords = np.vstack([box, (cX, cY)])
-                    xB = cX
-                    yB = cY
-                    cv2.circle(orig, (int(xB), int(yB)), 5, colors[0], -1)
-                    cv2.line(orig, (xA, yA), (int(xB), int(yB)), colors[0], 2)
+                    cv2.circle(orig, (int(xA), int(yA)), 10, colors[0], 1)
+                    cv2.line(orig, (xA, yA-15), (xA, yA+15), colors[0], 1)
+                    cv2.line(orig, (xA-15, yA), (xA+15, yA), colors[0], 1)
+                    cos = math.cos(angle*3.141592/180.0)
+                    sin = math.sin(angle*3.141592/180.0)
+                    cv2.circle(orig, (int(xB), int(yB)), 10, colors[3], 1)
+                    cv2.line(orig, (int(xB-15*cos), int(yB-15*sin)), (int(xB+15*cos), int(yB+15*sin)), colors[3], 1)
+                    cv2.line(orig, (int(xB-15*sin), int(yB+15*cos)), (int(xB+15*sin), int(yB-15*cos)), colors[3], 1)
                     Dist = dist.euclidean((xA, yA), (xB, yB)) / self.D
                     Dx = dist.euclidean((xA,0), (xB,0))/self.D
                     if (xA>xB):
@@ -463,33 +463,33 @@ class OpticalCalibrationCanvas(GridLayout):
                     if (yA<yB):
                         Dy *= -1
                     (mX, mY) = self.midpoint((xA, yA), (xB, yB))
-                    dxList = np.append(dxList, [Dx])
-                    dyList = np.append(dxList, [Dy])
-                    mxList = np.append(dxList, [mX])
-                    myList = np.append(dxList, [mY])
-                    diList = np.append(dxList, [Dist])
-
+                    dxList[x] = Dx
                     dyList[x] = Dy
                     mxList[x] = mX
                     myList[x] = mY
                     diList[x] = Dist
-
+        print "Done Analyzing"
         if dxList.ndim != 0 :
-            avgDx, stdDx = self.removeOutliersAndAverage(dxList, 0.05)
-            avgDy, stdDy = self.removeOutliersAndAverage(dyList, 0.05)
-            avgMx, stdMx = self.removeOutliersAndAverage(mxList, 0.05)
-            avgMy, stdMy = self.removeOutliersAndAverage(myList, 0.05)
-            avgDi, stdDi = self.removeOutliersAndAverage(diList, 0.05)
-            cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}mm".format(avgDx,avgDy,Dist), (int(avgMx), int(avgMy - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+            print "here1"
+            avgDx, stdDx = self.removeOutliersAndAverage(dxList)
+            avgDy, stdDy = self.removeOutliersAndAverage(dyList)
+            avgMx, stdMx = self.removeOutliersAndAverage(mxList)
+            avgMy, stdMy = self.removeOutliersAndAverage(myList)
+            avgDi, stdDi = self.removeOutliersAndAverage(diList)
+            print "here2"
+            cv2.putText(orig, "("+str(self.HomingPosX)+", "+str(self.HomingPosY)+")",(20, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+            cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}mm".format(avgDx,avgDy,Dist), (int(avgMx-20), int(avgMy - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+            print "here3"
             self.ids.MeasuredImage.update(orig)
+            print "here4"
             self.HomingX += avgDx#-self.calX
-            self.HomingY += avgDdy#-self.calY
+            self.HomingY += avgDy#-self.calY
             print "testing location"
-            if ((abs(averagedx)>=0.25) or (abs(averagedy)>=0.25)):
+            if ((abs(avgDx)>=0.25) or (abs(avgDy)>=0.25)):
                 print "Adjusting Location"
                 self.HomeIn()
             else:
-                print "Averagedx="+str(averagedx)+", Averagedy="+str(averagedy)
+                print "Averagedx="+str(avgDx)+", Averagedy="+str(avgDy)
                 print str(self.HomingPosX+15)+", "+str(7-self.HomingPosY)+", "+str(self.HomingX)
                 self.calErrorsX[self.HomingPosX+15][7-self.HomingPosY] = self.HomingX
                 self.calErrorsY[self.HomingPosX+15][7-self.HomingPosY] = self.HomingY
@@ -503,3 +503,6 @@ class OpticalCalibrationCanvas(GridLayout):
                     self.on_AutoHome()
                 else:
                     print "Done"
+        else:
+            popup=Popup(title="Error", content = Label(text="Could not find square"), size_hint=(None,None), size=(400,400))
+            popup.open()

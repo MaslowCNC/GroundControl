@@ -12,14 +12,14 @@ import Queue
 class Data(EventDispatcher):
     '''
 
-    Data is a set of variables which are essentially global variables which hold information 
-    about the gcode file opened, the machine which is connected, and the user's settings. These 
-    variables are NOT thread-safe. The queue system should always be used for passing information 
+    Data is a set of variables which are essentially global variables which hold information
+    about the gcode file opened, the machine which is connected, and the user's settings. These
+    variables are NOT thread-safe. The queue system should always be used for passing information
     between threads.
 
     '''
-    
-    
+
+
     '''
     Data available to all widgets
     '''
@@ -46,13 +46,13 @@ class Data(EventDispatcher):
     tolerance  = NumericProperty(0.5)
     gcodeShift = ObjectProperty([0.0,0.0])                          #the amount that the gcode has been shifted
     logger     =  Logger()                                          #the module which records the machines behavior to review later
-    
+
     # Background image stuff, persist but not saved
     backgroundFile = None
     backgroundTexture = None
     backgroundManualReg = []
     backgroundRedraw = BooleanProperty(False)
-    
+
     '''
     Flags
     '''
@@ -64,17 +64,17 @@ class Data(EventDispatcher):
     connectionStatus = BooleanProperty(0)
     #is the calibration process currently underway 0 -> false
     calibrationInProcess = False
-    
+
     '''
     Pointers to Objects
     '''
     config = None #pointer to the program configuration object...used for writing to settings
     serialPort = None #this is a pointer to the program serial port object
-    
+
     '''
-    
+
     Colors
-    
+
     '''
     fontColor                                             =  StringProperty('[color=7a7a7a]')
     drawingColor                                          =  ObjectProperty([.47,.47,.47])
@@ -90,18 +90,18 @@ class Data(EventDispatcher):
     zReadoutPos = 0.00
     zPopupUnits = None
     zStepSizeVal = 0.1
-    
+
     '''
     Queues
     '''
     message_queue   =  LoggingQueue(logger)
     gcode_queue     =  Queue.Queue()
     quick_queue     =  Queue.Queue()
-    
+
     def __init__(self):
         '''
-        
+
         Initializations.
-        
+
         '''
         self.logger.data = self
