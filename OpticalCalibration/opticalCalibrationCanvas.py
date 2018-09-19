@@ -124,6 +124,35 @@ class OpticalCalibrationCanvas(GridLayout):
             self.capture = None
             self.parent.parent.parent.dismiss()
 
+    def translatePoint(self, xB, yB, xA, yA, angle):
+        cosa = math.cos((angle)*3.141592/180.0)
+        sina = math.sin((angle)*3.141592/180.0)
+        xB -= xA
+        yB -= yA
+        _xB = xB*cosa - yB*sina
+        _yB = xB*sina + yB*cosa
+        xB = _xB+xA
+        yB = _yB+yA
+        return xB, yB
+
+    def simplifyContour(self,c):
+        tolerance = 0.01
+        while True:
+            _c = cv2.approxPolyDP(c, tolerance*cv2.arcLength(c,True), True)
+            if len(_c)<=4 or tolerance<0.5:
+                break
+            tolerance += 0.01
+        if len(_c)<4:# went too small.. now lower the tolerance until four points or more are reached
+            while True:
+                tolerance -= 0.01
+                _c = cv2.approxPolyDP(c, tolerance*cv2.arcLength(c,True), True)
+                if len(_c)>=4 or tolerance <= 0.1:
+                    break
+    #    print "len:"+str(len(c))+", tolerance:"+str(tolerance)
+        return _c #_c is the smallest approximation we can find with four our more
+
+
+
     def on_MoveandMeasure(self, doCalibrate, _posX, _posY):
         if _posX != None:
             #move to posX, posY.. put in absolute mode
@@ -217,20 +246,25 @@ class OpticalCalibrationCanvas(GridLayout):
                         maxArea = cv2.contourArea(cTest)
                         c = cTest
                 #make sure contour is large enough
-                if cv2.contourArea(c)>1000:
+                if cv2.contourArea(c)>100:
                     #approximate to a square (i.e., four contour segments)
-                    tolerance = 0.01
-                    while True:
-                        c = cv2.approxPolyDP(c, tolerance*cv2.arcLength(c,True), True)
-                        if len(c)<=4 or tolerance>0.5:
-                            break
-                        tolerance = tolerance+0.01
+                    cv2.drawContours(orig, [c.astype("int")], -1, (255, 255, 0), 2)
+                    c = self.simplifyContour(c)
+                    cv2.drawContours(orig, [c.astype("int")], -1, (255, 0, 0), 2)
                     # compute the rotated bounding box of the contour
                     box = cv2.minAreaRect(c)
                     angle = box[-1]
+                    if (abs(angle+90)<30):
+                        _angle = angle+90
+                    else:
+                        _angle = angle
                     box = cv2.cv.BoxPoints(box) if imutils.is_cv2() else cv2.boxPoints(box)
                     box = np.array(box, dtype="int")
                     box = perspective.order_points(box)
+                    cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
+                    M = cv2.getRotationMatrix2D((xA,yA),_angle,1)
+                    orig = cv2.warpAffine(orig,M,(width,height))
+
                     xB = np.average(box[:, 0])
                     yB = np.average(box[:, 1])
 
@@ -245,16 +279,20 @@ class OpticalCalibrationCanvas(GridLayout):
                         self.ids.OpticalCalibrationDistance.text = "pixels/mm: {:.3f}".format(self.D)
                         self.inAutoModeForFirstTime = True
 
-                    cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
+                    #cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
+
+                    cos = math.cos(angle*3.141592/180.0)
+                    sin = math.sin(angle*3.141592/180.0)
+                    if (_angle<30):
+                        _angle = _angle *-1.0
+                    xB,yB = self.translatePoint(xB,yB,xA,yA,_angle)
 
                     cv2.circle(orig, (int(xA), int(yA)), 10, colors[0], 1)
                     cv2.line(orig, (xA, yA-15), (xA, yA+15), colors[0], 1)
                     cv2.line(orig, (xA-15, yA), (xA+15, yA), colors[0], 1)
-                    cos = math.cos(angle*3.141592/180.0)
-                    sin = math.sin(angle*3.141592/180.0)
                     cv2.circle(orig, (int(xB), int(yB)), 10, colors[3], 1)
-                    cv2.line(orig, (int(xB-15*cos), int(yB-15*sin)), (int(xB+15*cos), int(yB+15*sin)), colors[3], 1)
-                    cv2.line(orig, (int(xB-15*sin), int(yB+15*cos)), (int(xB+15*sin), int(yB-15*cos)), colors[3], 1)
+                    cv2.line(orig, (int(xB), int(yB-15)), (int(xB), int(yB+15)), colors[3], 1)
+                    cv2.line(orig, (int(xB-15), int(yB)), (int(xB+15), int(yB)), colors[3], 1)
 
                     Dist = dist.euclidean((xA, yA), (xB, yB)) / self.D
                     Dx = dist.euclidean((xA,0), (xB,0))/self.D
@@ -270,14 +308,14 @@ class OpticalCalibrationCanvas(GridLayout):
                     myList[x] = mY
                     diList[x] = Dist
                     self.ids.MeasuredImage.update(orig)
-        print "--dxList--"
-        print dxList
-        print "--dyList--"
-        print dyList
-        print "--mxList--"
-        print mxList
-        print "--myList--"
-        print myList
+        #print "--dxList--"
+        #print dxList
+        #print "--dyList--"
+        #print dyList
+        #print "--mxList--"
+        #print mxList
+        #print "--myList--"
+        #print myList
 
         if dxList.ndim != 0 :
             avgDx, stdDx = self.removeOutliersAndAverage(dxList)
@@ -288,7 +326,8 @@ class OpticalCalibrationCanvas(GridLayout):
             print "AvgMx:"+str(avgMx)+", AvgMy:"+str(avgMy)
             print "AvgDx:"+str(avgDx)+", AvgDy:"+str(avgDy)
             print "AvgDi:"+str(avgDi)
-            cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}, {:.3f}mm".format(avgDx,avgDy,avgDi,stdDi), (int(avgMx-20), int(avgMy - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+            #cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}, {:.3f}mm".format(avgDx,avgDy,avgDi,stdDi), (int(avgMx-20), int(avgMy - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+            cv2.putText(orig, "Dx:{:.3f}, Dy:{:.3f}->Di:{:.3f}mm".format(avgDx,avgDy,avgDi), (15, 15),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
             if doCalibrate:
                 print "At calX,calY"
                 self.calX=avgDx
@@ -432,29 +471,45 @@ class OpticalCalibrationCanvas(GridLayout):
                         c = cTest
                 if cv2.contourArea(c)>1000:
                     #approximate to a square (i.e., four contour segments)
-                    tolerance = 0.01
-                    while True:
-                        c = cv2.approxPolyDP(c, tolerance*cv2.arcLength(c,True), True)
-                        if len(c)<=4 or tolerance>0.5:
-                            break
-                        tolerance = tolerance+0.01
+                    cv2.drawContours(orig, [c.astype("int")], -1, (255, 255, 0), 2)
+                    #print "len:"+str(len(c))
+                    #simplify the contour to get it as square as possible (i.e., remove the noise from the edges)
+                    c=self.simplifyContour(c)
+
+                    cv2.drawContours(orig, [c.astype("int")], -1, (255, 0, 0), 2)
                     #print str(x)+"a"
                     box = cv2.minAreaRect(c)
                     angle = box[-1]
+                    if (abs(angle+90)<30):
+                        _angle = angle+90
+                    else:
+                        _angle = angle
+
                     box = cv2.cv.BoxPoints(box) if imutils.is_cv2() else cv2.boxPoints(box)
                     box = np.array(box, dtype="int")
                     box = perspective.order_points(box)
+
+                    cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
+                    M = cv2.getRotationMatrix2D((xA,yA),_angle,1)
+                    orig = cv2.warpAffine(orig,M,(width,height))
+
                     xB = np.average(box[:, 0])
                     yB = np.average(box[:, 1])
-                    cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
+                    cos = math.cos(angle*3.141592/180.0)
+                    sin = math.sin(angle*3.141592/180.0)
+                    if (_angle<30):
+                        _angle = _angle *-1.0
+                    print _angle
+                    xB,yB = self.translatePoint(xB,yB,xA,yA,_angle)
+
+                    #cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
                     cv2.circle(orig, (int(xA), int(yA)), 10, colors[0], 1)
                     cv2.line(orig, (xA, yA-15), (xA, yA+15), colors[0], 1)
                     cv2.line(orig, (xA-15, yA), (xA+15, yA), colors[0], 1)
-                    cos = math.cos(angle*3.141592/180.0)
-                    sin = math.sin(angle*3.141592/180.0)
                     cv2.circle(orig, (int(xB), int(yB)), 10, colors[3], 1)
-                    cv2.line(orig, (int(xB-15*cos), int(yB-15*sin)), (int(xB+15*cos), int(yB+15*sin)), colors[3], 1)
-                    cv2.line(orig, (int(xB-15*sin), int(yB+15*cos)), (int(xB+15*sin), int(yB-15*cos)), colors[3], 1)
+                    cv2.line(orig, (int(xB), int(yB-15)), (int(xB), int(yB+15)), colors[3], 1)
+                    cv2.line(orig, (int(xB-15), int(yB)), (int(xB+15), int(yB)), colors[3], 1)
+
                     Dist = dist.euclidean((xA, yA), (xB, yB)) / self.D
                     Dx = dist.euclidean((xA,0), (xB,0))/self.D
                     if (xA>xB):
@@ -477,8 +532,9 @@ class OpticalCalibrationCanvas(GridLayout):
             avgMy, stdMy = self.removeOutliersAndAverage(myList)
             avgDi, stdDi = self.removeOutliersAndAverage(diList)
             print "here2"
-            cv2.putText(orig, "("+str(self.HomingPosX)+", "+str(self.HomingPosY)+")",(20, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
-            cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}mm".format(avgDx,avgDy,Dist), (int(avgMx-20), int(avgMy - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+            cv2.putText(orig, "("+str(self.HomingPosX)+", "+str(self.HomingPosY)+")",(15, 15),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+            cv2.putText(orig, "Dx:{:.3f}, Dy:{:.3f}->Di:{:.3f}mm".format(Dx,Dy,Dist), (15, 40),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+            #cv2.putText(orig, "{:.3f}, {:.3f}->{:.3f}mm".format(avgDx,avgDy,Dist), (int(avgMx-20), int(avgMy - 10)),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
             print "here3"
             self.ids.MeasuredImage.update(orig)
             print "here4"
