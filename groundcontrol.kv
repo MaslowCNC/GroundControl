@@ -2063,12 +2063,7 @@
                 cols: 5
                 Button:
                     text: "Calibrate"
-                    on_release: root.on_Measure(True)
-                Button:
-                    id: OpticalCalibrationMeasureButton
-                    text: "Measure"
-                    on_release: root.on_Measure(False)
-                    disabled: True
+                    on_release: root.on_CenterOnSquare(True)
                 Button:
                     id: OpticalCalibrationAutoMeasureButton
                     text: "Auto Home"
@@ -2080,9 +2075,6 @@
                 Button:
                     text: "Wipe Controller"
                     on_release: root.on_WipeController()
-                Button:
-                    text: "Center On Square"
-                    on_release: root.on_CenterOnSquare()
                 Button:
                     text: "Exit"
                     on_release: root.do_Exit()
