@@ -240,8 +240,8 @@ class OpticalCalibrationCanvas(GridLayout):
         print "Analyzing Images"
         dxList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
         dyList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
-        mxList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
-        myList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
+        #mxList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
+        #myList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
         diList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
 
         print "here"
@@ -334,16 +334,16 @@ class OpticalCalibrationCanvas(GridLayout):
                     (mX, mY) = self.midpoint((xA, yA), (xB, yB))
                     dxList[x] = Dx
                     dyList[x] = Dy
-                    mxList[x] = mX
-                    myList[x] = mY
+                    #mxList[x] = mX
+                    #myList[x] = mY
                     diList[x] = Dist
         print "Done Analyzing"
         if dxList.ndim != 0 :
             print "here1"
             avgDx, stdDx = self.removeOutliersAndAverage(dxList)
             avgDy, stdDy = self.removeOutliersAndAverage(dyList)
-            avgMx, stdMx = self.removeOutliersAndAverage(mxList)
-            avgMy, stdMy = self.removeOutliersAndAverage(myList)
+            #avgMx, stdMx = self.removeOutliersAndAverage(mxList)
+            #avgMy, stdMy = self.removeOutliersAndAverage(myList)
             avgDi, stdDi = self.removeOutliersAndAverage(diList)
             print "here2"
             cv2.putText(orig, "("+str(self.HomingPosX)+", "+str(self.HomingPosY)+")",(15, 15),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
