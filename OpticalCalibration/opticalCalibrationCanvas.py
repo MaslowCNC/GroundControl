@@ -72,6 +72,7 @@ class MeasuredImage(Image):
 class OpticalCalibrationCanvas(GridLayout):
 
     capture = None
+    cameraCount = 0
     refObj = None
     D = 0
     done = ObjectProperty(None)
@@ -115,11 +116,19 @@ class OpticalCalibrationCanvas(GridLayout):
         xyErrors = self.data.config.get('Computed Settings', 'xyErrorArray')
         self.calErrorsX, self.calErrorsY = maslowSettings.parseErrorArray(xyErrors, True)
         #print str(xErrors[2][0])
-        self.capture = cv2.VideoCapture(0)
-        if self.capture.isOpened():
-            self.ids.KivyCamera.start(self.capture)
-        else:
-            print "Failed to open camera"
+
+        # Work backwards to find a camera (assumes <= 2 cameras)
+        for i in reversed(range(2)):
+            cap = cv2.VideoCapture(i)
+            if cap.isOpened():
+                self.cameraCount = i + 1
+                break
+            cap.release()
+
+        print "Found %d cameras" % self.cameraCount
+        self.ids.cameras.values = self.cameras()
+        self.startCamera(self.cameraCount - 1)
+
         inAutoMode = False
         inAutoModeForFirstTime = True
 
@@ -129,6 +138,20 @@ class OpticalCalibrationCanvas(GridLayout):
             self.data.gcode_queue.queue.clear()
         self.inAutoMode = False
         self.inAutoModeForFirstTime = True
+
+    def startCamera(self, index):
+        self.capture = cv2.VideoCapture(index)
+        if self.capture.isOpened():
+            self.ids.KivyCamera.start(self.capture)
+        else:
+            print "Failed to open camera"
+
+    def cameras(self):
+        return ["%d" % i for i in range(self.cameraCount)]
+
+    def setCamera(self, val):
+        self.capture.release()
+        self.startCamera(int(val))
 
     def on_stop(self):
         self.capture.release()

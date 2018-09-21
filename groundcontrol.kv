@@ -2091,6 +2091,11 @@
                     halign: "center"
                     on_release: root.stopCut()
                     background_color: (1,.2,.2,1)
+                Spinner:
+                    id: cameras
+                    text: "Cameras"
+                    values: root.cameras()
+                    on_text: root.setCamera(cameras.text)
             GridLayout:
                 cols: 2
                 size_hint: 1, .6
