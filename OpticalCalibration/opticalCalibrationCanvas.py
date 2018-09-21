@@ -81,10 +81,20 @@ class OpticalCalibrationCanvas(GridLayout):
     matrixSize = (31, 15)
     calErrorsX = np.zeros(matrixSize)
     calErrorsY = np.zeros(matrixSize)
-    _calErrorsX = np.zeros(matrixSize)
-    _calErrorsY = np.zeros(matrixSize)
 
-    markerWidth         = 0.5*25.4
+
+    presets = [ [ [-15 , 7] , [0, 0] ],
+                [ [0, 7] , [15, 0] ],
+                [ [-15 , 0] , [0, -7] ],
+                [ [0, 0] , [15, -7] ],
+                [ [-15, 7] , [15, -7] ],
+                [ [-1, 1] , [1, -2] ],
+                [ [-1, 1] , [1, -2] ],
+                [ [-1, 2] , [2, -3] ],
+                [ [-1, 2] , [2, -3] ],
+               ]
+
+    markerWidth = 0.5*25.4
     inAutoMode = False
     inAutoModeForFirstTime = True
     HomingScanDirection = 1
@@ -93,6 +103,10 @@ class OpticalCalibrationCanvas(GridLayout):
     HomingPosX = 0
     HomingPosY = 0
     HomingRange = 4
+    HomingTLX = -2
+    HomingTLY = +2
+    HomingBRX = +2
+    HomingBRY = -2
     counter =0
 
     #def initialize(self):
@@ -106,14 +120,69 @@ class OpticalCalibrationCanvas(GridLayout):
             self.ids.KivyCamera.start(self.capture)
         else:
             print "Failed to open camera"
+        inAutoMode = False
+        inAutoModeForFirstTime = True
 
     def stopCut(self):
         self.data.quick_queue.put("!")
         with self.data.gcode_queue.mutex:
             self.data.gcode_queue.queue.clear()
+        self.inAutoMode = False
+        self.inAutoModeForFirstTime = True
 
     def on_stop(self):
         self.capture.release()
+
+    def on_UpdateTopLeftX(self,value=[0,False]):
+        if (value[1]==False):
+            try:
+                _tlX=int(self.ids.topLeftX.text)
+                self.ids.topLeftX.text = str(_tlX)
+                self.HomingTLX = _tlX
+            except:
+                print "Value not int"
+                self.ids.topLeftX.text = ""
+
+    def on_UpdateTopLeftY(self,value=[0,False]):
+        if (value[1]==False):
+            try:
+                _tlY=int(self.ids.topLeftY.text)
+                self.ids.topLeftY.text = str(_tlY)
+                self.HomingTLY = _tlY
+            except:
+                print "Value not int"
+                self.ids.topLeftY.text = ""
+
+    def on_UpdateBottomRightX(self,value=[0,False]):
+        if (value[1]==False):
+            try:
+                _brX=int(self.ids.bottomRightX.text)
+                self.ids.bottomRightX.text = str(_brX)
+                self.HomingBRX = _brX
+            except:
+                print "Value not int"
+                self.ids.bottomRightX.text = ""
+
+    def on_UpdateBottomRightY(self,value=[0,False]):
+        if (value[1]==False):
+            try:
+                _brY=int(self.ids.bottomRightY.text)
+                self.ids.bottomRightY.text = str(_brY)
+                self.HomingBRY = _brY
+            except:
+                print "Value not int"
+                self.ids.bottomRightY.text = ""
+
+    def on_Preset(self, preset):
+
+        self.ids.topLeftX.text = str(self.presets[preset][0][0])
+        self.ids.topLeftY.text = str(self.presets[preset][0][1])
+        self.ids.bottomRightX.text = str(self.presets[preset][1][0])
+        self.ids.bottomRightY.text = str(self.presets[preset][1][1])
+        self.HomingTLX = self.presets[preset][0][0]
+        self.HomingTLY = self.presets[preset][0][1]
+        self.HomingBRX = self.presets[preset][1][0]
+        self.HomingBRY = self.presets[preset][1][1]
 
     def midpoint(self, ptA, ptB):
         return ((ptA[0]+ptB[0])*0.5, (ptA[1]+ptB[1])*0.5)
@@ -156,8 +225,8 @@ class OpticalCalibrationCanvas(GridLayout):
         calX = 0
         calY = 0
         count = 0
-        for y in range(self.HomingRange,self.HomingRange*-1-1,-1):
-            for x in range(self.HomingRange*-1,self.HomingRange+1):
+        for y in range(self.HomingTLY, self.HomingBRY, -1):
+            for x in range(self.HomingTLX, self.HomingBRX, +1):
                 if (abs(y)<=7):
                     self.ids.OpticalCalibrationDistance.text += "[{:.2f},{:.2f}] ".format(self.calErrorsX[x+15][7-y], self.calErrorsY[x+15][7-y])
                     calX += (self.calErrorsX[x+15][7-y]-self.calErrorsX[15][7]) ** 2.0
@@ -198,25 +267,29 @@ class OpticalCalibrationCanvas(GridLayout):
     def on_WipeController(self):
         self.data.gcode_queue.put("$RST=O ")
 
+    def on_ReturnToCenter(self):
+        print "Moving to:[0, 0]"
+        self.data.gcode_queue.put("G90  ")
+        self.data.gcode_queue.put("G0 X0 Y0  ")
+        self.data.gcode_queue.put("G91  ")
+
     def on_AutoHome(self):
 
-        minX = self.HomingRange*-1
-        if (minX<-7):
-            minY=7
-        else:
-            minY=minX*-1
-        maxX = self.HomingRange
-        maxY = minY * -1
+        minX = self.HomingTLX+15
+        maxX = self.HomingBRX+15
+        minY = 7 - self.HomingTLY
+        maxY = 7 - self.HomingBRY
 
         if self.inAutoMode == False:
             self.HomingX = 0.0
             self.HomingY = 0.0
-            self.HomingPosX = 0
-            self.HomingPosY = 0
-            self.HomingPosX=minX
-            self.HomingPosY=minY
+            self.HomingPosX = minX
+            self.HomingPosY = minY
             self.inAutoMode = True
         else:
+            # note, the self.HomingX and self.HomingY are not reinitialzed here
+            # The rationale is that the offset for the previous registration point is
+            # probably a good starting point for this registration point..
             self.HomingPosX += self.HomingScanDirection
             if ((self.HomingPosX==maxX+1) or (self.HomingPosX==minX-1)):
                 if self.HomingPosX == maxX+1:
@@ -233,17 +306,21 @@ class OpticalCalibrationCanvas(GridLayout):
             self.printCalibrationErrorValue()
 
 
+
+
     def on_HomeToPos(self, posX, posY):
         self.HomingPosX = posX
         self.HomingPosY = posY
         self.HomeIn()
 
     def HomeIn(self):
-        print "Moving to:[{}, {}]".format(self.HomingX, self.HomingY)
+        _posX = round(self.HomingPosX*3.0+self.HomingX/25.4,4)
+        _posY = round(self.HomingPosY*3.0+self.HomingY/25.4,4)
+        print "Moving to:[{}, {}]".format(_posX, _posY)
         self.data.units = "INCHES"
         self.data.gcode_queue.put("G20 ")
         self.data.gcode_queue.put("G90  ")
-        self.data.gcode_queue.put("G0 X"+str(round(self.HomingPosX*3.0+self.HomingX/25.4,4))+" Y"+str(round(self.HomingPosY*3.0+self.HomingY/25.4,4))+"  ")
+        self.data.gcode_queue.put("G0 X"+str(_posX)+" Y"+str(_posY)+"  ")
         self.data.gcode_queue.put("G91  ")
         self.data.measureRequest = self.on_CenterOnSquare
         #request a measurement

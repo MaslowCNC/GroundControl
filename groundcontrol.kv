@@ -2053,14 +2053,19 @@
     GridLayout:
         cols:2
         GridLayout:
-            rows: 5
-            Label:
-                id: OpticalCalibrationDistance
-                text: "Pixels/Inch: (Please Calibrate)"
+            rows: 1
+            cols: 1
+            ScrollView:
+                Label:
+                    size_hint: None, None
+                    size: self.texture_size
+                    id: OpticalCalibrationDistance
+                    text: "Pixels/Inch: (Please Calibrate)"
         GridLayout:
-            rows: 5
+            rows: 2
             GridLayout:
                 cols: 5
+                size_hint: 1, .4
                 Button:
                     text: "Calibrate"
                     on_release: root.on_CenterOnSquare(True)
@@ -2069,6 +2074,9 @@
                     text: "Auto Home"
                     on_release: root.on_AutoHome()
                     disabled: True
+                Button:
+                    text: "Return to Center"
+                    on_release: root.on_ReturnToCenter()
                 Button:
                     text: "Save and Send"
                     on_release: root.on_SaveAndSend()
@@ -2084,46 +2092,111 @@
                     on_release: root.stopCut()
                     background_color: (1,.2,.2,1)
             GridLayout:
-                cols: 3
-                Label:
-                    text: "Move To:"
-                Label:
-                Label:
-                Button:
-                    text: "[-1,+1]"
-                    #on_release: root.on_MoveandMeasure(False,-1,1)
-                    on_release: root.on_HomeToPos(-1,1)
-                Button:
-                    text: "[0,+1]"
-                    #on_release: root.on_MoveandMeasure(False,0,1)
-                    on_release: root.on_HomeToPos(0,1)
-                Button:
-                    text: "[+1,+1]"
-                    #on_release: root.on_MoveandMeasure(False,1,1)
-                    on_release: root.on_HomeToPos(1,1)
+                cols: 2
+                size_hint: 1, .6
+                GridLayout:
+                    rows: 4
+                    Label:
+                        text: "Presets"
+                        text_size: self.size
+                        valign: "middle"
+                        halign: "center"
+                        size_hint: 1, .25
+                    GridLayout:
+                        rows: 2
+                        Label:
+                            text: "Large Sheets"
+                            text_size: self.size
+                            valign: "middle"
+                            halign: "left"
+                            size_hint: 1, .25
+                        GridLayout:
+                            cols: 2
+                            Button:
+                                text: "Top Left Quadrant"
+                                on_release: root.on_Preset(0)
+                            Button:
+                                text: "Top Right Quadrant"
+                                on_release: root.on_Preset(1)
+                            Button:
+                                text: "Bottom Left Quadrant"
+                                on_release: root.on_Preset(2)
+                            Button:
+                                text: "Bottom Right Quadrant"
+                                on_release: root.on_Preset(3)
+                            Button:
+                                text: "Full Area"
+                                on_release: root.on_Preset(4)
 
-                Button:
-                    text: "[-1,0]"
-                    #on_release: root.on_MoveandMeasure(False,-1,0)
-                    on_release: root.on_HomeToPos(-1,0)
-                Button:
-                    text: "[0,0]"
-                    #on_release: root.on_MoveandMeasure(False,0,0)
-                    on_release: root.on_HomeToPos(0,0)
-                Button:
-                    text: "[+1,0]"
-                    #on_release: root.on_MoveandMeasure(False,1,0)
-                    on_release: root.on_HomeToPos(1,0)
-
-                Button:
-                    text: "[-1,-1]"
-                    #on_release: root.on_MoveandMeasure(False,-1,-1)
-                    on_release: root.on_HomeToPos(-1,-1)
-                Button:
-                    text: "[0,-1]"
-                    #on_release: root.on_MoveandMeasure(False,0,-1)
-                    on_release: root.on_HomeToPos(0,-1)
-                Button:
-                    text: "[+1,-1]"
-                    #on_release: root.on_MoveandMeasure(False,1,-1)
-                    on_release: root.on_HomeToPos(1,-1)
+                    GridLayout:
+                        rows: 2
+                        Label:
+                            text: "Small Sheets"
+                            text_size: self.size
+                            valign: "middle"
+                            halign: "left"
+                            size_hint: 1, .25
+                        GridLayout:
+                            cols: 2
+                            Button:
+                                text: "8.5 x 11 (Portrait)"
+                                on_release: root.on_Preset(5)
+                            Button:
+                                text: "8.5 x 11 (Landscape)"
+                                on_release: root.on_Preset(6)
+                                disabled: True
+                            Button:
+                                text: "11 x 17 (Portrait)"
+                                on_release: root.on_Preset(7)
+                            Button:
+                                text: "11 x 17 (Landscape)"
+                                on_release: root.on_Preset(8)
+                                disabled: True
+                GridLayout:
+                    rows: 3
+                    GridLayout:
+                        cols: 3
+                        size_hint: 1, 0.2
+                        Label:
+                            text: "Top Left Point (x,y):"
+                            text_size: self.size
+                            halign: "right"
+                            valign: "middle"
+                            size_hint: 0.5, 1
+                        TextInput:
+                            id: topLeftX
+                            size_hint: 0.25, 1
+                            on_text_validate: root.on_UpdateTopLeftX()
+                            on_focus: root.on_UpdateTopLeftX(args)
+                            multiline: False
+                        TextInput:
+                            id: topLeftY
+                            size_hint: 0.25, 1
+                            on_text_validate: root.on_UpdateTopLeftY()
+                            on_focus: root.on_UpdateTopLeftY(args)
+                            multiline: False
+                    GridLayout:
+                        cols: 3
+                        size_hint: 1, 0.20
+                        Label:
+                            text: "Bottom Right Point (x,y):"
+                            text_size: self.size
+                            halign: "right"
+                            valign: "middle"
+                            size_hint: 0.5, 1
+                        TextInput:
+                            id: bottomRightX
+                            size_hint: 0.25, 1
+                            on_text_validate: root.on_UpdateBottomRightX()
+                            on_focus: root.on_UpdateBottomRightX(args)
+                            multiline: False
+                        TextInput:
+                            id: bottomRightY
+                            size_hint: 0.25, 1
+                            on_text_validate: root.on_UpdateBottomRightY()
+                            on_focus: root.on_UpdateBottomRightY(args)
+                            multiline: False
+                    GridLayout:
+                        size_hint: 1, 0.6
+                        Label:
+                            text:""
