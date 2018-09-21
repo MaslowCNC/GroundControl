@@ -276,7 +276,7 @@ class OpticalCalibrationCanvas(GridLayout):
     def on_AutoHome(self):
 
         minX = self.HomingTLX
-        maxX = self.HomingBRX5
+        maxX = self.HomingBRX
         minY = self.HomingTLY
         maxY = self.HomingBRY
 
