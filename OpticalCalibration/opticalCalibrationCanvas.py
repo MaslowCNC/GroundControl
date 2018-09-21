@@ -160,8 +160,8 @@ class OpticalCalibrationCanvas(GridLayout):
             for x in range(self.HomingRange*-1,self.HomingRange+1):
                 if (abs(y)<=7):
                     self.ids.OpticalCalibrationDistance.text += "[{:.2f},{:.2f}] ".format(self.calErrorsX[x+15][7-y], self.calErrorsY[x+15][7-y])
-                    calX += self.calErrorsX[x+15][7-y]*self.calErrorsX[x+15][7-y]
-                    calY += self.calErrorsY[x+15][7-y]*self.calErrorsY[x+15][7-y]
+                    calX += (self.calErrorsX[x+15][7-y]-self.calErrorsX[15][7]) ** 2.0
+                    calY += (self.calErrorsY[x+15][7-y]-self.calErrorsY[15][7]) ** 2.0
                     count += 1
             self.ids.OpticalCalibrationDistance.text +="\n"
         calX = math.sqrt(calX/count)
