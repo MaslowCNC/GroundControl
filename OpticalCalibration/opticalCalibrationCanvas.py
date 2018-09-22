@@ -82,6 +82,8 @@ class OpticalCalibrationCanvas(GridLayout):
     matrixSize = (31, 15)
     calErrorsX = np.zeros(matrixSize)
     calErrorsY = np.zeros(matrixSize)
+    measuredErrorsX = np.zeros(matrixSize)
+    measuredErrorsY = np.zeros(matrixSize)
 
 
     presets = [ [ [-15 , 7] , [0, 0] ],
@@ -97,7 +99,7 @@ class OpticalCalibrationCanvas(GridLayout):
 
     markerWidth = 0.5*25.4
     inAutoMode = False
-    inAutoModeForFirstTime = True
+    inMesureOnlyMode = False
     HomingScanDirection = 1
     HomingX = 0.0
     HomingY = 0.0
@@ -116,9 +118,10 @@ class OpticalCalibrationCanvas(GridLayout):
 
     def initialize(self):
         xyErrors = self.data.config.get('Computed Settings', 'xyErrorArray')
-        bedHeight = self.data.config.get('Maslow Settings', 'bedHeight')
-        bedWidth = self.data.config.get('Maslow Settings', 'bedWidth')
         self.calErrorsX, self.calErrorsY = maslowSettings.parseErrorArray(xyErrors, True)
+        self.bedHeight = float(self.data.config.get('Maslow Settings', 'bedHeight'))
+        self.bedWidth = float(self.data.config.get('Maslow Settings', 'bedWidth'))
+
         #print str(xErrors[2][0])
 
         # Work backwards to find a camera (assumes <= 2 cameras)
@@ -134,8 +137,8 @@ class OpticalCalibrationCanvas(GridLayout):
         self.ids.cameras.values = self.cameras()
         self.startCamera(self.cameraCount - 1)
 
-        inAutoMode = False
-        inAutoModeForFirstTime = True
+        self.inAutoMode = False
+        self.inMeasureOnlyMode = False
 
         mat = Matrix().scale(.2, .2, 1)
         self.ids.opticalScatter.apply_transform(mat, (0,0))
@@ -151,7 +154,8 @@ class OpticalCalibrationCanvas(GridLayout):
         with self.data.gcode_queue.mutex:
             self.data.gcode_queue.queue.clear()
         self.inAutoMode = False
-        self.inAutoModeForFirstTime = True
+        self.inMeasureOnlyMode = False
+
 
     def startCamera(self, index):
         print "Selected Camera Index:"+str(index)
@@ -299,8 +303,12 @@ class OpticalCalibrationCanvas(GridLayout):
         for y in range(7, -8, -1):
             points = []
             for x in range(-15, 16, +1):
-                points.append(x*3*25.4+self.calErrorsX[x+15][7-y]+self.bedWidth/2.0)
-                points.append(y*3*25.4+self.calErrorsY[x+15][7-y]+self.bedHeight/2.0)
+                if (self.inMeasureOnlyMode):
+                    points.append(x*3*25.4+self.measuredErrorsX[x+15][7-y]+self.bedWidth/2.0)
+                    points.append(y*3*25.4+self.measuredErrorsY[x+15][7-y]+self.bedHeight/2.0)
+                else:
+                    points.append(x*3*25.4+self.calErrorsX[x+15][7-y]+self.bedWidth/2.0)
+                    points.append(y*3*25.4+self.calErrorsY[x+15][7-y]+self.bedHeight/2.0)
             with self.ids.opticalScatter.canvas:
                 Color(1,0,0)
                 Line(points=points)
@@ -308,8 +316,12 @@ class OpticalCalibrationCanvas(GridLayout):
         for x in range(-15, 16, +1):
             points = []
             for y in range(7, -8, -1):
-                points.append(x*3*25.4+self.calErrorsX[x+15][7-y]+self.bedWidth/2.0)
-                points.append(y*3*25.4+self.calErrorsY[x+15][7-y]+self.bedHeight/2.0)
+                if (self.inMeasureOnlyMode):
+                    points.append(x*3*25.4+self.measuredErrorsX[x+15][7-y]+self.bedWidth/2.0)
+                    points.append(y*3*25.4+self.measuredErrorsY[x+15][7-y]+self.bedHeight/2.0)
+                else:
+                    points.append(x*3*25.4+self.calErrorsX[x+15][7-y]+self.bedWidth/2.0)
+                    points.append(y*3*25.4+self.calErrorsY[x+15][7-y]+self.bedHeight/2.0)
             with self.ids.opticalScatter.canvas:
                 Color(1,0,0)
                 Line(points=points)
@@ -343,12 +355,18 @@ class OpticalCalibrationCanvas(GridLayout):
                 if ((y == curY) and (x == curX) ):
                     reColor = True
                     self.ids.OpticalCalibrationDistance.text += "[color=ff3333]"
-                self.ids.OpticalCalibrationDistance.text += "[{:.2f},{:.2f}] ".format(self.calErrorsX[x+15][7-y], self.calErrorsY[x+15][7-y])
+                if (self.inMeasureOnlyMode):
+                    self.ids.OpticalCalibrationDistance.text += "[{:.2f},{:.2f}] ".format(self.measuredErrorsX[x+15][7-y], self.measuredErrorsY[x+15][7-y])
+                    calX += (self.calErrorsX[x+15][7-y]-self.measuredErrorsX[15][7]) ** 2.0
+                    calY += (self.calErrorsY[x+15][7-y]-self.measuredErrorsY[15][7]) ** 2.0
+                else:
+                    self.ids.OpticalCalibrationDistance.text += "[{:.2f},{:.2f}] ".format(self.calErrorsX[x+15][7-y], self.measuredErrorsY[x+15][7-y])
+                    calX += (self.calErrorsX[x+15][7-y]-self.measuredErrorsX[15][7]) ** 2.0
+                    calY += (self.calErrorsY[x+15][7-y]-self.measuredErrorsY[15][7]) ** 2.0
+
                 if reColor:
                     reColor = False
                     self.ids.OpticalCalibrationDistance.text += "[/color]"
-                calX += (self.calErrorsX[x+15][7-y]-self.calErrorsX[15][7]) ** 2.0
-                calY += (self.calErrorsY[x+15][7-y]-self.calErrorsY[15][7]) ** 2.0
                 count += 1
                 #print count
             self.ids.OpticalCalibrationDistance.text +="\n"
@@ -396,13 +414,17 @@ class OpticalCalibrationCanvas(GridLayout):
         self.data.gcode_queue.put("G0 X0 Y0  ")
         self.data.gcode_queue.put("G91  ")
 
-    def on_AutoHome(self):
+    def on_AutoHome(self, measureMode = False):
 
         minX = self.HomingTLX
         maxX = self.HomingBRX
         minY = self.HomingTLY
         maxY = self.HomingBRY
 
+        if measureMode == True:
+            print "Measure Only"
+            self.inMeasureOnlyMode = True
+        #print "Measure:"+str(self.inMeasureOnlyMode)
         if self.inAutoMode == False:
             self.HomingX = 0.0
             self.HomingY = 0.0
@@ -414,6 +436,9 @@ class OpticalCalibrationCanvas(GridLayout):
             # note, the self.HomingX and self.HomingY are not reinitialzed here
             # The rationale is that the offset for the previous registration point is
             # probably a good starting point for this registration point..
+            if (self.inMeasureOnlyMode):
+                self.HomingX = 0.0
+                self.HomingY = 0.0
             self.HomingPosX += self.HomingScanDirection
             if ((self.HomingPosX==maxX+1) or (self.HomingPosX==minX-1)):
                 if self.HomingPosX == maxX+1:
@@ -514,7 +539,6 @@ class OpticalCalibrationCanvas(GridLayout):
 
                         self.D = dist.euclidean((tlblX,tlblY),(trbrX,trbrY))/self.markerWidth
                         self.ids.OpticalCalibrationAutoMeasureButton.disabled = False
-                        self.inAutoModeForFirstTime = True
 
 
                     cos = math.cos(angle*3.141592/180.0)
@@ -567,14 +591,18 @@ class OpticalCalibrationCanvas(GridLayout):
                 self.HomingY += avgDy#-self.calY
                 print "testing location"
                 if doCalibrate!=True:  #its either True because you pressed the calibrate button or its a distance from the measurement callback.
-                    if ((abs(avgDx)>=0.125) or (abs(avgDy)>=0.125)):
+                    if (((abs(avgDx)>=0.125) or (abs(avgDy)>=0.125)) and (self.inMeasureOnlyMode==False)):
                         print "Adjusting Location"
                         self.HomeIn()
                     else:
                         print "Averagedx="+str(avgDx)+", Averagedy="+str(avgDy)
                         print str(self.HomingPosX+15)+", "+str(7-self.HomingPosY)+", "+str(self.HomingX)
-                        self.calErrorsX[self.HomingPosX+15][7-self.HomingPosY] = self.HomingX
-                        self.calErrorsY[self.HomingPosX+15][7-self.HomingPosY] = self.HomingY
+                        if (self.inMeasureOnlyMode):
+                            self.measuredErrorsX[self.HomingPosX+15][7-self.HomingPosY] = self.HomingX
+                            self.measuredErrorsY[self.HomingPosX+15][7-self.HomingPosY] = self.HomingY
+                        else:
+                            self.calErrorsX[self.HomingPosX+15][7-self.HomingPosY] = self.HomingX
+                            self.calErrorsY[self.HomingPosX+15][7-self.HomingPosY] = self.HomingY
                         self.updateScreenValues(self.HomingPosX, self.HomingPosY)
                         if (self.inAutoMode):
                             self.on_AutoHome()

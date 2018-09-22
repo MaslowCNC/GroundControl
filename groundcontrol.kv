@@ -2075,8 +2075,8 @@
                     on_release: root.on_CenterOnSquare(True)
                 Button:
                     id: OpticalCalibrationAutoMeasureButton
-                    text: "Auto Home"
-                    on_release: root.on_AutoHome()
+                    text: "Auto Calibrate"
+                    on_release: root.on_AutoHome(False)
                     disabled: True
                 Button:
                     text: "Return to Center"
@@ -2103,6 +2103,9 @@
                 Button:
                     text: "Save as CSV"
                     on_release: root.on_SaveCSV()
+                Button:
+                    text: "Auto Measure"
+                    on_release: root.on_AutoHome(True)
             GridLayout:
                 cols: 2
                 size_hint: 1, .6
