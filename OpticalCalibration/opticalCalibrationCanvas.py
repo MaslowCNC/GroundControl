@@ -277,7 +277,7 @@ class OpticalCalibrationCanvas(GridLayout):
         return _c #_c is the smallest approximation we can find with four our more
 
     def drawCalibration(self):
-
+        self.ids.opticalScatter.canvas.clear()
         for y in range(7, -8, -1):
             points = []
             for x in range(-15, 16, +1):
