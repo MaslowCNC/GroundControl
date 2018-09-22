@@ -122,6 +122,7 @@ class OpticalCalibrationCanvas(GridLayout):
             cap = cv2.VideoCapture(i)
             if cap.isOpened():
                 self.cameraCount = i + 1
+                cap.release()
                 break
             cap.release()
 
@@ -140,6 +141,7 @@ class OpticalCalibrationCanvas(GridLayout):
         self.inAutoModeForFirstTime = True
 
     def startCamera(self, index):
+        print "Selected Camera Index:"+str(index)
         self.capture = cv2.VideoCapture(index)
         if self.capture.isOpened():
             self.ids.KivyCamera.start(self.capture)
