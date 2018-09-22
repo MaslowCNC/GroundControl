@@ -2037,7 +2037,7 @@
         text: "This calibration routine is designed to utilize a camera to assess errors"
         size_hint_y:.1
     GridLayout:
-        cols:2
+        cols:3
         BoxLayout:
             orientation: 'vertical'
             KivyCamera:
@@ -2050,6 +2050,9 @@
                 id: MeasuredImage
                 resolution: (640,480)
                 play:True
+        ScatterPlane:
+            do_rotation: False
+            id: opticalScatter
     GridLayout:
         cols:2
         GridLayout:
@@ -2096,6 +2099,9 @@
                     text: "Cameras"
                     values: root.cameras()
                     on_text: root.setCamera(cameras.text)
+                Button:
+                    text: "Save as CSV"
+                    on_release: root.on_SaveCSV()
             GridLayout:
                 cols: 2
                 size_hint: 1, .6

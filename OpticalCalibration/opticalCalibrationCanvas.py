@@ -109,11 +109,15 @@ class OpticalCalibrationCanvas(GridLayout):
     HomingBRX = +2
     HomingBRY = -2
     counter =0
+    bedHeight = 48*25.4
+    bedWidth = 96*25.4
 
     #def initialize(self):
 
     def initialize(self):
         xyErrors = self.data.config.get('Computed Settings', 'xyErrorArray')
+        bedHeight = self.data.config.get('Maslow Settings', 'bedHeight')
+        bedWidth = self.data.config.get('Maslow Settings', 'bedWidth')
         self.calErrorsX, self.calErrorsY = maslowSettings.parseErrorArray(xyErrors, True)
         #print str(xErrors[2][0])
 
@@ -132,6 +136,15 @@ class OpticalCalibrationCanvas(GridLayout):
 
         inAutoMode = False
         inAutoModeForFirstTime = True
+
+        mat = Matrix().scale(.2, .2, 1)
+        self.ids.opticalScatter.apply_transform(mat, (0,0))
+        moveVertical = self.bedHeight/2
+        moveHorizontal = self.bedWidth/2
+        mat = Matrix().translate(moveHorizontal, moveVertical, 0)
+        self.ids.opticalScatter.apply_transform(mat)
+
+        self.drawCalibration()
 
     def stopCut(self):
         self.data.quick_queue.put("!")
@@ -198,6 +211,24 @@ class OpticalCalibrationCanvas(GridLayout):
                 print "Value not int"
                 self.ids.bottomRightY.text = ""
 
+    def on_SaveCSV(self):
+        outFile = open("calibrationValues.csv","w")
+        line = ""
+        for y in range(7, -8, -1):
+            line = ""
+            for x in range(-15, 16, +1):
+                line += "{:.2f},".format(self.calErrorsX[x+15][7-y])
+            line +="\n"
+            outFile.write(line)
+        outFile.write("\n")
+        for y in range(7, -8, -1):
+            line = ""
+            for x in range(-15, 16, +1):
+                line += "{:.2f},".format(self.calErrorsY[x+15][7-y])
+            line +="\n"
+            outFile.write(line)
+        outFile.close()
+
     def on_Preset(self, preset):
 
         self.ids.topLeftX.text = str(self.presets[preset][0][0])
@@ -245,6 +276,60 @@ class OpticalCalibrationCanvas(GridLayout):
     #    print "len:"+str(len(c))+", tolerance:"+str(tolerance)
         return _c #_c is the smallest approximation we can find with four our more
 
+    def drawCalibration(self):
+
+        for y in range(7, -8, -1):
+            points = []
+            for x in range(-15, 16, +1):
+                points.append(x*3*25.4+self.bedWidth/2.0)
+                points.append(y*3*25.4+self.bedHeight/2.0)
+            with self.ids.opticalScatter.canvas:
+                Color(0,0,1)
+                Line(points=points)
+
+        for x in range(-15, 16, +1):
+            points = []
+            for y in range(7, -8, -1):
+                points.append(x*3*25.4+self.bedWidth/2.0)
+                points.append(y*3*25.4+self.bedHeight/2.0)
+            with self.ids.opticalScatter.canvas:
+                Color(0,0,1)
+                Line(points=points)
+
+        for y in range(7, -8, -1):
+            points = []
+            for x in range(-15, 16, +1):
+                points.append(x*3*25.4+self.calErrorsX[x+15][7-y]+self.bedWidth/2.0)
+                points.append(y*3*25.4+self.calErrorsY[x+15][7-y]+self.bedHeight/2.0)
+            with self.ids.opticalScatter.canvas:
+                Color(1,0,0)
+                Line(points=points)
+
+        for x in range(-15, 16, +1):
+            points = []
+            for y in range(7, -8, -1):
+                points.append(x*3*25.4+self.calErrorsX[x+15][7-y]+self.bedWidth/2.0)
+                points.append(y*3*25.4+self.calErrorsY[x+15][7-y]+self.bedHeight/2.0)
+            with self.ids.opticalScatter.canvas:
+                Color(1,0,0)
+                Line(points=points)
+
+    def on_touch_up(self, touch):
+
+        if touch.is_mouse_scrolling:
+            self.zoomCanvas(touch)
+
+    def zoomCanvas(self, touch):
+        if touch.is_mouse_scrolling:
+            scaleFactor = .1
+            if touch.button == 'scrollup':
+                mat = Matrix().scale(1-scaleFactor, 1-scaleFactor, 1)
+                self.ids.opticalScatter.apply_transform(mat, anchor = touch.pos)
+            elif touch.button == 'scrolldown':
+                mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
+                self.ids.opticalScatter.apply_transform(mat, anchor = touch.pos)
+
+
     def updateScreenValues(self):
         self.ids.OpticalCalibrationDistance.text = " pixels\mm: {:.3f}\n".format(self.D)#Cal Error({:.3f},{:.3f})\n".format(self.D, self.calX, self.calY)
         calX = 0
@@ -263,6 +348,10 @@ class OpticalCalibrationCanvas(GridLayout):
         calX = math.sqrt(calX/count)
         calY = math.sqrt(calY/count)
         self.ids.OpticalCalibrationDistance.text += "X,Y Offset RMS: {:.3f}, {:.3f}\n".format(calX,calY)
+        self.drawCalibration()
+
+
+
 
 
     def removeOutliersAndAverage(self, data):
@@ -312,6 +401,7 @@ class OpticalCalibrationCanvas(GridLayout):
             self.HomingY = 0.0
             self.HomingPosX = minX
             self.HomingPosY = minY
+            self.HomingScanDirection = 1
             self.inAutoMode = True
         else:
             # note, the self.HomingX and self.HomingY are not reinitialzed here
@@ -359,7 +449,9 @@ class OpticalCalibrationCanvas(GridLayout):
         dyList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
         diList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
         print "here"
-        for x in range(10):  #review 10 images
+        x = 0
+        while True:
+        #for x in range(10):  #review 10 images
             #print x
             ret, image = self.ids.KivyCamera.getCapture()
             if ret:
@@ -422,7 +514,7 @@ class OpticalCalibrationCanvas(GridLayout):
                     sin = math.sin(angle*3.141592/180.0)
                     if (_angle<30):
                         _angle = _angle *-1.0
-                    print _angle
+                    #print _angle
                     xB,yB = self.translatePoint(xB,yB,xA,yA,_angle)
 
                     #cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
@@ -443,33 +535,43 @@ class OpticalCalibrationCanvas(GridLayout):
                     dxList[x] = Dx
                     dyList[x] = Dy
                     diList[x] = Dist
-        print "Done Analyzing"
+                    x +=1
+                    print "Processed Image #"+str(x)
+                    if (x==10):
+                        break
+        print "Done Analyzing Images.. Now Averaging and Removing Outliers"
         if dxList.ndim != 0 :
             avgDx, stdDx = self.removeOutliersAndAverage(dxList)
             avgDy, stdDy = self.removeOutliersAndAverage(dyList)
             avgDi, stdDi = self.removeOutliersAndAverage(diList)
-            cv2.putText(orig, "("+str(self.HomingPosX)+", "+str(self.HomingPosY)+")",(15, 15),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
-            cv2.putText(orig, "Dx:{:.3f}, Dy:{:.3f}->Di:{:.3f}mm".format(Dx,Dy,Dist), (15, 40),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
-            self.ids.MeasuredImage.update(orig)
-            self.HomingX += avgDx#-self.calX
-            self.HomingY += avgDy#-self.calY
-            print "testing location"
-            if doCalibrate!=True:  #its either True because you pressed the calibrate button or its a distance from the measurement callback.
-                if ((abs(avgDx)>=0.125) or (abs(avgDy)>=0.125)):
-                    print "Adjusting Location"
-                    self.HomeIn()
-                else:
-                    print "Averagedx="+str(avgDx)+", Averagedy="+str(avgDy)
-                    print str(self.HomingPosX+15)+", "+str(7-self.HomingPosY)+", "+str(self.HomingX)
-                    self.calErrorsX[self.HomingPosX+15][7-self.HomingPosY] = self.HomingX
-                    self.calErrorsY[self.HomingPosX+15][7-self.HomingPosY] = self.HomingY
-                    self.updateScreenValues()
-                    if (self.inAutoMode):
-                        self.on_AutoHome()
-                    else:
-                        print "Done"
+            if ( math.isnan(avgDx) or math.isnan(avgDy) ):
+                print "Value is not a number: "+str(avgDx)+", "+str(avgDy)
+                for x in range(len(dxList)):
+                    print str(x)+": "+dxList[x]+", "+dyList[y]
+                print "Aboring process."
             else:
-                self.updateScreenValues()
+                cv2.putText(orig, "("+str(self.HomingPosX)+", "+str(self.HomingPosY)+")",(15, 15),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+                cv2.putText(orig, "Dx:{:.3f}, Dy:{:.3f}->Di:{:.3f}mm".format(Dx,Dy,Dist), (15, 40),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+                self.ids.MeasuredImage.update(orig)
+                self.HomingX += avgDx#-self.calX
+                self.HomingY += avgDy#-self.calY
+                print "testing location"
+                if doCalibrate!=True:  #its either True because you pressed the calibrate button or its a distance from the measurement callback.
+                    if ((abs(avgDx)>=0.125) or (abs(avgDy)>=0.125)):
+                        print "Adjusting Location"
+                        self.HomeIn()
+                    else:
+                        print "Averagedx="+str(avgDx)+", Averagedy="+str(avgDy)
+                        print str(self.HomingPosX+15)+", "+str(7-self.HomingPosY)+", "+str(self.HomingX)
+                        self.calErrorsX[self.HomingPosX+15][7-self.HomingPosY] = self.HomingX
+                        self.calErrorsY[self.HomingPosX+15][7-self.HomingPosY] = self.HomingY
+                        self.updateScreenValues()
+                        if (self.inAutoMode):
+                            self.on_AutoHome()
+                        else:
+                            print "Done"
+                else:
+                    self.updateScreenValues()
         else:
             popup=Popup(title="Error", content = Label(text="Could not find square"), size_hint=(None,None), size=(400,400))
             popup.open()
