@@ -330,16 +330,23 @@ class OpticalCalibrationCanvas(GridLayout):
                 self.ids.opticalScatter.apply_transform(mat, anchor = touch.pos)
 
 
-    def updateScreenValues(self):
+    def updateScreenValues(self, curX = -20, curY = -20):
         self.ids.OpticalCalibrationDistance.text = " pixels\mm: {:.3f}\n".format(self.D)#Cal Error({:.3f},{:.3f})\n".format(self.D, self.calX, self.calY)
         calX = 0
         calY = 0
         count = 0
+        reColor = False
         #print str(self.HomingTLX)+", "+str(self.HomingBRX)+", "+str(self.HomingTLY)+", "+str(self.HomingBRY)
         for y in range(self.HomingTLY, self.HomingBRY - 1, -1):
             for x in range(self.HomingTLX, self.HomingBRX + 1, +1):
                 #if (abs(y)<=7)
+                if ((y == curY) and (x == curX) ):
+                    reColor = True
+                    self.ids.OpticalCalibrationDistance.text += "[color=ff3333]"
                 self.ids.OpticalCalibrationDistance.text += "[{:.2f},{:.2f}] ".format(self.calErrorsX[x+15][7-y], self.calErrorsY[x+15][7-y])
+                if reColor:
+                    reColor = False
+                    self.ids.OpticalCalibrationDistance.text += "[/color]"
                 calX += (self.calErrorsX[x+15][7-y]-self.calErrorsX[15][7]) ** 2.0
                 calY += (self.calErrorsY[x+15][7-y]-self.calErrorsY[15][7]) ** 2.0
                 count += 1
@@ -359,7 +366,7 @@ class OpticalCalibrationCanvas(GridLayout):
         print "mean:"+str(mean)
         sd = np.std(data)
         print "sd:"+str(sd)
-        tArray = [x for x in data if ( (x > mean-2.0*sd) and (x<mean+2.0*sd))]
+        tArray = [x for x in data if ( (x >= mean-2.0*sd) and (x<=mean+2.0*sd))]
         return np.average(tArray), np.std(tArray)
 
 
@@ -546,9 +553,12 @@ class OpticalCalibrationCanvas(GridLayout):
             avgDi, stdDi = self.removeOutliersAndAverage(diList)
             if ( math.isnan(avgDx) or math.isnan(avgDy) ):
                 print "Value is not a number: "+str(avgDx)+", "+str(avgDy)
+                print "dxList Length:"+len(dxList)
+                print "dyList Length:"+len(dxList)
+                print "diList Length:"+len(dxList)
                 for x in range(len(dxList)):
                     print str(x)+": "+dxList[x]+", "+dyList[y]
-                print "Aboring process."
+                print "Aborting process."
             else:
                 cv2.putText(orig, "("+str(self.HomingPosX)+", "+str(self.HomingPosY)+")",(15, 15),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
                 cv2.putText(orig, "Dx:{:.3f}, Dy:{:.3f}->Di:{:.3f}mm".format(Dx,Dy,Dist), (15, 40),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
@@ -565,7 +575,7 @@ class OpticalCalibrationCanvas(GridLayout):
                         print str(self.HomingPosX+15)+", "+str(7-self.HomingPosY)+", "+str(self.HomingX)
                         self.calErrorsX[self.HomingPosX+15][7-self.HomingPosY] = self.HomingX
                         self.calErrorsY[self.HomingPosX+15][7-self.HomingPosY] = self.HomingY
-                        self.updateScreenValues()
+                        self.updateScreenValues(self.HomingPosX, self.HomingPosY)
                         if (self.inAutoMode):
                             self.on_AutoHome()
                         else:
