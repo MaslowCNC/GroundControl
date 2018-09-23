@@ -378,7 +378,7 @@ class OpticalCalibrationCanvas(GridLayout):
                     calX += (self.measuredErrorsX[x+15][7-y]-self.measuredErrorsX[15][7]) ** 2.0
                     calY += (self.measuredErrorsY[x+15][7-y]-self.measuredErrorsY[15][7]) ** 2.0
                 else:
-                    self.ids.OpticalCalibrationDistance.text += "[{:.2f},{:.2f}] ".format(self.calErrorsX[x+15][7-y], self.measuredErrorsY[x+15][7-y])
+                    self.ids.OpticalCalibrationDistance.text += "[{:.2f},{:.2f}] ".format(self.calErrorsX[x+15][7-y], self.calErrorsY[x+15][7-y])
                     calX += (self.measuredErrorsX[x+15][7-y]-self.measuredErrorsX[15][7]) ** 2.0
                     calY += (self.measuredErrorsY[x+15][7-y]-self.measuredErrorsY[15][7]) ** 2.0
 
