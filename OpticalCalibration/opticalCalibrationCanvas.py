@@ -25,6 +25,8 @@ import math
 import sys
 import global_variables
 
+# just a test #
+
 class KivyCamera(Image):
     def __init__(self, **kwargs):
         super(KivyCamera, self).__init__(**kwargs)
