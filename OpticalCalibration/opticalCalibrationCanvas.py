@@ -232,6 +232,22 @@ class OpticalCalibrationCanvas(GridLayout):
             line +="\n"
             outFile.write(line)
         outFile.close()
+        outFile = open("measurementValues.csv","w")
+        line = ""
+        for y in range(7, -8, -1):
+            line = ""
+            for x in range(-15, 16, +1):
+                line += "{:.2f},".format(self.measuredErrorsX[x+15][7-y])
+            line +="\n"
+            outFile.write(line)
+        outFile.write("\n")
+        for y in range(7, -8, -1):
+            line = ""
+            for x in range(-15, 16, +1):
+                line += "{:.2f},".format(self.measuredErrorsY[x+15][7-y])
+            line +="\n"
+            outFile.write(line)
+        outFile.close()
 
     def on_Preset(self, preset):
 
@@ -304,11 +320,11 @@ class OpticalCalibrationCanvas(GridLayout):
             points = []
             for x in range(-15, 16, +1):
                 if (self.inMeasureOnlyMode):
-                    points.append(x*3*25.4+self.measuredErrorsX[x+15][7-y]+self.bedWidth/2.0)
-                    points.append(y*3*25.4+self.measuredErrorsY[x+15][7-y]+self.bedHeight/2.0)
+                    points.append(x*3*25.4-self.measuredErrorsX[x+15][7-y]+self.bedWidth/2.0)
+                    points.append(y*3*25.4-self.measuredErrorsY[x+15][7-y]+self.bedHeight/2.0)
                 else:
-                    points.append(x*3*25.4+self.calErrorsX[x+15][7-y]+self.bedWidth/2.0)
-                    points.append(y*3*25.4+self.calErrorsY[x+15][7-y]+self.bedHeight/2.0)
+                    points.append(x*3*25.4-self.calErrorsX[x+15][7-y]+self.bedWidth/2.0)
+                    points.append(y*3*25.4-self.calErrorsY[x+15][7-y]+self.bedHeight/2.0)
             with self.ids.opticalScatter.canvas:
                 Color(1,0,0)
                 Line(points=points)
@@ -317,11 +333,11 @@ class OpticalCalibrationCanvas(GridLayout):
             points = []
             for y in range(7, -8, -1):
                 if (self.inMeasureOnlyMode):
-                    points.append(x*3*25.4+self.measuredErrorsX[x+15][7-y]+self.bedWidth/2.0)
-                    points.append(y*3*25.4+self.measuredErrorsY[x+15][7-y]+self.bedHeight/2.0)
+                    points.append(x*3*25.4-self.measuredErrorsX[x+15][7-y]+self.bedWidth/2.0)
+                    points.append(y*3*25.4-self.measuredErrorsY[x+15][7-y]+self.bedHeight/2.0)
                 else:
-                    points.append(x*3*25.4+self.calErrorsX[x+15][7-y]+self.bedWidth/2.0)
-                    points.append(y*3*25.4+self.calErrorsY[x+15][7-y]+self.bedHeight/2.0)
+                    points.append(x*3*25.4-self.calErrorsX[x+15][7-y]+self.bedWidth/2.0)
+                    points.append(y*3*25.4-self.calErrorsY[x+15][7-y]+self.bedHeight/2.0)
             with self.ids.opticalScatter.canvas:
                 Color(1,0,0)
                 Line(points=points)
@@ -357,12 +373,12 @@ class OpticalCalibrationCanvas(GridLayout):
                     self.ids.OpticalCalibrationDistance.text += "[color=ff3333]"
                 if (self.inMeasureOnlyMode):
                     self.ids.OpticalCalibrationDistance.text += "[{:.2f},{:.2f}] ".format(self.measuredErrorsX[x+15][7-y], self.measuredErrorsY[x+15][7-y])
-                    calX += (self.calErrorsX[x+15][7-y]-self.measuredErrorsX[15][7]) ** 2.0
-                    calY += (self.calErrorsY[x+15][7-y]-self.measuredErrorsY[15][7]) ** 2.0
+                    calX += (self.measuredErrorsX[x+15][7-y]-self.measuredErrorsX[15][7]) ** 2.0
+                    calY += (self.measuredErrorsY[x+15][7-y]-self.measuredErrorsY[15][7]) ** 2.0
                 else:
                     self.ids.OpticalCalibrationDistance.text += "[{:.2f},{:.2f}] ".format(self.calErrorsX[x+15][7-y], self.measuredErrorsY[x+15][7-y])
-                    calX += (self.calErrorsX[x+15][7-y]-self.measuredErrorsX[15][7]) ** 2.0
-                    calY += (self.calErrorsY[x+15][7-y]-self.measuredErrorsY[15][7]) ** 2.0
+                    calX += (self.measuredErrorsX[x+15][7-y]-self.measuredErrorsX[15][7]) ** 2.0
+                    calY += (self.measuredErrorsY[x+15][7-y]-self.measuredErrorsY[15][7]) ** 2.0
 
                 if reColor:
                     reColor = False
