@@ -2168,10 +2168,53 @@
                                 on_release: root.on_Preset(8)
                                 disabled: True
                 GridLayout:
-                    rows: 3
+                    rows: 4
+                    GridLayout:
+                        rows: 3
+                        Label:
+                            text: "Optical Center Point"
+                            text_size: self.size
+                            valign: "middle"
+                            halign: "center"
+                        GridLayout:
+                            cols: 2
+                            Button:
+                                text: "Get A Point"
+                                on_release: root.on_centerCalibrate()
+                                size_hint: 1, 0.2
+                            Button:
+                                text: "Reset"
+                                on_release: root.on_centerReset()
+                                size_hint: 1, 0.2
+                        GridLayout:
+                            cols: 4
+                            Label:
+                                text: "Center x:"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.5, 1
+                            TextInput:
+                                id: centerX
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_updateCenterX()
+                                on_focus: root.on_updateCenterX(args)
+                                multiline: False
+                            Label:
+                                text: "Center y:"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.5, 1
+                            TextInput:
+                                id: centerY
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_updateCenterY()
+                                on_focus: root.on_updateCenterY(args)
+                                multiline: False
                     GridLayout:
                         cols: 3
-                        size_hint: 1, 0.2
+                        size_hint: 1, 0.3
                         Label:
                             text: "Top Left Point (x,y):"
                             text_size: self.size
@@ -2192,7 +2235,7 @@
                             multiline: False
                     GridLayout:
                         cols: 3
-                        size_hint: 1, 0.20
+                        size_hint: 1, 0.3
                         Label:
                             text: "Bottom Right Point (x,y):"
                             text_size: self.size

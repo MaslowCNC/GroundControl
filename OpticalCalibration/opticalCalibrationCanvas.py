@@ -10,6 +10,8 @@ from kivy.uix.image                          import Image
 from kivy.app                                import App
 from kivy.uix.popup                          import Popup
 from kivy.uix.label                          import Label
+
+from OpticalCalibration.cameraCenterCalibration import calculateCenterOfArc
 from UIElements.notificationPopup            import NotificationPopup
 from Settings                                import maslowSettings
 from functools                               import partial
@@ -84,7 +86,8 @@ class OpticalCalibrationCanvas(GridLayout):
     calErrorsY = np.zeros(matrixSize)
     measuredErrorsX = np.zeros(matrixSize)
     measuredErrorsY = np.zeros(matrixSize)
-
+    cameraCenteringPoints = []
+    opticalCenter = (None, None)
 
     presets = [ [ [-15 , 7] , [0, 0] ],
                 [ [0, 7] , [15, 0] ],
@@ -376,7 +379,7 @@ class OpticalCalibrationCanvas(GridLayout):
                     calX += (self.measuredErrorsX[x+15][7-y]-self.measuredErrorsX[15][7]) ** 2.0
                     calY += (self.measuredErrorsY[x+15][7-y]-self.measuredErrorsY[15][7]) ** 2.0
                 else:
-                    self.ids.OpticalCalibrationDistance.text += "[{:.2f},{:.2f}] ".format(self.calErrorsX[x+15][7-y], self.measuredErrorsY[x+15][7-y])
+                    self.ids.OpticalCalibrationDistance.text += "[{:.2f},{:.2f}] ".format(self.calErrorsX[x+15][7-y], self.calErrorsY[x+15][7-y])
                     calX += (self.measuredErrorsX[x+15][7-y]-self.measuredErrorsX[15][7]) ** 2.0
                     calY += (self.measuredErrorsY[x+15][7-y]-self.measuredErrorsY[15][7]) ** 2.0
 
@@ -515,8 +518,17 @@ class OpticalCalibrationCanvas(GridLayout):
                 colors = ((0, 0, 255), (240, 0, 159), (0, 165, 255), (255, 255, 0), (255, 0, 255))
                 refObj = None
                 height, width, channels = image.shape
-                xA = int(width/2)
-                yA = int(height/2)
+
+                if self.opticalCenter[0] is None or self.opticalCenter[1] is None:
+                    xA = int(width/2)
+                    yA = int(height/2)
+                else:
+                    xA, yA = self.opticalCenter
+
+                # Draw a center marker on the video (for spot-checking that we hit the target)
+                self.ids.KivyCamera.canvas.remove_group('center_marker')
+                print "Using optical center (%.2f, %.2f)" % (xA, yA)
+                self.drawCrosshairOnVideoForImagePoint(xA, yA, width, height, colors[4], group='center_marker')
 
                 orig = image.copy()
                 maxArea = 0
@@ -565,12 +577,8 @@ class OpticalCalibrationCanvas(GridLayout):
                     xB,yB = self.translatePoint(xB,yB,xA,yA,_angle)
 
                     #cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
-                    cv2.circle(orig, (int(xA), int(yA)), 10, colors[0], 1)
-                    cv2.line(orig, (xA, yA-15), (xA, yA+15), colors[0], 1)
-                    cv2.line(orig, (xA-15, yA), (xA+15, yA), colors[0], 1)
-                    cv2.circle(orig, (int(xB), int(yB)), 10, colors[3], 1)
-                    cv2.line(orig, (int(xB), int(yB-15)), (int(xB), int(yB+15)), colors[3], 1)
-                    cv2.line(orig, (int(xB-15), int(yB)), (int(xB+15), int(yB)), colors[3], 1)
+                    self.drawCrosshairOnImage(orig, xA, yA, colors[0])
+                    self.drawCrosshairOnImage(orig, xB, yB, colors[3])
 
                     Dist = dist.euclidean((xA, yA), (xB, yB)) / self.D
                     Dx = dist.euclidean((xA,0), (xB,0))/self.D
@@ -629,3 +637,122 @@ class OpticalCalibrationCanvas(GridLayout):
         else:
             popup=Popup(title="Error", content = Label(text="Could not find square"), size_hint=(None,None), size=(400,400))
             popup.open()
+
+    def drawCrosshairOnImage(self, image, x, y, color, thickness=1):
+        cv2.circle(image, (int(x), int(y)), 10, color, thickness)
+        cv2.line(image, (int(x), int(y) - 15), (int(x), int(y) + 15), color, thickness)
+        cv2.line(image, (int(x) - 15, int(y)), (int(x) + 15, int(y)), color, thickness)
+
+    def imagePointToWidgetPoint(self, ix, iy, iwidth, iheight, widget):
+        wsize = widget.size
+        videoSize = (wsize[0], wsize[0] * (float(iheight) / float(iwidth)))
+        videoOffsetY = (wsize[1] - videoSize[1]) / 2
+        wx = (float(ix) / iwidth) * videoSize[0]
+        wy = wsize[1] - ((float(iy) / iheight) * videoSize[1] + videoOffsetY)
+        return wx, wy
+
+    def drawCrosshairOnVideoForImagePoint(self, ix, iy, iwidth, iheight, color=(1., 0, 0), group='overlay'):
+        widget = self.ids.KivyCamera
+        with widget.canvas:
+            Color(*color)
+            wx, wy = self.imagePointToWidgetPoint(ix, iy, iwidth, iheight, widget)
+            Line(circle=(widget.x+wx, widget.y+wy, 2), group=group)
+
+    def drawCircleOnVideo(self, cx, cy, r, iwidth, iheight, color=(1., 0, 0)):
+        widget = self.ids.KivyCamera
+        with widget.canvas:
+            Color(*color)
+            wx, wy = self.imagePointToWidgetPoint(cx, cy, iwidth, iheight, widget)
+            wr = (r / iwidth) * widget.size[0]
+            Line(circle=(widget.x+wx, widget.y+wy, wr), group='overlay')
+
+    def on_centerReset(self):
+        self.cameraCenteringPoints = []
+        self.ids.KivyCamera.canvas.remove_group('overlay')
+
+    def on_updateCenterX(self, value=(0,False)):
+        if value[1] is False:
+            try:
+                cX = float(self.ids.centerX.text)
+                self.opticalCenter = (cX, self.opticalCenter[1])
+            except TypeError:
+                print "Value not float"
+                self.ids.centerX.text = ""
+
+    def on_updateCenterY(self, value=(0,False)):
+        if value[1] is False:
+            try:
+                cY = float(self.ids.centerY.text)
+                self.opticalCenter = (self.opticalCenter[0], cY)
+            except TypeError:
+                print "Value not float"
+                self.ids.centerY.text = ""
+
+    def on_centerCalibrate(self):
+        ret, image = self.ids.KivyCamera.getCapture()
+        if ret is False:
+            Popup(title="Error", content=Label(text="Could not capture image"),
+                  size_hint=(None, None), size=(400, 400)).open()
+
+        self.ids.MeasuredImage.update(image)
+
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (5, 5), 0)
+        edged = cv2.Canny(gray, 50, 100)
+        edged = cv2.dilate(edged, None, iterations=1)
+        edged = cv2.erode(edged, None, iterations=1)
+        cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        cnts = cnts[0] if imutils.is_cv2() else cnts[1]
+        (cnts, _) = contours.sort_contours(cnts)
+        height, width, channels = image.shape
+
+        colors = ((0, 0, 255), (240, 0, 159), (0, 165, 255), (255, 255, 0),
+                  (255, 0, 255))
+
+        orig = image.copy()
+        maxArea = 0
+        c = 0
+        for cTest in cnts:
+            if cv2.contourArea(cTest) > maxArea:
+                maxArea = cv2.contourArea(cTest)
+                c = cTest
+
+        if cv2.contourArea(c) <= 1000:
+            Popup(title="Error", content=Label(text="cv2.contourArea(c) <= 1000 (bad I think?)"),
+                  size_hint=(None, None), size=(400, 400)).open()
+            return
+
+        # approximate to a square (i.e., four contour segments)
+        cv2.drawContours(orig, [c.astype("int")], -1, (255, 255, 0), 2)
+        # simplify the contour to get it as square as possible (i.e., remove the noise from the edges)
+        c = self.simplifyContour(c)
+        cv2.drawContours(orig, [c.astype("int")], -1, (255, 0, 0), 2)
+        box = cv2.minAreaRect(c)
+
+        box = cv2.cv.BoxPoints(box) if imutils.is_cv2() else cv2.boxPoints(
+            box)
+        box = np.array(box, dtype="int")
+        box = perspective.order_points(box)
+
+        cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
+
+        xB = np.average(box[:, 0])
+        yB = np.average(box[:, 1])
+
+        self.drawCrosshairOnImage(orig, xB, yB, colors[3])
+        self.ids.MeasuredImage.update(orig)
+        self.drawCrosshairOnVideoForImagePoint(xB, yB, width, height)
+
+        self.cameraCenteringPoints.append((xB, yB))
+        if len(self.cameraCenteringPoints) >= 3:
+            # TODO: Average over all (or at least some) possible circles for the center point and radius
+            # TODO: Sanity check that the circle is sane
+            cX, cY = calculateCenterOfArc(self.cameraCenteringPoints[-3], self.cameraCenteringPoints[-2], self.cameraCenteringPoints[-1])
+            self.ids.KivyCamera.canvas.remove_group('center_marker')
+            self.drawCrosshairOnVideoForImagePoint(cX, cY, width, height, colors[4], group='center_marker')
+            print "found a potential center point: %f, %f" % (cX, cY)
+            radius = dist.euclidean((cX, cY),(self.cameraCenteringPoints[-1][0], self.cameraCenteringPoints[-1][1]))
+            self.drawCircleOnVideo(cX, cY, radius, width, height)
+            self.ids.centerX.text = "%.1f" % cX
+            self.ids.centerY.text = "%.1f" % cY
+            self.opticalCenter = (cX, cY)
