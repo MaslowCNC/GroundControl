@@ -76,7 +76,7 @@ class OpticalCalibrationCanvas(GridLayout):
     capture = None
     cameraCount = 0
     refObj = None
-    D = 0
+    D = 1
     done = ObjectProperty(None)
     currentX, currentY = 0, 0
     calX = 0
@@ -283,18 +283,18 @@ class OpticalCalibrationCanvas(GridLayout):
         yB = _yB+yA
         return xB, yB
 
-    def simplifyContour(self,c):
+    def simplifyContour(self,c,sides=4):
         tolerance = 0.01
         while True:
             _c = cv2.approxPolyDP(c, tolerance*cv2.arcLength(c,True), True)
-            if len(_c)<=4 or tolerance<0.5:
+            if len(_c)<=sides or tolerance>0.5:
                 break
             tolerance += 0.01
-        if len(_c)<4:# went too small.. now lower the tolerance until four points or more are reached
+        if len(_c)<sides:# went too small.. now lower the tolerance until four points or more are reached
             while True:
                 tolerance -= 0.01
                 _c = cv2.approxPolyDP(c, tolerance*cv2.arcLength(c,True), True)
-                if len(_c)>=4 or tolerance <= 0.1:
+                if len(_c)>=sides or tolerance <= 0.1:
                     break
     #    print "len:"+str(len(c))+", tolerance:"+str(tolerance)
         return _c #_c is the smallest approximation we can find with four our more
@@ -494,11 +494,13 @@ class OpticalCalibrationCanvas(GridLayout):
         #request a measurement
         self.data.gcode_queue.put("B10 L")
 
-    def on_CenterOnSquare(self, doCalibrate=False):
+    def on_CenterOnSquare(self, doCalibrate=False, findCenter=False):
         print "Analyzing Images"
         dxList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
         dyList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
         diList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
+        xBList = np.zeros(shape=(10))
+        yBList = np.zeros(shape=(10))
         print "here"
         x = 0
         while True:
@@ -540,7 +542,11 @@ class OpticalCalibrationCanvas(GridLayout):
                     #approximate to a square (i.e., four contour segments)
                     cv2.drawContours(orig, [c.astype("int")], -1, (255, 255, 0), 2)
                     #simplify the contour to get it as square as possible (i.e., remove the noise from the edges)
-                    c=self.simplifyContour(c)
+                    if (findCenter):
+                        sides = 20
+                    else:
+                        sides = 4
+                    c=self.simplifyContour(c,sides)
                     cv2.drawContours(orig, [c.astype("int")], -1, (255, 0, 0), 2)
                     box = cv2.minAreaRect(c)
                     angle = box[-1]
@@ -554,8 +560,9 @@ class OpticalCalibrationCanvas(GridLayout):
                     box = perspective.order_points(box)
 
                     cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
-                    M = cv2.getRotationMatrix2D((xA,yA),_angle,1)
-                    orig = cv2.warpAffine(orig,M,(width,height))
+                    if findCenter == False:
+                        M = cv2.getRotationMatrix2D((xA,yA),_angle,1)
+                        orig = cv2.warpAffine(orig,M,(width,height))
 
                     xB = np.average(box[:, 0])
                     yB = np.average(box[:, 1])
@@ -574,7 +581,8 @@ class OpticalCalibrationCanvas(GridLayout):
                     if (_angle<30):
                         _angle = _angle *-1.0
                     #print _angle
-                    xB,yB = self.translatePoint(xB,yB,xA,yA,_angle)
+                    if findCenter == False:
+                        xB,yB = self.translatePoint(xB,yB,xA,yA,_angle)
 
                     #cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
                     self.drawCrosshairOnImage(orig, xA, yA, colors[0])
@@ -590,6 +598,8 @@ class OpticalCalibrationCanvas(GridLayout):
                     dxList[x] = Dx
                     dyList[x] = Dy
                     diList[x] = Dist
+                    xBList[x] = xB
+                    yBList[x] = yB
                     x +=1
                     print "Processed Image #"+str(x)
                     if (x==10):
@@ -599,23 +609,21 @@ class OpticalCalibrationCanvas(GridLayout):
             avgDx, stdDx = self.removeOutliersAndAverage(dxList)
             avgDy, stdDy = self.removeOutliersAndAverage(dyList)
             avgDi, stdDi = self.removeOutliersAndAverage(diList)
+            avgxB, stdxB = self.removeOutliersAndAverage(xBList)
+            avgyB, stdyB = self.removeOutliersAndAverage(yBList)
             if ( math.isnan(avgDx) or math.isnan(avgDy) ):
                 print "Value is not a number: "+str(avgDx)+", "+str(avgDy)
-                print "dxList Length:"+len(dxList)
-                print "dyList Length:"+len(dxList)
-                print "diList Length:"+len(dxList)
-                for x in range(len(dxList)):
-                    print str(x)+": "+dxList[x]+", "+dyList[y]
                 print "Aborting process."
             else:
                 cv2.putText(orig, "("+str(self.HomingPosX)+", "+str(self.HomingPosY)+")",(15, 15),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
                 cv2.putText(orig, "Dx:{:.3f}, Dy:{:.3f}->Di:{:.3f}mm".format(Dx,Dy,Dist), (15, 40),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
+                cv2.putText(orig, "({:.3f}, {:.3f})".format(avgxB,avgyB), (15, 65),cv2.FONT_HERSHEY_SIMPLEX, 0.55, colors[0], 2)
                 self.ids.MeasuredImage.update(orig)
                 self.HomingX += avgDx#-self.calX
                 self.HomingY += avgDy#-self.calY
                 print "testing location"
                 if doCalibrate!=True:  #its either True because you pressed the calibrate button or its a distance from the measurement callback.
-                    if (((abs(avgDx)>=0.125) or (abs(avgDy)>=0.125)) and (self.inMeasureOnlyMode==False)):
+                    if (((abs(avgDx)>=0.125) or (abs(avgDy)>=0.125)) and (self.inMeasureOnlyMode==False) and (findCenter==False)):
                         print "Adjusting Location"
                         self.HomeIn()
                     else:
@@ -624,9 +632,13 @@ class OpticalCalibrationCanvas(GridLayout):
                         if (self.inMeasureOnlyMode):
                             self.measuredErrorsX[self.HomingPosX+15][7-self.HomingPosY] = self.HomingX
                             self.measuredErrorsY[self.HomingPosX+15][7-self.HomingPosY] = self.HomingY
-                        else:
+                        elif (findCenter==False):
                             self.calErrorsX[self.HomingPosX+15][7-self.HomingPosY] = self.HomingX
                             self.calErrorsY[self.HomingPosX+15][7-self.HomingPosY] = self.HomingY
+                        else:
+                            self.ids.centerX.text = "%.1f" % avgxB
+                            self.ids.centerY.text = "%.1f" % avgyB
+                            self.opticalCenter = (avgxB, avgyB)
                         self.updateScreenValues(self.HomingPosX, self.HomingPosY)
                         if (self.inAutoMode):
                             self.on_AutoHome()

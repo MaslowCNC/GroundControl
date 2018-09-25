@@ -2071,8 +2071,11 @@
                 cols: 5
                 size_hint: 1, .4
                 Button:
-                    text: "Calibrate"
-                    on_release: root.on_CenterOnSquare(True)
+                    text: "Calibrate \nDimensions"
+                    on_release: root.on_CenterOnSquare(doCalibrate=True)
+                Button:
+                    text: "Calibrate \nCenter Location"
+                    on_release: root.on_CenterOnSquare(findCenter=True)
                 Button:
                     id: OpticalCalibrationAutoMeasureButton
                     text: "Auto Calibrate"
