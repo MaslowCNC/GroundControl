@@ -106,6 +106,13 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         Clock.schedule_once(self.data.pushSettings, 6)
         self.parentWidget.close()
 
+    def moveSledToDefault(self):
+        chainLength = App.get_running_app().data.config.get('Advanced Settings', 'chainExtendLength')
+        self.data.gcode_queue.put("G91 ")
+        self.data.gcode_queue.put("B09 L"+str(chainLength)+" R"+str(chainLength)+" ")
+        self.data.gcode_queue.put("G90 ")
+        self.parentWidget.close()
+
     def calibrateMachine(self):
         '''
 
@@ -208,3 +215,5 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
             self.measureChainTolerances()
         elif text == "Optical Calibration":
             self.launchOpticalCalibration()
+        elif text == "Move Sled to Default":
+            self.moveSledToDefault()

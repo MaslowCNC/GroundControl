@@ -391,7 +391,7 @@
             Spinner:
                 id: advancedOptions
                 text: "Advanced"
-                values: ["Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test", "Run Triangular Test Cut Pattern", "Reset settings to defaults", "Compute chain calibration factors", "Optical Calibration"]
+                values: ["Move Sled to Default","Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test", "Run Triangular Test Cut Pattern", "Reset settings to defaults", "Compute chain calibration factors", "Optical Calibration"]
                 on_text: root.advancedOptionsFunctions(advancedOptions.text)
 
 <OtherFeatures>:
@@ -2068,117 +2068,172 @@
         GridLayout:
             rows: 2
             GridLayout:
-                cols: 5
+                cols: 2
                 size_hint: 1, .4
                 Button:
-                    text: "Calibrate \nDimensions"
-                    on_release: root.on_CenterOnSquare(doCalibrate=True)
-                Button:
-                    text: "Calibrate \nCenter Location"
-                    on_release: root.on_CenterOnSquare(findCenter=True)
-                Button:
-                    id: OpticalCalibrationAutoMeasureButton
-                    text: "Auto Calibrate"
-                    on_release: root.on_AutoHome(False)
-                    disabled: True
-                Button:
-                    text: "Return to Center"
-                    on_release: root.on_ReturnToCenter()
-                Button:
-                    text: "Save and Send"
-                    on_release: root.on_SaveAndSend()
-                Button:
-                    text: "Wipe Calibration \nEEPROM"
-                    on_release: root.on_WipeController()
-                Button:
-                    text: "Exit"
-                    on_release: root.do_Exit()
-                Button:
+                    size_hint: .2, 1
                     text: "Stop!"
                     halign: "center"
                     on_release: root.stopCut()
                     background_color: (1,.2,.2,1)
-                Spinner:
-                    id: cameras
-                    text: "Cameras"
-                    values: root.cameras()
-                    on_text: root.setCamera(cameras.text)
-                Button:
-                    text: "Save as CSV"
-                    on_release: root.on_SaveCSV()
-                Button:
-                    text: "Auto Measure"
-                    on_release: root.on_AutoHome(True)
+                GridLayout:
+                    cols: 5
+                    size_hint: .8, 1
+                    Button:
+                        text: "Calibrate\nDimensions"
+                        halign: "center"
+                        on_release: root.on_CenterOnSquare(doCalibrate=True)
+                    Button:
+                        text: "Calibrate\nCenter of\n Sled Rotation"
+                        halign: "center"
+                        on_release: root.on_CenterOnSquare(findCenter=True)
+                    Button:
+                        id: OpticalCalibrationAutoMeasureButton
+                        text: "Auto Calibrate"
+                        halign: "center"
+                        on_release: root.on_AutoHome(False)
+                        disabled: True
+                    Button:
+                        text: "Auto Measure"
+                        on_release: root.on_AutoHome(True)
+                    Button:
+                        text: "Return to\nCenter"
+                        halign: "center"
+                        on_release: root.on_ReturnToCenter()
+                    Button:
+                        text: "Save and Send\nto Controller"
+                        halign: "center"
+                        on_release: root.on_SaveAndSend()
+                    Button:
+                        text: "Wipe\nCalibration\nfrom EEPROM"
+                        halign: "center"
+                        on_release: root.on_WipeController()
+                    Spinner:
+                        id: cameras
+                        text: "Cameras"
+                        values: root.cameras()
+                        on_text: root.setCamera(cameras.text)
+                    Button:
+                        text: "Save as CSV"
+                        on_release: root.on_SaveCSV()
+                    Button:
+                        text: "Exit"
+                        on_release: root.do_Exit()
             GridLayout:
                 cols: 2
                 size_hint: 1, .6
                 GridLayout:
-                    rows: 4
-                    Label:
-                        text: "Presets"
-                        text_size: self.size
-                        valign: "middle"
-                        halign: "center"
-                        size_hint: 1, .25
+                    rows: 2
                     GridLayout:
-                        rows: 2
+                        rows: 4
+                        sizehint: 1, .7
                         Label:
-                            text: "Large Sheets"
+                            text: "[b]Calibration Extents[/b]"
                             text_size: self.size
+                            halign: "center"
                             valign: "middle"
-                            halign: "left"
-                            size_hint: 1, .25
+                            size_hint: 1, .2
+                            markup: True
+                        Spinner:
+                            size_hint: 1, 0.4
+                            id: presets
+                            text: "Presets"
+                            values: ["48x36 Top Left", "48x36 Bottom Left", "48x36 Top Right", "48x36 Bottom Right", "96x48 Full Area", "8.5x11 (Portrait)","11x17 (Portrait)"]
+                            on_text: root.on_Preset(presets.text)
                         GridLayout:
-                            cols: 2
-                            Button:
-                                text: "Top Left Quadrant"
-                                on_release: root.on_Preset(0)
-                            Button:
-                                text: "Top Right Quadrant"
-                                on_release: root.on_Preset(1)
-                            Button:
-                                text: "Bottom Left Quadrant"
-                                on_release: root.on_Preset(2)
-                            Button:
-                                text: "Bottom Right Quadrant"
-                                on_release: root.on_Preset(3)
-                            Button:
-                                text: "Full Area"
-                                on_release: root.on_Preset(4)
-
-                    GridLayout:
-                        rows: 2
-                        Label:
-                            text: "Small Sheets"
-                            text_size: self.size
-                            valign: "middle"
-                            halign: "left"
-                            size_hint: 1, .25
+                            cols: 3
+                            size_hint: 1, 0.3
+                            Label:
+                                text: "Top Left Point (x,y):"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.5, 1
+                            TextInput:
+                                id: topLeftX
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_UpdateTopLeftX()
+                                on_focus: root.on_UpdateTopLeftX(args)
+                                multiline: False
+                            TextInput:
+                                id: topLeftY
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_UpdateTopLeftY()
+                                on_focus: root.on_UpdateTopLeftY(args)
+                                multiline: False
                         GridLayout:
-                            cols: 2
-                            Button:
-                                text: "8.5 x 11 (Portrait)"
-                                on_release: root.on_Preset(5)
-                            Button:
-                                text: "8.5 x 11 (Landscape)"
-                                on_release: root.on_Preset(6)
-                                disabled: True
-                            Button:
-                                text: "11 x 17 (Portrait)"
-                                on_release: root.on_Preset(7)
-                            Button:
-                                text: "11 x 17 (Landscape)"
-                                on_release: root.on_Preset(8)
-                                disabled: True
-                GridLayout:
-                    rows: 4
+                            cols: 3
+                            size_hint: 1, 0.3
+                            Label:
+                                text: "Bottom Right Point (x,y):"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.5, 1
+                            TextInput:
+                                id: bottomRightX
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_UpdateBottomRightX()
+                                on_focus: root.on_UpdateBottomRightX(args)
+                                multiline: False
+                            TextInput:
+                                id: bottomRightY
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_UpdateBottomRightY()
+                                on_focus: root.on_UpdateBottomRightY(args)
+                                multiline: False
                     GridLayout:
                         rows: 3
+                        sizehint: 1, .3
                         Label:
-                            text: "Optical Center Point"
+                            text: "[b]Calibration Pattern Dimensions[/b]"
+                            text_size: self.size
+                            halign: "center"
+                            valign: "middle"
+                            size_hint: 1, .3
+                            markup: True
+                        GridLayout:
+                            cols: 2
+                            size_hint: 1, 0.2
+                            Label:
+                                text: "Width (inches):"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.5, 1
+                            TextInput:
+                                id: markerX
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_UpdateMarkerX()
+                                on_focus: root.on_UpdateMarkerX(args)
+                                multiline: False
+                        GridLayout:
+                            cols: 2
+                            size_hint: 1, 0.2
+                            Label:
+                                text: "Height (inches):"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.5, 1
+                            TextInput:
+                                id: markerY
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_UpdateMarkerY()
+                                on_focus: root.on_UpdateMarkerY(args)
+                                multiline: False
+
+                GridLayout:
+                    rows: 2
+                    GridLayout:
+                        rows: 3
+                        sizehint: 1, .5
+                        Label:
+                            text: "[b]Sled Center of Rotation[/b]"
                             text_size: self.size
                             valign: "middle"
                             halign: "center"
+                            markup: True
                         GridLayout:
                             cols: 2
                             Button:
@@ -2216,48 +2271,11 @@
                                 on_focus: root.on_updateCenterY(args)
                                 multiline: False
                     GridLayout:
-                        cols: 3
-                        size_hint: 1, 0.3
+                        rows: 1
+                        sizehint: 1, .5
                         Label:
-                            text: "Top Left Point (x,y):"
+                            text: ""
                             text_size: self.size
                             halign: "right"
                             valign: "middle"
-                            size_hint: 0.5, 1
-                        TextInput:
-                            id: topLeftX
-                            size_hint: 0.25, 1
-                            on_text_validate: root.on_UpdateTopLeftX()
-                            on_focus: root.on_UpdateTopLeftX(args)
-                            multiline: False
-                        TextInput:
-                            id: topLeftY
-                            size_hint: 0.25, 1
-                            on_text_validate: root.on_UpdateTopLeftY()
-                            on_focus: root.on_UpdateTopLeftY(args)
-                            multiline: False
-                    GridLayout:
-                        cols: 3
-                        size_hint: 1, 0.3
-                        Label:
-                            text: "Bottom Right Point (x,y):"
-                            text_size: self.size
-                            halign: "right"
-                            valign: "middle"
-                            size_hint: 0.5, 1
-                        TextInput:
-                            id: bottomRightX
-                            size_hint: 0.25, 1
-                            on_text_validate: root.on_UpdateBottomRightX()
-                            on_focus: root.on_UpdateBottomRightX(args)
-                            multiline: False
-                        TextInput:
-                            id: bottomRightY
-                            size_hint: 0.25, 1
-                            on_text_validate: root.on_UpdateBottomRightY()
-                            on_focus: root.on_UpdateBottomRightY(args)
-                            multiline: False
-                    GridLayout:
-                        size_hint: 1, 0.6
-                        Label:
-                            text:""
+                            size_hint: 1, 1

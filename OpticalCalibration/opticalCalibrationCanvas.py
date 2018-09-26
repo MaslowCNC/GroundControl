@@ -77,6 +77,8 @@ class OpticalCalibrationCanvas(GridLayout):
     cameraCount = 0
     refObj = None
     D = 1
+    xD = 1
+    yD = 1
     done = ObjectProperty(None)
     currentX, currentY = 0, 0
     calX = 0
@@ -89,18 +91,20 @@ class OpticalCalibrationCanvas(GridLayout):
     cameraCenteringPoints = []
     opticalCenter = (None, None)
 
-    presets = [ [ [-15 , 7] , [0, 0] ],
-                [ [0, 7] , [15, 0] ],
-                [ [-15 , 0] , [0, -7] ],
-                [ [0, 0] , [15, -7] ],
-                [ [-15, 7] , [15, -7] ],
-                [ [-1, 1] , [1, -2] ],
-                [ [-1, 1] , [1, -2] ],
-                [ [-1, 2] , [2, -3] ],
-                [ [-1, 2] , [2, -3] ],
+    presets = [ ["48x36 Top Left", [-15 , 7] , [0, 0] ],
+                ["48x36 Bottom Left", [0, 7] , [15, 0] ],
+                ["48x36 Top Right", [-15 , 0] , [0, -7] ],
+                ["48x36 Bottom Right", [0, 0] , [15, -7] ],
+                ["96x48 Full Area", [-15, 7] , [15, -7] ],
+                ["8.5x11 (Portrait)", [-1, 1] , [1, -2] ],
+                ["11x17 (Portrait)", [-1, 2] , [2, -3] ],
                ]
 
+    #values: ["48x36 Top Left", "48x36 Bottom Left", "48x36 Top Right", "48x36 Bottom Right", "96x48 Full Area", "8.5x11 (Portait)","11x17 (Portrait)"]
+
     markerWidth = 0.5*25.4
+    markerX = 0.5*25.4
+    markerY = 0.5*25.4
     inAutoMode = False
     inMesureOnlyMode = False
     HomingScanDirection = 1
@@ -149,8 +153,13 @@ class OpticalCalibrationCanvas(GridLayout):
         moveHorizontal = self.bedWidth/2
         mat = Matrix().translate(moveHorizontal, moveVertical, 0)
         self.ids.opticalScatter.apply_transform(mat)
-
         self.drawCalibration()
+        self.ids.topLeftX.text = str(self.HomingTLX)
+        self.ids.topLeftY.text = str(self.HomingTLY)
+        self.ids.bottomRightX.text = str(self.HomingBRX)
+        self.ids.bottomRightY.text = str(self.HomingBRY)
+        self.ids.markerX.text = str(round(self.markerX/25.4,3))
+        self.ids.markerY.text = str(round(self.markerY/25.4,3))
 
     def stopCut(self):
         self.data.quick_queue.put("!")
@@ -218,6 +227,30 @@ class OpticalCalibrationCanvas(GridLayout):
                 print "Value not int"
                 self.ids.bottomRightY.text = ""
 
+    def on_UpdateMarkerX(self,value=[0,False]):
+        if (value[1]==False):
+            try:
+                _mX=float(self.ids.markerX.text)
+                self.ids.markerX.text = str(round(_mX,3))
+                self.markerX = _mX*25.4
+            except:
+                print "Value not float"
+                self.ids.markerX.text = ""
+
+    def on_UpdateMarkerY(self,value=[0,False]):
+        if (value[1]==False):
+            try:
+                _mY=float(self.ids.markerY.text)
+                self.ids.markerY.text = str(round(_mY,3))
+                self.markerY = _mY*25.4
+            except:
+                print "Value not float"
+                self.ids.markerY.text = ""
+
+
+
+
+
     def on_SaveCSV(self):
         outFile = open("calibrationValues.csv","w")
         line = ""
@@ -253,15 +286,18 @@ class OpticalCalibrationCanvas(GridLayout):
         outFile.close()
 
     def on_Preset(self, preset):
+        for _preset in self.presets:
+            if preset == _preset[0]:
+                self.ids.topLeftX.text = str(_preset[1][0])
+                self.ids.topLeftY.text = str(_preset[1][1])
+                self.ids.bottomRightX.text = str(_preset[2][0])
+                self.ids.bottomRightY.text = str(_preset[2][1])
+                self.HomingTLX = _preset[1][0]
+                self.HomingTLY = _preset[1][1]
+                self.HomingBRX = _preset[2][0]
+                self.HomingBRY = _preset[2][1]
 
-        self.ids.topLeftX.text = str(self.presets[preset][0][0])
-        self.ids.topLeftY.text = str(self.presets[preset][0][1])
-        self.ids.bottomRightX.text = str(self.presets[preset][1][0])
-        self.ids.bottomRightY.text = str(self.presets[preset][1][1])
-        self.HomingTLX = self.presets[preset][0][0]
-        self.HomingTLY = self.presets[preset][0][1]
-        self.HomingBRX = self.presets[preset][1][0]
-        self.HomingBRY = self.presets[preset][1][1]
+
 
     def midpoint(self, ptA, ptB):
         return ((ptA[0]+ptB[0])*0.5, (ptA[1]+ptB[1])*0.5)
@@ -571,8 +607,11 @@ class OpticalCalibrationCanvas(GridLayout):
                         (tl, tr, br, bl) = box
                         (tlblX, tlblY) = self.midpoint(tl, bl)
                         (trbrX, trbrY) = self.midpoint(tr, br)
+                        (tltrX, tltrY) = self.midpoint(tl, tr)
+                        (blbrX, blbrY) = self.midpoint(bl, br)
 
-                        self.D = dist.euclidean((tlblX,tlblY),(trbrX,trbrY))/self.markerWidth
+                        self.xD = dist.euclidean((tlblX,tlblY),(trbrX,trbrY))/self.markerX
+                        self.yD = dist.euclidean((tltrX,tltrY),(blbrX,blbrY))/self.markerY
                         self.ids.OpticalCalibrationAutoMeasureButton.disabled = False
 
 
@@ -588,13 +627,14 @@ class OpticalCalibrationCanvas(GridLayout):
                     self.drawCrosshairOnImage(orig, xA, yA, colors[0])
                     self.drawCrosshairOnImage(orig, xB, yB, colors[3])
 
-                    Dist = dist.euclidean((xA, yA), (xB, yB)) / self.D
-                    Dx = dist.euclidean((xA,0), (xB,0))/self.D
+                    #Dist = dist.euclidean((xA, yA), (xB, yB)) / self.D
+                    Dx = dist.euclidean((xA,0), (xB,0))/self.xD
                     if (xA>xB):
                         Dx *= -1
-                    Dy = dist.euclidean((0,yA), (0,yB))/self.D
+                    Dy = dist.euclidean((0,yA), (0,yB))/self.yD
                     if (yA<yB):
                         Dy *= -1
+                    Dist = math.sqrt(Dx**2.0 + Dy**2.0 )
                     dxList[x] = Dx
                     dyList[x] = Dy
                     diList[x] = Dist
