@@ -425,7 +425,7 @@ class OpticalCalibrationCanvas(GridLayout):
         App.get_running_app().data.config.set('Computed Settings', 'xyErrorArray', _str)
 
     def on_WipeController(self):
-        self.data.gcode_queue.put("$RST=O ")
+        self.data.gcode_queue.put("$RST=^ ")
 
     def on_ReturnToCenter(self):
         print "Moving to:[0, 0]"

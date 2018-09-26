@@ -766,3 +766,5 @@ def sendErrorArray(firmwareKey, value, data):
     for x in range(0, 31):#31
         for y in range (0, 15):#15
             data.gcode_queue.put("$O=" + str(x)+","+str(y)+","+str(xErrors[x][y])+","+str(yErrors[x][y])+" ")
+    # if you send a 31,15 , it will trigger a save to EEPROM
+    data.gcode_queue.put("$O=" + str(31)+","+str(15)+","+str(42)+","+str(42)+" ")
