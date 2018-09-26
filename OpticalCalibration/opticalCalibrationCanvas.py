@@ -120,6 +120,8 @@ class OpticalCalibrationCanvas(GridLayout):
     counter =0
     bedHeight = 48*25.4
     bedWidth = 96*25.4
+    xCurve = np.zeros(shape=(6))  # coefficients for quadratic curve
+    yCurve = np.zeros(shape=(6))  # coefficients for quadratic curve
 
     #def initialize(self):
 
@@ -808,3 +810,55 @@ class OpticalCalibrationCanvas(GridLayout):
             self.ids.centerX.text = "%.1f" % cX
             self.ids.centerY.text = "%.1f" % cY
             self.opticalCenter = (cX, cY)
+
+    def on_surfaceFit(self):
+        # set data into proper format
+        dataX = np.zeros(((15*31),3))
+        dataY = np.zeros(((15*31),3))
+        for y in range(7, -8, -1):
+            for x in range(-15, 16, +1):
+                dataX[(7-y)*31+(x+15)][0]=float(x)
+                dataY[(7-y)*31+(x+15)][0]=float(x)
+                dataX[(7-y)*31+(x+15)][1]=float(y)
+                dataY[(7-y)*31+(x+15)][1]=float(y)
+                dataX[(7-y)*31+(x+15)][2]=self.calErrorsX[x+15][7-y]
+                dataY[(7-y)*31+(x+15)][2]=self.calErrorsY[x+15][7-y]
+        #surface fit X Errors
+        xA = np.c_[np.ones(dataX.shape[0]), dataX[:,:2], np.prod(dataX[:,:2], axis=1), dataX[:,:2]**2]
+        xCurve,_,_,_ = np.linalg.lstsq(xA, dataX[:,2],rcond=None)
+        xB = dataX[:,2]
+        xSStot = ((xB-xB.mean())**2).sum()
+        xSSres = ((xB-np.dot(xA,xCurve))**2).sum()
+        if (xSStot!=0):
+            xR2 = 1.0 - xSSres / xSStot
+        else:
+            xR2 = 0.0
+        #surface fit Y Errors
+        yA = np.c_[np.ones(dataY.shape[0]), dataY[:,:2], np.prod(dataY[:,:2], axis=1), dataY[:,:2]**2]
+        yCurve,_,_,_ = np.linalg.lstsq(yA, dataY[:,2],rcond=None)
+        yB = dataY[:,2]
+        ySStot = ((yB-yB.mean())**2).sum()
+        ySSres = ((yB-np.dot(yA,yCurve))**2).sum()
+        if (ySStot!=0):
+            yR2 = 1.0 - ySSres / ySStot
+        else:
+            yR2 = 0.0
+
+        #update screen
+        line = "X Coefficients: "
+        count=0
+        for c in xCurve:
+            line+= str(float(round(c,2)))
+            if count!=5:
+                line += ", "
+                count += 1
+        self.ids.xCoefficients.text = line + " ("+str(float(round(xR2,2)))+")"
+
+        line = "Y Coefficients: "
+        count=0
+        for c in yCurve:
+            line+= str(float(round(c,2)))
+            if count!=5:
+                line += ", "
+                count += 1
+        self.ids.yCoefficients.text = line + " ("+str(float(round(yR2,2)))+")"

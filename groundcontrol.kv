@@ -2271,11 +2271,29 @@
                                 on_focus: root.on_updateCenterY(args)
                                 multiline: False
                     GridLayout:
-                        rows: 1
+                        rows: 4
                         sizehint: 1, .5
                         Label:
-                            text: ""
+                            text: "Surface Fitting"
                             text_size: self.size
                             halign: "right"
                             valign: "middle"
-                            size_hint: 1, 1
+                            size_hint: 1, .2
+                        Button:
+                            text: "Fit to Surface"
+                            on_release: root.on_surfaceFit()
+                            size_hint: 1, 0.2
+                        Label:
+                            text: "X Coefficients:"
+                            id: xCoefficients
+                            text_size: self.size
+                            halign: "left"
+                            valign: "middle"
+                            size_hint: 1, .25
+                        Label:
+                            text: "Y Coefficients:"
+                            id: yCoefficients
+                            text_size: self.size
+                            halign: "left"
+                            valign: "middle"
+                            size_hint: 1, .25
