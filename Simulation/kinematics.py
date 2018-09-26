@@ -19,7 +19,9 @@ class Kinematics():
     motorOffsetY  = 463.0                               #vertical distance from the corner of the work area to the sprocket center
     chain1Offset  = 0                                   #number of links +,- that have slipped
     chain2Offset  = 0                                   #number of links +,- that have slipped
-
+    topBeamTilt   = 0                                   #tilt of top beam in degrees
+    leftChainTolerance = 0                              #chain tolerance of left chain in percent
+    rightChainTolerance = 0                             #chain tolerance of right chain in percent
     x = 2708.4
     y = 270
 
@@ -84,12 +86,19 @@ class Kinematics():
     Chain2  = 0#right chain length
 
     i = 0
-    
+
     rotationDiskRadius = 100
     chainSagCorrection = 0
     chainOverSprocket = 1
     _xCordOfMotor = D/2
     _yCordOfMotor = machineHeight/2 + motorOffsetY
+    topBeamTilt = 0.0
+
+    leftMotorX = math.cos(topBeamTilt*3.141592/180.0)*D/-2.0
+    leftMotorY = math.sin(topBeamTilt*3.141592/180.0)*D/-2.0  + machineHeight/2 + motorOffsetY
+    rightMotorX = math.cos(topBeamTilt*3.141592/180.0)*D+leftMotorX
+    rightMotorY = math.sin(topBeamTilt*3.141592/180.0)*D/2.0  + machineHeight/2 + motorOffsetY
+
     isQuadKinematics    = True
 
     def _verifyValidTarget(self, xTarget, yTarget):
@@ -116,46 +125,51 @@ class Kinematics():
         self.Theta = math.atan(2*self.s/self.l)
         self.Psi1 = self.Theta - self.Phi
         self.Psi2 = self.Theta + self.Phi
-        
+
         self._xCordOfMotor = self.D/2
         self._yCordOfMotor = self.machineHeight/2 + self.motorOffsetY
 
+        self.leftMotorX = math.cos(self.topBeamTilt*3.141592/180.0)*self.D/-2.0
+        self.leftMotorY = math.sin(self.topBeamTilt*3.141592/180.0)*self.D/-2.0 + self.machineHeight/2 + self.motorOffsetY
+        self.rightMotorX = math.cos(self.topBeamTilt*3.141592/180.0)*self.D+self.leftMotorX
+        self.rightMotorY = math.sin(self.topBeamTilt*3.141592/180.0)*self.D/2.0 + self.machineHeight/2 + self.motorOffsetY
+
     def inverse(self, xTarget, yTarget):
         '''
-        
+
         Compute the lengths of chain needed to reach a target XY position
-        
+
         '''
         if self.isQuadKinematics:
             return self.quadrilateralInverse(xTarget, yTarget)
         else:
             return self.triangularInverse(xTarget, yTarget)
-    
+
     def triangularInverse(self, xTarget, yTarget):
         '''
-    
+
         The inverse kinematics (relating an xy coordinate pair to the required chain lengths to hit that point)
-        function for a triangular set up where the chains meet at a point, or are arranged so that they simulate 
+        function for a triangular set up where the chains meet at a point, or are arranged so that they simulate
         meeting at a point.
-        
+
         '''
-    
+
         #Confirm that the coordinates are on the wood
         self._verifyValidTarget(xTarget, yTarget)
-        
-        Motor1Distance = math.sqrt(math.pow((-1*self._xCordOfMotor - xTarget),2)+math.pow((self._yCordOfMotor - yTarget),2))
-        Motor2Distance = math.sqrt(math.pow((self._xCordOfMotor - xTarget),2)+math.pow((self._yCordOfMotor - yTarget),2))
+
+        Motor1Distance = math.sqrt(math.pow((self.leftMotorX - xTarget),2)+math.pow((self.leftMotorY - yTarget),2))
+        Motor2Distance = math.sqrt(math.pow((self.rightMotorX - xTarget),2)+math.pow((self.rightMotorY - yTarget),2))
 
         #Calculate the chain angles from horizontal, based on if the chain connects to the sled from the top or bottom of the sprocket
         if self.chainOverSprocket == 1:
-            Chain1Angle = math.asin((self._yCordOfMotor - yTarget)/Motor1Distance) + math.asin(self.R/Motor1Distance)
-            Chain2Angle = math.asin((self._yCordOfMotor - yTarget)/Motor2Distance) + math.asin(self.R/Motor2Distance)
+            Chain1Angle = math.asin((self.leftMotorY - yTarget)/Motor1Distance) + math.asin(self.R/Motor1Distance)
+            Chain2Angle = math.asin((self.rightMotorY - yTarget)/Motor2Distance) + math.asin(self.R/Motor2Distance)
 
             Chain1AroundSprocket = self.R * Chain1Angle
             Chain2AroundSprocket = self.R * Chain2Angle
         else:
-            Chain1Angle = math.asin((self._yCordOfMotor - yTarget)/Motor1Distance) - math.asin(self.R/Motor1Distance)
-            Chain2Angle = math.asin((self._yCordOfMotor - yTarget)/Motor2Distance) - math.asin(self.R/Motor2Distance)
+            Chain1Angle = math.asin((self.leftMotorY - yTarget)/Motor1Distance) - math.asin(self.R/Motor1Distance)
+            Chain2Angle = math.asin((self.rightMotorY - yTarget)/Motor2Distance) - math.asin(self.R/Motor2Distance)
 
             Chain1AroundSprocket = self.R * (3.14159 - Chain1Angle)
             Chain2AroundSprocket = self.R * (3.14159 - Chain2Angle)
@@ -169,15 +183,15 @@ class Kinematics():
         Chain2Straight *= (1 + ((self.chainSagCorrection / 1000000000000) * math.pow(math.cos(Chain2Angle),2) * math.pow(Chain2Straight,2) * math.pow((math.tan(Chain1Angle) * math.cos(Chain2Angle)) + math.sin(Chain2Angle),2)))
 
         #Calculate total chain lengths accounting for sprocket geometry and chain sag
-        Chain1 = Chain1AroundSprocket + Chain1Straight
-        Chain2 = Chain2AroundSprocket + Chain2Straight
+        Chain1 = Chain1AroundSprocket + Chain1Straight*(1-self.leftChainTolerance/100.0)
+        Chain2 = Chain2AroundSprocket + Chain2Straight*(1-self.rightChainTolerance/100.0)
 
         #Subtract of the virtual length which is added to the chain by the rotation mechanism
         Chain1 = Chain1 - self.rotationDiskRadius
         Chain2 = Chain2 - self.rotationDiskRadius
-        
+
         return Chain1, Chain2
-    
+
     def quadrilateralInverse(self, xTarget, yTarget):
 
         '''
@@ -473,5 +487,3 @@ class Kinematics():
 
         Temp = ((math.sqrt(YPlus * YPlus - self.R * self.R)/self.R) - (self.y + YPlus - self.h * math.sin(Psi))/Denominator)
         return Temp
-
-

@@ -1,7 +1,7 @@
 '''
 
-This file provides a single dict which contains all of the details about the 
-various settings.  It also has a number of helper functions for interacting 
+This file provides a single dict which contains all of the details about the
+various settings.  It also has a number of helper functions for interacting
 and using the data in this dict.
 
 '''
@@ -21,7 +21,7 @@ This is the settings dict.  Its structure is:
             "desc": "A description of the setting",
             "key": "keyName", //this has to be a valid keyname
             "default": "default value",
-            "firmwareKey": 12   // if this is a setting in the firmware, this 
+            "firmwareKey": 12   // if this is a setting in the firmware, this
                                 // is the integer value of that setting
         },
         {...}
@@ -312,10 +312,26 @@ settings = {
             {
                 "type": "string",
                 "title": "Chain Sag Correction Value for Triangular Kinematics",
-                "desc": "The scaled value computed by the calibration process to calculate chain sag based on sled weight, chain weight, and workspace angle\\ndefault setting: %s",
+                "desc": "The scaled value computed by the calibration process to calculate chain sag based on sled weight, chain weight, and workspace angle",
                 "key": "chainSagCorrection",
                 "default": 0,
                 "firmwareKey": 37
+            },
+            {
+                "type": "bool",
+                "title": "Use Calibration Error Matrix (Experimental)",
+                "desc": "Enable modifying x,y coordinates during calculations to account for errors determined by optical calibration",
+                "key": "enableOpticalCalibration",
+                "default": 0,
+                "firmwareKey": 44
+            },
+            {
+                "type": "string",
+                "title": "Top Beam Tilt (Experimental)",
+                "desc": "Experimental adjustment for top beam tilt in degrees",
+                "key": "topBeamTilt",
+                "default": 0,
+                "firmwareKey": 43
             },
             {
                 "type": "bool",
@@ -585,6 +601,12 @@ settings = {
                 "type": "string",
                 "key": "distPerRotRightChainTolerance",
                 "firmwareKey": 41
+            },
+            {
+                "type": "string",
+                "key": "xyErrorArray",
+                "default": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+                "firmwareKey": 45
             }
         ],
     "Background Settings":
@@ -608,7 +630,7 @@ settings = {
 
 def getJSONSettingSection(section):
     '''
-    This generates a JSON string which is used to construct the Kivy config 
+    This generates a JSON string which is used to construct the Kivy config
     panel
     '''
     options = []
@@ -623,7 +645,7 @@ def getJSONSettingSection(section):
 
 def getDefaultValueSection(section):
     '''
-    Returns a dict with the settings keys as the key and the default value 
+    Returns a dict with the settings keys as the key and the default value
     of that setting as the value for the section specified
     '''
     ret = {}
@@ -657,8 +679,7 @@ def syncFirmwareKey(firmwareKey, value, data):
         for option in settings[section]:
             if 'firmwareKey' in option and option['firmwareKey'] == firmwareKey:
                 storedValue = data.config.get(section, option['key'])
-
-		if (option['key'] == "spindleAutomate"):
+                if (option['key'] == "spindleAutomate"):
                     if (storedValue == "Servo"):
                         storedValue = 1
                     elif (storedValue == "Relay_High"):
@@ -667,8 +688,12 @@ def syncFirmwareKey(firmwareKey, value, data):
                         storedValue = 3
                     else:
                         storedValue = 0
-
-                if not isClose(float(storedValue), value):
+                if ( (firmwareKey == 45) ):
+                    print "firmwareKey = 45"
+                    if (storedValue != ""):
+                        sendErrorArray(firmwareKey, storedValue, data)
+                elif not isClose(float(storedValue), value):
+                    print "firmwareKey(send) = "+str(firmwareKey)
                     data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(storedValue))
                 else:
                     break
@@ -676,10 +701,70 @@ def syncFirmwareKey(firmwareKey, value, data):
 
 def isClose(a, b, rel_tol=1e-06):
     '''
-    Takes two values and returns true if values are close enough in value 
-    such that the difference between them is less than the significant 
+    Takes two values and returns true if values are close enough in value
+    such that the difference between them is less than the significant
     figure specified by rel_tol.  Useful for comparing float values on
     arduino adapted from https://stackoverflow.com/a/33024979
     '''
     return abs(a-b) <= rel_tol * max(abs(a), abs(b))
-    
+
+def parseErrorArray(value, asFloat):
+
+    #not the best programming, but I think it'll work
+    xErrors = [[0 for x in range(15)] for y in range(31)]
+    yErrors = [[0 for x in range(15)] for y in range(32)]
+
+    index = 0
+    xCounter = 0
+    yCounter = 0
+    val = ""
+    while (index < len(value) ):
+        while ( (index < len(value) ) and ( value[index] != ',') ):
+            val += value[index]
+            index += 1
+        index += 1
+        xErrors[xCounter][yCounter] = int(val)
+        #print str(xCounter)+", "+str(yCounter)+", "+str(xErrors[xCounter][yCounter])
+        val=""
+        xCounter += 1
+        if (xCounter == 31):
+            xCounter = 0
+            yCounter += 1
+        if (yCounter == 15):
+            xCounter = 0
+            yCounter = 0
+            while (index < len(value) ):
+                while ( (index < len(value) ) and ( value[index] != ',') ):
+                    val += value[index]
+                    index += 1
+                index += 1
+                #print str(xCounter)+", "+str(yCounter)+": "+val+"->"+str(len(val))
+                yErrors[xCounter][yCounter] = int(val)
+                val=""
+                xCounter += 1
+                if (xCounter == 31):
+                    xCounter = 0
+                    yCounter += 1
+                if (yCounter == 15):
+                    break;
+
+    if (asFloat==False):
+        return xErrors, yErrors
+    else:
+        xFloatErrors = [[0.0 for x in range(15)] for y in range(31)]
+        yFloatErrors = [[0.0 for x in range(15)] for y in range(32)]
+        for x in range(31):
+            for y in range(15):
+                xFloatErrors[x][y] = float(xErrors[x][y])/1000.0
+                yFloatErrors[x][y] = float(yErrors[x][y])/1000.0
+        return xFloatErrors, yFloatErrors
+
+def sendErrorArray(firmwareKey, value, data):
+    # parse out the array from string and then send them using the $O command
+    xErrors, yErrors = parseErrorArray(value,False)
+    # now send the array:
+    for x in range(0, 31):#31
+        for y in range (0, 15):#15
+            data.gcode_queue.put("$O=" + str(x)+","+str(y)+","+str(xErrors[x][y])+","+str(yErrors[x][y])+" ")
+    # if you send a 31,15 , it will trigger a save to EEPROM
+    data.gcode_queue.put("$O=" + str(31)+","+str(15)+","+str(42)+","+str(42)+" ")

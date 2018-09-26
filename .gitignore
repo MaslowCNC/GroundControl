@@ -2,3 +2,7 @@
 *.ini
 *ENV
 log.txt
+# For optical calibration
+calibrationValues.csv
+measuredimage.png
+.idea
