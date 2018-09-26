@@ -383,6 +383,33 @@ class OpticalCalibrationCanvas(GridLayout):
                 Color(1,0,0)
                 Line(points=points)
 
+        for y in range(7, -8, -1):
+            points = []
+            for x in range(-15, 16, +1):
+                points.append(x*3*25.4-self.calSurface(x*3*25.4,y*3*25.4,0)+self.bedWidth/2.0)
+                points.append(y*3*25.4-self.calSurface(x*3*25.4,y*3*25.4,1)+self.bedHeight/2.0)
+            with self.ids.opticalScatter.canvas:
+                Color(0,1,0)
+                Line(points=points)
+
+        for x in range(-15, 16, +1):
+            points = []
+            for y in range(7, -8, -1):
+                points.append(x*3*25.4-self.calSurface(x*3*25.4,y*3*25.4,0)+self.bedWidth/2.0)
+                points.append(y*3*25.4-self.calSurface(x*3*25.4,y*3*25.4,1)+self.bedHeight/2.0)
+            with self.ids.opticalScatter.canvas:
+                Color(0,1,0)
+                Line(points=points)
+
+
+    def calSurface(self,x,y,plane):
+        if plane == 0:
+            retVal = self.xCurve[4]*x**2.0 + self.xCurve[5]*y**2.0 + self.xCurve[3]*x*y + self.xCurve[1]*x + self.xCurve[2]*y + self.xCurve[0]
+        else:
+            retVal = self.yCurve[4]*x**2.0 + self.yCurve[5]*y**2.0 + self.yCurve[3]*x*y + self.yCurve[1]*x + self.yCurve[2]*y + self.yCurve[0]
+        return retVal
+
+
     def on_touch_up(self, touch):
 
         if touch.is_mouse_scrolling:
@@ -817,28 +844,28 @@ class OpticalCalibrationCanvas(GridLayout):
         dataY = np.zeros(((15*31),3))
         for y in range(7, -8, -1):
             for x in range(-15, 16, +1):
-                dataX[(7-y)*31+(x+15)][0]=float(x)
-                dataY[(7-y)*31+(x+15)][0]=float(x)
-                dataX[(7-y)*31+(x+15)][1]=float(y)
-                dataY[(7-y)*31+(x+15)][1]=float(y)
+                dataX[(7-y)*31+(x+15)][0]=float(x*3*25.4)
+                dataY[(7-y)*31+(x+15)][0]=float(x*3*25.4)
+                dataX[(7-y)*31+(x+15)][1]=float(y*3*25.4)
+                dataY[(7-y)*31+(x+15)][1]=float(y*3*25.4)
                 dataX[(7-y)*31+(x+15)][2]=self.calErrorsX[x+15][7-y]
                 dataY[(7-y)*31+(x+15)][2]=self.calErrorsY[x+15][7-y]
         #surface fit X Errors
         xA = np.c_[np.ones(dataX.shape[0]), dataX[:,:2], np.prod(dataX[:,:2], axis=1), dataX[:,:2]**2]
-        xCurve,_,_,_ = np.linalg.lstsq(xA, dataX[:,2],rcond=None)
+        self.xCurve,_,_,_ = np.linalg.lstsq(xA, dataX[:,2],rcond=None)
         xB = dataX[:,2]
         xSStot = ((xB-xB.mean())**2).sum()
-        xSSres = ((xB-np.dot(xA,xCurve))**2).sum()
+        xSSres = ((xB-np.dot(xA,self.xCurve))**2).sum()
         if (xSStot!=0):
             xR2 = 1.0 - xSSres / xSStot
         else:
             xR2 = 0.0
         #surface fit Y Errors
         yA = np.c_[np.ones(dataY.shape[0]), dataY[:,:2], np.prod(dataY[:,:2], axis=1), dataY[:,:2]**2]
-        yCurve,_,_,_ = np.linalg.lstsq(yA, dataY[:,2],rcond=None)
+        self.yCurve,_,_,_ = np.linalg.lstsq(yA, dataY[:,2],rcond=None)
         yB = dataY[:,2]
         ySStot = ((yB-yB.mean())**2).sum()
-        ySSres = ((yB-np.dot(yA,yCurve))**2).sum()
+        ySSres = ((yB-np.dot(yA,self.yCurve))**2).sum()
         if (ySStot!=0):
             yR2 = 1.0 - ySSres / ySStot
         else:
@@ -847,7 +874,7 @@ class OpticalCalibrationCanvas(GridLayout):
         #update screen
         line = "X Coefficients: "
         count=0
-        for c in xCurve:
+        for c in self.xCurve:
             line+= str(float(round(c,2)))
             if count!=5:
                 line += ", "
@@ -856,9 +883,11 @@ class OpticalCalibrationCanvas(GridLayout):
 
         line = "Y Coefficients: "
         count=0
-        for c in yCurve:
+        for c in self.yCurve:
             line+= str(float(round(c,2)))
             if count!=5:
                 line += ", "
                 count += 1
         self.ids.yCoefficients.text = line + " ("+str(float(round(yR2,2)))+")"
+
+        self.drawCalibration()
