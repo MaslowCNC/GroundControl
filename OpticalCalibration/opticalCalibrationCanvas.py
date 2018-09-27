@@ -486,7 +486,21 @@ class OpticalCalibrationCanvas(GridLayout):
                         _str += str(int(self.calErrorsX[x][y]*1000))+_strcomma
                     else:
                         _str += str(int(self.calErrorsY[x][y]*1000))+_strcomma
-        print _str
+        #print _str
+
+        App.get_running_app().data.config.set('Computed Settings', 'calX0', str(float(round(xCurve[0],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calX1', str(float(round(xCurve[1],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calX2', str(float(round(xCurve[2],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calX3', str(float(round(xCurve[3],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calX4', str(float(round(xCurve[4],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calX5', str(float(round(xCurve[5],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calY0', str(float(round(yCurve[0],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calY1', str(float(round(yCurve[1],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calY2', str(float(round(yCurve[2],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calY3', str(float(round(yCurve[3],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calY4', str(float(round(yCurve[4],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calY5', str(float(round(yCurve[5],4))))
+
         App.get_running_app().data.config.set('Computed Settings', 'xyErrorArray', _str)
 
     def on_WipeController(self):
@@ -844,10 +858,10 @@ class OpticalCalibrationCanvas(GridLayout):
         dataY = np.zeros(((15*31),3))
         for y in range(7, -8, -1):
             for x in range(-15, 16, +1):
-                dataX[(7-y)*31+(x+15)][0]=float(x*3*25.4)
-                dataY[(7-y)*31+(x+15)][0]=float(x*3*25.4)
-                dataX[(7-y)*31+(x+15)][1]=float(y*3*25.4)
-                dataY[(7-y)*31+(x+15)][1]=float(y*3*25.4)
+                dataX[(7-y)*31+(x+15)][0]=float(x*3.0*25.4)
+                dataY[(7-y)*31+(x+15)][0]=float(x*3.0*25.4)
+                dataX[(7-y)*31+(x+15)][1]=float(y*3.0*25.4)
+                dataY[(7-y)*31+(x+15)][1]=float(y*3.0*25.4)
                 dataX[(7-y)*31+(x+15)][2]=self.calErrorsX[x+15][7-y]
                 dataY[(7-y)*31+(x+15)][2]=self.calErrorsY[x+15][7-y]
         #surface fit X Errors
