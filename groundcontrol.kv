@@ -2086,13 +2086,13 @@
                     cols: 5
                     size_hint: .8, 1
                     Button:
-                        text: "Calibrate\nDimensions"
-                        halign: "center"
-                        on_release: root.on_CenterOnSquare(doCalibrate=True)
-                    Button:
                         text: "Calibrate\nCenter of\n Sled Rotation"
                         halign: "center"
                         on_release: root.on_CenterOnSquare(findCenter=True)
+                    Button:
+                        text: "Calibrate\nDimensions"
+                        halign: "center"
+                        on_release: root.on_CenterOnSquare(doCalibrate=True)
                     Button:
                         id: OpticalCalibrationAutoMeasureButton
                         text: "Auto Calibrate"
@@ -2114,6 +2114,7 @@
                         text: "Wipe\nCalibration\nfrom EEPROM"
                         halign: "center"
                         on_release: root.on_WipeController()
+                        disabled: True  #disabled until it works better
                     Spinner:
                         id: cameras
                         text: "Cameras"

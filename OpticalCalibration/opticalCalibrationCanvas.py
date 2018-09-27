@@ -273,10 +273,6 @@ class OpticalCalibrationCanvas(GridLayout):
                 print "Value not float"
                 self.ids.markerY.text = ""
 
-
-
-
-
     def on_SaveCSV(self):
         outFile = open("calibrationValues.csv","w")
         line = ""
@@ -322,7 +318,6 @@ class OpticalCalibrationCanvas(GridLayout):
                 self.HomingTLY = _preset[1][1]
                 self.HomingBRX = _preset[2][0]
                 self.HomingBRY = _preset[2][1]
-
 
 
     def midpoint(self, ptA, ptB):
@@ -478,10 +473,6 @@ class OpticalCalibrationCanvas(GridLayout):
         self.ids.OpticalCalibrationDistance.text += "X,Y Offset RMS: {:.3f}, {:.3f}\n".format(calX,calY)
         self.drawCalibration()
 
-
-
-
-
     def removeOutliersAndAverage(self, data):
         mean = np.mean(data)
         print "mean:"+str(mean)
@@ -489,7 +480,6 @@ class OpticalCalibrationCanvas(GridLayout):
         print "sd:"+str(sd)
         tArray = [x for x in data if ( (x >= mean-2.0*sd) and (x<=mean+2.0*sd))]
         return np.average(tArray), np.std(tArray)
-
 
     def on_SaveAndSend(self):
         _str = ""
@@ -602,6 +592,7 @@ class OpticalCalibrationCanvas(GridLayout):
         yBList = np.zeros(shape=(10))
         print "here"
         x = 0
+        falseCounter = 0
         while True:
         #for x in range(10):  #review 10 images
             #print x
@@ -676,6 +667,10 @@ class OpticalCalibrationCanvas(GridLayout):
                         self.xD = dist.euclidean((tlblX,tlblY),(trbrX,trbrY))/self.markerX
                         self.yD = dist.euclidean((tltrX,tltrY),(blbrX,blbrY))/self.markerY
                         self.ids.OpticalCalibrationAutoMeasureButton.disabled = False
+                        if self.xD == 0:  #doing this to catch bad calibrations and stop crashing
+                            self.xD = 1.0
+                        if self.yD == 0:
+                            self.yD = 1.0
 
 
                     cos = math.cos(angle*3.141592/180.0)
@@ -707,6 +702,14 @@ class OpticalCalibrationCanvas(GridLayout):
                     print "Processed Image #"+str(x)
                     if (x==10):
                         break
+                else:
+                    falseCounter += 1
+                    if (falseCounter == 10):
+                        break
+            else:
+                falseCounter += 1
+                if (falseCounter == 10):
+                    break
         print "Done Analyzing Images.. Now Averaging and Removing Outliers"
         if dxList.ndim != 0 :
             avgDx, stdDx = self.removeOutliersAndAverage(dxList)
