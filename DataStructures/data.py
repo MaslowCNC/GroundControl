@@ -23,7 +23,7 @@ class Data(EventDispatcher):
     '''
     Data available to all widgets
     '''
-    
+
     #Gcodes contains all of the lines of gcode in the opened file
     gcode      = ObjectProperty([])
     version    = '1.23'
@@ -80,7 +80,7 @@ class Data(EventDispatcher):
     drawingColor                                          =  ObjectProperty([.47,.47,.47])
     iconPath                                              =  StringProperty('./Images/Icons/normal/')
     posIndicatorColor                                     =  ObjectProperty([0,0,0])
-    targetInicatorColor                                   =  ObjectProperty([1,0,0])
+    targetIndicatorColor                                   =  ObjectProperty([1,0,0])
 
     '''
     Misc UI bits that need to be saved between invocations (but not saved)

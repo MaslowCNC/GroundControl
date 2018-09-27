@@ -1,6 +1,6 @@
 from kivy.uix.gridlayout                     import GridLayout
 from kivy.properties                         import NumericProperty, ObjectProperty, BooleanProperty
-from kivy.graphics                           import Color, Ellipse, Line
+from kivy.graphics                           import Color, Ellipse, Line, InstructionGroup
 from kivy.graphics.texture                   import Texture
 from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
@@ -10,7 +10,7 @@ from kivy.uix.image                          import Image
 from kivy.app                                import App
 from kivy.uix.popup                          import Popup
 from kivy.uix.label                          import Label
-
+from UIElements.positionIndicator            import PositionIndicator
 from OpticalCalibration.cameraCenterCalibration import calculateCenterOfArc
 from UIElements.notificationPopup            import NotificationPopup
 from Settings                                import maslowSettings
@@ -122,6 +122,7 @@ class OpticalCalibrationCanvas(GridLayout):
     bedWidth = 96*25.4
     xCurve = np.zeros(shape=(6))  # coefficients for quadratic curve
     yCurve = np.zeros(shape=(6))  # coefficients for quadratic curve
+    calibrationLines = InstructionGroup()
 
     #def initialize(self):
 
@@ -162,6 +163,29 @@ class OpticalCalibrationCanvas(GridLayout):
         self.ids.bottomRightY.text = str(self.HomingBRY)
         self.ids.markerX.text = str(round(self.markerX/25.4,3))
         self.ids.markerY.text = str(round(self.markerY/25.4,3))
+
+        self.ids.calibrationTargetIndicator.color   = self.data.targetIndicatorColor
+        self.ids.calibrationPositionIndicator.color = [1,1,1]
+        self.updatePositionIndicator(0,0,self.data.units)
+        self.updateTargetIndicator(0,0,self.data.units)
+
+    def updatePositionIndicator(self,x,y,units):
+        if (units=="MM"):
+            posX = x+self.bedWidth/2.0
+            posY = y+self.bedHeight/2.0
+        else:
+            posX = x+self.bedWidth/2.0/25.4
+            posY = y+self.bedHeight/2.0/25.4
+        self.ids.calibrationPositionIndicator.setPos(posX,posY,units)
+
+    def updateTargetIndicator(self,x,y,units):
+        if (units=="MM"):
+            posX = x+self.bedWidth/2.0
+            posY = y+self.bedHeight/2.0
+        else:
+            posX = x+self.bedWidth/2.0/25.4
+            posY = y+self.bedHeight/2.0/25.4
+        self.ids.calibrationTargetIndicator.setPos(posX,posY,units)
 
     def stopCut(self):
         self.data.quick_queue.put("!")
@@ -338,27 +362,27 @@ class OpticalCalibrationCanvas(GridLayout):
         return _c #_c is the smallest approximation we can find with four our more
 
     def drawCalibration(self):
-        self.ids.opticalScatter.canvas.clear()
+        self.ids.opticalScatter.canvas.remove(self.calibrationLines)
+        self.calibrationLines.clear()
         for y in range(7, -8, -1):
             points = []
+            self.calibrationLines.add(Color(0,0,1))
             for x in range(-15, 16, +1):
                 points.append(x*3*25.4+self.bedWidth/2.0)
                 points.append(y*3*25.4+self.bedHeight/2.0)
-            with self.ids.opticalScatter.canvas:
-                Color(0,0,1)
-                Line(points=points)
+                self.calibrationLines.add(Line(points=points))
+            #with self.ids.opticalScatter.canvas:
 
         for x in range(-15, 16, +1):
             points = []
+            self.calibrationLines.add(Color(0,0,1))
             for y in range(7, -8, -1):
                 points.append(x*3*25.4+self.bedWidth/2.0)
                 points.append(y*3*25.4+self.bedHeight/2.0)
-            with self.ids.opticalScatter.canvas:
-                Color(0,0,1)
-                Line(points=points)
-
+                self.calibrationLines.add(Line(points=points))
         for y in range(7, -8, -1):
             points = []
+            self.calibrationLines.add(Color(1,0,0))
             for x in range(-15, 16, +1):
                 if (self.inMeasureOnlyMode):
                     points.append(x*3*25.4-self.measuredErrorsX[x+15][7-y]+self.bedWidth/2.0)
@@ -366,12 +390,10 @@ class OpticalCalibrationCanvas(GridLayout):
                 else:
                     points.append(x*3*25.4-self.calErrorsX[x+15][7-y]+self.bedWidth/2.0)
                     points.append(y*3*25.4-self.calErrorsY[x+15][7-y]+self.bedHeight/2.0)
-            with self.ids.opticalScatter.canvas:
-                Color(1,0,0)
-                Line(points=points)
-
+                self.calibrationLines.add(Line(points=points))
         for x in range(-15, 16, +1):
             points = []
+            self.calibrationLines.add(Color(1,0,0))
             for y in range(7, -8, -1):
                 if (self.inMeasureOnlyMode):
                     points.append(x*3*25.4-self.measuredErrorsX[x+15][7-y]+self.bedWidth/2.0)
@@ -379,27 +401,24 @@ class OpticalCalibrationCanvas(GridLayout):
                 else:
                     points.append(x*3*25.4-self.calErrorsX[x+15][7-y]+self.bedWidth/2.0)
                     points.append(y*3*25.4-self.calErrorsY[x+15][7-y]+self.bedHeight/2.0)
-            with self.ids.opticalScatter.canvas:
-                Color(1,0,0)
-                Line(points=points)
-
+                self.calibrationLines.add(Line(points=points))
         for y in range(7, -8, -1):
             points = []
+            self.calibrationLines.add(Color(0,1,0))
             for x in range(-15, 16, +1):
                 points.append(x*3*25.4-self.calSurface(x*3*25.4,y*3*25.4,0)+self.bedWidth/2.0)
                 points.append(y*3*25.4-self.calSurface(x*3*25.4,y*3*25.4,1)+self.bedHeight/2.0)
-            with self.ids.opticalScatter.canvas:
-                Color(0,1,0)
-                Line(points=points)
+                self.calibrationLines.add(Line(points=points))
 
         for x in range(-15, 16, +1):
             points = []
+            self.calibrationLines.add(Color(0,1,0))
             for y in range(7, -8, -1):
                 points.append(x*3*25.4-self.calSurface(x*3*25.4,y*3*25.4,0)+self.bedWidth/2.0)
                 points.append(y*3*25.4-self.calSurface(x*3*25.4,y*3*25.4,1)+self.bedHeight/2.0)
-            with self.ids.opticalScatter.canvas:
-                Color(0,1,0)
-                Line(points=points)
+                self.calibrationLines.add(Line(points=points))
+
+        self.ids.opticalScatter.canvas.add(self.calibrationLines)
 
 
     def calSurface(self,x,y,plane):
@@ -563,6 +582,7 @@ class OpticalCalibrationCanvas(GridLayout):
     def HomeIn(self):
         _posX = round(self.HomingPosX*3.0+self.HomingX/25.4,4)
         _posY = round(self.HomingPosY*3.0+self.HomingY/25.4,4)
+        self.updateTargetIndicator(_posX,_posY,"INCHES")
         print "Moving to:[{}, {}]".format(_posX, _posY)
         self.data.units = "INCHES"
         self.data.gcode_queue.put("G20 ")

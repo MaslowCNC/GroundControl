@@ -2050,9 +2050,15 @@
                 id: MeasuredImage
                 resolution: (640,480)
                 play:True
-        ScatterPlane:
-            do_rotation: False
-            id: opticalScatter
+        StencilView:
+            ScatterPlane:
+                do_rotation: False
+                id: opticalScatter
+                PositionIndicator:
+                    id: calibrationPositionIndicator
+                PositionIndicator:
+                    id: calibrationTargetIndicator
+
     GridLayout:
         cols:2
         GridLayout:
@@ -2274,10 +2280,11 @@
                         rows: 4
                         sizehint: 1, .5
                         Label:
-                            text: "Surface Fitting"
+                            text: "[b]Surface Fitting[/b]"
                             text_size: self.size
-                            halign: "right"
+                            halign: "center"
                             valign: "middle"
+                            markup: True
                             size_hint: 1, .2
                         Button:
                             text: "Fit to Surface"
