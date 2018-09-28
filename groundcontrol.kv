@@ -2032,6 +2032,7 @@
         ) if (self.size and self.parent and self.parent.children) else (0, 0)
 
 <OpticalCalibrationCanvas>:
+    id: opticalcanvas
     rows: 3
     Label:
         text: "This calibration routine is designed to utilize a camera to assess errors"
@@ -2114,7 +2115,7 @@
                         text: "Wipe\nCalibration\nfrom EEPROM"
                         halign: "center"
                         on_release: root.on_WipeController()
-                        disabled: True  #disabled until it works better
+                        disabled: False  #disabled until it works better
                     Spinner:
                         id: cameras
                         text: "Cameras"

@@ -44,6 +44,7 @@ from Connection.nonVisibleWidgets import   NonVisibleWidgets
 from UIElements.notificationPopup import   NotificationPopup
 from Settings                     import   maslowSettings
 from UIElements.backgroundMenu    import   BackgroundMenu
+from OpticalCalibration.opticalCalibrationCanvas    import OpticalCalibrationCanvas
 '''
 
 Main UI Program
@@ -92,6 +93,7 @@ class GroundControlApp(App):
         interface.add_widget(self.frontpage)
 
         self.nonVisibleWidgets = NonVisibleWidgets()
+
 
 
         '''
@@ -486,7 +488,10 @@ class GroundControlApp(App):
 
         self.frontpage.setPosReadout(self.xval, self.yval, self.zval)
         self.frontpage.gcodecanvas.positionIndicator.setPos(self.xval,self.yval,self.data.units)
-        self.OpticalCalibration.opticalCalibrationCanvas.updatePositionIndicator(self.xval,self.yval,self.data.units)
+        for widget in self.root_window.children:
+            if isinstance(widget,Popup):
+                if widget.title == "Maslow Optical Calibration":
+                    widget.content.updatePositionIndicator(self.xval,self.yval,self.data.units)
 
     def setErrorOnScreen(self, message):
 

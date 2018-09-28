@@ -791,8 +791,9 @@ class OpticalCalibrationCanvas(GridLayout):
     def on_updateCenterX(self, value=(0,False)):
         if value[1] is False:
             try:
-                cX = float(self.ids.centerX.text)
-                self.opticalCenter = (cX, self.opticalCenter[1])
+                if self.ids.centerX.text!="":
+                    cX = float(self.ids.centerX.text)
+                    self.opticalCenter = (cX, self.opticalCenter[1])
             except TypeError:
                 print "Value not float"
                 self.ids.centerX.text = ""
@@ -800,8 +801,9 @@ class OpticalCalibrationCanvas(GridLayout):
     def on_updateCenterY(self, value=(0,False)):
         if value[1] is False:
             try:
-                cY = float(self.ids.centerY.text)
-                self.opticalCenter = (self.opticalCenter[0], cY)
+                if self.ids.centerY.text!="":
+                    cY = float(self.ids.centerY.text)
+                    self.opticalCenter = (self.opticalCenter[0], cY)
             except TypeError:
                 print "Value not float"
                 self.ids.centerY.text = ""
