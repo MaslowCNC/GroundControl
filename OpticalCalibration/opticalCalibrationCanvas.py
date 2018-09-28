@@ -497,18 +497,18 @@ class OpticalCalibrationCanvas(GridLayout):
                         _str += str(int(self.calErrorsY[x][y]*1000))+_strcomma
         #print _str
 
-        App.get_running_app().data.config.set('Computed Settings', 'calX0', str(float(round(xCurve[0],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calX1', str(float(round(xCurve[1],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calX2', str(float(round(xCurve[2],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calX3', str(float(round(xCurve[3],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calX4', str(float(round(xCurve[4],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calX5', str(float(round(xCurve[5],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calY0', str(float(round(yCurve[0],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calY1', str(float(round(yCurve[1],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calY2', str(float(round(yCurve[2],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calY3', str(float(round(yCurve[3],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calY4', str(float(round(yCurve[4],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calY5', str(float(round(yCurve[5],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calX0', str(float(round(self.xCurve[0],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calX1', str(float(round(self.xCurve[1],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calX2', str(float(round(self.xCurve[2],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calX3', str(float(round(self.xCurve[3],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calX4', str(float(round(self.xCurve[4],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calX5', str(float(round(self.xCurve[5],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calY0', str(float(round(self.yCurve[0],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calY1', str(float(round(self.yCurve[1],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calY2', str(float(round(self.yCurve[2],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calY3', str(float(round(self.yCurve[3],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calY4', str(float(round(self.yCurve[4],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calY5', str(float(round(self.yCurve[5],4))))
 
         App.get_running_app().data.config.set('Computed Settings', 'xyErrorArray', _str)
 
