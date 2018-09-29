@@ -131,6 +131,19 @@ class OpticalCalibrationCanvas(GridLayout):
         self.calErrorsX, self.calErrorsY = maslowSettings.parseErrorArray(xyErrors, True)
         self.bedHeight = float(self.data.config.get('Maslow Settings', 'bedHeight'))
         self.bedWidth = float(self.data.config.get('Maslow Settings', 'bedWidth'))
+        self.xCurve[0] = float(self.data.config.get('Computed Settings', 'calX0'))
+        self.xCurve[1] = float(self.data.config.get('Computed Settings', 'calX1'))
+        self.xCurve[2] = float(self.data.config.get('Computed Settings', 'calX2'))
+        self.xCurve[3] = float(self.data.config.get('Computed Settings', 'calX3'))
+        self.xCurve[4] = float(self.data.config.get('Computed Settings', 'calX4'))
+        self.xCurve[5] = float(self.data.config.get('Computed Settings', 'calX5'))
+        self.yCurve[0] = float(self.data.config.get('Computed Settings', 'calY0'))
+        self.yCurve[1] = float(self.data.config.get('Computed Settings', 'calY1'))
+        self.yCurve[2] = float(self.data.config.get('Computed Settings', 'calY2'))
+        self.yCurve[3] = float(self.data.config.get('Computed Settings', 'calY3'))
+        self.yCurve[4] = float(self.data.config.get('Computed Settings', 'calY4'))
+        self.yCurve[5] = float(self.data.config.get('Computed Settings', 'calY5'))
+
 
         #print str(xErrors[2][0])
 
@@ -168,6 +181,7 @@ class OpticalCalibrationCanvas(GridLayout):
         self.ids.calibrationPositionIndicator.color = [1,1,1]
         self.updatePositionIndicator(0,0,self.data.units)
         self.updateTargetIndicator(0,0,self.data.units)
+        self.updateCurveCoefficients()
 
     def updatePositionIndicator(self,x,y,units):
         if (units=="MM"):
@@ -472,6 +486,25 @@ class OpticalCalibrationCanvas(GridLayout):
         calY = math.sqrt(calY/count)
         self.ids.OpticalCalibrationDistance.text += "X,Y Offset RMS: {:.3f}, {:.3f}\n".format(calX,calY)
         self.drawCalibration()
+
+    def updateCurveCoefficients(self):
+        line = "X Coefficients: "
+        count=0
+        for c in self.xCurve:
+            line+= str(float(round(c,2)))
+            if count!=5:
+                line += ", "
+                count += 1
+        self.ids.xCoefficients.text = line
+
+        line = "Y Coefficients: "
+        count=0
+        for c in self.yCurve:
+            line+= str(float(round(c,2)))
+            if count!=5:
+                line += ", "
+                count += 1
+        self.ids.yCoefficients.text = line
 
     def removeOutliersAndAverage(self, data):
         mean = np.mean(data)
@@ -911,22 +944,7 @@ class OpticalCalibrationCanvas(GridLayout):
         print self.xCurve
         print self.yCurve
         #update screen
-        line = "X Coefficients: "
-        count=0
-        for c in self.xCurve:
-            line+= str(float(round(c,2)))
-            if count!=5:
-                line += ", "
-                count += 1
-        self.ids.xCoefficients.text = line + " ("+str(float(round(xR2,2)))+")"
+        self.updateCurveCoefficients()
 
-        line = "Y Coefficients: "
-        count=0
-        for c in self.yCurve:
-            line+= str(float(round(c,2)))
-            if count!=5:
-                line += ", "
-                count += 1
-        self.ids.yCoefficients.text = line + " ("+str(float(round(yR2,2)))+")"
 
         self.drawCalibration()
