@@ -2094,14 +2094,17 @@
                         halign: "center"
                         on_release: root.on_CenterOnSquare(doCalibrate=True)
                     Button:
-                        id: OpticalCalibrationAutoMeasureButton
+                        id: OpticalCalibrationAutoCalibrateButton
                         text: "Auto Calibrate"
                         halign: "center"
                         on_release: root.on_AutoHome(False)
                         disabled: True
                     Button:
+                        id: OpticalCalibrationAutoMeasureButton
                         text: "Auto Measure"
+                        halign: "center"
                         on_release: root.on_AutoHome(True)
+                        disabled: True
                     Button:
                         text: "Return to\nCenter"
                         halign: "center"

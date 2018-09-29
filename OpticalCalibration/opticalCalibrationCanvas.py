@@ -663,6 +663,7 @@ class OpticalCalibrationCanvas(GridLayout):
 
                         self.xD = dist.euclidean((tlblX,tlblY),(trbrX,trbrY))/self.markerX
                         self.yD = dist.euclidean((tltrX,tltrY),(blbrX,blbrY))/self.markerY
+                        self.ids.OpticalCalibrationAutoCalibrateButton.disabled = False
                         self.ids.OpticalCalibrationAutoMeasureButton.disabled = False
                         if self.xD == 0:  #doing this to catch bad calibrations and stop crashing
                             self.xD = 1.0
@@ -726,7 +727,7 @@ class OpticalCalibrationCanvas(GridLayout):
                 self.HomingY += avgDy#-self.calY
                 print "testing location"
                 if doCalibrate!=True:  #its either True because you pressed the calibrate button or its a distance from the measurement callback.
-                    if (((abs(avgDx)>=0.125) or (abs(avgDy)>=0.125)) and (self.inMeasureOnlyMode==False) and (findCenter==False)):
+                    if (((abs(avgDx)>=0.125) or (abs(avgDy)>=0.125)) and (findCenter==False)): # removed (self.inMeasureOnlyMode==False) so it will also home in
                         print "Adjusting Location"
                         self.HomeIn()
                     else:
