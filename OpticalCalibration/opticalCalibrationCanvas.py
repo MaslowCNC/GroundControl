@@ -156,7 +156,7 @@ class OpticalCalibrationCanvas(GridLayout):
         self.scaleY = float(self.data.config.get('Computed Settings', 'scaleY'))
         self.ids.scaleX.text = str(self.scaleX)
         self.ids.scaleY.text = str(self.scaleY)
->>>>>>> aef6a5783fca3f3087369711cfc1cdba375b8a41
+
 
         #print str(xErrors[2][0])
 
