@@ -131,6 +131,11 @@ class OpticalCalibrationCanvas(GridLayout):
         self.calErrorsX, self.calErrorsY = maslowSettings.parseErrorArray(xyErrors, True)
         self.bedHeight = float(self.data.config.get('Maslow Settings', 'bedHeight'))
         self.bedWidth = float(self.data.config.get('Maslow Settings', 'bedWidth'))
+        opticalCenterX = float(self.data.config.get('Computed Settings', 'opticalCenterX'))
+        opticalCenterY = float(self.data.config.get('Computed Settings', 'opticalCenterY'))
+        self.opticalCenter = (opticalCenterX, opticalCenterY)
+        self.ids.centerX.text = str(self.opticalCenter[0])
+        self.ids.centerY.text = str(self.opticalCenter[1])
 
         #print str(xErrors[2][0])
 
@@ -792,6 +797,7 @@ class OpticalCalibrationCanvas(GridLayout):
                 if self.ids.centerX.text!="":
                     cX = float(self.ids.centerX.text)
                     self.opticalCenter = (cX, self.opticalCenter[1])
+                    App.get_running_app().data.config.set('Computed Settings', 'opticalCenterX', str(self.opticalCenter[0]))
             except TypeError:
                 print "Value not float"
                 self.ids.centerX.text = ""
@@ -802,6 +808,7 @@ class OpticalCalibrationCanvas(GridLayout):
                 if self.ids.centerY.text!="":
                     cY = float(self.ids.centerY.text)
                     self.opticalCenter = (self.opticalCenter[0], cY)
+                    App.get_running_app().data.config.set('Computed Settings', 'opticalCenterY', str(self.opticalCenter[1]))
             except TypeError:
                 print "Value not float"
                 self.ids.centerY.text = ""
