@@ -559,10 +559,7 @@ class OpticalCalibrationCanvas(GridLayout):
         else:
             self.inAutoMode = False
             print "Calibration Completed"
-            self.printCalibrationErrorValue()
-
-
-
+            # self.printCalibrationErrorValue()
 
     def on_HomeToPos(self, posX, posY):
         self.HomingPosX = posX
