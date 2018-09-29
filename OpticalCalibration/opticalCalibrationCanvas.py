@@ -497,18 +497,18 @@ class OpticalCalibrationCanvas(GridLayout):
                         _str += str(int(self.calErrorsY[x][y]*1000))+_strcomma
         #print _str
 
-        App.get_running_app().data.config.set('Computed Settings', 'calX0', str(float(round(self.xCurve[0],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calX1', str(float(round(self.xCurve[1],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calX2', str(float(round(self.xCurve[2],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calX3', str(float(round(self.xCurve[3],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calX4', str(float(round(self.xCurve[4],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calX5', str(float(round(self.xCurve[5],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calY0', str(float(round(self.yCurve[0],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calY1', str(float(round(self.yCurve[1],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calY2', str(float(round(self.yCurve[2],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calY3', str(float(round(self.yCurve[3],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calY4', str(float(round(self.yCurve[4],4))))
-        App.get_running_app().data.config.set('Computed Settings', 'calY5', str(float(round(self.yCurve[5],4))))
+        App.get_running_app().data.config.set('Computed Settings', 'calX0', str(self.xCurve[0]))
+        App.get_running_app().data.config.set('Computed Settings', 'calX1', str(self.xCurve[1]))
+        App.get_running_app().data.config.set('Computed Settings', 'calX2', str(self.xCurve[2]))
+        App.get_running_app().data.config.set('Computed Settings', 'calX3', str(self.xCurve[3]))
+        App.get_running_app().data.config.set('Computed Settings', 'calX4', str(self.xCurve[4]))
+        App.get_running_app().data.config.set('Computed Settings', 'calX5', str(self.xCurve[5]))
+        App.get_running_app().data.config.set('Computed Settings', 'calY0', str(self.yCurve[0]))
+        App.get_running_app().data.config.set('Computed Settings', 'calY1', str(self.yCurve[1]))
+        App.get_running_app().data.config.set('Computed Settings', 'calY2', str(self.yCurve[2]))
+        App.get_running_app().data.config.set('Computed Settings', 'calY3', str(self.yCurve[3]))
+        App.get_running_app().data.config.set('Computed Settings', 'calY4', str(self.yCurve[4]))
+        App.get_running_app().data.config.set('Computed Settings', 'calY5', str(self.yCurve[5]))
 
         App.get_running_app().data.config.set('Computed Settings', 'xyErrorArray', _str)
 
@@ -910,6 +910,8 @@ class OpticalCalibrationCanvas(GridLayout):
         else:
             yR2 = 0.0
 
+        print self.xCurve
+        print self.yCurve
         #update screen
         line = "X Coefficients: "
         count=0
