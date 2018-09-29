@@ -133,7 +133,7 @@ class OpticalCalibrationCanvas(GridLayout):
         self.calErrorsX, self.calErrorsY = maslowSettings.parseErrorArray(xyErrors, True)
         self.bedHeight = float(self.data.config.get('Maslow Settings', 'bedHeight'))
         self.bedWidth = float(self.data.config.get('Maslow Settings', 'bedWidth'))
-<<<<<<< HEAD
+
         self.xCurve[0] = float(self.data.config.get('Computed Settings', 'calX0'))
         self.xCurve[1] = float(self.data.config.get('Computed Settings', 'calX1'))
         self.xCurve[2] = float(self.data.config.get('Computed Settings', 'calX2'))
@@ -147,7 +147,6 @@ class OpticalCalibrationCanvas(GridLayout):
         self.yCurve[4] = float(self.data.config.get('Computed Settings', 'calY4'))
         self.yCurve[5] = float(self.data.config.get('Computed Settings', 'calY5'))
 
-=======
         opticalCenterX = float(self.data.config.get('Computed Settings', 'opticalCenterX'))
         opticalCenterY = float(self.data.config.get('Computed Settings', 'opticalCenterY'))
         self.opticalCenter = (opticalCenterX, opticalCenterY)
