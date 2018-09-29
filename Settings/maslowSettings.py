@@ -686,6 +686,16 @@ settings = {
                 "key": "opticalCenterY",
                 "default": "",
             },
+            {
+                "type": "string",
+                "key": "scaleX",
+                "default": "1.0",
+            },
+            {
+                "type": "string",
+                "key": "scaleY",
+                "default": "1.0",
+            },
         ],
     "Background Settings":
         [
