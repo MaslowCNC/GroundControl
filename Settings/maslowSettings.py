@@ -676,6 +676,26 @@ settings = {
                 "key": "calY5",
                 "firmwareKey": 58
             },
+            {
+                "type": "string",
+                "key": "opticalCenterX",
+                "default": "",
+            },
+            {
+                "type": "string",
+                "key": "opticalCenterY",
+                "default": "",
+            },
+            {
+                "type": "string",
+                "key": "scaleX",
+                "default": "1.0",
+            },
+            {
+                "type": "string",
+                "key": "scaleY",
+                "default": "1.0",
+            },
         ],
     "Background Settings":
         [
