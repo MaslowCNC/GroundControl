@@ -2203,34 +2203,58 @@
                             size_hint: 1, .3
                             markup: True
                         GridLayout:
-                            cols: 2
+                            cols: 4
                             size_hint: 1, 0.2
                             Label:
-                                text: "Width (inches):"
+                                text: "Width (in):"
                                 text_size: self.size
                                 halign: "right"
                                 valign: "middle"
-                                size_hint: 0.5, 1
+                                size_hint: 0.25, 1
                             TextInput:
                                 id: markerX
                                 size_hint: 0.25, 1
                                 on_text_validate: root.on_UpdateMarkerX()
                                 on_focus: root.on_UpdateMarkerX(args)
                                 multiline: False
-                        GridLayout:
-                            cols: 2
-                            size_hint: 1, 0.2
                             Label:
-                                text: "Height (inches):"
+                                text: "X-Scale:"
                                 text_size: self.size
                                 halign: "right"
                                 valign: "middle"
+                                size_hint: 0.25, 1
+                            TextInput:
+                                id: scaleX
                                 size_hint: 0.5, 1
+                                on_text_validate: root.on_UpdateScaleX()
+                                on_focus: root.on_UpdateScaleX(args)
+                                multiline: False
+                        GridLayout:
+                            cols: 4
+                            size_hint: 1, 0.2
+                            Label:
+                                text: "Height (in):"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.25, 1
                             TextInput:
                                 id: markerY
                                 size_hint: 0.25, 1
                                 on_text_validate: root.on_UpdateMarkerY()
                                 on_focus: root.on_UpdateMarkerY(args)
+                                multiline: False
+                            Label:
+                                text: "Y-Scale:"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.25, 1
+                            TextInput:
+                                id: scaleY
+                                size_hint: 0.5, 1
+                                on_text_validate: root.on_UpdateScaleY()
+                                on_focus: root.on_UpdateScaleY(args)
                                 multiline: False
 
                 GridLayout:

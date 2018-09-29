@@ -90,6 +90,8 @@ class OpticalCalibrationCanvas(GridLayout):
     measuredErrorsY = np.zeros(matrixSize)
     cameraCenteringPoints = []
     opticalCenter = (None, None)
+    scaleX = 1.0
+    scaleY = 1.0
 
     presets = [ ["48x36 Top Left", [-15 , 7] , [0, 0] ],
                 ["48x36 Bottom Left", [0, 7] , [15, 0] ],
@@ -131,6 +133,7 @@ class OpticalCalibrationCanvas(GridLayout):
         self.calErrorsX, self.calErrorsY = maslowSettings.parseErrorArray(xyErrors, True)
         self.bedHeight = float(self.data.config.get('Maslow Settings', 'bedHeight'))
         self.bedWidth = float(self.data.config.get('Maslow Settings', 'bedWidth'))
+<<<<<<< HEAD
         self.xCurve[0] = float(self.data.config.get('Computed Settings', 'calX0'))
         self.xCurve[1] = float(self.data.config.get('Computed Settings', 'calX1'))
         self.xCurve[2] = float(self.data.config.get('Computed Settings', 'calX2'))
@@ -144,6 +147,17 @@ class OpticalCalibrationCanvas(GridLayout):
         self.yCurve[4] = float(self.data.config.get('Computed Settings', 'calY4'))
         self.yCurve[5] = float(self.data.config.get('Computed Settings', 'calY5'))
 
+=======
+        opticalCenterX = float(self.data.config.get('Computed Settings', 'opticalCenterX'))
+        opticalCenterY = float(self.data.config.get('Computed Settings', 'opticalCenterY'))
+        self.opticalCenter = (opticalCenterX, opticalCenterY)
+        self.ids.centerX.text = str(self.opticalCenter[0])
+        self.ids.centerY.text = str(self.opticalCenter[1])
+        self.scaleX = float(self.data.config.get('Computed Settings', 'scaleX'))
+        self.scaleY = float(self.data.config.get('Computed Settings', 'scaleY'))
+        self.ids.scaleX.text = str(self.scaleX)
+        self.ids.scaleY.text = str(self.scaleY)
+>>>>>>> aef6a5783fca3f3087369711cfc1cdba375b8a41
 
         #print str(xErrors[2][0])
 
@@ -286,6 +300,26 @@ class OpticalCalibrationCanvas(GridLayout):
             except:
                 print "Value not float"
                 self.ids.markerY.text = ""
+
+    def on_UpdateScaleX(self,value=(0,False)):
+        if not value[1]:
+            try:
+                self.scaleX = float(self.ids.scaleX.text)
+                self.ids.scaleX.text = str(self.scaleX)
+                App.get_running_app().data.config.set('Computed Settings', 'scaleX', str(self.scaleX))
+            except:
+                print "Value not float"
+                self.ids.scaleX.text = ""
+
+    def on_UpdateScaleY(self,value=(0,False)):
+        if not value[1]:
+            try:
+                self.scaleY = float(self.ids.scaleY.text)
+                self.ids.scaleY.text = str(self.scaleY)
+                App.get_running_app().data.config.set('Computed Settings', 'scaleY', str(self.scaleY))
+            except:
+                print "Value not float"
+                self.ids.scaleY.text = ""
 
     def on_SaveCSV(self):
         outFile = open("calibrationValues.csv","w")
@@ -825,6 +859,7 @@ class OpticalCalibrationCanvas(GridLayout):
                 if self.ids.centerX.text!="":
                     cX = float(self.ids.centerX.text)
                     self.opticalCenter = (cX, self.opticalCenter[1])
+                    App.get_running_app().data.config.set('Computed Settings', 'opticalCenterX', str(self.opticalCenter[0]))
             except TypeError:
                 print "Value not float"
                 self.ids.centerX.text = ""
@@ -835,6 +870,7 @@ class OpticalCalibrationCanvas(GridLayout):
                 if self.ids.centerY.text!="":
                     cY = float(self.ids.centerY.text)
                     self.opticalCenter = (self.opticalCenter[0], cY)
+                    App.get_running_app().data.config.set('Computed Settings', 'opticalCenterY', str(self.opticalCenter[1]))
             except TypeError:
                 print "Value not float"
                 self.ids.centerY.text = ""
