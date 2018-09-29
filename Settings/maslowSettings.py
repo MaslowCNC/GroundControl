@@ -679,12 +679,12 @@ settings = {
             {
                 "type": "string",
                 "key": "opticalCenterX",
-                "default": "",
+                "default": "0",
             },
             {
                 "type": "string",
                 "key": "opticalCenterY",
-                "default": "",
+                "default": "0",
             },
             {
                 "type": "string",
