@@ -108,9 +108,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
 
     def moveSledToDefault(self):
         chainLength = App.get_running_app().data.config.get('Advanced Settings', 'chainExtendLength')
-        self.data.gcode_queue.put("G91 ")
         self.data.gcode_queue.put("B09 L"+str(chainLength)+" R"+str(chainLength)+" ")
-        self.data.gcode_queue.put("G90 ")
         self.parentWidget.close()
 
     def calibrateMachine(self):
