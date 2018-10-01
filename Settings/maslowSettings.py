@@ -609,7 +609,27 @@ settings = {
                 "type": "string",
                 "key": "distPerRotRightChainTolerance",
                 "firmwareKey": 41
+            }
+        ],
+    "Background Settings":
+        [
+            {
+                "type": "string",
+                "title": "Background File or Directory",
+                "desc": "Current background file",
+                "key": "backgroundFile",
+                "default": ""
             },
+            {
+                "type": "list",
+                "title": "Manual Registration",
+                "desc": "Relative corner coords for image correction",
+                "key": "manualReg",
+                "default": []
+            },
+        ],
+    "Optical Calibration Settings":
+        [
             {
                 "type": "string",
                 "key": "xyErrorArray",
@@ -707,41 +727,36 @@ settings = {
                 "type": "string",
                 "key": "scaleY",
                 "default": "1.0"
-            }
-        ],
-    "Background Settings":
-        [
-            {
-                "type": "string",
-                "title": "Background File or Directory",
-                "desc": "Current background file",
-                "key": "backgroundFile",
-                "default": ""
             },
-            {
-                "type": "list",
-                "title": "Manual Registration",
-                "desc": "Relative corner coords for image correction",
-                "key": "manualReg",
-                "default": []
-            },
-        ],
-    "Optical Calibration Settings":
-        [
             {
                 "type": "int",
                 "key": "gaussianBlurValue",
                 "default": 5
             },
             {
-                "type": "int",
+                "type": "float",
                 "key": "cannyLowValue",
-                "default": 50
+                "default": 50.0
+            },
+            {
+                "type": "float",
+                "key": "cannyHighValue",
+                "default": 100.0
             },
             {
                 "type": "int",
-                "key": "cannyHighValue",
-                "default": 100
+                "key": "autoScanDirection",
+                "default": 0
+            },
+            {
+                "type": "float",
+                "key": "markerX",
+                "default": 12.7
+            },
+            {
+                "type": "float",
+                "key": "markerY",
+                "default": 12.7
             }
         ]
 

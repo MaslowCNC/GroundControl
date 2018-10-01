@@ -2105,6 +2105,12 @@
                         halign: "center"
                         on_release: root.on_AutoHome(True)
                         disabled: True
+                    Spinner:
+                        id: autoScanDirection
+                        text: "Auto Scan\nDirection"
+                        halign: "center"
+                        values: ["Horizontally","Vertically"]
+                        on_release: root.on_AutoScanDirection(autoScanDirection.text)
                     Button:
                         text: "Return to\nCenter"
                         halign: "center"
@@ -2113,11 +2119,6 @@
                         text: "Save and Send\nto Controller"
                         halign: "center"
                         on_release: root.on_SaveAndSend()
-                    Button:
-                        text: "Wipe\nCalibration\nfrom EEPROM"
-                        halign: "center"
-                        on_release: root.on_WipeController()
-                        disabled: False  #disabled until it works better
                     Spinner:
                         id: cameras
                         text: "Cameras"

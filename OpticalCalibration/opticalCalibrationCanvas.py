@@ -131,41 +131,44 @@ class OpticalCalibrationCanvas(GridLayout):
     gaussianBlurValue = 5
     cannyLowValue = 50.0
     cannyHighValue = 100.0
-
+    autoScanDirection = 0  #0 is horizontally, 1 is vertical
     #def initialize(self):
 
     def initialize(self):
-        xyErrors = self.data.config.get('Computed Settings', 'xyErrorArray')
+        xyErrors = self.data.config.get('Optical Calibration Settings', 'xyErrorArray')
         self.calErrorsX, self.calErrorsY = maslowSettings.parseErrorArray(xyErrors, True)
         self.bedHeight = float(self.data.config.get('Maslow Settings', 'bedHeight'))
         self.bedWidth = float(self.data.config.get('Maslow Settings', 'bedWidth'))
 
-        self.xCurve[0] = float(self.data.config.get('Computed Settings', 'calX0'))
-        self.xCurve[1] = float(self.data.config.get('Computed Settings', 'calX1'))
-        self.xCurve[2] = float(self.data.config.get('Computed Settings', 'calX2'))
-        self.xCurve[3] = float(self.data.config.get('Computed Settings', 'calX3'))
-        self.xCurve[4] = float(self.data.config.get('Computed Settings', 'calX4'))
-        self.xCurve[5] = float(self.data.config.get('Computed Settings', 'calX5'))
-        self.yCurve[0] = float(self.data.config.get('Computed Settings', 'calY0'))
-        self.yCurve[1] = float(self.data.config.get('Computed Settings', 'calY1'))
-        self.yCurve[2] = float(self.data.config.get('Computed Settings', 'calY2'))
-        self.yCurve[3] = float(self.data.config.get('Computed Settings', 'calY3'))
-        self.yCurve[4] = float(self.data.config.get('Computed Settings', 'calY4'))
-        self.yCurve[5] = float(self.data.config.get('Computed Settings', 'calY5'))
+        self.xCurve[0] = float(self.data.config.get('Optical Calibration Settings', 'calX0'))
+        self.xCurve[1] = float(self.data.config.get('Optical Calibration Settings', 'calX1'))
+        self.xCurve[2] = float(self.data.config.get('Optical Calibration Settings', 'calX2'))
+        self.xCurve[3] = float(self.data.config.get('Optical Calibration Settings', 'calX3'))
+        self.xCurve[4] = float(self.data.config.get('Optical Calibration Settings', 'calX4'))
+        self.xCurve[5] = float(self.data.config.get('Optical Calibration Settings', 'calX5'))
+        self.yCurve[0] = float(self.data.config.get('Optical Calibration Settings', 'calY0'))
+        self.yCurve[1] = float(self.data.config.get('Optical Calibration Settings', 'calY1'))
+        self.yCurve[2] = float(self.data.config.get('Optical Calibration Settings', 'calY2'))
+        self.yCurve[3] = float(self.data.config.get('Optical Calibration Settings', 'calY3'))
+        self.yCurve[4] = float(self.data.config.get('Optical Calibration Settings', 'calY4'))
+        self.yCurve[5] = float(self.data.config.get('Optical Calibration Settings', 'calY5'))
 
-        opticalCenterX = float(self.data.config.get('Computed Settings', 'opticalCenterX'))
-        opticalCenterY = float(self.data.config.get('Computed Settings', 'opticalCenterY'))
+        opticalCenterX = float(self.data.config.get('Optical Calibration Settings', 'opticalCenterX'))
+        opticalCenterY = float(self.data.config.get('Optical Calibration Settings', 'opticalCenterY'))
         self.opticalCenter = (opticalCenterX, opticalCenterY)
         self.ids.centerX.text = str(self.opticalCenter[0])
         self.ids.centerY.text = str(self.opticalCenter[1])
-        self.scaleX = float(self.data.config.get('Computed Settings', 'scaleX'))
-        self.scaleY = float(self.data.config.get('Computed Settings', 'scaleY'))
+        self.scaleX = float(self.data.config.get('Optical Calibration Settings', 'scaleX'))
+        self.scaleY = float(self.data.config.get('Optical Calibration Settings', 'scaleY'))
         self.ids.scaleX.text = str(self.scaleX)
         self.ids.scaleY.text = str(self.scaleY)
 
         self.gaussianBlurValue = int(self.data.config.get('Optical Calibration Settings', 'gaussianBlurValue'))
         self.cannyLowValue = float(self.data.config.get('Optical Calibration Settings', 'cannyLowValue'))
         self.cannyHighValue = float(self.data.config.get('Optical Calibration Settings', 'cannyHighValue'))
+        self.markerX = float(self.data.config.get('Optical Calibration Settings', 'markerX'))
+        self.markerY = float(self.data.config.get('Optical Calibration Settings', 'markerY'))
+        self.autoScanDirection = int(self.data.config.get('Optical Calibration Settings', 'autoScanDirection'))
 
         #print str(xErrors[2][0])
 
@@ -295,6 +298,7 @@ class OpticalCalibrationCanvas(GridLayout):
                 _mX=float(self.ids.markerX.text)
                 self.ids.markerX.text = str(round(_mX,3))
                 self.markerX = _mX*25.4
+                App.get_running_app().data.config.set('Optical Calibration Settings', 'markerX', self.markerX)
             except:
                 print "Value not float"
                 self.ids.markerX.text = ""
@@ -305,6 +309,7 @@ class OpticalCalibrationCanvas(GridLayout):
                 _mY=float(self.ids.markerY.text)
                 self.ids.markerY.text = str(round(_mY,3))
                 self.markerY = _mY*25.4
+                App.get_running_app().data.config.set('Optical Calibration Settings', 'markerY', self.markerY)
             except:
                 print "Value not float"
                 self.ids.markerY.text = ""
@@ -314,7 +319,7 @@ class OpticalCalibrationCanvas(GridLayout):
             try:
                 self.scaleX = float(self.ids.scaleX.text)
                 self.ids.scaleX.text = str(self.scaleX)
-                App.get_running_app().data.config.set('Computed Settings', 'scaleX', str(self.scaleX))
+                App.get_running_app().data.config.set('Optical Calibration Settings', 'scaleX', str(self.scaleX))
             except:
                 print "Value not float"
                 self.ids.scaleX.text = ""
@@ -324,7 +329,7 @@ class OpticalCalibrationCanvas(GridLayout):
             try:
                 self.scaleY = float(self.ids.scaleY.text)
                 self.ids.scaleY.text = str(self.scaleY)
-                App.get_running_app().data.config.set('Computed Settings', 'scaleY', str(self.scaleY))
+                App.get_running_app().data.config.set('Optical Calibration Settings', 'scaleY', str(self.scaleY))
             except:
                 print "Value not float"
                 self.ids.scaleY.text = ""
@@ -573,20 +578,20 @@ class OpticalCalibrationCanvas(GridLayout):
                         _str += str(int(self.calErrorsY[x][y]*1000))+_strcomma
         #print _str
 
-        App.get_running_app().data.config.set('Computed Settings', 'calX0', str(self.xCurve[0]))
-        App.get_running_app().data.config.set('Computed Settings', 'calX1', str(self.xCurve[1]))
-        App.get_running_app().data.config.set('Computed Settings', 'calX2', str(self.xCurve[2]))
-        App.get_running_app().data.config.set('Computed Settings', 'calX3', str(self.xCurve[3]))
-        App.get_running_app().data.config.set('Computed Settings', 'calX4', str(self.xCurve[4]))
-        App.get_running_app().data.config.set('Computed Settings', 'calX5', str(self.xCurve[5]))
-        App.get_running_app().data.config.set('Computed Settings', 'calY0', str(self.yCurve[0]))
-        App.get_running_app().data.config.set('Computed Settings', 'calY1', str(self.yCurve[1]))
-        App.get_running_app().data.config.set('Computed Settings', 'calY2', str(self.yCurve[2]))
-        App.get_running_app().data.config.set('Computed Settings', 'calY3', str(self.yCurve[3]))
-        App.get_running_app().data.config.set('Computed Settings', 'calY4', str(self.yCurve[4]))
-        App.get_running_app().data.config.set('Computed Settings', 'calY5', str(self.yCurve[5]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calX0', str(self.xCurve[0]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calX1', str(self.xCurve[1]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calX2', str(self.xCurve[2]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calX3', str(self.xCurve[3]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calX4', str(self.xCurve[4]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calX5', str(self.xCurve[5]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calY0', str(self.yCurve[0]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calY1', str(self.yCurve[1]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calY2', str(self.yCurve[2]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calY3', str(self.yCurve[3]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calY4', str(self.yCurve[4]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calY5', str(self.yCurve[5]))
 
-        App.get_running_app().data.config.set('Computed Settings', 'xyErrorArray', _str)
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'xyErrorArray', _str)
 
     def on_WipeController(self):
         self.data.gcode_queue.put("$RST=^ ")
@@ -597,12 +602,23 @@ class OpticalCalibrationCanvas(GridLayout):
         self.data.gcode_queue.put("G0 X0 Y0  ")
         self.data.gcode_queue.put("G91  ")
 
+    def on_AutoScanDirection(self, scanDirection):
+        if scanDirection=="Horizontally":
+            self.autoScanDirection = 0
+            App.get_running_app().data.config.set('Optical Calibration Settings', 'autoScanDirection', self.autoScanDirection)
+        else:
+            self.autoScanDirection = 1
+            App.get_running_app().data.config.set('Optical Calibration Settings', 'autoScanDirection', self.autoScanDirection)
+
+
     def on_AutoHome(self, measureMode = False):
 
         minX = self.HomingTLX
         maxX = self.HomingBRX
         minY = self.HomingTLY
         maxY = self.HomingBRY
+
+
 
         if measureMode == True:
             print "Measure Only"
@@ -619,23 +635,44 @@ class OpticalCalibrationCanvas(GridLayout):
             # note, the self.HomingX and self.HomingY are not reinitialzed here
             # The rationale is that the offset for the previous registration point is
             # probably a good starting point for this registration point..
-            if (self.inMeasureOnlyMode):
-                self.HomingX = 0.0
-                self.HomingY = 0.0
-            self.HomingPosX += self.HomingScanDirection
-            if ((self.HomingPosX==maxX+1) or (self.HomingPosX==minX-1)):
-                if self.HomingPosX == maxX+1:
-                    self.HomingPosX = maxX
+            if (self.autoScanDirection == 0): # horizontal
+                if (self.inMeasureOnlyMode):
+                    self.HomingX = 0.0
+                    self.HomingY = 0.0
+                self.HomingPosX += self.HomingScanDirection
+                if ((self.HomingPosX==maxX+1) or (self.HomingPosX==minX-1)):
+                    if self.HomingPosX == maxX+1:
+                        self.HomingPosX = maxX
+                    else:
+                        self.HomingPosX = minX
+                    self.HomingScanDirection *= -1
+                    self.HomingPosY -= 1
+                if (self.HomingPosY!=maxY-1):
+                    self.HomeIn()
                 else:
-                    self.HomingPosX = minX
-                self.HomingScanDirection *= -1
-                self.HomingPosY -= 1
-        if (self.HomingPosY!=maxY-1):
-            self.HomeIn()
-        else:
-            self.inAutoMode = False
-            print "Calibration Completed"
-            # self.printCalibrationErrorValue()
+                    self.inAutoMode = False
+                    print "Calibration Completed"
+                    # self.printCalibrationErrorValue()
+            else: #vertical
+                if (self.inMeasureOnlyMode):
+                    self.HomingX = 0.0
+                    self.HomingY = 0.0
+                self.HomingPosY -= self.HomingScanDirection
+                if ((self.HomingPosY==maxY-1) or (self.HomingPosY==minY+1)):
+                    if self.HomingPosY == minY+1:
+                        self.HomingPosY = minY
+                    else:
+                        self.HomingPosY = maxY
+                    self.HomingScanDirection *= -1
+                    self.HomingPosX += 1
+                if (self.HomingPosX!=maxX+1):
+                    self.HomingY -= 15.0  # drop down 15 mm for next square's guess (only)
+                    self.HomeIn()
+                else:
+                    self.inAutoMode = False
+                    print "Calibration Completed"
+                    # self.printCalibrationErrorValue()
+
 
     def on_AutoHomeVertical(self, measureMode = False):
 
@@ -913,7 +950,7 @@ class OpticalCalibrationCanvas(GridLayout):
                 if self.ids.centerX.text!="":
                     cX = float(self.ids.centerX.text)
                     self.opticalCenter = (cX, self.opticalCenter[1])
-                    App.get_running_app().data.config.set('Computed Settings', 'opticalCenterX', str(self.opticalCenter[0]))
+                    App.get_running_app().data.config.set('Optical Calibration Settings', 'opticalCenterX', str(self.opticalCenter[0]))
             except TypeError:
                 print "Value not float"
                 self.ids.centerX.text = ""
@@ -924,7 +961,7 @@ class OpticalCalibrationCanvas(GridLayout):
                 if self.ids.centerY.text!="":
                     cY = float(self.ids.centerY.text)
                     self.opticalCenter = (self.opticalCenter[0], cY)
-                    App.get_running_app().data.config.set('Computed Settings', 'opticalCenterY', str(self.opticalCenter[1]))
+                    App.get_running_app().data.config.set('Optical Calibration Settings', 'opticalCenterY', str(self.opticalCenter[1]))
             except TypeError:
                 print "Value not float"
                 self.ids.centerY.text = ""
