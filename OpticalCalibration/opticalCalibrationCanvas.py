@@ -62,7 +62,7 @@ class MeasuredImage(Image):
         super(MeasuredImage, self).__init__(**kwargs)
 
     def update(self, frame):
-        cv2.imwrite("measuredImage.png",frame)
+        #cv2.imwrite("measuredImage.png",frame)
         buf1 = cv2.flip(frame,0)
         buf = buf1.tostring()
         image_texture = Texture.create(
@@ -128,6 +128,9 @@ class OpticalCalibrationCanvas(GridLayout):
     xCurve = np.zeros(shape=(6))  # coefficients for quadratic curve
     yCurve = np.zeros(shape=(6))  # coefficients for quadratic curve
     calibrationLines = InstructionGroup()
+    gaussianBlurValue = 5
+    cannyLowValue = 50.0
+    cannyHighValue = 100.0
 
     #def initialize(self):
 
@@ -160,6 +163,9 @@ class OpticalCalibrationCanvas(GridLayout):
         self.ids.scaleX.text = str(self.scaleX)
         self.ids.scaleY.text = str(self.scaleY)
 
+        self.gaussianBlurValue = int(self.data.config.get('Optical Calibration Settings', 'gaussianBlurValue'))
+        self.cannyLowValue = float(self.data.config.get('Optical Calibration Settings', 'cannyLowValue'))
+        self.cannyHighValue = float(self.data.config.get('Optical Calibration Settings', 'cannyHighValue'))
 
         #print str(xErrors[2][0])
 
@@ -665,6 +671,7 @@ class OpticalCalibrationCanvas(GridLayout):
                 self.HomingScanDirection *= -1
                 self.HomingPosX += 1
         if (self.HomingPosX!=maxX+1):
+            self.HomingY -= 15.0  # drop down 15 mm for next square's guess (only)
             self.HomeIn()
         else:
             self.inAutoMode = False
@@ -708,8 +715,8 @@ class OpticalCalibrationCanvas(GridLayout):
             if ret:
                 #self.ids.MeasuredImage.update(image)
                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                gray = cv2.GaussianBlur(gray, (5, 5), 0)
-                edged = cv2.Canny(gray, 50, 100)
+                gray = cv2.GaussianBlur(gray, (self.gaussianBlurValue, self.gaussianBlurValue), 0)
+                edged = cv2.Canny(gray, self.cannyLowValue, self.cannyHighValue)
                 edged = cv2.dilate(edged, None, iterations=1)
                 edged = cv2.erode(edged, None, iterations=1)
                 cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)

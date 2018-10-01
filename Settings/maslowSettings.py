@@ -619,83 +619,95 @@ settings = {
             {
                 "type": "string",
                 "key": "calX0",
-                "firmwareKey": 47
+                "firmwareKey": 47,
+                "default": "0"
             },
             {
                 "type": "string",
                 "key": "calX1",
-                "firmwareKey": 48
+                "firmwareKey": 48,
+                "default": "0"
             },
             {
                 "type": "string",
                 "key": "calX2",
-                "firmwareKey": 49
+                "firmwareKey": 49,
+                "default": "0"
             },
             {
                 "type": "string",
                 "key": "calX3",
-                "firmwareKey": 50
+                "firmwareKey": 50,
+                "default": "0"
             },
             {
                 "type": "string",
                 "key": "calX4",
-                "firmwareKey": 51
+                "firmwareKey": 51,
+                "default": "0"
             },
             {
                 "type": "string",
                 "key": "calX5",
-                "firmwareKey": 52
+                "firmwareKey": 52,
+                "default": "0"
             },
             {
                 "type": "string",
                 "key": "calY0",
-                "firmwareKey": 53
+                "firmwareKey": 53,
+                "default": "0"
             },
             {
                 "type": "string",
                 "key": "calY1",
-                "firmwareKey": 54
+                "firmwareKey": 54,
+                "default": "0"
             },
             {
                 "type": "string",
                 "key": "calY2",
-                "firmwareKey": 55
+                "firmwareKey": 55,
+                "default": "0"
             },
             {
                 "type": "string",
                 "key": "calY3",
-                "firmwareKey": 56
+                "firmwareKey": 56,
+                "default": "0"
             },
             {
                 "type": "string",
                 "key": "calY4",
-                "firmwareKey": 57
+                "firmwareKey": 57,
+                "default": "0"
             },
             {
                 "type": "string",
                 "key": "calY5",
-                "firmwareKey": 58
+                "firmwareKey": 58,
+                "default": "0"
             },
             {
                 "type": "string",
                 "key": "opticalCenterX",
-                "default": "0",
+                "default": "0"
             },
             {
                 "type": "string",
                 "key": "opticalCenterY",
-                "default": "0",
+                "default": "0"
             },
             {
                 "type": "string",
                 "key": "scaleX",
-                "default": "1.0",
+                "default": "1.0"
             },
             {
                 "type": "string",
                 "key": "scaleY",
-                "default": "1.0",
-            },
+                "default": "1.0"
+            }
         ],
     "Background Settings":
         [
@@ -713,7 +725,26 @@ settings = {
                 "key": "manualReg",
                 "default": []
             },
+        ],
+    "Optical Calibration Settings":
+        [
+            {
+                "type": "int",
+                "key": "gaussianBlurValue",
+                "default": 5
+            },
+            {
+                "type": "int",
+                "key": "cannyLowValue",
+                "default": 50
+            },
+            {
+                "type": "int",
+                "key": "cannyHighValue",
+                "default": 100
+            }
         ]
+
 }
 
 def getJSONSettingSection(section):

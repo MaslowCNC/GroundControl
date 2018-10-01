@@ -161,6 +161,7 @@ class GroundControlApp(App):
         config.setdefaults('Advanced Settings', maslowSettings.getDefaultValueSection('Advanced Settings'))
         config.setdefaults('Ground Control Settings', maslowSettings.getDefaultValueSection('Ground Control Settings'))
         config.setdefaults('Background Settings', maslowSettings.getDefaultValueSection('Background Settings'))
+        config.setdefaults('Optical Calibration Settings', maslowSettings.getDefaultValueSection('Optical Calibration Settings'))
         config.remove_callback(self.computeSettings)
 
     def build_settings(self, settings):

@@ -391,7 +391,7 @@
             Spinner:
                 id: advancedOptions
                 text: "Advanced"
-                values: ["Move Sled to Default","Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test", "Run Triangular Test Cut Pattern", "Reset settings to defaults", "Compute chain calibration factors", "Optical Calibration"]
+                values: ["Move Sled to Default","Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test", "Run Triangular Test Cut Pattern", "Reset settings to defaults", "Compute chain calibration factors", "Optical Calibration", "Camera Adjustment"]
                 on_text: root.advancedOptionsFunctions(advancedOptions.text)
 
 <OtherFeatures>:
@@ -2332,3 +2332,130 @@
                             halign: "left"
                             valign: "middle"
                             size_hint: 1, .25
+
+
+<CameraAdjustmentCanvas>:
+    rows: 3
+    Label:
+        text: "This calibration routine is designed to allow for adjustment to the image recognition parameters for optical calibration"
+        size_hint_y:.1
+    GridLayout:
+        cols: 4
+        size_hint_y:.6
+        BoxLayout:
+            orientation: 'vertical'
+            KivyCamera:
+                id: KivyCamera
+                resolution: (640,480)
+                play:True
+        BoxLayout:
+            orientation: 'vertical'
+            MeasuredImage:
+                id: GrayedImage
+                resolution: (640,480)
+                play:True
+        BoxLayout:
+            orientation: 'vertical'
+            MeasuredImage:
+                id: EdgedImage
+                resolution: (640,480)
+                play:True
+        BoxLayout:
+            orientation: 'vertical'
+            MeasuredImage:
+                id: MeasuredImage
+                resolution: (640,480)
+                play:True
+    GridLayout:
+        cols:2
+        size_hint_y: .3
+        GridLayout:
+            rows: 1
+            cols: 1
+            ScrollView:
+                Label:
+                    size_hint: None, None
+                    size: self.texture_size
+                    id: cameraResults
+                    text: "Pixels/Inch:"
+                    markup: True
+        GridLayout:
+            rows: 2
+            cols: 2
+            size_hint: 1, .4
+            GridLayout:
+                rows: 2
+                GridLayout:
+                    cols: 3
+                    GridLayout:
+                        rows: 3
+                        Label:
+                            text: "Gaussian Blur"
+                            text_size: self.width, self.height
+                            halign: "center"
+                            id: gaussianBlurLabel
+                        Label:
+                            text: ""
+                            text_size: self.width, self.height
+                            halign: "center"
+                            id: gaussianBlurValueLabel
+                        Slider:
+                            min: 1
+                            max:11
+                            value: 5
+                            step: 2
+                            id: gaussianBlur
+                            on_value: root.onGaussianBlur()
+                    GridLayout:
+                        rows: 3
+                        Label:
+                            text: "Edge Detection Lower Threshold"
+                            halign: "center"
+                            text_size: self.width, self.height
+                            id: cannyLowLabel
+                        Label:
+                            text: ""
+                            text_size: self.width, self.height
+                            halign: "center"
+                            id: cannyLowValueLabel
+                        Slider:
+                            min: 0
+                            max:255
+                            value: 50
+                            step: 1
+                            id: cannyLow
+                            on_value: root.onCannyLow()
+                    GridLayout:
+                        rows: 3
+                        Label:
+                            text: "Edge Detection Upper Threshold"
+                            halign: "center"
+                            text_size: self.width, self.height
+                            id: cannyHighLabel
+                        Label:
+                            text: ""
+                            text_size: self.width, self.height
+                            halign: "center"
+                            id: cannyHighValueLabel
+                        Slider:
+                            min: 0
+                            max:255
+                            value: 100
+                            step: 1
+                            id: cannyHigh
+                            on_value: root.onCannyHigh()
+                GridLayout:
+                    cols: 3
+                    Spinner:
+                        id: cameras
+                        text: "Cameras"
+                        values: root.cameras()
+                        on_text: root.setCamera(cameras.text)
+                    Button:
+                        text: "Save"
+                        halign: "center"
+                        on_release: root.on_SaveSettings()
+                    Button:
+                        text: "Exit"
+                        halign: "center"
+                        on_release: root.do_Exit()
