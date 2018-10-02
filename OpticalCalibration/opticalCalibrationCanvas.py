@@ -951,7 +951,7 @@ class OpticalCalibrationCanvas(GridLayout):
                     cX = float(self.ids.centerX.text)
                     self.opticalCenter = (cX, self.opticalCenter[1])
                     App.get_running_app().data.config.set('Optical Calibration Settings', 'opticalCenterX', str(self.opticalCenter[0]))
-            except TypeError:
+            except:
                 print "Value not float"
                 self.ids.centerX.text = ""
 
@@ -962,7 +962,7 @@ class OpticalCalibrationCanvas(GridLayout):
                     cY = float(self.ids.centerY.text)
                     self.opticalCenter = (self.opticalCenter[0], cY)
                     App.get_running_app().data.config.set('Optical Calibration Settings', 'opticalCenterY', str(self.opticalCenter[1]))
-            except TypeError:
+            except:
                 print "Value not float"
                 self.ids.centerY.text = ""
 
@@ -1058,6 +1058,7 @@ class OpticalCalibrationCanvas(GridLayout):
         else:
             xR2 = 0.0
         #surface fit Y Errors
+
         yA = np.c_[np.ones(dataY.shape[0]), dataY[:,:2], np.prod(dataY[:,:2], axis=1), dataY[:,:2]**2]
         self.yCurve,_,_,_ = np.linalg.lstsq(yA, dataY[:,2],rcond=None)
         yB = dataY[:,2]
@@ -1069,9 +1070,56 @@ class OpticalCalibrationCanvas(GridLayout):
             yR2 = 0.0
 
         print self.xCurve
+        print xR2
         print self.yCurve
+        print yR2
         #update screen
         self.updateCurveCoefficients()
+
+
+        self.drawCalibration()
+
+
+    def on_reducedSurfaceFit(self):
+        # set data into proper format
+        dataX = np.zeros(((11*27),3))
+        dataY = np.zeros(((11*27),3))
+        for y in range(5, -6, -1):
+            for x in range(-13, 14, +1):
+                dataX[(5-y)*27+(x+13)][0]=float(x*3.0*25.4)
+                dataY[(5-y)*27+(x+13)][0]=float(x*3.0*25.4)
+                dataX[(5-y)*27+(x+13)][1]=float(y*3.0*25.4)
+                dataY[(5-y)*27+(x+13)][1]=float(y*3.0*25.4)
+                dataX[(5-y)*27+(x+13)][2]=self.calErrorsX[x+15][7-y]
+                dataY[(5-y)*27+(x+13)][2]=self.calErrorsY[x+15][7-y]
+        #surface fit X Errors
+        xA = np.c_[np.ones(dataX.shape[0]), dataX[:,:2], np.prod(dataX[:,:2], axis=1), dataX[:,:2]**2]
+        self.xCurve,_,_,_ = np.linalg.lstsq(xA, dataX[:,2],rcond=None)
+        xB = dataX[:,2]
+        xSStot = ((xB-xB.mean())**2).sum()
+        xSSres = ((xB-np.dot(xA,self.xCurve))**2).sum()
+        if (xSStot!=0):
+            xR2 = 1.0 - xSSres / xSStot
+        else:
+            xR2 = 0.0
+        #surface fit Y Errors
+
+        yA = np.c_[np.ones(dataY.shape[0]), dataY[:,:2], np.prod(dataY[:,:2], axis=1), dataY[:,:2]**2]
+        self.yCurve,_,_,_ = np.linalg.lstsq(yA, dataY[:,2],rcond=None)
+        yB = dataY[:,2]
+        ySStot = ((yB-yB.mean())**2).sum()
+        ySSres = ((yB-np.dot(yA,self.yCurve))**2).sum()
+        if (ySStot!=0):
+            yR2 = 1.0 - ySSres / ySStot
+        else:
+            yR2 = 0.0
+
+        print self.xCurve
+        print xR2
+        print self.yCurve
+        print yR2
+        #update screen
+        #self.updateCurveCoefficients()
 
 
         self.drawCalibration()
