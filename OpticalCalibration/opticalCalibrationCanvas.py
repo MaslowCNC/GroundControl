@@ -1,6 +1,6 @@
 from kivy.uix.gridlayout                     import GridLayout
 from kivy.properties                         import NumericProperty, ObjectProperty, BooleanProperty
-from kivy.graphics                           import Color, Ellipse, Line
+from kivy.graphics                           import Color, Ellipse, Line, InstructionGroup
 from kivy.graphics.texture                   import Texture
 from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
@@ -10,7 +10,7 @@ from kivy.uix.image                          import Image
 from kivy.app                                import App
 from kivy.uix.popup                          import Popup
 from kivy.uix.label                          import Label
-
+from UIElements.positionIndicator            import PositionIndicator
 from OpticalCalibration.cameraCenterCalibration import calculateCenterOfArc
 from UIElements.notificationPopup            import NotificationPopup
 from Settings                                import maslowSettings
@@ -62,7 +62,7 @@ class MeasuredImage(Image):
         super(MeasuredImage, self).__init__(**kwargs)
 
     def update(self, frame):
-        cv2.imwrite("measuredImage.png",frame)
+        #cv2.imwrite("measuredImage.png",frame)
         buf1 = cv2.flip(frame,0)
         buf = buf1.tostring()
         image_texture = Texture.create(
@@ -77,6 +77,8 @@ class OpticalCalibrationCanvas(GridLayout):
     cameraCount = 0
     refObj = None
     D = 1
+    xD = 1
+    yD = 1
     done = ObjectProperty(None)
     currentX, currentY = 0, 0
     calX = 0
@@ -86,21 +88,28 @@ class OpticalCalibrationCanvas(GridLayout):
     calErrorsY = np.zeros(matrixSize)
     measuredErrorsX = np.zeros(matrixSize)
     measuredErrorsY = np.zeros(matrixSize)
+    leftChainLength = np.zeros(matrixSize)
+    rightChainLength = np.zeros(matrixSize)
+
     cameraCenteringPoints = []
     opticalCenter = (None, None)
+    scaleX = 1.0
+    scaleY = 1.0
 
-    presets = [ [ [-15 , 7] , [0, 0] ],
-                [ [0, 7] , [15, 0] ],
-                [ [-15 , 0] , [0, -7] ],
-                [ [0, 0] , [15, -7] ],
-                [ [-15, 7] , [15, -7] ],
-                [ [-1, 1] , [1, -2] ],
-                [ [-1, 1] , [1, -2] ],
-                [ [-1, 2] , [2, -3] ],
-                [ [-1, 2] , [2, -3] ],
+    presets = [ ["48x36 Top Left", [-15 , 7] , [0, 0] ],
+                ["48x36 Bottom Left", [0, 7] , [15, 0] ],
+                ["48x36 Top Right", [-15 , 0] , [0, -7] ],
+                ["48x36 Bottom Right", [0, 0] , [15, -7] ],
+                ["96x48 Full Area", [-15, 7] , [15, -7] ],
+                ["8.5x11 (Portrait)", [-1, 1] , [1, -2] ],
+                ["11x17 (Portrait)", [-1, 2] , [2, -3] ],
                ]
 
+    #values: ["48x36 Top Left", "48x36 Bottom Left", "48x36 Top Right", "48x36 Bottom Right", "96x48 Full Area", "8.5x11 (Portait)","11x17 (Portrait)"]
+
     markerWidth = 0.5*25.4
+    markerX = 0.5*25.4
+    markerY = 0.5*25.4
     inAutoMode = False
     inMesureOnlyMode = False
     HomingScanDirection = 1
@@ -116,14 +125,50 @@ class OpticalCalibrationCanvas(GridLayout):
     counter =0
     bedHeight = 48*25.4
     bedWidth = 96*25.4
-
+    xCurve = np.zeros(shape=(6))  # coefficients for quadratic curve
+    yCurve = np.zeros(shape=(6))  # coefficients for quadratic curve
+    calibrationLines = InstructionGroup()
+    gaussianBlurValue = 5
+    cannyLowValue = 50.0
+    cannyHighValue = 100.0
+    autoScanDirection = 0  #0 is horizontally, 1 is vertical
     #def initialize(self):
 
     def initialize(self):
-        xyErrors = self.data.config.get('Computed Settings', 'xyErrorArray')
+        xyErrors = self.data.config.get('Optical Calibration Settings', 'xyErrorArray')
         self.calErrorsX, self.calErrorsY = maslowSettings.parseErrorArray(xyErrors, True)
         self.bedHeight = float(self.data.config.get('Maslow Settings', 'bedHeight'))
         self.bedWidth = float(self.data.config.get('Maslow Settings', 'bedWidth'))
+
+        self.xCurve[0] = float(self.data.config.get('Optical Calibration Settings', 'calX0'))
+        self.xCurve[1] = float(self.data.config.get('Optical Calibration Settings', 'calX1'))
+        self.xCurve[2] = float(self.data.config.get('Optical Calibration Settings', 'calX2'))
+        self.xCurve[3] = float(self.data.config.get('Optical Calibration Settings', 'calX3'))
+        self.xCurve[4] = float(self.data.config.get('Optical Calibration Settings', 'calX4'))
+        self.xCurve[5] = float(self.data.config.get('Optical Calibration Settings', 'calX5'))
+        self.yCurve[0] = float(self.data.config.get('Optical Calibration Settings', 'calY0'))
+        self.yCurve[1] = float(self.data.config.get('Optical Calibration Settings', 'calY1'))
+        self.yCurve[2] = float(self.data.config.get('Optical Calibration Settings', 'calY2'))
+        self.yCurve[3] = float(self.data.config.get('Optical Calibration Settings', 'calY3'))
+        self.yCurve[4] = float(self.data.config.get('Optical Calibration Settings', 'calY4'))
+        self.yCurve[5] = float(self.data.config.get('Optical Calibration Settings', 'calY5'))
+
+        opticalCenterX = float(self.data.config.get('Optical Calibration Settings', 'opticalCenterX'))
+        opticalCenterY = float(self.data.config.get('Optical Calibration Settings', 'opticalCenterY'))
+        self.opticalCenter = (opticalCenterX, opticalCenterY)
+        self.ids.centerX.text = str(self.opticalCenter[0])
+        self.ids.centerY.text = str(self.opticalCenter[1])
+        self.scaleX = float(self.data.config.get('Optical Calibration Settings', 'scaleX'))
+        self.scaleY = float(self.data.config.get('Optical Calibration Settings', 'scaleY'))
+        self.ids.scaleX.text = str(self.scaleX)
+        self.ids.scaleY.text = str(self.scaleY)
+
+        self.gaussianBlurValue = int(self.data.config.get('Optical Calibration Settings', 'gaussianBlurValue'))
+        self.cannyLowValue = float(self.data.config.get('Optical Calibration Settings', 'cannyLowValue'))
+        self.cannyHighValue = float(self.data.config.get('Optical Calibration Settings', 'cannyHighValue'))
+        self.markerX = float(self.data.config.get('Optical Calibration Settings', 'markerX'))
+        self.markerY = float(self.data.config.get('Optical Calibration Settings', 'markerY'))
+        self.autoScanDirection = int(self.data.config.get('Optical Calibration Settings', 'autoScanDirection'))
 
         #print str(xErrors[2][0])
 
@@ -149,8 +194,37 @@ class OpticalCalibrationCanvas(GridLayout):
         moveHorizontal = self.bedWidth/2
         mat = Matrix().translate(moveHorizontal, moveVertical, 0)
         self.ids.opticalScatter.apply_transform(mat)
-
         self.drawCalibration()
+        self.ids.topLeftX.text = str(self.HomingTLX)
+        self.ids.topLeftY.text = str(self.HomingTLY)
+        self.ids.bottomRightX.text = str(self.HomingBRX)
+        self.ids.bottomRightY.text = str(self.HomingBRY)
+        self.ids.markerX.text = str(round(self.markerX/25.4,3))
+        self.ids.markerY.text = str(round(self.markerY/25.4,3))
+
+        self.ids.calibrationTargetIndicator.color   = self.data.targetIndicatorColor
+        self.ids.calibrationPositionIndicator.color = [1,1,1]
+        self.updatePositionIndicator(0,0,self.data.units)
+        self.updateTargetIndicator(0,0,self.data.units)
+        self.updateCurveCoefficients()
+
+    def updatePositionIndicator(self,x,y,units):
+        if (units=="MM"):
+            posX = x+self.bedWidth/2.0
+            posY = y+self.bedHeight/2.0
+        else:
+            posX = x+self.bedWidth/2.0/25.4
+            posY = y+self.bedHeight/2.0/25.4
+        self.ids.calibrationPositionIndicator.setPos(posX,posY,units)
+
+    def updateTargetIndicator(self,x,y,units):
+        if (units=="MM"):
+            posX = x+self.bedWidth/2.0
+            posY = y+self.bedHeight/2.0
+        else:
+            posX = x+self.bedWidth/2.0/25.4
+            posY = y+self.bedHeight/2.0/25.4
+        self.ids.calibrationTargetIndicator.setPos(posX,posY,units)
 
     def stopCut(self):
         self.data.quick_queue.put("!")
@@ -218,6 +292,48 @@ class OpticalCalibrationCanvas(GridLayout):
                 print "Value not int"
                 self.ids.bottomRightY.text = ""
 
+    def on_UpdateMarkerX(self,value=[0,False]):
+        if (value[1]==False):
+            try:
+                _mX=float(self.ids.markerX.text)
+                self.ids.markerX.text = str(round(_mX,3))
+                self.markerX = _mX*25.4
+                App.get_running_app().data.config.set('Optical Calibration Settings', 'markerX', self.markerX)
+            except:
+                print "Value not float"
+                self.ids.markerX.text = ""
+
+    def on_UpdateMarkerY(self,value=[0,False]):
+        if (value[1]==False):
+            try:
+                _mY=float(self.ids.markerY.text)
+                self.ids.markerY.text = str(round(_mY,3))
+                self.markerY = _mY*25.4
+                App.get_running_app().data.config.set('Optical Calibration Settings', 'markerY', self.markerY)
+            except:
+                print "Value not float"
+                self.ids.markerY.text = ""
+
+    def on_UpdateScaleX(self,value=(0,False)):
+        if not value[1]:
+            try:
+                self.scaleX = float(self.ids.scaleX.text)
+                self.ids.scaleX.text = str(self.scaleX)
+                App.get_running_app().data.config.set('Optical Calibration Settings', 'scaleX', str(self.scaleX))
+            except:
+                print "Value not float"
+                self.ids.scaleX.text = ""
+
+    def on_UpdateScaleY(self,value=(0,False)):
+        if not value[1]:
+            try:
+                self.scaleY = float(self.ids.scaleY.text)
+                self.ids.scaleY.text = str(self.scaleY)
+                App.get_running_app().data.config.set('Optical Calibration Settings', 'scaleY', str(self.scaleY))
+            except:
+                print "Value not float"
+                self.ids.scaleY.text = ""
+
     def on_SaveCSV(self):
         outFile = open("calibrationValues.csv","w")
         line = ""
@@ -253,15 +369,17 @@ class OpticalCalibrationCanvas(GridLayout):
         outFile.close()
 
     def on_Preset(self, preset):
+        for _preset in self.presets:
+            if preset == _preset[0]:
+                self.ids.topLeftX.text = str(_preset[1][0])
+                self.ids.topLeftY.text = str(_preset[1][1])
+                self.ids.bottomRightX.text = str(_preset[2][0])
+                self.ids.bottomRightY.text = str(_preset[2][1])
+                self.HomingTLX = _preset[1][0]
+                self.HomingTLY = _preset[1][1]
+                self.HomingBRX = _preset[2][0]
+                self.HomingBRY = _preset[2][1]
 
-        self.ids.topLeftX.text = str(self.presets[preset][0][0])
-        self.ids.topLeftY.text = str(self.presets[preset][0][1])
-        self.ids.bottomRightX.text = str(self.presets[preset][1][0])
-        self.ids.bottomRightY.text = str(self.presets[preset][1][1])
-        self.HomingTLX = self.presets[preset][0][0]
-        self.HomingTLY = self.presets[preset][0][1]
-        self.HomingBRX = self.presets[preset][1][0]
-        self.HomingBRY = self.presets[preset][1][1]
 
     def midpoint(self, ptA, ptB):
         return ((ptA[0]+ptB[0])*0.5, (ptA[1]+ptB[1])*0.5)
@@ -300,27 +418,28 @@ class OpticalCalibrationCanvas(GridLayout):
         return _c #_c is the smallest approximation we can find with four our more
 
     def drawCalibration(self):
-        self.ids.opticalScatter.canvas.clear()
+        self.ids.opticalScatter.canvas.remove(self.calibrationLines)
+        self.calibrationLines.clear()
         for y in range(7, -8, -1):
             points = []
+            self.calibrationLines.add(Color(0,0,1))
             for x in range(-15, 16, +1):
                 points.append(x*3*25.4+self.bedWidth/2.0)
                 points.append(y*3*25.4+self.bedHeight/2.0)
-            with self.ids.opticalScatter.canvas:
-                Color(0,0,1)
-                Line(points=points)
-
+                self.calibrationLines.add(Line(points=points))
+            #with self.ids.opticalScatter.canvas:
         for x in range(-15, 16, +1):
             points = []
+            self.calibrationLines.add(Color(0,0,1))
             for y in range(7, -8, -1):
                 points.append(x*3*25.4+self.bedWidth/2.0)
                 points.append(y*3*25.4+self.bedHeight/2.0)
-            with self.ids.opticalScatter.canvas:
-                Color(0,0,1)
-                Line(points=points)
+                self.calibrationLines.add(Line(points=points))
+
 
         for y in range(7, -8, -1):
             points = []
+            self.calibrationLines.add(Color(1,0,0))
             for x in range(-15, 16, +1):
                 if (self.inMeasureOnlyMode):
                     points.append(x*3*25.4-self.measuredErrorsX[x+15][7-y]+self.bedWidth/2.0)
@@ -328,12 +447,10 @@ class OpticalCalibrationCanvas(GridLayout):
                 else:
                     points.append(x*3*25.4-self.calErrorsX[x+15][7-y]+self.bedWidth/2.0)
                     points.append(y*3*25.4-self.calErrorsY[x+15][7-y]+self.bedHeight/2.0)
-            with self.ids.opticalScatter.canvas:
-                Color(1,0,0)
-                Line(points=points)
-
+                self.calibrationLines.add(Line(points=points))
         for x in range(-15, 16, +1):
             points = []
+            self.calibrationLines.add(Color(1,0,0))
             for y in range(7, -8, -1):
                 if (self.inMeasureOnlyMode):
                     points.append(x*3*25.4-self.measuredErrorsX[x+15][7-y]+self.bedWidth/2.0)
@@ -341,9 +458,33 @@ class OpticalCalibrationCanvas(GridLayout):
                 else:
                     points.append(x*3*25.4-self.calErrorsX[x+15][7-y]+self.bedWidth/2.0)
                     points.append(y*3*25.4-self.calErrorsY[x+15][7-y]+self.bedHeight/2.0)
-            with self.ids.opticalScatter.canvas:
-                Color(1,0,0)
-                Line(points=points)
+                self.calibrationLines.add(Line(points=points))
+
+        for y in range(7, -8, -1):
+            points = []
+            self.calibrationLines.add(Color(0,1,0))
+            for x in range(-15, 16, +1):
+                points.append(x*3*25.4-self.calSurface(x*3*25.4,y*3*25.4,0)+self.bedWidth/2.0)
+                points.append(y*3*25.4-self.calSurface(x*3*25.4,y*3*25.4,1)+self.bedHeight/2.0)
+                self.calibrationLines.add(Line(points=points))
+        for x in range(-15, 16, +1):
+            points = []
+            self.calibrationLines.add(Color(0,1,0))
+            for y in range(7, -8, -1):
+                points.append(x*3*25.4-self.calSurface(x*3*25.4,y*3*25.4,0)+self.bedWidth/2.0)
+                points.append(y*3*25.4-self.calSurface(x*3*25.4,y*3*25.4,1)+self.bedHeight/2.0)
+                self.calibrationLines.add(Line(points=points))
+
+        self.ids.opticalScatter.canvas.add(self.calibrationLines)
+
+
+    def calSurface(self,x,y,plane):
+        if plane == 0:
+            retVal = self.xCurve[4]*x**2.0 + self.xCurve[5]*y**2.0 + self.xCurve[3]*x*y + self.xCurve[1]*x + self.xCurve[2]*y + self.xCurve[0]
+        else:
+            retVal = self.yCurve[4]*x**2.0 + self.yCurve[5]*y**2.0 + self.yCurve[3]*x*y + self.yCurve[1]*x + self.yCurve[2]*y + self.yCurve[0]
+        return retVal
+
 
     def on_touch_up(self, touch):
 
@@ -394,18 +535,32 @@ class OpticalCalibrationCanvas(GridLayout):
         self.ids.OpticalCalibrationDistance.text += "X,Y Offset RMS: {:.3f}, {:.3f}\n".format(calX,calY)
         self.drawCalibration()
 
+    def updateCurveCoefficients(self):
+        line = "X Coefficients: "
+        count=0
+        for c in self.xCurve:
+            line+= str(float(round(c,2)))
+            if count!=5:
+                line += ", "
+                count += 1
+        self.ids.xCoefficients.text = line
 
-
-
+        line = "Y Coefficients: "
+        count=0
+        for c in self.yCurve:
+            line+= str(float(round(c,2)))
+            if count!=5:
+                line += ", "
+                count += 1
+        self.ids.yCoefficients.text = line
 
     def removeOutliersAndAverage(self, data):
         mean = np.mean(data)
-        print "mean:"+str(mean)
+        #print "mean:"+str(mean)
         sd = np.std(data)
-        print "sd:"+str(sd)
+        #print "sd:"+str(sd)
         tArray = [x for x in data if ( (x >= mean-2.0*sd) and (x<=mean+2.0*sd))]
         return np.average(tArray), np.std(tArray)
-
 
     def on_SaveAndSend(self):
         _str = ""
@@ -421,8 +576,22 @@ class OpticalCalibrationCanvas(GridLayout):
                         _str += str(int(self.calErrorsX[x][y]*1000))+_strcomma
                     else:
                         _str += str(int(self.calErrorsY[x][y]*1000))+_strcomma
-        print _str
-        App.get_running_app().data.config.set('Computed Settings', 'xyErrorArray', _str)
+        #print _str
+
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calX0', str(self.xCurve[0]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calX1', str(self.xCurve[1]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calX2', str(self.xCurve[2]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calX3', str(self.xCurve[3]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calX4', str(self.xCurve[4]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calX5', str(self.xCurve[5]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calY0', str(self.yCurve[0]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calY1', str(self.yCurve[1]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calY2', str(self.yCurve[2]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calY3', str(self.yCurve[3]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calY4', str(self.yCurve[4]))
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'calY5', str(self.yCurve[5]))
+
+        App.get_running_app().data.config.set('Optical Calibration Settings', 'xyErrorArray', _str)
 
     def on_WipeController(self):
         self.data.gcode_queue.put("$RST=^ ")
@@ -433,7 +602,85 @@ class OpticalCalibrationCanvas(GridLayout):
         self.data.gcode_queue.put("G0 X0 Y0  ")
         self.data.gcode_queue.put("G91  ")
 
+    def on_AutoScanDirection(self, scanDirection):
+        if scanDirection=="Horizontally":
+            print "Set for Horizontal Scan"
+            self.autoScanDirection = 0
+            App.get_running_app().data.config.set('Optical Calibration Settings', 'autoScanDirection', self.autoScanDirection)
+        else:
+            self.autoScanDirection = 1
+            App.get_running_app().data.config.set('Optical Calibration Settings', 'autoScanDirection', self.autoScanDirection)
+            print "Set for Vertical Scan"
+
+
     def on_AutoHome(self, measureMode = False):
+
+        minX = self.HomingTLX
+        maxX = self.HomingBRX
+        minY = self.HomingTLY
+        maxY = self.HomingBRY
+
+
+
+        if measureMode == True:
+            print "Measure Only"
+            self.inMeasureOnlyMode = True
+        #print "Measure:"+str(self.inMeasureOnlyMode)
+        if self.inAutoMode == False:
+            self.HomingX = 0.0
+            self.HomingY = 0.0
+            self.HomingPosX = minX
+            self.HomingPosY = minY
+            self.HomingScanDirection = 1
+            self.inAutoMode = True
+            self.HomeIn()
+        else:
+            # note, the self.HomingX and self.HomingY are not reinitialzed here
+            # The rationale is that the offset for the previous registration point is
+            # probably a good starting point for this registration point..
+            if (self.autoScanDirection == 0): # horizontal
+                print "Horizontal Scan"
+                if (self.inMeasureOnlyMode):
+                    self.HomingX = 0.0
+                    self.HomingY = 0.0
+                self.HomingPosX += self.HomingScanDirection
+                if ((self.HomingPosX==maxX+1) or (self.HomingPosX==minX-1)):
+                    if self.HomingPosX == maxX+1:
+                        self.HomingPosX = maxX
+                    else:
+                        self.HomingPosX = minX
+                    self.HomingScanDirection *= -1
+                    self.HomingPosY -= 1
+                if (self.HomingPosY!=maxY-1):
+                    self.HomingY -= 7.0  # drop down 7 mm for next square's guess (only)
+                    self.HomeIn()
+                else:
+                    self.inAutoMode = False
+                    print "Calibration Completed"
+                    # self.printCalibrationErrorValue()
+            else: #vertical
+                print "Vertical Scan"
+                if (self.inMeasureOnlyMode):
+                    self.HomingX = 0.0
+                    self.HomingY = 0.0
+                self.HomingPosY -= self.HomingScanDirection
+                if ((self.HomingPosY==maxY-1) or (self.HomingPosY==minY+1)):
+                    if self.HomingPosY == minY+1:
+                        self.HomingPosY = minY
+                    else:
+                        self.HomingPosY = maxY
+                    self.HomingScanDirection *= -1
+                    self.HomingPosX += 1
+                if (self.HomingPosX!=maxX+1):
+                    self.HomingY -= 7.0  # drop down 7 mm for next square's guess (only)
+                    self.HomeIn()
+                else:
+                    self.inAutoMode = False
+                    print "Calibration Completed"
+                    # self.printCalibrationErrorValue()
+
+
+    def on_AutoHomeVertical(self, measureMode = False):
 
         minX = self.HomingTLX
         maxX = self.HomingBRX
@@ -458,21 +705,21 @@ class OpticalCalibrationCanvas(GridLayout):
             if (self.inMeasureOnlyMode):
                 self.HomingX = 0.0
                 self.HomingY = 0.0
-            self.HomingPosX += self.HomingScanDirection
-            if ((self.HomingPosX==maxX+1) or (self.HomingPosX==minX-1)):
-                if self.HomingPosX == maxX+1:
-                    self.HomingPosX = maxX
+            self.HomingPosY -= self.HomingScanDirection
+            if ((self.HomingPosY==maxY-1) or (self.HomingPosY==minY+1)):
+                if self.HomingPosY == minY+1:
+                    self.HomingPosY = minY
                 else:
-                    self.HomingPosX = minX
+                    self.HomingPosY = maxY
                 self.HomingScanDirection *= -1
-                self.HomingPosY -= 1
-        if (self.HomingPosY!=maxY-1):
+                self.HomingPosX += 1
+        if (self.HomingPosX!=maxX+1):
+            self.HomingY -= 10.0  # drop down 10 mm for next square's guess (only)
             self.HomeIn()
         else:
             self.inAutoMode = False
             print "Calibration Completed"
-            self.printCalibrationErrorValue()
-
+            # self.printCalibrationErrorValue()
 
 
 
@@ -484,7 +731,8 @@ class OpticalCalibrationCanvas(GridLayout):
     def HomeIn(self):
         _posX = round(self.HomingPosX*3.0+self.HomingX/25.4,4)
         _posY = round(self.HomingPosY*3.0+self.HomingY/25.4,4)
-        print "Moving to:[{}, {}]".format(_posX, _posY)
+        self.updateTargetIndicator(_posX,_posY,"INCHES")
+        print "Moving to ({},{}) by trying [{}, {}]".format(self.HomingPosX*3.0, self.HomingPosY*3.0,_posX, _posY)
         self.data.units = "INCHES"
         self.data.gcode_queue.put("G20 ")
         self.data.gcode_queue.put("G90  ")
@@ -501,17 +749,17 @@ class OpticalCalibrationCanvas(GridLayout):
         diList = np.zeros(shape=(10))#[-9999.9 for x in range(10)]
         xBList = np.zeros(shape=(10))
         yBList = np.zeros(shape=(10))
-        print "here"
         x = 0
+        falseCounter = 0
         while True:
         #for x in range(10):  #review 10 images
             #print x
             ret, image = self.ids.KivyCamera.getCapture()
             if ret:
-                self.ids.MeasuredImage.update(image)
+                #self.ids.MeasuredImage.update(image)
                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                gray = cv2.GaussianBlur(gray, (5, 5), 0)
-                edged = cv2.Canny(gray, 50, 100)
+                gray = cv2.GaussianBlur(gray, (self.gaussianBlurValue, self.gaussianBlurValue), 0)
+                edged = cv2.Canny(gray, self.cannyLowValue, self.cannyHighValue)
                 edged = cv2.dilate(edged, None, iterations=1)
                 edged = cv2.erode(edged, None, iterations=1)
                 cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -529,16 +777,16 @@ class OpticalCalibrationCanvas(GridLayout):
 
                 # Draw a center marker on the video (for spot-checking that we hit the target)
                 self.ids.KivyCamera.canvas.remove_group('center_marker')
-                print "Using optical center (%.2f, %.2f)" % (xA, yA)
+                #print "Using optical center (%.2f, %.2f)" % (xA, yA)
                 self.drawCrosshairOnVideoForImagePoint(xA, yA, width, height, colors[4], group='center_marker')
 
-                orig = image.copy()
                 maxArea = 0
                 for cTest in cnts:
                     if (cv2.contourArea(cTest)>maxArea):
                         maxArea = cv2.contourArea(cTest)
                         c = cTest
                 if cv2.contourArea(c)>1000:
+                    orig = image.copy()
                     #approximate to a square (i.e., four contour segments)
                     cv2.drawContours(orig, [c.astype("int")], -1, (255, 255, 0), 2)
                     #simplify the contour to get it as square as possible (i.e., remove the noise from the edges)
@@ -571,9 +819,17 @@ class OpticalCalibrationCanvas(GridLayout):
                         (tl, tr, br, bl) = box
                         (tlblX, tlblY) = self.midpoint(tl, bl)
                         (trbrX, trbrY) = self.midpoint(tr, br)
+                        (tltrX, tltrY) = self.midpoint(tl, tr)
+                        (blbrX, blbrY) = self.midpoint(bl, br)
 
-                        self.D = dist.euclidean((tlblX,tlblY),(trbrX,trbrY))/self.markerWidth
+                        self.xD = dist.euclidean((tlblX,tlblY),(trbrX,trbrY))/self.markerX
+                        self.yD = dist.euclidean((tltrX,tltrY),(blbrX,blbrY))/self.markerY
+                        self.ids.OpticalCalibrationAutoCalibrateButton.disabled = False
                         self.ids.OpticalCalibrationAutoMeasureButton.disabled = False
+                        if self.xD == 0:  #doing this to catch bad calibrations and stop crashing
+                            self.xD = 1.0
+                        if self.yD == 0:
+                            self.yD = 1.0
 
 
                     cos = math.cos(angle*3.141592/180.0)
@@ -588,22 +844,33 @@ class OpticalCalibrationCanvas(GridLayout):
                     self.drawCrosshairOnImage(orig, xA, yA, colors[0])
                     self.drawCrosshairOnImage(orig, xB, yB, colors[3])
 
-                    Dist = dist.euclidean((xA, yA), (xB, yB)) / self.D
-                    Dx = dist.euclidean((xA,0), (xB,0))/self.D
+                    #Dist = dist.euclidean((xA, yA), (xB, yB)) / self.D
+                    Dx = dist.euclidean((xA,0), (xB,0))/self.xD
                     if (xA>xB):
                         Dx *= -1
-                    Dy = dist.euclidean((0,yA), (0,yB))/self.D
+                    Dy = dist.euclidean((0,yA), (0,yB))/self.yD
                     if (yA<yB):
                         Dy *= -1
+                    Dist = math.sqrt(Dx**2.0 + Dy**2.0 )
                     dxList[x] = Dx
                     dyList[x] = Dy
                     diList[x] = Dist
                     xBList[x] = xB
                     yBList[x] = yB
                     x +=1
-                    print "Processed Image #"+str(x)
+                    self.ids.MeasuredImage.update(orig)
+                    #print "Processed Image #"+str(x)
                     if (x==10):
                         break
+                else:
+                    falseCounter += 1
+                    #if (falseCounter == 10):
+                    #    break
+            else:
+                falseCounter += 1
+                #if (falseCounter == 10):
+                #    break
+        print "Got 10 images processed, "+str(falseCounter)+" images were bad"
         print "Done Analyzing Images.. Now Averaging and Removing Outliers"
         if dxList.ndim != 0 :
             avgDx, stdDx = self.removeOutliersAndAverage(dxList)
@@ -623,18 +890,19 @@ class OpticalCalibrationCanvas(GridLayout):
                 self.HomingY += avgDy#-self.calY
                 print "testing location"
                 if doCalibrate!=True:  #its either True because you pressed the calibrate button or its a distance from the measurement callback.
-                    if (((abs(avgDx)>=0.125) or (abs(avgDy)>=0.125)) and (self.inMeasureOnlyMode==False) and (findCenter==False)):
+                    if (((abs(avgDx)>=0.125) or (abs(avgDy)>=0.125)) and (findCenter==False)): # removed (self.inMeasureOnlyMode==False) so it will also home in
                         print "Adjusting Location"
                         self.HomeIn()
                     else:
-                        print "Averagedx="+str(avgDx)+", Averagedy="+str(avgDy)
-                        print str(self.HomingPosX+15)+", "+str(7-self.HomingPosY)+", "+str(self.HomingX)
+                        #print "Averagedx="+str(avgDx)+", Averagedy="+str(avgDy)
+                        xS = self.HomingX+self.HomingPosX*3*25.4*(1.0-self.scaleX)
+                        yS = self.HomingY+self.HomingPosY*3*25.4*(1.0-self.scaleY)
                         if (self.inMeasureOnlyMode):
-                            self.measuredErrorsX[self.HomingPosX+15][7-self.HomingPosY] = self.HomingX
-                            self.measuredErrorsY[self.HomingPosX+15][7-self.HomingPosY] = self.HomingY
+                            self.measuredErrorsX[self.HomingPosX+15][7-self.HomingPosY] = xS
+                            self.measuredErrorsY[self.HomingPosX+15][7-self.HomingPosY] = yS
                         elif (findCenter==False):
-                            self.calErrorsX[self.HomingPosX+15][7-self.HomingPosY] = self.HomingX
-                            self.calErrorsY[self.HomingPosX+15][7-self.HomingPosY] = self.HomingY
+                            self.calErrorsX[self.HomingPosX+15][7-self.HomingPosY] = xS
+                            self.calErrorsY[self.HomingPosX+15][7-self.HomingPosY] = yS
                         else:
                             self.ids.centerX.text = "%.1f" % avgxB
                             self.ids.centerY.text = "%.1f" % avgyB
@@ -685,18 +953,22 @@ class OpticalCalibrationCanvas(GridLayout):
     def on_updateCenterX(self, value=(0,False)):
         if value[1] is False:
             try:
-                cX = float(self.ids.centerX.text)
-                self.opticalCenter = (cX, self.opticalCenter[1])
-            except TypeError:
+                if self.ids.centerX.text!="":
+                    cX = float(self.ids.centerX.text)
+                    self.opticalCenter = (cX, self.opticalCenter[1])
+                    App.get_running_app().data.config.set('Optical Calibration Settings', 'opticalCenterX', str(self.opticalCenter[0]))
+            except:
                 print "Value not float"
                 self.ids.centerX.text = ""
 
     def on_updateCenterY(self, value=(0,False)):
         if value[1] is False:
             try:
-                cY = float(self.ids.centerY.text)
-                self.opticalCenter = (self.opticalCenter[0], cY)
-            except TypeError:
+                if self.ids.centerY.text!="":
+                    cY = float(self.ids.centerY.text)
+                    self.opticalCenter = (self.opticalCenter[0], cY)
+                    App.get_running_app().data.config.set('Optical Calibration Settings', 'opticalCenterY', str(self.opticalCenter[1]))
+            except:
                 print "Value not float"
                 self.ids.centerY.text = ""
 
@@ -768,3 +1040,92 @@ class OpticalCalibrationCanvas(GridLayout):
             self.ids.centerX.text = "%.1f" % cX
             self.ids.centerY.text = "%.1f" % cY
             self.opticalCenter = (cX, cY)
+
+    def on_surfaceFit(self):
+        # set data into proper format
+        dataX = np.zeros(((15*31),3))
+        dataY = np.zeros(((15*31),3))
+        for y in range(7, -8, -1):
+            for x in range(-15, 16, +1):
+                dataX[(7-y)*31+(x+15)][0]=float(x*3.0*25.4)
+                dataY[(7-y)*31+(x+15)][0]=float(x*3.0*25.4)
+                dataX[(7-y)*31+(x+15)][1]=float(y*3.0*25.4)
+                dataY[(7-y)*31+(x+15)][1]=float(y*3.0*25.4)
+                dataX[(7-y)*31+(x+15)][2]=self.calErrorsX[x+15][7-y]
+                dataY[(7-y)*31+(x+15)][2]=self.calErrorsY[x+15][7-y]
+        #surface fit X Errors
+        xA = np.c_[np.ones(dataX.shape[0]), dataX[:,:2], np.prod(dataX[:,:2], axis=1), dataX[:,:2]**2]
+        self.xCurve,_,_,_ = np.linalg.lstsq(xA, dataX[:,2],rcond=None)
+        xB = dataX[:,2]
+        xSStot = ((xB-xB.mean())**2).sum()
+        xSSres = ((xB-np.dot(xA,self.xCurve))**2).sum()
+        if (xSStot!=0):
+            xR2 = 1.0 - xSSres / xSStot
+        else:
+            xR2 = 0.0
+        #surface fit Y Errors
+
+        yA = np.c_[np.ones(dataY.shape[0]), dataY[:,:2], np.prod(dataY[:,:2], axis=1), dataY[:,:2]**2]
+        self.yCurve,_,_,_ = np.linalg.lstsq(yA, dataY[:,2],rcond=None)
+        yB = dataY[:,2]
+        ySStot = ((yB-yB.mean())**2).sum()
+        ySSres = ((yB-np.dot(yA,self.yCurve))**2).sum()
+        if (ySStot!=0):
+            yR2 = 1.0 - ySSres / ySStot
+        else:
+            yR2 = 0.0
+
+        print self.xCurve
+        print xR2
+        print self.yCurve
+        print yR2
+        #update screen
+        self.updateCurveCoefficients()
+
+
+        self.drawCalibration()
+
+
+    def on_reducedSurfaceFit(self):
+        # set data into proper format
+        dataX = np.zeros(((11*27),3))
+        dataY = np.zeros(((11*27),3))
+        for y in range(5, -6, -1):
+            for x in range(-13, 14, +1):
+                dataX[(5-y)*27+(x+13)][0]=float(x*3.0*25.4)
+                dataY[(5-y)*27+(x+13)][0]=float(x*3.0*25.4)
+                dataX[(5-y)*27+(x+13)][1]=float(y*3.0*25.4)
+                dataY[(5-y)*27+(x+13)][1]=float(y*3.0*25.4)
+                dataX[(5-y)*27+(x+13)][2]=self.calErrorsX[x+15][7-y]
+                dataY[(5-y)*27+(x+13)][2]=self.calErrorsY[x+15][7-y]
+        #surface fit X Errors
+        xA = np.c_[np.ones(dataX.shape[0]), dataX[:,:2], np.prod(dataX[:,:2], axis=1), dataX[:,:2]**2]
+        self.xCurve,_,_,_ = np.linalg.lstsq(xA, dataX[:,2],rcond=None)
+        xB = dataX[:,2]
+        xSStot = ((xB-xB.mean())**2).sum()
+        xSSres = ((xB-np.dot(xA,self.xCurve))**2).sum()
+        if (xSStot!=0):
+            xR2 = 1.0 - xSSres / xSStot
+        else:
+            xR2 = 0.0
+        #surface fit Y Errors
+
+        yA = np.c_[np.ones(dataY.shape[0]), dataY[:,:2], np.prod(dataY[:,:2], axis=1), dataY[:,:2]**2]
+        self.yCurve,_,_,_ = np.linalg.lstsq(yA, dataY[:,2],rcond=None)
+        yB = dataY[:,2]
+        ySStot = ((yB-yB.mean())**2).sum()
+        ySSres = ((yB-np.dot(yA,self.yCurve))**2).sum()
+        if (ySStot!=0):
+            yR2 = 1.0 - ySSres / ySStot
+        else:
+            yR2 = 0.0
+
+        print self.xCurve
+        print xR2
+        print self.yCurve
+        print yR2
+        #update screen
+        #self.updateCurveCoefficients()
+
+
+        self.drawCalibration()

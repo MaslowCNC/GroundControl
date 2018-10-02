@@ -44,6 +44,7 @@ from Connection.nonVisibleWidgets import   NonVisibleWidgets
 from UIElements.notificationPopup import   NotificationPopup
 from Settings                     import   maslowSettings
 from UIElements.backgroundMenu    import   BackgroundMenu
+from OpticalCalibration.opticalCalibrationCanvas    import OpticalCalibrationCanvas
 '''
 
 Main UI Program
@@ -67,21 +68,21 @@ class GroundControlApp(App):
             self.data.drawingColor           = [.47,.47,.47]
             Window.clearcolor                = (1, 1, 1, 1)
             self.data.posIndicatorColor      =  [0,0,0]
-            self.data.targetInicatorColor    =  [1,0,0]
+            self.data.targetIndicatorColor    =  [1,0,0]
         elif self.config.get('Maslow Settings', 'colorScheme') == 'Dark':
             self.data.iconPath               = './Images/Icons/highvis/'
             self.data.fontColor              = '[color=000000]'
             self.data.drawingColor           = [1,1,1]
             Window.clearcolor                = (0, 0, 0, 1)
             self.data.posIndicatorColor      =  [1,1,1]
-            self.data.targetInicatorColor    =  [1,0,0]
+            self.data.targetIndicatorColor    =  [1,0,0]
         elif self.config.get('Maslow Settings', 'colorScheme') == 'DarkGreyBlue':
             self.data.iconPath               = './Images/Icons/darkgreyblue/'
             self.data.fontColor              = '[color=000000]'
             self.data.drawingColor           = [1,1,1]
             Window.clearcolor                = (0.06, 0.10, 0.2, 1)
             self.data.posIndicatorColor      =  [0.51,0.93,0.97]
-            self.data.targetInicatorColor = [1,0,0]
+            self.data.targetIndicatorColor = [1,0,0]
 
 
 
@@ -92,6 +93,7 @@ class GroundControlApp(App):
         interface.add_widget(self.frontpage)
 
         self.nonVisibleWidgets = NonVisibleWidgets()
+
 
 
         '''
@@ -159,6 +161,7 @@ class GroundControlApp(App):
         config.setdefaults('Advanced Settings', maslowSettings.getDefaultValueSection('Advanced Settings'))
         config.setdefaults('Ground Control Settings', maslowSettings.getDefaultValueSection('Ground Control Settings'))
         config.setdefaults('Background Settings', maslowSettings.getDefaultValueSection('Background Settings'))
+        config.setdefaults('Optical Calibration Settings', maslowSettings.getDefaultValueSection('Optical Calibration Settings'))
         config.remove_callback(self.computeSettings)
 
     def build_settings(self, settings):
@@ -486,6 +489,10 @@ class GroundControlApp(App):
 
         self.frontpage.setPosReadout(self.xval, self.yval, self.zval)
         self.frontpage.gcodecanvas.positionIndicator.setPos(self.xval,self.yval,self.data.units)
+        for widget in self.root_window.children:
+            if isinstance(widget,Popup):
+                if widget.title == "Maslow Optical Calibration":
+                    widget.content.updatePositionIndicator(self.xval,self.yval,self.data.units)
 
     def setErrorOnScreen(self, message):
 

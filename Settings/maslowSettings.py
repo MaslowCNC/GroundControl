@@ -326,6 +326,14 @@ settings = {
                 "firmwareKey": 44
             },
             {
+                "type": "bool",
+                "title": "Use Interpolation (True) or Curve Fit (False) (Experimental)",
+                "desc": "Selects use interpolation of calibration error matrix or curve fit",
+                "key": "useInterpolationOrCurve",
+                "default": 0,
+                "firmwareKey": 46
+            },
+            {
                 "type": "string",
                 "title": "Top Beam Tilt (Experimental)",
                 "desc": "Experimental adjustment for top beam tilt in degrees",
@@ -601,12 +609,6 @@ settings = {
                 "type": "string",
                 "key": "distPerRotRightChainTolerance",
                 "firmwareKey": 41
-            },
-            {
-                "type": "string",
-                "key": "xyErrorArray",
-                "default": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
-                "firmwareKey": 45
             }
         ],
     "Background Settings":
@@ -625,7 +627,139 @@ settings = {
                 "key": "manualReg",
                 "default": []
             },
+        ],
+    "Optical Calibration Settings":
+        [
+            {
+                "type": "string",
+                "key": "xyErrorArray",
+                "default": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+                "firmwareKey": 45
+            },
+            {
+                "type": "string",
+                "key": "calX0",
+                "firmwareKey": 47,
+                "default": "0"
+            },
+            {
+                "type": "string",
+                "key": "calX1",
+                "firmwareKey": 48,
+                "default": "0"
+            },
+            {
+                "type": "string",
+                "key": "calX2",
+                "firmwareKey": 49,
+                "default": "0"
+            },
+            {
+                "type": "string",
+                "key": "calX3",
+                "firmwareKey": 50,
+                "default": "0"
+            },
+            {
+                "type": "string",
+                "key": "calX4",
+                "firmwareKey": 51,
+                "default": "0"
+            },
+            {
+                "type": "string",
+                "key": "calX5",
+                "firmwareKey": 52,
+                "default": "0"
+            },
+            {
+                "type": "string",
+                "key": "calY0",
+                "firmwareKey": 53,
+                "default": "0"
+            },
+            {
+                "type": "string",
+                "key": "calY1",
+                "firmwareKey": 54,
+                "default": "0"
+            },
+            {
+                "type": "string",
+                "key": "calY2",
+                "firmwareKey": 55,
+                "default": "0"
+            },
+            {
+                "type": "string",
+                "key": "calY3",
+                "firmwareKey": 56,
+                "default": "0"
+            },
+            {
+                "type": "string",
+                "key": "calY4",
+                "firmwareKey": 57,
+                "default": "0"
+            },
+            {
+                "type": "string",
+                "key": "calY5",
+                "firmwareKey": 58,
+                "default": "0"
+            },
+            {
+                "type": "string",
+                "key": "opticalCenterX",
+                "default": "0"
+            },
+            {
+                "type": "string",
+                "key": "opticalCenterY",
+                "default": "0"
+            },
+            {
+                "type": "string",
+                "key": "scaleX",
+                "default": "1.0"
+            },
+            {
+                "type": "string",
+                "key": "scaleY",
+                "default": "1.0"
+            },
+            {
+                "type": "int",
+                "key": "gaussianBlurValue",
+                "default": 5
+            },
+            {
+                "type": "float",
+                "key": "cannyLowValue",
+                "default": 50.0
+            },
+            {
+                "type": "float",
+                "key": "cannyHighValue",
+                "default": 100.0
+            },
+            {
+                "type": "int",
+                "key": "autoScanDirection",
+                "default": 0
+            },
+            {
+                "type": "float",
+                "key": "markerX",
+                "default": 12.7
+            },
+            {
+                "type": "float",
+                "key": "markerY",
+                "default": 12.7
+            }
         ]
+
 }
 
 def getJSONSettingSection(section):

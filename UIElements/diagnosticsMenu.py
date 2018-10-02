@@ -5,6 +5,7 @@ from kivy.uix.popup                                 import    Popup
 from CalibrationWidgets.calibrationFrameWidget      import    CalibrationFrameWidget
 from Simulation.simulationCanvas                    import    SimulationCanvas
 from OpticalCalibration.opticalCalibrationCanvas    import    OpticalCalibrationCanvas
+from OpticalCalibration.cameraAdjustmentCanvas      import    CameraAdjustmentCanvas
 from kivy.clock                                     import    Clock
 from   kivy.app                                     import    App
 import sys
@@ -106,6 +107,11 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         Clock.schedule_once(self.data.pushSettings, 6)
         self.parentWidget.close()
 
+    def moveSledToDefault(self):
+        chainLength = App.get_running_app().data.config.get('Advanced Settings', 'chainExtendLength')
+        self.data.gcode_queue.put("B09 L"+str(chainLength)+" R"+str(chainLength)+" ")
+        self.parentWidget.close()
+
     def calibrateMachine(self):
         '''
 
@@ -144,6 +150,16 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self.popupContent.data = self.data
         self.popupContent.initialize()
         self._popup = Popup(title="Maslow Optical Calibration", content=self.popupContent,
+                            size_hint=(0.85, 0.95), auto_dismiss = True)
+        self._popup.open()
+        self.parentWidget.close()
+
+    def launchCameraAdjustment(self):
+        print "launch camera adjustment"
+        self.popupContent      = CameraAdjustmentCanvas()
+        self.popupContent.data = self.data
+        self.popupContent.initialize()
+        self._popup = Popup(title="Maslow Camera Adjustment", content=self.popupContent,
                             size_hint=(0.85, 0.95), auto_dismiss = True)
         self._popup.open()
         self.parentWidget.close()
@@ -208,3 +224,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
             self.measureChainTolerances()
         elif text == "Optical Calibration":
             self.launchOpticalCalibration()
+        elif text == "Camera Adjustment":
+            self.launchCameraAdjustment()
+        elif text == "Move Sled to Default":
+            self.moveSledToDefault()
