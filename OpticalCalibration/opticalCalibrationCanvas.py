@@ -604,11 +604,13 @@ class OpticalCalibrationCanvas(GridLayout):
 
     def on_AutoScanDirection(self, scanDirection):
         if scanDirection=="Horizontally":
+            print "Set for Horizontal Scan"
             self.autoScanDirection = 0
             App.get_running_app().data.config.set('Optical Calibration Settings', 'autoScanDirection', self.autoScanDirection)
         else:
             self.autoScanDirection = 1
             App.get_running_app().data.config.set('Optical Calibration Settings', 'autoScanDirection', self.autoScanDirection)
+            print "Set for Vertical Scan"
 
 
     def on_AutoHome(self, measureMode = False):
@@ -631,11 +633,13 @@ class OpticalCalibrationCanvas(GridLayout):
             self.HomingPosY = minY
             self.HomingScanDirection = 1
             self.inAutoMode = True
+            self.HomeIn()
         else:
             # note, the self.HomingX and self.HomingY are not reinitialzed here
             # The rationale is that the offset for the previous registration point is
             # probably a good starting point for this registration point..
             if (self.autoScanDirection == 0): # horizontal
+                print "Horizontal Scan"
                 if (self.inMeasureOnlyMode):
                     self.HomingX = 0.0
                     self.HomingY = 0.0
@@ -648,12 +652,14 @@ class OpticalCalibrationCanvas(GridLayout):
                     self.HomingScanDirection *= -1
                     self.HomingPosY -= 1
                 if (self.HomingPosY!=maxY-1):
+                    self.HomingY -= 7.0  # drop down 7 mm for next square's guess (only)
                     self.HomeIn()
                 else:
                     self.inAutoMode = False
                     print "Calibration Completed"
                     # self.printCalibrationErrorValue()
             else: #vertical
+                print "Vertical Scan"
                 if (self.inMeasureOnlyMode):
                     self.HomingX = 0.0
                     self.HomingY = 0.0
@@ -666,7 +672,7 @@ class OpticalCalibrationCanvas(GridLayout):
                     self.HomingScanDirection *= -1
                     self.HomingPosX += 1
                 if (self.HomingPosX!=maxX+1):
-                    self.HomingY -= 15.0  # drop down 15 mm for next square's guess (only)
+                    self.HomingY -= 7.0  # drop down 7 mm for next square's guess (only)
                     self.HomeIn()
                 else:
                     self.inAutoMode = False
@@ -708,7 +714,7 @@ class OpticalCalibrationCanvas(GridLayout):
                 self.HomingScanDirection *= -1
                 self.HomingPosX += 1
         if (self.HomingPosX!=maxX+1):
-            self.HomingY -= 15.0  # drop down 15 mm for next square's guess (only)
+            self.HomingY -= 10.0  # drop down 10 mm for next square's guess (only)
             self.HomeIn()
         else:
             self.inAutoMode = False

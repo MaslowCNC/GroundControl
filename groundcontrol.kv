@@ -2106,11 +2106,11 @@
                         on_release: root.on_AutoHome(True)
                         disabled: True
                     Spinner:
-                        id: autoScanDirection
+                        id: ScanDirection
                         text: "Auto Scan\nDirection"
                         halign: "center"
                         values: ["Horizontally","Vertically"]
-                        on_release: root.on_AutoScanDirection(autoScanDirection.text)
+                        on_text: root.on_AutoScanDirection(ScanDirection.text)
                     Button:
                         text: "Return to\nCenter"
                         halign: "center"
