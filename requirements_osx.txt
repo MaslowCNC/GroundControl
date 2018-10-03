@@ -3,6 +3,7 @@ Cython==0.23
 Kivy==1.9.1
 Kivy-Garden==0.1.4
 packaging==16.8
+Pillow==5.2.0
 pygame==1.9.3
 pyparsing==2.2.0
 pyserial==3.3
