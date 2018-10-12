@@ -391,7 +391,7 @@
             Spinner:
                 id: advancedOptions
                 text: "Advanced"
-                values: ["Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test", "Run Triangular Test Cut Pattern", "Reset settings to defaults", "Compute chain calibration factors"]
+                values: ["Move Sled to Default","Set Chain Length - Manual", "Wipe EEPROM", "Simulation", "Load Calibration Benchmark Test", "Run Triangular Test Cut Pattern", "Reset settings to defaults", "Compute chain calibration factors", "Optical Calibration", "Camera Adjustment"]
                 on_text: root.advancedOptionsFunctions(advancedOptions.text)
 
 <OtherFeatures>:
@@ -1119,7 +1119,7 @@
         size_hint_x: leftCol
         Label:
             text: "To refine these measurements we're going to cut a test shape.\n\nThe test shape consists of two short horizontal cuts and two short vertical cuts\n\nBased on the distance between these marks we can dial in the machine settings\n\nThe size of bit used is not critical\nMeasure to any point on the mark as long as you are consistent\n\nThe process will repeat until both measurements are equal to within .5mm\nThe more accurate your measurements, the more accurate your machine will be\n\nPress Cut Test Pattern to begin"
-            
+
             text_size: self.size
             valign: 'middle'
         GridLayout:
@@ -1697,6 +1697,12 @@
     rotationRadiusLabel:rotationRadiusLabel
     chainSagCorrectionOffset:chainSagCorrectionOffset
     chainSagCorrectionLabel:chainSagCorrectionLabel
+    topBeamTilt:topBeamTilt
+    topBeamTiltLabel:topBeamTiltLabel
+    leftChainTolerance:leftChainTolerance
+    leftChainToleranceLabel:leftChainToleranceLabel
+    rightChainTolerance:rightChainTolerance
+    rightChainToleranceLabel:rightChainToleranceLabel
     kinematicsSelect:kinematicsSelect
 
     rows: 3
@@ -1831,6 +1837,42 @@
                 disabled: root.isQuadKinematics
                 id: chainSagCorrectionOffset
             Label:
+                text: "Top Beam Tilt"
+                text_size: self.width, self.height
+                font_size: sp(self.height)/sp(3)
+                disabled: root.isQuadKinematics
+                id: topBeamTiltLabel
+            Slider:
+                min: -.2
+                max:.2
+                value: 0
+                disabled: root.isQuadKinematics
+                id: topBeamTilt
+            Label:
+                text: "Left Chain Tolerance"
+                text_size: self.width, self.height
+                font_size: sp(self.height)/sp(3)
+                disabled: root.isQuadKinematics
+                id: leftChainToleranceLabel
+            Slider:
+                min: 0
+                max:0.05
+                value: 0
+                disabled: root.isQuadKinematics
+                id: leftChainTolerance
+            Label:
+                text: "Right Chain Tolerance"
+                text_size: self.width, self.height
+                font_size: sp(self.height)/sp(3)
+                disabled: root.isQuadKinematics
+                id: rightChainToleranceLabel
+            Slider:
+                min: 0
+                max:0.1
+                value: 0
+                disabled: root.isQuadKinematics
+                id: rightChainTolerance
+            Label:
                 text: "Grid Size: 150mm"
                 text_size: self.width, self.height
                 font_size: sp(self.height)/sp(3)
@@ -1840,6 +1882,7 @@
                 max:300
                 value: 300
                 id: gridSize
+
 
             Button:
                 text: "Reset All"
@@ -1869,7 +1912,7 @@
         text: 'Close'
         on_press: app.frontpage.gcodecanvas.centerCanvas() #Force canvas redraw
         on_release: root.close()
-					
+
 <BackgroundPickDlg>
     imWidg:imWidg
     cols: 1
@@ -1987,3 +2030,435 @@
         self.parent.center_y +
         sin(self.opacity * self.index * 2 * pi / self.siblings) * self.radius
         ) if (self.size and self.parent and self.parent.children) else (0, 0)
+
+<OpticalCalibrationCanvas>:
+    rows: 3
+    Label:
+        text: "This calibration routine is designed to utilize a camera to assess errors"
+        size_hint_y:.1
+    GridLayout:
+        cols:3
+        BoxLayout:
+            orientation: 'vertical'
+            KivyCamera:
+                id: KivyCamera
+                resolution: (640,480)
+                play:True
+        BoxLayout:
+            orientation: 'vertical'
+            MeasuredImage:
+                id: MeasuredImage
+                resolution: (640,480)
+                play:True
+        StencilView:
+            ScatterPlane:
+                do_rotation: False
+                id: opticalScatter
+                PositionIndicator:
+                    id: calibrationPositionIndicator
+                PositionIndicator:
+                    id: calibrationTargetIndicator
+
+    GridLayout:
+        cols:2
+        GridLayout:
+            rows: 1
+            cols: 1
+            ScrollView:
+                Label:
+                    size_hint: None, None
+                    size: self.texture_size
+                    id: OpticalCalibrationDistance
+                    text: "Pixels/Inch: (Please Calibrate)"
+                    markup: True
+        GridLayout:
+            rows: 2
+            GridLayout:
+                cols: 2
+                size_hint: 1, .4
+                Button:
+                    size_hint: .2, 1
+                    text: "Stop!"
+                    halign: "center"
+                    on_release: root.stopCut()
+                    background_color: (1,.2,.2,1)
+                GridLayout:
+                    cols: 5
+                    size_hint: .8, 1
+                    Button:
+                        text: "Calibrate\nCenter of\n Sled Rotation"
+                        halign: "center"
+                        on_release: root.on_CenterOnSquare(findCenter=True)
+                    Button:
+                        text: "Calibrate\nDimensions"
+                        halign: "center"
+                        on_release: root.on_CenterOnSquare(doCalibrate=True)
+                    Button:
+                        id: OpticalCalibrationAutoCalibrateButton
+                        text: "Auto Calibrate"
+                        halign: "center"
+                        on_release: root.on_AutoHome(False)
+                        disabled: True
+                    Button:
+                        id: OpticalCalibrationAutoMeasureButton
+                        text: "Auto Measure"
+                        halign: "center"
+                        on_release: root.on_AutoHome(True)
+                        disabled: True
+                    Spinner:
+                        id: ScanDirection
+                        text: "Auto Scan\nDirection"
+                        halign: "center"
+                        values: ["Horizontally","Vertically"]
+                        on_text: root.on_AutoScanDirection(ScanDirection.text)
+                    Button:
+                        text: "Return to\nCenter"
+                        halign: "center"
+                        on_release: root.on_ReturnToCenter()
+                    Button:
+                        text: "Save and Send\nto Controller"
+                        halign: "center"
+                        on_release: root.on_SaveAndSend()
+                    Spinner:
+                        id: cameras
+                        text: "Cameras"
+                        values: root.cameras()
+                        on_text: root.setCamera(cameras.text)
+                    Spinner:
+                        id: csv
+                        text: "CSV"
+                        values: ["Load", "Save"]
+                        on_text: root.on_CSV(csv.text)
+                    Button:
+                        text: "Exit"
+                        on_release: root.do_Exit()
+            GridLayout:
+                cols: 2
+                size_hint: 1, .6
+                GridLayout:
+                    rows: 2
+                    GridLayout:
+                        rows: 4
+                        sizehint: 1, .7
+                        Label:
+                            text: "[b]Calibration Extents[/b]"
+                            text_size: self.size
+                            halign: "center"
+                            valign: "middle"
+                            size_hint: 1, .2
+                            markup: True
+                        Spinner:
+                            size_hint: 1, 0.4
+                            id: presets
+                            text: "Presets"
+                            values: ["48x36 Top Left", "48x36 Bottom Left", "48x36 Top Right", "48x36 Bottom Right", "96x48 Full Area", "8.5x11 (Portrait)","11x17 (Portrait)"]
+                            on_text: root.on_Preset(presets.text)
+                        GridLayout:
+                            cols: 3
+                            size_hint: 1, 0.3
+                            Label:
+                                text: "Top Left Point (x,y):"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.5, 1
+                            TextInput:
+                                id: topLeftX
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_UpdateTopLeftX()
+                                on_focus: root.on_UpdateTopLeftX(args)
+                                multiline: False
+                            TextInput:
+                                id: topLeftY
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_UpdateTopLeftY()
+                                on_focus: root.on_UpdateTopLeftY(args)
+                                multiline: False
+                        GridLayout:
+                            cols: 3
+                            size_hint: 1, 0.3
+                            Label:
+                                text: "Bottom Right Point (x,y):"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.5, 1
+                            TextInput:
+                                id: bottomRightX
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_UpdateBottomRightX()
+                                on_focus: root.on_UpdateBottomRightX(args)
+                                multiline: False
+                            TextInput:
+                                id: bottomRightY
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_UpdateBottomRightY()
+                                on_focus: root.on_UpdateBottomRightY(args)
+                                multiline: False
+                    GridLayout:
+                        rows: 3
+                        sizehint: 1, .3
+                        Label:
+                            text: "[b]Calibration Pattern Dimensions[/b]"
+                            text_size: self.size
+                            halign: "center"
+                            valign: "middle"
+                            size_hint: 1, .3
+                            markup: True
+                        GridLayout:
+                            cols: 4
+                            size_hint: 1, 0.2
+                            Label:
+                                text: "Width (in):"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.25, 1
+                            TextInput:
+                                id: markerX
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_UpdateMarkerX()
+                                on_focus: root.on_UpdateMarkerX(args)
+                                multiline: False
+                            Label:
+                                text: "X-Scale:"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.25, 1
+                            TextInput:
+                                id: scaleX
+                                size_hint: 0.5, 1
+                                on_text_validate: root.on_UpdateScaleX()
+                                on_focus: root.on_UpdateScaleX(args)
+                                multiline: False
+                        GridLayout:
+                            cols: 4
+                            size_hint: 1, 0.2
+                            Label:
+                                text: "Height (in):"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.25, 1
+                            TextInput:
+                                id: markerY
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_UpdateMarkerY()
+                                on_focus: root.on_UpdateMarkerY(args)
+                                multiline: False
+                            Label:
+                                text: "Y-Scale:"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.25, 1
+                            TextInput:
+                                id: scaleY
+                                size_hint: 0.5, 1
+                                on_text_validate: root.on_UpdateScaleY()
+                                on_focus: root.on_UpdateScaleY(args)
+                                multiline: False
+
+                GridLayout:
+                    rows: 2
+                    GridLayout:
+                        rows: 3
+                        sizehint: 1, .5
+                        Label:
+                            text: "[b]Sled Center of Rotation[/b]"
+                            text_size: self.size
+                            valign: "middle"
+                            halign: "center"
+                            markup: True
+                        GridLayout:
+                            cols: 2
+                            Button:
+                                text: "Get A Point"
+                                on_release: root.on_centerCalibrate()
+                                size_hint: 1, 0.2
+                            Button:
+                                text: "Reset"
+                                on_release: root.on_centerReset()
+                                size_hint: 1, 0.2
+                        GridLayout:
+                            cols: 4
+                            Label:
+                                text: "Center x:"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.5, 1
+                            TextInput:
+                                id: centerX
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_updateCenterX()
+                                on_focus: root.on_updateCenterX(args)
+                                multiline: False
+                            Label:
+                                text: "Center y:"
+                                text_size: self.size
+                                halign: "right"
+                                valign: "middle"
+                                size_hint: 0.5, 1
+                            TextInput:
+                                id: centerY
+                                size_hint: 0.25, 1
+                                on_text_validate: root.on_updateCenterY()
+                                on_focus: root.on_updateCenterY(args)
+                                multiline: False
+                    GridLayout:
+                        rows: 4
+                        sizehint: 1, .5
+                        Label:
+                            text: "[b]Surface Fitting[/b]"
+                            text_size: self.size
+                            halign: "center"
+                            valign: "middle"
+                            markup: True
+                            size_hint: 1, .2
+                        Button:
+                            text: "Fit to Surface"
+                            on_release: root.on_surfaceFit()
+                            size_hint: 1, 0.2
+                        Label:
+                            text: "X Coefficients:"
+                            id: xCoefficients
+                            text_size: self.size
+                            halign: "left"
+                            valign: "middle"
+                            size_hint: 1, .25
+                        Label:
+                            text: "Y Coefficients:"
+                            id: yCoefficients
+                            text_size: self.size
+                            halign: "left"
+                            valign: "middle"
+                            size_hint: 1, .25
+
+
+<CameraAdjustmentCanvas>:
+    rows: 3
+    Label:
+        text: "This calibration routine is designed to allow for adjustment to the image recognition parameters for optical calibration"
+        size_hint_y:.1
+    GridLayout:
+        cols: 4
+        size_hint_y:.6
+        BoxLayout:
+            orientation: 'vertical'
+            KivyCamera:
+                id: KivyCamera
+                resolution: (640,480)
+                play:True
+        BoxLayout:
+            orientation: 'vertical'
+            MeasuredImage:
+                id: GrayedImage
+                resolution: (640,480)
+                play:True
+        BoxLayout:
+            orientation: 'vertical'
+            MeasuredImage:
+                id: EdgedImage
+                resolution: (640,480)
+                play:True
+        BoxLayout:
+            orientation: 'vertical'
+            MeasuredImage:
+                id: MeasuredImage
+                resolution: (640,480)
+                play:True
+    GridLayout:
+        cols:2
+        size_hint_y: .3
+        GridLayout:
+            rows: 1
+            cols: 1
+            ScrollView:
+                Label:
+                    size_hint: None, None
+                    size: self.texture_size
+                    id: cameraResults
+                    text: "Pixels/Inch:"
+                    markup: True
+        GridLayout:
+            rows: 2
+            cols: 2
+            size_hint: 1, .4
+            GridLayout:
+                rows: 2
+                GridLayout:
+                    cols: 3
+                    GridLayout:
+                        rows: 3
+                        Label:
+                            text: "Gaussian Blur"
+                            text_size: self.width, self.height
+                            halign: "center"
+                            id: gaussianBlurLabel
+                        Label:
+                            text: ""
+                            text_size: self.width, self.height
+                            halign: "center"
+                            id: gaussianBlurValueLabel
+                        Slider:
+                            min: 1
+                            max:11
+                            value: 5
+                            step: 2
+                            id: gaussianBlur
+                            on_value: root.onGaussianBlur()
+                    GridLayout:
+                        rows: 3
+                        Label:
+                            text: "Edge Detection Lower Threshold"
+                            halign: "center"
+                            text_size: self.width, self.height
+                            id: cannyLowLabel
+                        Label:
+                            text: ""
+                            text_size: self.width, self.height
+                            halign: "center"
+                            id: cannyLowValueLabel
+                        Slider:
+                            min: 0
+                            max:255
+                            value: 50
+                            step: 1
+                            id: cannyLow
+                            on_value: root.onCannyLow()
+                    GridLayout:
+                        rows: 3
+                        Label:
+                            text: "Edge Detection Upper Threshold"
+                            halign: "center"
+                            text_size: self.width, self.height
+                            id: cannyHighLabel
+                        Label:
+                            text: ""
+                            text_size: self.width, self.height
+                            halign: "center"
+                            id: cannyHighValueLabel
+                        Slider:
+                            min: 0
+                            max:255
+                            value: 100
+                            step: 1
+                            id: cannyHigh
+                            on_value: root.onCannyHigh()
+                GridLayout:
+                    cols: 3
+                    Spinner:
+                        id: cameras
+                        text: "Cameras"
+                        values: root.cameras()
+                        on_text: root.setCamera(cameras.text)
+                    Button:
+                        text: "Save"
+                        halign: "center"
+                        on_release: root.on_SaveSettings()
+                    Button:
+                        text: "Exit"
+                        halign: "center"
+                        on_release: root.do_Exit()

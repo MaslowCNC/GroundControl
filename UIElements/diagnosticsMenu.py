@@ -4,6 +4,8 @@ from UIElements.scrollableTextPopup                 import    ScrollableTextPopu
 from kivy.uix.popup                                 import    Popup
 from CalibrationWidgets.calibrationFrameWidget      import    CalibrationFrameWidget
 from Simulation.simulationCanvas                    import    SimulationCanvas
+from OpticalCalibration.opticalCalibrationCanvas    import    OpticalCalibrationCanvas
+from OpticalCalibration.cameraAdjustmentCanvas      import    CameraAdjustmentCanvas
 from kivy.clock                                     import    Clock
 from   kivy.app                                     import    App
 import sys
@@ -11,7 +13,7 @@ import os
 import time
 
 class Diagnostics(FloatLayout, MakesmithInitFuncs):
-    
+
     def about(self):
         popupText = 'Ground Control v' + str(self.data.version) + ' allows you to control the Maslow machine. ' + \
                     'From within Ground Control, you can move the machine to where you want to begin a cut, calibrate the machine, ' + \
@@ -31,85 +33,90 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
                     '\n\n' + \
                     'You should have received a copy of the GNU General Public License ' + \
                     'along with the Maslow Control Software. If not, see <http://www.gnu.org/licenses/>.'
-                
+
         content = ScrollableTextPopup(cancel = self.dismiss_popup, text = popupText, markup = True)
         if sys.platform.startswith('darwin'):
             self._popup = Popup(title="About GroundControl", content=content, size=(520,400), size_hint=(.6, .6))
         else:
             self._popup = Popup(title="About GroundControl", content=content, size=(520,400), size_hint=(None, None))
         self._popup.open()
-    
+
     def dismiss_popup(self):
         '''
-        
+
         Close The Pop-up
-        
+
         '''
         self._popup.dismiss()
-        
+
     def calibrateChainLengths(self):
         '''
-        
+
         This function is called when the "Calibrate Chain Lengths Automatic" button is pressed under the Actions window
-        
+
         '''
-        
+
         self.popupContent       = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
         self.popupContent.setupJustChainsCalibration()
         self.popupContent.on_Enter()
-        
+
         self._popup = Popup(title="Calibrate Chain Lengths", content=self.popupContent,
                             size_hint=(0.85, 0.95), auto_dismiss = False)
         self._popup.open()
-    
+
     def runJustTriangularCuts(self):
         '''
-        
+
         This function is called when the "Run Triangular Test Cuts" button under advanced options is pressed
-        
+
         '''
-        
+
         self.popupContent       = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
         self.popupContent.setupJustTriangularTestCuts()
         self.popupContent.on_Enter()
-        
+
         self._popup = Popup(title="Calibrate Chain Lengths", content=self.popupContent,
                             size_hint=(0.85, 0.95), auto_dismiss = False)
         self._popup.open()
-    
+
     def manualCalibration(self):
         '''
-        
+
         This function is called when the "Run Triangular Test Cuts" button under advanced options is pressed
-        
+
         '''
-        
+
         self.popupContent = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
         self.popupContent.setupManualCalibration()
         self.popupContent.on_Enter()
-        
+
         self._popup = Popup(title="Calibrate Chain Lengths", content=self.popupContent,
                             size_hint=(0.85, 0.95), auto_dismiss = False)
         self._popup.open()
-    
+
     def manualCalibrateChainLengths(self):
         self.data.gcode_queue.put("B08 ")
         self.parentWidget.close()
-    
+
     def testMotors(self):
         self.data.gcode_queue.put("B04 ")
         self.parentWidget.close()
-    
+
     def wipeEEPROM(self):
         self.data.gcode_queue.put("$RST=* ")
         Clock.schedule_once(self.data.pushSettings, 6)
         self.parentWidget.close()
-    
+
+    def moveSledToDefault(self):
+        chainLength = App.get_running_app().data.config.get('Advanced Settings', 'chainExtendLength')
+        self.data.gcode_queue.put("B09 L"+str(chainLength)+" R"+str(chainLength)+" ")
+        self.parentWidget.close()
+
     def calibrateMachine(self):
         '''
-        
+
         Spawns a walk through that helps the user measure the machine's dimensions
-        
+
         '''
         self.popupContent       = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
         self.popupContent.setupFullCalibration()
@@ -117,16 +124,16 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self._popup = Popup(title="Calibration", content=self.popupContent,
                             size_hint=(0.95, 0.95), auto_dismiss = False)
         self._popup.open()
-    
+
     def dismissCalibrationPopup(self):
         '''
-        
+
         Close The calibration Pop-up
-        
+
         '''
         self.data.calibrationInProcess = False
         self._popup.dismiss()
-    
+
     def launchSimulation(self):
         print "launch simulation"
         self.popupContent      = SimulationCanvas()
@@ -136,49 +143,69 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
                             size_hint=(0.85, 0.95), auto_dismiss = True)
         self._popup.open()
         self.parentWidget.close()
-    
+
+    def launchOpticalCalibration(self):
+        print "launch optical calibration"
+        self.popupContent      = OpticalCalibrationCanvas()
+        self.popupContent.data = self.data
+        self.popupContent.initialize()
+        self._popup = Popup(title="Maslow Optical Calibration", content=self.popupContent,
+                            size_hint=(0.85, 0.95), auto_dismiss = True)
+        self._popup.open()
+        self.parentWidget.close()
+
+    def launchCameraAdjustment(self):
+        print "launch camera adjustment"
+        self.popupContent      = CameraAdjustmentCanvas()
+        self.popupContent.data = self.data
+        self.popupContent.initialize()
+        self._popup = Popup(title="Maslow Camera Adjustment", content=self.popupContent,
+                            size_hint=(0.85, 0.95), auto_dismiss = True)
+        self._popup.open()
+        self.parentWidget.close()
+
     def loadCalibrationBenchmarkTest(self):
         '''
-        
+
         Loads the Calibration Benchmark Test file
-        
+
         '''
         self.data.gcodeFile = "./gcodeForTesting/Calibration Benchmark Test.nc"
         self.parentWidget.close()
-    
+
     def resetAllSettings(self):
         '''
-        
+
         Renames the groundcontrol.ini file which resets all the settings to the default values
-        
+
         '''
-        
+
         currentSettingsFile = App.get_running_app().get_application_config()
         newSettingsFile = currentSettingsFile.replace("groundcontrol","groundcontrolbackup" + time.strftime("%Y%m%d-%H%M%S"))
-        
+
         os.rename(currentSettingsFile, newSettingsFile)
-        
+
         #close ground control
         app = App.get_running_app()
         app.stop()
-        
+
     def measureChainTolerances(self):
         '''
-        
+
         Chains can stretch over time and with use. This process computes the true length of your chains.
-        
+
         '''
-        
+
         self.popupContent = CalibrationFrameWidget(done=self.dismissCalibrationPopup)
         self.popupContent.setupMeasureChainTolerances()
         self.popupContent.on_Enter()
-        
+
         self._popup = Popup(title="Measure Chain Tolerances", content=self.popupContent,
                             size_hint=(0.85, 0.95), auto_dismiss = False)
         self._popup.open()
-    
+
     def advancedOptionsFunctions(self, text):
-        
+
         if   text == "Test Feedback System":
             self.testFeedbackSystem()
         elif text == "Set Chain Length - Manual":
@@ -195,3 +222,9 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
             self.resetAllSettings()
         elif text == "Compute chain calibration factors":
             self.measureChainTolerances()
+        elif text == "Optical Calibration":
+            self.launchOpticalCalibration()
+        elif text == "Camera Adjustment":
+            self.launchCameraAdjustment()
+        elif text == "Move Sled to Default":
+            self.moveSledToDefault()

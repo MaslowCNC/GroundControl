@@ -26,11 +26,11 @@ class SimulationCanvas(GridLayout):
     correctKinematics   = Kinematics()
     distortedKinematics = Kinematics()
     kinematicsType      = 'Quadrilateral'
-    
+
     isQuadKinematics    = BooleanProperty(True)
 
     def initialize(self):
-        
+
         self.motorSpacingError.bind(value=self.onSliderChange)
         self.motorVerticalError.bind(value=self.onSliderChange)
         self.sledMountSpacingError.bind(value=self.onSliderChange)
@@ -39,29 +39,31 @@ class SimulationCanvas(GridLayout):
         self.rightChainOffset.bind(value=self.onSliderChange)
         self.rotationRadiusOffset.bind(value=self.onSliderChange)
         self.chainSagCorrectionOffset.bind(value=self.onSliderChange)
-
+        self.topBeamTilt.bind(value=self.onSliderChange)
+        self.leftChainTolerance.bind(value=self.onSliderChange)
+        self.rightChainTolerance.bind(value=self.onSliderChange)
         self.vertCGDist.bind(value=self.onSliderChange)
         self.gridSize.bind(value=self.onSliderChange)
-        
+
         Clock.schedule_once(self.moveToCenter, 3)
-        
+
         #start with our current kinematics type
         self.kinematicsSelect.text = self.data.config.get('Advanced Settings', 'kinematicsType')
-          
+
         self.recompute()
-    
+
     def moveToCenter(self, *args):
-        
-        
+
+
         #This moves the simulation onto the screen, I would love if it were centered
         #but for now it doesn't adapt to screen size (Window.width, Window.height)
-        
+
         moveVertical = self.bedHeight/1.4
         moveHorizontal = self.bedWidth/1.4
-        
+
         mat = Matrix().translate(moveHorizontal, moveVertical, 0)
         self.scatterInstance.apply_transform(mat)
-        
+
         #scale it down to fit on the screen
         self.scatterInstance.apply_transform(Matrix().scale(.3, .3, 1))
 
@@ -73,7 +75,7 @@ class SimulationCanvas(GridLayout):
         self.scatterInstance.apply_transform(mat)
 
     def resetSliders(self):
-        
+
         self.motorSpacingError.value = 0
         self.motorVerticalError.value = 0
         self.sledMountSpacingError.value = 0
@@ -83,10 +85,13 @@ class SimulationCanvas(GridLayout):
         self.rightChainOffset.value = 0
         self.rotationRadiusOffset.value = 0
         self.chainSagCorrectionOffset.value = 0
+        self.topBeamTilt.value = 0
         self.gridSize.value=300
+        self.leftChainTolerance.value = 0
+        self.rightChainTolerance.value = 0
 
     def recompute(self):
-        
+
 
         #clear the canvas to redraw
         self.scatterInstance.canvas.clear()
@@ -222,66 +227,101 @@ class SimulationCanvas(GridLayout):
         pass
 
     def doSpecificCalculation(self):
-        
+
         lengthMM = 800
 
-        #horizontal measurement 
+        #horizontal measurement
         pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, 0)
         pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2,  0)
-        
+
         #vertical measurement
         pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(0, lengthMM/2)
         pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(0, -lengthMM/2)
-        
+
         printString = "An 800mm square centered on the sheet is distorted\n%.4fmm horizontally, and %.4fmm vertically." % ( (lengthMM - (distortedPoint2[0] - distortedPoint1[0])), (lengthMM - (distortedPoint3[1] - distortedPoint4[1])))
-        
+
         lengthMM = 1905/2
-        
+
         pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, -400)
         pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2,  -400)
-        
+
         printString1 = printString + "\n\nThe triangular calibration test is off by %.4fmm." % ((lengthMM - (distortedPoint2[0] - distortedPoint1[0])))
-        
-        
-        
-        
-        
+
+
+
+
+
         lengthMM = 800
         xOffset = 1100 - lengthMM/2
         yOffset = 500  - lengthMM/2
-        
-        #horizontal measurement 
+
+        #horizontal measurement
         pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, yOffset)
         pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2,  yOffset)
-        
+
         #vertical measurement
         pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(xOffset, lengthMM/2)
         pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(xOffset, -lengthMM/2)
-        
+
         printString = "An 800mm square in the top corner on the sheet is distorted\n%.4fmm horizontally, and %.4fmm vertically." % ( (lengthMM - (distortedPoint2[0] - distortedPoint1[0])), (lengthMM - (distortedPoint3[1] - distortedPoint4[1])))
-        
+
         lengthMM = 800
         xOffset = 1100 - lengthMM/2
         yOffset = 500  - lengthMM/2
-        
-        #horizontal measurement 
+
+        #horizontal measurement
         pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-lengthMM/2, -yOffset)
         pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(lengthMM/2,  -yOffset)
-        
+
         #vertical measurement
         pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(xOffset, lengthMM/2)
         pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(xOffset, -lengthMM/2)
-        
+
         printString2 = printString + "\n\nAn 800mm square in the bottom corner on the sheet is distorted\n%.4fmm horizontally, and %.4fmm vertically." % ( (lengthMM - (distortedPoint2[0] - distortedPoint1[0])), (lengthMM - (distortedPoint3[1] - distortedPoint4[1])))
-        
+
         #calculate "Calibration Benchmark Score"
 
+
+        pointPlotted1, distortedPoint1 = self.testPointGenerator.plotPoint(-965.2,  355.6)
+        pointPlotted2, distortedPoint2 = self.testPointGenerator.plotPoint(-965.2, -355.6)
+        pointPlotted3, distortedPoint3 = self.testPointGenerator.plotPoint(965.2, -355.6)
+        pointPlotted4, distortedPoint4 = self.testPointGenerator.plotPoint(965.2, 355.6)
+        pointPlotted5, distortedPoint5 = self.testPointGenerator.plotPoint(-304.8,  304.8)
+        pointPlotted6, distortedPoint6 = self.testPointGenerator.plotPoint(-304.8,  -304.8)
+        pointPlotted7, distortedPoint7 = self.testPointGenerator.plotPoint(304.8,  -304.8)
+        pointPlotted8, distortedPoint8 = self.testPointGenerator.plotPoint(304.8,  304.8)
+
+        dH0H1 = math.sqrt(math.pow(distortedPoint1[0],2)+math.pow(distortedPoint1[1],2))
+        dH0H2 = math.sqrt(math.pow(distortedPoint2[0],2)+math.pow(distortedPoint2[1],2))
+        dH0H3 = math.sqrt(math.pow(distortedPoint3[0],2)+math.pow(distortedPoint3[1],2))
+        dH0H4 = math.sqrt(math.pow(distortedPoint4[0],2)+math.pow(distortedPoint4[1],2))
+        dH0H5 = math.sqrt(math.pow(distortedPoint5[0],2)+math.pow(distortedPoint5[1],2))
+        dH0H6 = math.sqrt(math.pow(distortedPoint6[0],2)+math.pow(distortedPoint6[1],2))
+        dH0H7 = math.sqrt(math.pow(distortedPoint7[0],2)+math.pow(distortedPoint7[1],2))
+        dH0H8 = math.sqrt(math.pow(distortedPoint8[0],2)+math.pow(distortedPoint8[1],2))
+
+        dH1H2 = math.sqrt(math.pow(distortedPoint1[0]-distortedPoint2[0],2)+math.pow(distortedPoint1[1]-distortedPoint2[1],2))
+        dH2H3 = math.sqrt(math.pow(distortedPoint2[0]-distortedPoint3[0],2)+math.pow(distortedPoint2[1]-distortedPoint3[1],2))
+        dH3H4 = math.sqrt(math.pow(distortedPoint3[0]-distortedPoint4[0],2)+math.pow(distortedPoint3[1]-distortedPoint4[1],2))
+        dH1H4 = math.sqrt(math.pow(distortedPoint1[0]-distortedPoint4[0],2)+math.pow(distortedPoint1[1]-distortedPoint4[1],2))
+
+        dH5H6 = math.sqrt(math.pow(distortedPoint5[0]-distortedPoint6[0],2)+math.pow(distortedPoint5[1]-distortedPoint6[1],2))
+        dH6H7 = math.sqrt(math.pow(distortedPoint6[0]-distortedPoint7[0],2)+math.pow(distortedPoint6[1]-distortedPoint7[1],2))
+        dH7H8 = math.sqrt(math.pow(distortedPoint7[0]-distortedPoint8[0],2)+math.pow(distortedPoint7[1]-distortedPoint8[1],2))
+        dH5H8 = math.sqrt(math.pow(distortedPoint5[0]-distortedPoint8[0],2)+math.pow(distortedPoint5[1]-distortedPoint8[1],2))
+
+
+        printString2 = printString2 + "\n\ndH0H1:%.2f, dH0H2:%.2f, dH0H3:%.2f, dH0H4:%.2f" % (dH0H1,dH0H2,dH0H3,dH0H4)
+        printString2 = printString2 + "\n\ndH0H5:%.2f, dH0H6:%.2f, dH0H7:%.2f, dH0H8:%.2f" % (dH0H5,dH0H5,dH0H6,dH0H8)
+        printString2 = printString2 + "\n\ndH1H2:%.2f, dH2H3:%.2f, dH3H4:%.2f, dH1H4:%.2f" % (dH1H2,dH2H3,dH3H4,dH1H4)
+        printString2 = printString2 + "\n\ndH5H6:%.2f, dH6H7:%.2f, dH7H8:%.2f, dH5H8:%.2f" % (dH5H6,dH6H7,dH7H8,dH5H8)
+
         #dimensions used in calibration cuts
-        scoreXMM   = 1905.0 
+        scoreXMM   = 1905.0
         scoreYMM   = 900.0
         scoreBoxMM = 100.0
 
-        #plot horizontal measurement 
+        #plot horizontal measurement
         pointPlotted1h, distortedPoint1h = self.testPointGenerator.plotPoint(-scoreXMM/2.0,  scoreYMM/2.0)
         pointPlotted2h, distortedPoint2h = self.testPointGenerator.plotPoint( scoreXMM/2.0,  scoreYMM/2.0)
         errHTop = abs(scoreXMM - abs(distortedPoint1h[0] - distortedPoint2h[0]))
@@ -356,9 +396,9 @@ class SimulationCanvas(GridLayout):
         self.machineLabel1.text = printString1
         self.machineLabel2.text = printString2
 
-    
+
     def setKinematics(self, kinematicsType):
-        
+
         if kinematicsType == "Quadrilateral":
             self.isQuadKinematics = True
             self.distortedKinematics.isQuadKinematics = True
@@ -367,7 +407,7 @@ class SimulationCanvas(GridLayout):
             self.isQuadKinematics = False
             self.distortedKinematics.isQuadKinematics = False
             self.correctKinematics.isQuadKinematics = False
-    
+
     def onSliderChange(self, *args):
 
         self.distortedKinematics.motorOffsetY = self.correctKinematics.motorOffsetY + self.motorVerticalError.value
@@ -390,12 +430,21 @@ class SimulationCanvas(GridLayout):
 
         self.distortedKinematics.chain2Offset = int(self.rightChainOffset.value)
         self.rightChainOffsetLabel.text = "Right Chain\nSlipped Links: " + "%.2f" % self.rightChainOffset.value + "links"
-        
+
         self.distortedKinematics.rotationDiskRadius = self.correctKinematics.rotationDiskRadius + self.rotationRadiusOffset.value
         self.rotationRadiusLabel.text = "Rotation Radius\nSpacing Error: " + "%.2f" % self.rotationRadiusOffset.value + "mm"
 
         self.distortedKinematics.chainSagCorrection = self.correctKinematics.chainSagCorrection + self.chainSagCorrectionOffset.value
         self.chainSagCorrectionLabel.text = "Chain Sag\Correction Error: " + "%.2f" % self.chainSagCorrectionOffset.value
+
+        self.distortedKinematics.topBeamTilt = self.correctKinematics.topBeamTilt + self.topBeamTilt.value
+        self.topBeamTiltLabel.text = "Top Beam Tilt: " + "%.2f" % self.topBeamTilt.value
+
+        self.distortedKinematics.leftChainTolerance = self.correctKinematics.leftChainTolerance + self.leftChainTolerance.value
+        self.leftChainToleranceLabel.text = "Left Chain Tolerance: " + "%.2f" % self.leftChainTolerance.value
+
+        self.distortedKinematics.rightChainTolerance = self.correctKinematics.rightChainTolerance + self.rightChainTolerance.value
+        self.rightChainToleranceLabel.text = "Right Chain Tolerance: " + "%.2f" % self.rightChainTolerance.value
 
         #self.machineLabel.text = "distance between sled attachments ideal: "+str(self.correctKinematics.l)+" actual: "+str(self.distortedKinematics.l)+"mm\nvertical distance between sled attachments and bit ideal: "+str(self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.s)+"mm\nvertical distance between sled attachments and CG ideal: "+str(self.correctKinematics.h3+self.correctKinematics.s)+" actual: "+str(self.distortedKinematics.h3+self.distortedKinematics.s)+"mm\ndistance between motors ideal: "+str(self.correctKinematics.D)+" actual: "+str(self.distortedKinematics.D)+"mm"
 

@@ -44,6 +44,7 @@ from Connection.nonVisibleWidgets import   NonVisibleWidgets
 from UIElements.notificationPopup import   NotificationPopup
 from Settings                     import   maslowSettings
 from UIElements.backgroundMenu    import   BackgroundMenu
+from OpticalCalibration.opticalCalibrationCanvas    import OpticalCalibrationCanvas
 '''
 
 Main UI Program
@@ -55,49 +56,50 @@ class GroundControlApp(App):
     def get_application_config(self):
         return super(GroundControlApp, self).get_application_config(
             '~/%(appname)s.ini')
-    
+
     def build(self):
-        
+
         interface       =  FloatLayout()
         self.data       =  Data()
-        
+
         if self.config.get('Maslow Settings', 'colorScheme') == 'Light':
             self.data.iconPath               = './Images/Icons/normal/'
             self.data.fontColor              = '[color=7a7a7a]'
             self.data.drawingColor           = [.47,.47,.47]
             Window.clearcolor                = (1, 1, 1, 1)
             self.data.posIndicatorColor      =  [0,0,0]
-            self.data.targetInicatorColor    =  [1,0,0]
+            self.data.targetIndicatorColor    =  [1,0,0]
         elif self.config.get('Maslow Settings', 'colorScheme') == 'Dark':
             self.data.iconPath               = './Images/Icons/highvis/'
             self.data.fontColor              = '[color=000000]'
             self.data.drawingColor           = [1,1,1]
             Window.clearcolor                = (0, 0, 0, 1)
             self.data.posIndicatorColor      =  [1,1,1]
-            self.data.targetInicatorColor    =  [1,0,0]
+            self.data.targetIndicatorColor    =  [1,0,0]
         elif self.config.get('Maslow Settings', 'colorScheme') == 'DarkGreyBlue':
             self.data.iconPath               = './Images/Icons/darkgreyblue/'
             self.data.fontColor              = '[color=000000]'
             self.data.drawingColor           = [1,1,1]
             Window.clearcolor                = (0.06, 0.10, 0.2, 1)
             self.data.posIndicatorColor      =  [0.51,0.93,0.97]
-            self.data.targetInicatorColor = [1,0,0]
+            self.data.targetIndicatorColor = [1,0,0]
 
-        
-        
+
+
         Window.maximize()
-        
-        
+
+
         self.frontpage = FrontPage(self.data, name='FrontPage')
         interface.add_widget(self.frontpage)
-        
+
         self.nonVisibleWidgets = NonVisibleWidgets()
-        
-        
+
+
+
         '''
         Load User Settings
         '''
-        
+
         # force create an ini no matter what.
         self.config.write()
 
@@ -109,7 +111,7 @@ class GroundControlApp(App):
             self.data.message_queue.put("Message: This update will increase the maximum feedrate of your machine. You can adjust this value under the Advanced settings.")
             self.config.set('Advanced Settings', 'maxFeedrate', '800')
             self.config.write()
-        
+
         self.data.comport = self.config.get('Maslow Settings', 'COMport')
         self.data.gcodeFile = self.config.get('Maslow Settings', 'openFile')
         offsetX = float(self.config.get('Advanced Settings', 'homeX'))
@@ -125,29 +127,29 @@ class GroundControlApp(App):
                         self.config.get('Background Settings', 'manualReg'))
         if self.data.backgroundFile != "":
             BackgroundMenu(self.data).processBackground()
-        
+
         '''
         Initializations
         '''
-        
+
         self.frontpage.setUpData(self.data)
         self.nonVisibleWidgets.setUpData(self.data)
         self.frontpage.gcodecanvas.initialize()
-        
+
         '''
         Scheduling
         '''
-        
+
         Clock.schedule_interval(self.runPeriodically, .01)
-        
+
         '''
         Push settings to machine
         '''
         self.data.bind(connectionStatus = self.requestMachineSettings)
         self.data.pushSettings = self.requestMachineSettings
-        
+
         return interface
-        
+
     def build_config(self, config):
         """
         Set the default values for the config sections.
@@ -159,17 +161,18 @@ class GroundControlApp(App):
         config.setdefaults('Advanced Settings', maslowSettings.getDefaultValueSection('Advanced Settings'))
         config.setdefaults('Ground Control Settings', maslowSettings.getDefaultValueSection('Ground Control Settings'))
         config.setdefaults('Background Settings', maslowSettings.getDefaultValueSection('Background Settings'))
+        config.setdefaults('Optical Calibration Settings', maslowSettings.getDefaultValueSection('Optical Calibration Settings'))
         config.remove_callback(self.computeSettings)
-        
+
     def build_settings(self, settings):
         """
         Add custom section to the default configuration object.
         """
-        
+
         settings.add_json_panel('Maslow Settings', self.config, data=maslowSettings.getJSONSettingSection('Maslow Settings'))
         settings.add_json_panel('Advanced Settings', self.config, data=maslowSettings.getJSONSettingSection('Advanced Settings'))
         settings.add_json_panel('Ground Control Settings', self.config, data=maslowSettings.getJSONSettingSection("Ground Control Settings"))
-        
+
 
     def computeSettings(self, section, key, value):
         # Update Computed settings
@@ -189,15 +192,15 @@ class GroundControlApp(App):
             if self.config.has_option('Advanced Settings', 'rightChainTolerance'):
                 distPerRotRightChainTolerance = (1 + (float(self.config.get('Advanced Settings', 'rightChainTolerance')) / 100)) * float(self.config.get('Advanced Settings', 'gearTeeth')) * float(self.config.get('Advanced Settings', 'chainPitch'))
                 self.config.set('Computed Settings', "distPerRotRightChainTolerance", str("{0:.5f}".format(distPerRotRightChainTolerance)))
-        
+
         elif key == 'leftChainTolerance' and self.config.has_option('Advanced Settings', 'leftChainTolerance') and self.config.has_option('Computed Settings', 'distPerRot'):
             distPerRotLeftChainTolerance = (1 + (float(self.config.get('Advanced Settings', 'leftChainTolerance')) / 100)) * float(self.config.get('Computed Settings', 'distPerRot'))
             self.config.set('Computed Settings', "distPerRotLeftChainTolerance", str("{0:.5f}".format(distPerRotLeftChainTolerance)))
-        
+
         elif key == 'rightChainTolerance' and self.config.has_option('Advanced Settings', 'rightChainTolerance') and self.config.has_option('Computed Settings', 'distPerRot'):
             distPerRotRightChainTolerance = (1 + (float(self.config.get('Advanced Settings', 'rightChainTolerance')) / 100)) * float(self.config.get('Computed Settings', 'distPerRot'))
             self.config.set('Computed Settings', "distPerRotRightChainTolerance", str("{0:.5f}".format(distPerRotRightChainTolerance)))
-        
+
         elif key == 'enablePosPIDValues':
             for key in ('KpPos', 'KiPos', 'KdPos', 'propWeight'):
                 if int(self.config.get('Advanced Settings', 'enablePosPIDValues')) == 1:
@@ -227,7 +230,7 @@ class GroundControlApp(App):
                 else:
                     value = maslowSettings.getDefaultValue('Advanced Settings', key)
                 self.config.set('Computed Settings', key, value)
-        
+
         elif key == 'chainOverSprocket':
             if value == 'Top':
                 self.config.set('Computed Settings',  'chainOverSprocketComputed', 1)
@@ -239,21 +242,21 @@ class GroundControlApp(App):
                 self.config.set('Computed Settings',  'fPWMComputed', 1)
             elif value == '4,100Hz':
                 self.config.set('Computed Settings',  'fPWMComputed', 2)
-            else: 
+            else:
                 self.config.set('Computed Settings',  'fPWMComputed', 3)
 
     def configSettingChange(self, section, key, value):
         """
-        
+
         Respond to changes in the configuration.
-        
+
         """
-        
+
         # Update GC things
         if section == "Maslow Settings":
             if key == "COMport":
                 self.data.comport = value
-            
+
             if (key == "bedHeight" or key == "bedWidth"):
                 self.frontpage.gcodecanvas.drawWorkspace()
 
@@ -272,25 +275,33 @@ class GroundControlApp(App):
                     value = 3
                 else:
                     value = 0
-    
-        
+
+
         # Update Computed Settings
         self.computeSettings(section, key, value)
-        
+
         # Write the settings change to the Disk
         self.data.config.write()
 
         # only run on live connection
         if self.data.connectionStatus != 1:
             return
-        
+
         # Push settings that can be directly written to machine
+        print section+", "+key
         firmwareKey = maslowSettings.getFirmwareKey(section, key)
+        print "pre-firmwareKey="+str(firmwareKey)
         if firmwareKey is not None:
-            self.data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(value))
-    
+            if ( (firmwareKey == 45) ):
+                print "firmwareKey = 45"
+                if (value != ""):
+                    maslowSettings.sendErrorArray(firmwareKey, value, self.data)
+            else:
+                print "firmwareKey="+str(firmwareKey)
+                self.data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(value))
+
     def requestMachineSettings(self, *args):
-        ''' 
+        '''
         Requests the machine to report all settings.  This will implicitly
         cause a sync of the machine settings because if GroundControl sees a
         reported setting which does match its expected value, GC will push the
@@ -298,53 +309,53 @@ class GroundControlApp(App):
         '''
         if self.data.connectionStatus == 1:
             self.data.gcode_queue.put("$$")
-    
+
     def receivedSetting(self, message):
         '''
-        This parses a settings report from the machine, usually received in 
-        response to a $$ request.  If the value received does not match the 
+        This parses a settings report from the machine, usually received in
+        response to a $$ request.  If the value received does not match the
         expected value.
         '''
         parameter, position = self.parseFloat(message, 0)
         value, position = self.parseFloat(message, position)
         if (parameter is not None and value is not None):
             maslowSettings.syncFirmwareKey(int(parameter), value, self.data)
-    
+
     def parseFloat(self, text, position=0):
         '''
         Takes a string and parses out the float found at position default to 0
         returning a list of the matched float and the ending
         position of the float
         '''
-        # This regex comes from a python docs recommended 
+        # This regex comes from a python docs recommended
         regex = re.compile("[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?")
         match = regex.search(text[position:])
         if match:
             return (float(match.group(0)), match.end(0))
         else:
             return (None, position)
-    
+
     '''
-    
+
     Update Functions
-    
+
     '''
-    
+
     def writeToTextConsole(self, message):
         try:
             newText = self.frontpage.consoleText[-2000:] + message
             self.frontpage.consoleText = newText
-            self.frontpage.textconsole.gotToBottom()  
+            self.frontpage.textconsole.gotToBottom()
         except:
             self.frontpage.consoleText = "text not displayed correctly"
-    
+
     def runPeriodically(self, *args):
         '''
         this block should be handled within the appropriate widget
         '''
         while not self.data.message_queue.empty(): #if there is new data to be read
             message = self.data.message_queue.get()
-            
+
             if message[0] == "<":
                 self.setPosOnScreen(message)
             elif message[0] == "$":
@@ -364,7 +375,7 @@ class GroundControlApp(App):
             elif message[0:8] == "Message:":
                 if self.data.calibrationInProcess and message[0:15] == "Message: Unable":   #this suppresses the annoying messages about invalid chain lengths during the calibration process
                     break
-                self.previousUploadStatus = self.data.uploadFlag 
+                self.previousUploadStatus = self.data.uploadFlag
                 self.data.uploadFlag = 0
                 try:
                     self._popup.dismiss()                                           #close any open popup
@@ -382,7 +393,7 @@ class GroundControlApp(App):
                     global_variables._keyboard.bind(on_key_down=self.keydown_popup)
                     self._popup.bind(on_dismiss=self.ondismiss_popup)
             elif message[0:6] == "ALARM:":
-                self.previousUploadStatus = self.data.uploadFlag 
+                self.previousUploadStatus = self.data.uploadFlag
                 self.data.uploadFlag = 0
                 try:
                     self._popup.dismiss()                                           #close any open popup
@@ -402,7 +413,7 @@ class GroundControlApp(App):
             elif message[0:8] == "Firmware":
                 self.data.logger.writeToLog("Ground Control Version " + str(self.data.version) + "\n")
                 self.writeToTextConsole("Ground Control " + str(self.data.version) + "\r\n" + message + "\r\n")
-                
+
                 #Check that version numbers match
                 if float(message[-7:]) < float(self.data.version):
                     self.data.message_queue.put("Message: Warning, your firmware is out of date and may not work correctly with this version of Ground Control\n\n" + "Ground Control Version " + str(self.data.version) + "\r\n" + message)
@@ -421,44 +432,44 @@ class GroundControlApp(App):
         if (keycode[1] == 'enter') or (keycode[1] =='numpadenter') or (keycode[1] == 'escape'):
             self.dismiss_popup_continue()
         return True     # always swallow keypresses since this is a modal dialog
-        
-    
+
+
     def dismiss_popup_continue(self):
         '''
-        
+
         Close The Pop-up and continue cut
-        
+
         '''
         self._popup.dismiss()
         self.data.quick_queue.put("~") #send cycle resume command to unpause the machine
         self.data.uploadFlag = self.previousUploadStatus #resume cutting if the machine was cutting before
-    
+
     def dismiss_popup_hold(self):
         '''
-        
+
         Close The Pop-up and continue cut
-        
+
         '''
         self._popup.dismiss()
         self.data.uploadFlag = 0 #stop cutting
-    
+
     def setPosOnScreen(self, message):
         '''
-        
+
         This should be moved into the appropriate widget
-        
+
         '''
-        
+
         try:
             startpt = message.find('MPos:') + 5
-            
+
             endpt = message.find('WPos:')
-            
+
             numz  = message[startpt:endpt]
             units = "mm" #message[endpt+1:endpt+3]
-            
+
             valz = numz.split(",")
-            
+
             self.xval  = float(valz[0])
             self.yval  = float(valz[1])
             self.zval  = float(valz[2])
@@ -478,35 +489,39 @@ class GroundControlApp(App):
 
         self.frontpage.setPosReadout(self.xval, self.yval, self.zval)
         self.frontpage.gcodecanvas.positionIndicator.setPos(self.xval,self.yval,self.data.units)
-    
+        for widget in self.root_window.children:
+            if isinstance(widget,Popup):
+                if widget.title == "Maslow Optical Calibration":
+                    widget.content.updatePositionIndicator(self.xval,self.yval,self.data.units)
+
     def setErrorOnScreen(self, message):
-        
+
         try:
-            startpt = message.find(':')+1 
+            startpt = message.find(':')+1
             endpt = message.find(',', startpt)
             leftErrorValueAsString = message[startpt:endpt]
             leftErrorValueAsFloat  = float(leftErrorValueAsString)
-            
+
             startpt = endpt + 1
             endpt = message.find(',', startpt)
             rightErrorValueAsString = message[startpt:endpt]
-            
+
             rightErrorValueAsFloat  = float(rightErrorValueAsString)
-            
+
             if self.data.units == "INCHES":
                 rightErrorValueAsFloat = rightErrorValueAsFloat/25.4
                 leftErrorValueAsFloat  = leftErrorValueAsFloat/25.4
-            
+
             avgError = (abs(leftErrorValueAsFloat) + abs(rightErrorValueAsFloat))/2
-            
+
             self.frontpage.gcodecanvas.positionIndicator.setError(0, self.data.units)
             self.data.logger.writeErrorValueToLog(avgError)
-            
+
             self.frontpage.gcodecanvas.targetIndicator.setPos(self.xval - .5*rightErrorValueAsFloat + .5*leftErrorValueAsFloat, self.yval - .5*rightErrorValueAsFloat - .5*leftErrorValueAsFloat,self.data.units)
-            
-            
+
+
         except:
             print "Machine Position Report Command Misread Happened Once"
-    
+
 if __name__ == '__main__':
     GroundControlApp().run()
