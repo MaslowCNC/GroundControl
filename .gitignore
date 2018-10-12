@@ -3,6 +3,6 @@
 *ENV
 log.txt
 # For optical calibration
-calibrationValues.csv
+*.csv
 measuredimage.png
 .idea
