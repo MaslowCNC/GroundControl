@@ -26,6 +26,7 @@ import re
 import math
 import sys
 import global_variables
+import csv
 
 class KivyCamera(Image):
     def __init__(self, **kwargs):
@@ -367,6 +368,27 @@ class OpticalCalibrationCanvas(GridLayout):
             line +="\n"
             outFile.write(line)
         outFile.close()
+
+    def on_LoadCSV(self):
+        with open('input.csv') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            for row_index, row in enumerate(csv_reader):
+                # Blank line
+                if row_index == 15:
+                    continue
+                for col_index, col in enumerate(row):
+                    if row_index < 15:
+                        self.calErrorsX[col_index][row_index] = float(col)
+                    elif row_index > 15:
+                        self.calErrorsY[col_index][row_index - 16] = float(col)
+
+    def on_CSV(self, text):
+        # Reset text to CSV (selection is more of a set of actions)
+        self.ids.csv.text = "CSV"
+        if text == "Load":
+            self.on_LoadCSV()
+        else:
+            self.on_SaveCSV()
 
     def on_Preset(self, preset):
         for _preset in self.presets:

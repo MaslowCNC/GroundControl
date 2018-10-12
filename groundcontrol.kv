@@ -2124,9 +2124,11 @@
                         text: "Cameras"
                         values: root.cameras()
                         on_text: root.setCamera(cameras.text)
-                    Button:
-                        text: "Save as CSV"
-                        on_release: root.on_SaveCSV()
+                    Spinner:
+                        id: csv
+                        text: "CSV"
+                        values: ["Load", "Save"]
+                        on_text: root.on_CSV(csv.text)
                     Button:
                         text: "Exit"
                         on_release: root.do_Exit()
