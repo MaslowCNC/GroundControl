@@ -391,7 +391,7 @@ class SimulationCanvas(GridLayout):
 
         self.distortedKinematics.chain2Offset = int(self.rightChainOffset.value)
         self.rightChainOffsetLabel.text = "Right Chain\nSlipped Links: " + "%.2f" % self.rightChainOffset.value + "links"
-
+        
         self.distortedKinematics.rotationDiskRadius = self.correctKinematics.rotationDiskRadius + self.rotationRadiusOffset.value
         self.rotationRadiusLabel.text = "Rotation Radius\nSpacing Error: " + "%.2f" % self.rotationRadiusOffset.value + "mm"
 

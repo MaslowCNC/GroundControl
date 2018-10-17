@@ -84,7 +84,7 @@ class Kinematics():
     Chain2  = 0#right chain length
 
     i = 0
-
+    
     rotationDiskRadius = 100
     chainSagCorrection = 0
     chainOverSprocket = 1
@@ -123,7 +123,7 @@ class Kinematics():
         self.Theta = math.atan(2*self.s/self.l)
         self.Psi1 = self.Theta - self.Phi
         self.Psi2 = self.Theta + self.Phi
-
+        
         self._xCordOfMotor = self.D/2
         self._yCordOfMotor = self.machineHeight/2 + self.motorOffsetY
 
@@ -134,24 +134,24 @@ class Kinematics():
 
     def inverse(self, xTarget, yTarget):
         '''
-
+        
         Compute the lengths of chain needed to reach a target XY position
-
+        
         '''
         if self.isQuadKinematics:
             return self.quadrilateralInverse(xTarget, yTarget)
         else:
             return self.triangularInverse(xTarget, yTarget)
-
+    
     def triangularInverse(self, xTarget, yTarget):
         '''
-
+    
         The inverse kinematics (relating an xy coordinate pair to the required chain lengths to hit that point)
-        function for a triangular set up where the chains meet at a point, or are arranged so that they simulate
+        function for a triangular set up where the chains meet at a point, or are arranged so that they simulate 
         meeting at a point.
-
+        
         '''
-
+    
         #Confirm that the coordinates are on the wood
         self._verifyValidTarget(xTarget, yTarget)
 
