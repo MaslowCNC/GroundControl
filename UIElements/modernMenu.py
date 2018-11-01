@@ -146,11 +146,14 @@ class MenuSpawner(Widget):
             return super(MenuSpawner, self).on_touch_down(touch, *args)
 
     def on_touch_move(self, touch, *args):
-        if (
-            touch.ud['menu_timeout'] and
-            dist(touch.pos, touch.opos) > self.cancel_distance
-        ):
-            Clock.unschedule(touch.ud['menu_timeout'])
+        try:
+            if (
+                touch.ud['menu_timeout'] and
+                dist(touch.pos, touch.opos) > self.cancel_distance
+            ):
+                Clock.unschedule(touch.ud['menu_timeout'])
+        except KeyError:
+            pass
         return super(MenuSpawner, self).on_touch_move(touch, *args)
 
     def on_touch_up(self, touch, *args):
