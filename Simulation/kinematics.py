@@ -82,6 +82,12 @@ class Kinematics():
     # output = chain lengths measured from 12 o'clock
     Chain1  = 0#left chain length
     Chain2  = 0#right chain length
+    
+    leftChainTolerance=0
+    rightChainTolerance=0
+    chainWeight=.09/304.8
+    chainElasticity=.000023
+    sledWeight=22
 
     i = 0
     
@@ -153,24 +159,70 @@ class Kinematics():
 
             Chain1AroundSprocket = self.R * Chain1Angle
             Chain2AroundSprocket = self.R * Chain2Angle
+            
+            xTangent1=-self._xCordOfMotor+self.R*math.sin(Chain1Angle)
+            yTangent1=self._yCordOfMotor+self.R*math.cos(Chain1Angle)
+            
+            xTangent2=self._xCordOfMotor-self.R*math.sin(Chain2Angle)
+            yTangent2=self._yCordOfMotor+self.R*math.cos(Chain2Angle)
         else:
             Chain1Angle = math.asin((self._yCordOfMotor - yTarget)/Motor1Distance) - math.asin(self.R/Motor1Distance)
             Chain2Angle = math.asin((self._yCordOfMotor - yTarget)/Motor2Distance) - math.asin(self.R/Motor2Distance)
 
             Chain1AroundSprocket = self.R * (3.14159 - Chain1Angle)
             Chain2AroundSprocket = self.R * (3.14159 - Chain2Angle)
-
+            
+            xTangent1=-self._xCordOfMotor-self.R*math.sin(Chain1Angle)
+            yTangent1=self._yCordOfMotor-self.R*math.cos(Chain1Angle)
+            
+            xTangent2=self._xCordOfMotor+self.R*math.sin(Chain2Angle)
+            yTangent2=self._yCordOfMotor-self.R*math.cos(Chain2Angle)
+        
         #Calculate the straight chain length from the sprocket to the bit
         Chain1Straight = math.sqrt(math.pow(Motor1Distance,2)-math.pow(self.R,2))
         Chain2Straight = math.sqrt(math.pow(Motor2Distance,2)-math.pow(self.R,2))
-
-        #Correct the straight chain lengths to account for chain sag
-        Chain1Straight *= (1 + ((self.chainSagCorrection / 1000000000000) * math.pow(math.cos(Chain1Angle),2) * math.pow(Chain1Straight,2) * math.pow((math.tan(Chain2Angle) * math.cos(Chain1Angle)) + math.sin(Chain1Angle),2)))
-        Chain2Straight *= (1 + ((self.chainSagCorrection / 1000000000000) * math.pow(math.cos(Chain2Angle),2) * math.pow(Chain2Straight,2) * math.pow((math.tan(Chain1Angle) * math.cos(Chain2Angle)) + math.sin(Chain2Angle),2)))
-
+        
+        #TensionDenominator=(x_l       y_r-      x_r       y_l-      x_l       y_t     +x_t    y_l      +x_r       y_t    -x_t     y_r)
+        TensionDenominator= (xTangent1*yTangent2-xTangent2*yTangent1-xTangent1*yTarget+xTarget*yTangent1+xTangent2*yTarget-xTarget*yTangent2)
+        
+        #Total vertical force is sled weight, plus half the two chain weights
+        TotalWeight=self.sledWeight+0.5*self.chainWeight*(Chain1Straight+Chain2Straight)
+        
+        #T_l     = -(    w                *sqrt(     pow(x_l      -x_t    ,2.0)+pow(     y_l      -y_t    ,2.0))  (x_r      -x_t))    /TensionDenominator
+        Tension1 = - (TotalWeight*math.sqrt(math.pow(xTangent1-xTarget,2)+math.pow(yTangent1-yTarget,2))*(xTangent2-xTarget))/TensionDenominator
+        
+        #T_r     = (   w                *sqrt(     pow(x_r      -x_t    ,2.0)+pow(     y_r      -y_t    ,2.0))  (x_l      -x_t))/(x_ly_r-x_ry_l-x_ly_t+x_ty_l+x_ry_t-x_ty_r)
+        Tension2 = (TotalWeight*math.sqrt(math.pow(xTangent2-xTarget,2)+math.pow(yTangent2-yTarget,2))*(xTangent1-xTarget))/TensionDenominator
+        
+        HorizontalTension=Tension1*(xTarget-xTangent1)/Chain1Straight
+        
+        #Calculation of horizontal component of tension for two chains should be equal, as validation step
+        #HorizontalTension1=Tension1*(xTarget-xTangent1)/Chain1Straight
+        #HorizontalTension2=Tension2*(xTangent2-xTarget)/Chain2Straight
+        
+        #Calculation of vertical force due to tension, to validate tension calculation
+        #VerticalForce=Tension1*(yTangent1-yTarget)/Chain1Straight+Tension2*(yTangent2-yTarget)/Chain2Straight
+        
+        a1=HorizontalTension/self.chainWeight
+        a2=HorizontalTension/self.chainWeight
+        # print("Horizontal Tension ",HorizontalTension)
+        
+        #Catenary Equation
+        Chain1=math.sqrt(math.pow(2*a1*math.sinh((xTarget-xTangent1)/(2*a1)),2)+math.pow(yTangent1-yTarget,2))
+        Chain2=math.sqrt(math.pow(2*a2*math.sinh((xTangent2-xTarget)/(2*a2)),2)+math.pow(yTangent2-yTarget,2))
+        CatenaryDelta1=Chain1-Chain1Straight
+        CatenaryDelta2=Chain2-Chain2Straight
+        # print("Catenary Delta 1 ",CatenaryDelta1)
+        # print("Catenary Delta 2 ",CatenaryDelta2)
+        
         #Calculate total chain lengths accounting for sprocket geometry and chain sag
-        Chain1 = Chain1AroundSprocket + Chain1Straight
-        Chain2 = Chain2AroundSprocket + Chain2Straight
+        Chain1ElasticityDelta=Chain1-Chain1/(1+Tension1*self.chainElasticity)
+        Chain2ElasticityDelta=Chain2-Chain2/(1+Tension2*self.chainElasticity)
+        #print("Chain1 Elasticity Delta ",Chain1ElasticityDelta)
+        #print("Chain2 Elasticity Delta ",Chain2ElasticityDelta)
+        
+        Chain1 = Chain1AroundSprocket + Chain1*(1.0+self.leftChainTolerance/100.0)/(1+Tension1*self.chainElasticity)
+        Chain2 = Chain2AroundSprocket + Chain2*(1.0+self.rightChainTolerance/100.0)/(1+Tension2*self.chainElasticity)
 
         #Subtract of the virtual length which is added to the chain by the rotation mechanism
         Chain1 = Chain1 - self.rotationDiskRadius
@@ -315,13 +367,15 @@ class Kinematics():
         Take the chain lengths and return an XY position
 
         '''
-
+        #print("Chain Sag Correction:")
+        #print(self.chainSagCorrection)
+        #print("")
         # apply any offsets for slipped links
         chainALength = chainALength + (self.chain1Offset * self.R)
         chainBLength = chainBLength + (self.chain2Offset * self.R)
 
         xGuess = -10
-        yGuess = 0
+        yGuess = 10
 
         guessCount = 0
 
@@ -336,20 +390,18 @@ class Kinematics():
 
             #print 'guess {:7.3f} {:7.3f} error {:7.3f} {:7.3f} guesslength {:7.3f} {:7.3f} '.format(xGuess,yGuess,aChainError,bChainError,guessLengthA, guessLengthB)
 
-            #adjust the guess based on the result
-            xGuess = xGuess + .1*aChainError - .1*bChainError
-            yGuess = yGuess - .1*aChainError - .1*bChainError
-
-            guessCount = guessCount + 1
-
-
             #if we've converged on the point...or it's time to give up, exit the loop
-            if((abs(aChainError) < .01 and abs(bChainError) < .01) or guessCount > 5000):
+            if((abs(aChainError) < .000000001 and abs(bChainError) < .000000001) or guessCount > 5000):
                 if(guessCount > 5000):
                     print "Message: Unable to find valid machine position. Please calibrate chain lengths.",aChainError,bChainError,xGuess,yGuess
-                    return 0, 0
+                    return xGuess, yGuess
                 else:
                     return xGuess, yGuess
+            else:
+                #adjust the guess based on the result
+                xGuess = xGuess + .1*aChainError - .1*bChainError
+                yGuess = yGuess - .1*aChainError - .1*bChainError
+                guessCount = guessCount + 1
 
     def _MatSolv(self):
         Sum = 0
@@ -473,5 +525,6 @@ class Kinematics():
 
         Temp = ((math.sqrt(YPlus * YPlus - self.R * self.R)/self.R) - (self.y + YPlus - self.h * math.sin(Psi))/Denominator)
         return Temp
+
 
 
