@@ -221,8 +221,8 @@ class Kinematics():
         #print("Chain1 Elasticity Delta ",Chain1ElasticityDelta)
         #print("Chain2 Elasticity Delta ",Chain2ElasticityDelta)
         
-        Chain1 = Chain1AroundSprocket + Chain1*(1.0+self.leftChainTolerance/100.0)/(1+Tension1*self.chainElasticity)
-        Chain2 = Chain2AroundSprocket + Chain2*(1.0+self.rightChainTolerance/100.0)/(1+Tension2*self.chainElasticity)
+        Chain1 = Chain1AroundSprocket + Chain1/(1.0+self.leftChainTolerance/100.0)/(1+Tension1*self.chainElasticity)
+        Chain2 = Chain2AroundSprocket + Chain2/(1.0+self.rightChainTolerance/100.0)/(1+Tension2*self.chainElasticity)
 
         #Subtract of the virtual length which is added to the chain by the rotation mechanism
         Chain1 = Chain1 - self.rotationDiskRadius
