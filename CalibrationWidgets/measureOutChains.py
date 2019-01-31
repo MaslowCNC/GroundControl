@@ -20,7 +20,7 @@ class MeasureOutChains(GridLayout):
         
         '''
         self.data = App.get_running_app().data
-        self.text =  "Now we are going to adjust the chains to a known length\n\nIf your chains are not attached place the first link of the chain on the vertical sprocket tooth\nIf your chains are already in place they may retract to the target length\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Next\n\nThe Move to Center button will move the sled to the center.\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way"
+        self.text =  "If your chains are already in place they may retract to the target length.\n\nIf your left chain is still attached to the right motor from the length measurement motor-to-motor, remove it from the RIGHT motor without changing the position it has on the left motor.\nFor chains that are not attached to a motor (typical calibration = right chain) place the first link of the chain on the vertical sprocket tooth.\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Next\n\nThe Move to Center button will move the sled to the center.\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way"
         
         #select the right image for a given setup
         print "measure out chains on enter"
