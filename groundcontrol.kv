@@ -1578,6 +1578,176 @@
             on_release: root.next()
         Label:
 
+<ChooseHoleyOrTriangularCalibration>:
+    BoxLayout:
+        height: root.height
+        width: root.width
+        orientation: 'horizontal'
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_x: 2
+            # Comments and Pictures
+        BoxLayout
+            orientation: 'vertical'
+            Label:
+            Button:
+                text: 'Holey Calibration'
+                on_release: root.chooseHoleyCalibration()
+            Button:
+                text: 'Triangular Calibration'
+                on_release: root.chooseTriangularCalibration()
+            Label:
+
+<HoleyCalMeasurements>
+    BoxLayout:
+        height: root.height
+        width: root.width
+        orientation: 'vertical'
+        BoxLayout:
+            orientation: 'horizontal'
+            BoxLayout:
+                orientation: 'vertical'
+                Image:
+                    #Cut Image
+                    source: "./Images/HoleySixPtCal.png"
+                Image:
+                    #Desctiption
+                    source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview.jpg"
+            BoxLayout:
+                size_hint_x: .3
+                orientation: 'vertical'
+                GridLayout:
+                    cols: 2
+                    ColoredLabel:
+                        id: M1Label
+                        text: "M1"
+                        bcolor: 0, 1, 0, 0.4
+                        size_hint_x: .3
+                    TextInput:
+                        id: M1
+                        disabled: False
+                        multiline: False
+                        on_focus: root.ValidateMeasurement(self,args[1])
+                    ColoredLabel:
+                        id: M2Label
+                        text: "M2"
+                        bcolor: 0, 1, 0, 0.4
+                        size_hint_x: .3
+                    TextInput:
+                        id: M2
+                        disabled: False
+                        multiline: False
+                        on_focus: root.ValidateMeasurement(self,args[1])
+                    ColoredLabel:
+                        id: M3Label
+                        text: "M3"
+                        bcolor: 0, 1, 0, 0.4
+                        size_hint_x: .3
+                    TextInput:
+                        id: M3
+                        disabled: False
+                        multiline: False
+                        on_focus: root.ValidateMeasurement(self,args[1])
+                    ColoredLabel:
+                        id: M4Label
+                        text: "M4"
+                        bcolor: 0, 1, 0, 0.4
+                        size_hint_x: .3
+                    TextInput:
+                        id: M4
+                        disabled: False
+                        multiline: False
+                        on_focus: root.ValidateMeasurement(self,args[1])
+                    ColoredLabel:
+                        id: M5Label
+                        text: "M5"
+                        bcolor: 0, 1, 0, 0.4
+                        size_hint_x: .3
+                    TextInput:
+                        id: M5
+                        disabled: False
+                        multiline: False
+                        on_focus: root.ValidateMeasurement(self,args[1])
+                    ColoredLabel:
+                        id: M6Label
+                        text: "M6"
+                        bcolor: 0, 1, 0, 0.4
+                        size_hint_x: .3
+                    TextInput:
+                        id: M6
+                        disabled: False
+                        multiline: False
+                        on_focus: root.ValidateMeasurement(self,args[1])
+                    ColoredLabel:
+                        id: M7Label
+                        text: "M7"
+                        bcolor: 0, 1, 0, 0.4
+                        size_hint_x: .3
+                    TextInput:
+                        id: M7
+                        disabled: False
+                        multiline: False
+                        on_focus: root.ValidateMeasurement(self,args[1])
+                    ColoredLabel:
+                        id: M8Label
+                        text: "M8"
+                        bcolor: 0, 1, 0, 0.4
+                        size_hint_x: .3
+                    TextInput:
+                        id: M8
+                        disabled: False
+                        multiline: False
+                        on_focus: root.ValidateMeasurement(self,args[1])
+                    ColoredLabel:
+                        id: M9Label
+                        text: "M9"
+                        bcolor: 0, 1, 0, 0.4
+                        size_hint_x: .3
+                    TextInput:
+                        id: M9
+                        disabled: False
+                        multiline: False
+                        on_focus: root.ValidateMeasurement(self,args[1])
+                    ColoredLabel:
+                        id: M10Label
+                        text: "M10"
+                        bcolor: 0, 1, 0, 0.4
+                        size_hint_x: .3
+                    TextInput:
+                        id: M10
+                        disabled: False
+                        multiline: False
+                        on_focus: root.ValidateMeasurement(self,args[1])
+                    ColoredLabel:
+                        id: M11Label
+                        text: "M11"
+                        bcolor: 0, 1, 0, 0.4
+                        size_hint_x: .3
+                    TextInput:
+                        id: M11
+                        disabled: False
+                        multiline: False
+                        on_focus: root.ValidateMeasurement(self,args[1])
+                    ColoredLabel:
+                        id: M12Label
+                        text: "M12"
+                        bcolor: 0, 1, 0, 0.4
+                        size_hint_x: .3
+                    TextInput:
+                        id: M12
+                        disabled: False
+                        multiline: False
+                        on_focus: root.ValidateMeasurement(self,args[1])
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: .4
+                    Button:
+                        text: "Next"
+                        on_release: root.Next()
+                    Button:
+                        text: "Quit"
+                        on_release: root.Close()
+
 <Finish>:
     cols: 2
     width: root.width
