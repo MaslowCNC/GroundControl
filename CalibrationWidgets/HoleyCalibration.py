@@ -6,15 +6,14 @@ class HoleyCalibration():
     SP_D=3601.2
     SP_motorOffsetY=468.4
     SP_rotationDiskRadius=139.1
-    SP_chainSagCorrection=31.865887
     SP_leftChainTolerance=0
     SP_rightChainTolerance=0
     SP_sledWeight=22
+    SP_chainOverSprocket=False
     
     Opt_D=3601.2
     Opt_motorOffsetY=468.4
     Opt_rotationDiskRadius=139.1
-    Opt_chainSagCorrection=31.865887
     Opt_leftChainTolerance=0
     Opt_rightChainTolerance=0
     Opt_sledWeight=22
@@ -54,6 +53,16 @@ class HoleyCalibration():
         
         return self.MeasuredLengthArray-self.CalculateMeasurements(CalculatedPositions)
     
+    def InitialMeasurementError(self,Meas,idx): #For validating in GUI
+        Ideal=self.IdealLengthArray[idx]
+        return Ideal-Meas
+    def ValidateMeasurement(self,Meas,idx):
+        if idx<12:
+            Ideal=self.IdealLengthArray[idx]
+            return 0.1>abs((Ideal-Meas)/Ideal)
+        else:
+            return Meas>0.0
+        
     def CalculateMeasurements(self,HolePositions):
 #        aH1x,aH1y,aH2x,aH2y,aH3x,aH3y,aH4x,aH4y,aH5x,aH5y,aH6x,aH6y
         Measurements=[]
@@ -112,18 +121,18 @@ class HoleyCalibration():
         self.kin.recomputeGeometry()
     def ReportCalibration(self):
         print('Optimized Errors')
-        for idx,pts,ms,ideal,er in zip(
+        for idx,pts,ms,cal,er in zip(
                 range(self.MeasuredLengthArray.size),
                 self.MeasurementMap,
                 self.MeasuredLengthArray,
-                self.MeasuredLengthArray-self.OptimizationOutput.fun,
-                self.OptimizationOutput.fun):
+                self.CalibratedLengths(),
+                self.CalibratedLengthError()):
             print(('\tIndex                : {}'+
                    '\n\t\tPoints Span        : {} to {}'+
                    '\n\t\tMeasured Distance  : {}'+
                    '\n\t\tCalibrated Distance: {}'+
                    '\n\t\tDistance Error     : {}').format(
-                           idx,pts[0],pts[1],ms,ideal,er))
+                           idx,pts[0],pts[1],ms,cal,er))
         print("")
         print("Distance Between Motors:")
         print(self.Opt_D)
@@ -136,7 +145,10 @@ class HoleyCalibration():
         print("")
         print("Right Chain Tolerance:")
         print(self.Opt_rightChainTolerance)
-        
+    def CalibratedLengths(self):
+        return self.MeasuredLengthArray-self.OptimizationOutput.fun
+    def CalibratedLengthError(self):
+        return self.OptimizationOutput.fun
     def HolePositionsFromChainLengths(self):
         HolePositions=[]
         for LeftChainLength,RightChainLength in self.ChainLengths:
