@@ -30,8 +30,27 @@ from CalibrationWidgets.enterDistanceBetweenMotors          import  EnterDistanc
 from CalibrationWidgets.measureOneChain                     import  MeasureOneChain
 from CalibrationWidgets.computeChainCorrectionFactors       import  ComputeChainCorrectionFactors
 from CalibrationWidgets.wipeOldCorrectionValues             import  WipeOldCorrectionValues
-from   kivy.app                                             import  App
+from CalibrationWidgets.chooseHoleyOrTriangularCalibration  import  ChooseHoleyOrTriangularCalibration
+from CalibrationWidgets.holeyCalMeasurements                import  HoleyCalMeasurements
+from CalibrationWidgets.holeyCalOptimize                    import  HoleyCalOptimize
+from kivy.app                                               import  App
+from kivy.lang                                              import  Builder
+from kivy.uix.label                                         import  Label
+from kivy.properties                                        import  ListProperty
 
+Builder.load_string("""
+<ColoredLabel>:
+  bcolor: 1, 1, 1, 1
+  canvas.before:
+    Color:
+      rgba: self.bcolor
+    Rectangle:
+      pos: self.pos
+      size: self.size
+""")
+    
+class ColoredLabel(Label):
+  bcolor = ListProperty([0,0,0,.5])
 
 class CalibrationFrameWidget(GridLayout):
     done   = ObjectProperty(None)
@@ -73,23 +92,23 @@ class CalibrationFrameWidget(GridLayout):
         self.listOfCalibrationSteps = []
         
         #load the first steps in the calibration process because they are always the same
-        intro =  Intro()
-        self.listOfCalibrationSteps.append(intro)
-        
-        chooseKinematicsType                        = ChooseKinematicsType()
-        self.listOfCalibrationSteps.append(chooseKinematicsType)
-        
-        vertDistGuess                               = VertDistToMotorsGuess()
-        self.listOfCalibrationSteps.append(vertDistGuess)
-        
-        setTo12                                     = SetSprocketsVertical()
-        self.listOfCalibrationSteps.append(setTo12)
-        
-        measureMotorDist                            = MeasureDistBetweenMotors()
-        self.listOfCalibrationSteps.append(measureMotorDist)
-        
-        chooseChainOverSprocketDirection             = ChooseChainOverSprocketDirection()
-        self.listOfCalibrationSteps.append(chooseChainOverSprocketDirection)
+#        intro =  Intro()
+#        self.listOfCalibrationSteps.append(intro)
+#        
+#        chooseKinematicsType                        = ChooseKinematicsType()
+#        self.listOfCalibrationSteps.append(chooseKinematicsType)
+#        
+#        vertDistGuess                               = VertDistToMotorsGuess()
+#        self.listOfCalibrationSteps.append(vertDistGuess)
+#        
+#        setTo12                                     = SetSprocketsVertical()
+#        self.listOfCalibrationSteps.append(setTo12)
+#        
+#        measureMotorDist                            = MeasureDistBetweenMotors()
+#        self.listOfCalibrationSteps.append(measureMotorDist)
+#        
+#        chooseChainOverSprocketDirection             = ChooseChainOverSprocketDirection()
+#        self.listOfCalibrationSteps.append(chooseChainOverSprocketDirection)
         
         reviewMeasurements                          = ReviewMeasurements()
         self.listOfCalibrationSteps.append(reviewMeasurements)
@@ -232,21 +251,29 @@ class CalibrationFrameWidget(GridLayout):
             
         
         if App.get_running_app().data.config.get('Advanced Settings', 'kinematicsType') == 'Triangular':
-            #add rotation radius guess
-            rotationRadiusGuess                         = RotationRadiusGuess()
-            self.listOfCalibrationSteps.append(rotationRadiusGuess)
+            #Put step with choice of Holey Calibration vs. Triangular Calibration
+            ChoiceWid=ChooseHoleyOrTriangularCalibration()
+            ChoiceWid.chooseHoleyCalibration=self.addHoleyCalibration
+            ChoiceWid.chooseTriangularCalibration=self.addTriangularCalibration
+            ChoiceWid.listOfCalibrationSteps=self.listOfCalibrationSteps
+            ChoiceWid.done=self.done
+            self.listOfCalibrationSteps.append(ChoiceWid)
             
-            #add extend chains
-            measureOutChains                                = MeasureOutChains()
-            self.listOfCalibrationSteps.append(measureOutChains)
-            
-            #add set z
-            adjustZCalibrationDepth                         = AdjustZCalibrationDepth()
-            self.listOfCalibrationSteps.append(adjustZCalibrationDepth)
-            
-            #add triangular kinematics
-            triangularCalibration                       = TriangularCalibration()
-            self.listOfCalibrationSteps.append(triangularCalibration)
+#            #add rotation radius guess
+#            rotationRadiusGuess                         = RotationRadiusGuess()
+#            self.listOfCalibrationSteps.append(rotationRadiusGuess)
+#            
+#            #add extend chains
+#            measureOutChains                                = MeasureOutChains()
+#            self.listOfCalibrationSteps.append(measureOutChains)
+#            
+#            #add set z
+#            adjustZCalibrationDepth                         = AdjustZCalibrationDepth()
+#            self.listOfCalibrationSteps.append(adjustZCalibrationDepth)
+#            
+#            #add triangular kinematics
+#            triangularCalibration                       = TriangularCalibration()
+#            self.listOfCalibrationSteps.append(triangularCalibration)
         else:
             
             #add extend chains
@@ -265,6 +292,60 @@ class CalibrationFrameWidget(GridLayout):
             self.listOfCalibrationSteps.append(quadTestCut)
         
         
+            #one last review
+            reviewMeasurements                          = ReviewMeasurements()
+            self.listOfCalibrationSteps.append(reviewMeasurements)
+            
+            #add finish step
+            finish              = Finish()
+            finish.done         = self.done
+            self.listOfCalibrationSteps.append(finish)
+    
+    def addHoleyCalibration(self):
+        #add extend chains
+        
+        measureOutChains                                = MeasureOutChains()
+        self.listOfCalibrationSteps.append(measureOutChains)
+        
+        #add set z
+        adjustZCalibrationDepth                         = AdjustZCalibrationDepth()
+        self.listOfCalibrationSteps.append(adjustZCalibrationDepth)
+        
+        #add Holey Calibration Measurements
+        CommonDict=dict()
+        hcm=HoleyCalMeasurements(CommonDict)
+        self.listOfCalibrationSteps.append(hcm)
+        
+        #add Holey Calibration.  
+        hco=HoleyCalOptimize(CommonDict)
+        self.listOfCalibrationSteps.append(hco)
+        
+        self.loadNextStep()
+        
+        
+    def addTriangularCalibration(self):
+        #add rotation radius guess
+#        import pdb; pdb.set_trace()
+        rotationRadiusGuess                         = RotationRadiusGuess()
+        self.listOfCalibrationSteps.append(rotationRadiusGuess)
+        
+        #add extend chains
+        measureOutChains                                = MeasureOutChains()
+        self.listOfCalibrationSteps.append(measureOutChains)
+        
+        #add set z
+        adjustZCalibrationDepth                         = AdjustZCalibrationDepth()
+        self.listOfCalibrationSteps.append(adjustZCalibrationDepth)
+        
+        #add triangular kinematics
+        triangularCalibration                       = TriangularCalibration()
+        self.listOfCalibrationSteps.append(triangularCalibration)
+        
+        self.addAfterCalSteps()
+        
+        self.readyToMoveOn()
+        
+    def addAfterCalSteps(self):
         #one last review
         reviewMeasurements                          = ReviewMeasurements()
         self.listOfCalibrationSteps.append(reviewMeasurements)
