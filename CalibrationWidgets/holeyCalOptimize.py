@@ -191,8 +191,6 @@ class HoleyCalOptimize(Widget):
         self.Cal.ReportCalibration()
         
     def CalibratedLengthsToGui(self):
-
-        #
         #Push Calibrated Lengths and Erors to GUI
         CalLengths=self.Cal.CalibratedLengths()
         ce=self.Cal.CalibratedLengthError()
@@ -210,6 +208,7 @@ class HoleyCalOptimize(Widget):
         for cn,gn in CalNames:
             self.ids[gn].text='{:4f}'.format(self.Cal.__dict__[cn])
             print(self.ids[gn].text)
+        
     def pushParamsToGC(self):
         #Calibrated Machine Parameters
         for grp,fnm,fky,shcnm,ehcnm,iid in self.KeyMap:
@@ -227,4 +226,3 @@ class HoleyCalOptimize(Widget):
             else:
                 v=str(v)
             self.data.config.set(grp,fnm,v)
-        pass

@@ -20,8 +20,12 @@ class HoleyCalMeasurements(Widget):
     def __init__(self,Dict):
         super(HoleyCalMeasurements,self).__init__()
         self.Dict=Dict
-        self.Cal=HoleyCalibration()
-        self.Cal.InitializeIdealXyCoordinates()
+        if not 'CalObj' in Dict.keys():
+            self.Cal=HoleyCalibration()
+            self.Cal.InitializeIdealXyCoordinates()
+            self.Dict.update({'CalObj':self.Cal})
+        else:
+            self.Cal=Dict['CalObj']
     def Next(self):
         DictValues=[]
 #        for k in self.DictIds:
@@ -33,7 +37,7 @@ class HoleyCalMeasurements(Widget):
         DictValues=[self.ids[k].text for k in self.DictIds]
         MeasDict=dict(zip(self.DictIds,DictValues))
         self.Dict.update(MeasDict)
-        self.Dict.update({'CalObj':self.Cal})
+        
         self.readyToMoveOn()
 #        CalWid=hspc_Calibrate(self.Dict)
 #        self.clear_widgets()
