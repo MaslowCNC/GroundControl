@@ -1583,16 +1583,27 @@
         height: root.height
         width: root.width
         orientation: 'horizontal'
-        BoxLayout:
-            orientation: 'vertical'
-            size_hint_x: 2
-            # Comments and Pictures
+        GridLayout:
+            size_hint_x: 1.5
+            cols: 2
+            Label:
+                text: '- New Process\n- 12 Measurements\n- More Accurate\n- Requires scipy and numpy Python libraries\n- Installation Instructions at: https://www.scipy.org/install.html'
+            Image:
+                #Cut Image
+                source: "./Images/HoleySixPtCal.png"
+            Label:
+                text: '- Original Maslow Calibration Process\n- 3 Measurements\n- Less Accurate\n- Does not require scipy or numpy Python libraries'
+            Image:
+                source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview Triangular.jpg"
         BoxLayout
+            size_hint_x: 0.5
             orientation: 'vertical'
             Label:
             Button:
                 text: 'Holey Calibration'
                 on_release: root.chooseHoleyCalibration()
+            Label:
+            Label:
             Button:
                 text: 'Triangular Calibration'
                 on_release: root.chooseTriangularCalibration()
@@ -1607,12 +1618,13 @@
             orientation: 'horizontal'
             BoxLayout:
                 orientation: 'vertical'
+                Label:
+                    text: '- Units are mm\n- Enter the measured distances corresponding with the labels in the photo\n- Labels are M1 through M12\n- Labels are green, but will turn red if outside a reasonable tolerance'
                 Image:
                     #Cut Image
                     source: "./Images/HoleySixPtCal.png"
-                Image:
-                    #Desctiption
-                    source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview.jpg"
+                Label:
+                    size_hint_y: .5
             BoxLayout:
                 size_hint_x: .3
                 orientation: 'vertical'
@@ -1744,10 +1756,35 @@
                     Button:
                         text: "Next"
                         on_release: root.Next()
-                    Button:
-                        text: "Quit"
-                        on_release: root.Close()
-
+                    Label:
+                        
+<HoleyCalCut>:
+    BoxLayout:
+        width: root.width
+        height: root.height
+        orientation: 'horizontal'
+        BoxLayout:
+            size_hint_x: 1.5
+            orientation: 'vertical'
+            #Comments and Pictures
+            Label:
+                text: "- This step will cut the test pattern into the stock\n- It will drill 6 holes, similar to the pattern in the picture\n- The machine parameters should already be measured and reasonably accurate"
+            Image:
+                #Cut Image
+                source: "./Images/HoleySixPtCal.png"
+            Label:
+        BoxLayout:
+            size_hint_x: .5
+            orientation: 'vertical'
+            Label:
+            Button:
+                text: 'Run Holey Calibration Cut'
+                on_release: root.cutHoleyCalPattern()
+            Button:
+                text: 'Next'
+                on_release: root.readyToMoveOn()
+            Label:
+        
 <Finish>:
     cols: 2
     width: root.width
