@@ -325,6 +325,8 @@ class CalibrationFrameWidget(GridLayout):
         hco=HoleyCalOptimize(CommonDict)
         self.listOfCalibrationSteps.append(hco)
         
+        self.addAfterCalSteps()
+        
         self.loadNextStep()
         
         
