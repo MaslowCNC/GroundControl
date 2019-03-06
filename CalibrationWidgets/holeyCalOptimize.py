@@ -9,7 +9,7 @@ Created on Sat Feb 23 15:22:46 2019
 from kivy.uix.widget import Widget
 from kivy.lang import Builder
 from kivy.app import App
-
+#text: "- The measurements should align\\n  with the measurements you entered\\n- Your machine parameters should\\n  be correct\\n- Pressing 'Calibrate' should\\n  populate calibrated machine paramters"
 def LoadCalibrateWid():
     BaseStr= \
 """
@@ -20,83 +20,96 @@ def LoadCalibrateWid():
         orientation: 'vertical'
         BoxLayout:
             orientation: 'horizontal'
-            size_hint_y: .1
-            ColoredLabel:
-                size_hint_x: .1
-                text: ""
-                bcolor: 0,0,0,.5
-            ColoredLabel:
-                text: "Initial"
-                bcolor: 0,0,0,.5
-            ColoredLabel:
-                text: "Calibrated"
-                bcolor: 0,0,0,.5
-        BoxLayout:
-            orientation: 'vertical'
-            GridLayout:
-                cols: 5"""
+            size_hint_y: .65
+            Label:
+                size_hint_x: .4
+                text: "- The measurements should align\\n  with the measurements you entered\\n- Your machine parameters should\\n  be within measurable accuracy\\n- Pressing 'Calibrate' should\\n  populate calibrated machine paramters"
+            BoxLayout:
+                orientation: 'vertical'
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: .1
+                    ColoredLabel:
+                        size_hint_x: .1
+                        text: ""
+                        bcolor: 0,0,0,.5
+                    ColoredLabel:
+                        text: "Initial"
+                        bcolor: 0,0,0,.5
+                    ColoredLabel:
+                        text: "Calibrated"
+                        bcolor: 0,0,0,.5
+                BoxLayout:
+                    orientation: 'vertical'
+                    GridLayout:
+                        cols: 5"""
     LabelFormat= \
 """
-                Label:
-                    size_hint_x: {0}
-                    text: \"{1}\""""
+                        Label:
+                            size_hint_x: {0}
+                            text: \"{1}\""""
     Labels=[(".3",""),("1","Measurement"),("1","Error"),("1","Length"),("1","Error")]
     Labels=''.join([LabelFormat.format(Width,Label) for Width,Label in Labels])
         
     Fmt=\
 """
-                Label:
-                    size_hint_x: .1
-                    text: \"M{0}\"
-                TextInput:
-                    id: M{0}Meas
-                TextInput:
-                    id: M{0}MeasErr
-                TextInput:
-                    id: M{0}Cal
-                TextInput:
-                    id: M{0}CalErr"""
+                        Label:
+                            size_hint_x: .1
+                            text: \"M{0}\"
+                        TextInput:
+                            id: M{0}Meas
+                        TextInput:
+                            id: M{0}MeasErr
+                        TextInput:
+                            id: M{0}Cal
+                        TextInput:
+                            id: M{0}CalErr"""
     mmts=['1','2','3','4','5','6','7','8','9','10','11','12']
     mmts=[Fmt.format(mmt) for mmt in mmts]
     mmts=''.join(mmts)
     CalBox=\
 """
-            BoxLayout:
-                orientation: 'horizontal'
-                size_hint_y: .35
-                Button:
-                    size_hint_x: .5
-                    text: 'Calibrate'
-                    on_release: root.Calibrate()
-                GridLayout:
-                    cols: 3"""
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: .3
+            Label:
+                size_hint_x: .05
+            Button:
+                size_hint_x: .2
+                text: 'Calibrate'
+                on_release: root.Calibrate()
+            GridLayout:
+                size_hint_x: .35
+                cols: 3"""
     lblfmt=\
 """
-                    Label:
-                        text: \"{}\""""
+                Label:
+                    text: \"{}\""""
     lbls=['','Initial','Calibrated']
     lbls=[lblfmt.format(lbl) for lbl in lbls]
     lblstr=''.join(lbls)
     inptfmt=\
 """
-                    Label:
-                        text: \"{0}\"
-                    TextInput:
-                        id: Init{0}
-                    TextInput:
-                        id: Cal{0}"""
+                Label:
+                    text: \"{0}\"
+                TextInput:
+                    id: Init{0}
+                TextInput:
+                    id: Cal{0}"""
     prms=['MotorYOffset','DistBtwnMtrs','LftChTol','RghtChTol']
     prms=''.join([inptfmt.format(prm) for prm in prms])
     ptm=\
 """
-                Button:
-                    size_hint_x: .5
-                    text: 'Push to Machine'
-                    on_release: root.pushParamsToGC()
-                Button:
-                    size_hint_x: .5
-                    text: 'Next'
-                    on_release: root.readyToMoveOn()"""
+            Button:
+                size_hint_x: .2
+                text: 'Push to Machine'
+                on_release: root.pushParamsToGC()
+            Button:
+                size_hint_x: .2
+                text: 'Next'
+                on_release: root.readyToMoveOn()
+        Label:
+            size_hint_y: .05"""
     WidLayout=''.join([BaseStr,Labels,mmts,CalBox,lblstr,prms,ptm])
     Builder.load_string(WidLayout)
     
