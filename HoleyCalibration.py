@@ -1,4 +1,4 @@
-import kinematics as kinematics
+import Simulation.kinematics as kinematics
 import math
 from scipy.optimize import least_squares
 import numpy
@@ -32,7 +32,7 @@ class HoleyCalibration():
             (1,5),
             (3,5),
             (2,6)]
-    
+    CutOrder=[1,0,3,4,5,2] #Counter Clockwise, starting at top
     IdealLengthArray=0
     MeasuredLengthArray=0
     DesiredLengthDeltaArray=0
@@ -41,13 +41,12 @@ class HoleyCalibration():
     
     kin=kinematics.Kinematics()
     #Define function with input of (ideal lengths and) machine parameters (delta) and output of length error
-    def LengthDeltaFromIdeal(self,DeltaArray):
+    def LengthDeltaFromIdeal(self,DeltaArray): #Del_D,Del_motorOffsetY,Del_rotationDiskRadius,Del_chainSagCorrection):
         self.kin.D=self.SP_D+DeltaArray[0]
         self.kin.motorOffsetY=self.SP_motorOffsetY+DeltaArray[1]
         self.kin.leftChainTolerance=self.SP_leftChainTolerance+DeltaArray[2]
         self.kin.rightChainTolerance=self.SP_rightChainTolerance+DeltaArray[3]
         self.kin.recomputeGeometry()
-        #import pdb; pdb.set_trace()
         CalculatedPositions=[]
         for LeftChainLength,RightChainLength in self.ChainLengths:
             CalculatedPositions.append(self.kin.forward(LeftChainLength,RightChainLength))
@@ -58,11 +57,24 @@ class HoleyCalibration():
         Ideal=self.IdealLengthArray[idx]
         return Ideal-Meas
     def ValidateMeasurement(self,Meas,idx):
-        if idx<12:
+        if idx<11:
             Ideal=self.IdealLengthArray[idx]
             return 0.1>abs((Ideal-Meas)/Ideal)
         else:
             return Meas>0.0
+    def CutTestPattern(self,data):
+        print('Cutting Holey Calibration Test Pattern')
+        data.gcode_queue.put("G21")
+        data.gcode_queue.put("G90") # Switch to absolute mode
+        data.gcode_queue.put("G40")
+        data.gcode_queue.put("G17")
+        data.gcode_queue.put("M3")
+        for idx in self.CutOrder:
+            x,y=self.IdealCoordinates[idx]
+            print('cutting index: '+str(idx+1))
+            CutHole(data,x,y)
+        data.gcode_queue.put("G0 X0 Y0")
+        data.gcode_queue.put("M5")
         
     def CalculateMeasurements(self,HolePositions):
 #        aH1x,aH1y,aH2x,aH2y,aH3x,aH3y,aH4x,aH4y,aH5x,aH5y,aH6x,aH6y
@@ -90,6 +102,7 @@ class HoleyCalibration():
                 (aH1x,-aH1y),
                 (aH2x,-aH1y),
                 (-aH1x,-aH1y)]
+        self.IdealCoordinates=IdealCoordinates
         self.kin.D=self.SP_D
         self.kin.motorOffsetY=self.SP_motorOffsetY
         self.kin.rotationDiskRadius=self.SP_rotationDiskRadius
@@ -149,7 +162,6 @@ class HoleyCalibration():
     def CalibratedLengths(self):
         return self.MeasuredLengthArray-self.OptimizationOutput.fun
     def CalibratedLengthError(self):
-        #import pdb; pdb.set_trace()
         return self.OptimizationOutput.fun
     def HolePositionsFromChainLengths(self):
         HolePositions=[]
@@ -181,4 +193,10 @@ class HoleyCalibration():
 
 def GeometricLength(x1,y1,x2,y2):
     return math.sqrt(math.pow(x1-x2,2) + math.pow(y1-y2,2))
+
+def CutHole(data,x,y):
+    print('Cutting point, x='+str(x)+', y='+str(y))
+    data.gcode_queue.put("G0 X"+str(x)+" Y"+str(y))
+    data.gcode_queue.put("G0 Z-5")
+    data.gcode_queue.put("G0 Z5")
     
