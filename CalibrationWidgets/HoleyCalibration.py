@@ -57,7 +57,7 @@ class HoleyCalibration():
         Ideal=self.IdealLengthArray[idx]
         return Ideal-Meas
     def ValidateMeasurement(self,Meas,idx):
-        if idx<12:
+        if idx<11:
             Ideal=self.IdealLengthArray[idx]
             return 0.1>abs((Ideal-Meas)/Ideal)
         else:
