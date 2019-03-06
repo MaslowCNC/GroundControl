@@ -349,7 +349,7 @@ class CalibrationFrameWidget(GridLayout):
         
         self.addAfterCalSteps()
         
-        self.readyToMoveOn()
+        self.loadNextStep()
         
     def addAfterCalSteps(self):
         #one last review
