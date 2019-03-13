@@ -85,9 +85,9 @@ class Kinematics():
     
     leftChainTolerance=0
     rightChainTolerance=0
-    chainWeight=.09/304.8
-    chainElasticity=.000023
-    sledWeight=22
+    chainDensity=.0013 #N/mm
+    chainElasticity=5.1685e-6 #mm/mm/N
+    sledWeight=97.9 #N
 
     i = 0
     
@@ -186,7 +186,7 @@ class Kinematics():
         TensionDenominator= (xTangent1*yTangent2-xTangent2*yTangent1-xTangent1*yTarget+xTarget*yTangent1+xTangent2*yTarget-xTarget*yTangent2)
         
         #Total vertical force is sled weight, plus half the two chain weights
-        TotalWeight=self.sledWeight+0.5*self.chainWeight*(Chain1Straight+Chain2Straight)
+        TotalWeight=self.sledWeight+0.5*self.chainDensity*(Chain1Straight+Chain2Straight)
         
         #T_l     = -(    w                *sqrt(     pow(x_l      -x_t    ,2.0)+pow(     y_l      -y_t    ,2.0))  (x_r      -x_t))    /TensionDenominator
         Tension1 = - (TotalWeight*math.sqrt(math.pow(xTangent1-xTarget,2)+math.pow(yTangent1-yTarget,2))*(xTangent2-xTarget))/TensionDenominator
@@ -203,8 +203,8 @@ class Kinematics():
         #Calculation of vertical force due to tension, to validate tension calculation
         #VerticalForce=Tension1*(yTangent1-yTarget)/Chain1Straight+Tension2*(yTangent2-yTarget)/Chain2Straight
         
-        a1=HorizontalTension/self.chainWeight
-        a2=HorizontalTension/self.chainWeight
+        a1=HorizontalTension/self.chainDensity
+        a2=HorizontalTension/self.chainDensity
         # print("Horizontal Tension ",HorizontalTension)
         
         #Catenary Equation
