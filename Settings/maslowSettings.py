@@ -178,7 +178,7 @@ settings = {
                 "title": "Chain Elasticity",
                 "desc": "Elasticity of Chain [mm/mm/N]",
                 "key": "chainElasticity",
-		"firmwareKey": 47,
+		"firmwareKey": 37,
                 "default": 5.1685e-6,
 	    },
 	    {
