@@ -8,7 +8,7 @@ class HoleyCalibration():
     SP_rotationDiskRadius=139.1
     SP_leftChainTolerance=0
     SP_rightChainTolerance=0
-    SP_sledWeight=22
+    SP_sledWeight=97.9 #N
     SP_chainOverSprocket=False
     
     Opt_D=3601.2
@@ -16,7 +16,7 @@ class HoleyCalibration():
     Opt_rotationDiskRadius=139.1
     Opt_leftChainTolerance=0
     Opt_rightChainTolerance=0
-    Opt_sledWeight=22
+    Opt_sledWeight=97.9 #N
     
     #Chain lengths @ each hole
     ChainLengths=[]
