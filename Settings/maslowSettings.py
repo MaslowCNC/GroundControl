@@ -175,6 +175,14 @@ settings = {
         [
             {
                 "type": "string",
+                "title": "Chain Elasticity",
+                "desc": "Elasticity of Chain [mm/mm/N]",
+                "key": "chainElasticity",
+		"firmwareKey": 47,
+                "default": 5.1685e-6,
+	    },
+	    {
+                "type": "string",
                 "title": "Max touch Z-axis plunge",
                 "desc": "Max depth the z axis should plunge in order to find the touch probe",
                 "key": "maxTouchProbePlungeDistance",
