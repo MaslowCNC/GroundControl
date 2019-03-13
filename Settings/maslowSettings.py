@@ -83,6 +83,14 @@ settings = {
             },
             {
                 "type": "string",
+                "title": "Sled Weight",
+                "desc": "Weight of the sled [N]",
+                "key": "sledWeight",
+                "default": 97.9,
+                "firmwareKey": 46
+            },
+            {
+                "type": "string",
                 "title": "Vertical Distance Sled Mounts to Cutter",
                 "desc": "The vertical distance between where the chains mount on the sled to the cutting tool.",
                 "key": "sledHeight",
