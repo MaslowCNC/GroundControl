@@ -128,7 +128,7 @@ class HoleyCalOptimize(Widget):
                 ('Advanced Settings','rightChainTolerance',41,  'SP_rightChainTolerance','Opt_rightChainTolerance','InitRghtChTol'),
                 ('Advanced Settings','chainOverSprocket',  None,'SP_chainOverSprocket',  'SP_chainOverSprocket',   'ChainOverSprocket'),
                 ('Maslow Settings',  'motorOffsetY',       3,   'SP_motorOffsetY',       'Opt_motorOffsetY',       'InitMotorYOffset'),
-                ('Advanced Settings','chainSagCorrection', 37,  'SP_sledWeight',         'SP_sledWeight',          'SledWeight'),
+                ('Maslow Settings',  'sledWeight',         46,  'SP_sledWeight',         'SP_sledWeight',          'SledWeight'),
                 ('Maslow Settings',  'motorSpacingX',      2,   'SP_D',                  'Opt_D',                  'InitDistBtwnMtrs'),
                 ('Advanced Settings','kinematicsType',     None,'isQuadKinematics',      'isQuadKinematics',       'IsQuadKin')]
     def on_Enter(self):
