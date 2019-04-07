@@ -677,7 +677,16 @@ def syncFirmwareKey(firmwareKey, value, data):
                         storedValue = 0
 
                 if not isClose(float(storedValue), value):
-                    data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(storedValue))
+                    de=math.log(value,10)
+                    ru=math.ceil(de)
+                    fmt='{:'+str(int(max(max(7-ru,7),abs(ru))))+'.'+str(int(6-ru))+'f}'
+                    try:
+                        gc="$" + str(firmwareKey) + "=" + fmt.format(value)
+                    except:
+                        gc="$" + str(firmwareKey) + "=" + str(value)
+                    print('keySync String" '+gc)
+                    print(value)
+                    data.gcode_queue.put(gc)
                 else:
                     break
     return
