@@ -665,8 +665,7 @@ def syncFirmwareKey(firmwareKey, value, data):
         for option in settings[section]:
             if 'firmwareKey' in option and option['firmwareKey'] == firmwareKey:
                 storedValue = data.config.get(section, option['key'])
-
-		if (option['key'] == "spindleAutomate"):
+                if (option['key'] == "spindleAutomate"):
                     if (storedValue == "Servo"):
                         storedValue = 1
                     elif (storedValue == "Relay_High"):
@@ -675,21 +674,24 @@ def syncFirmwareKey(firmwareKey, value, data):
                         storedValue = 3
                     else:
                         storedValue = 0
-
                 if not isClose(float(storedValue), value):
-                    de=math.log(value,10)
-                    ru=math.ceil(de)
-                    fmt='{:'+str(int(max(max(7-ru,7),abs(ru))))+'.'+str(int(6-ru))+'f}'
-                    try:
-                        gc="$" + str(firmwareKey) + "=" + fmt.format(value)
-                    except:
-                        gc="$" + str(firmwareKey) + "=" + str(value)
-                    print('keySync String" '+gc)
-                    print(value)
+                    gc=firmwareKeyString(firmwareKey,value)
                     data.gcode_queue.put(gc)
                 else:
                     break
     return
+
+def firmwareKeyString(firmwareKey,value):
+    de=math.log(abs(value),10)
+    ru=math.ceil(de)
+    fmt='{:'+str(int(max(max(7-ru,7),abs(ru))))+'.'+str(int(6-ru))+'f}'
+    try:
+        gc="$" + str(firmwareKey) + "=" + fmt.format(value)
+    except:
+        gc="$" + str(firmwareKey) + "=" + str(value)
+    print('keySync String" '+gc)
+    print(value)
+    return gc
 
 def isClose(a, b, rel_tol=1e-06):
     '''
