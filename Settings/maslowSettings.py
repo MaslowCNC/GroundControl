@@ -682,8 +682,11 @@ def syncFirmwareKey(firmwareKey, value, data):
     return
 
 def firmwareKeyString(firmwareKey,value):
-    de=math.log(abs(value),10)
-    ru=math.ceil(de)
+    try:
+        de=math.log(abs(value),10)
+        ru=math.ceil(de)
+    except:
+        ru=0
     fmt='{:'+str(int(max(max(7-ru,7),abs(ru))))+'.'+str(int(6-ru))+'f}'
     try:
         gc="$" + str(firmwareKey) + "=" + fmt.format(value)
