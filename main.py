@@ -272,7 +272,8 @@ class GroundControlApp(App):
         # Push settings that can be directly written to machine
         firmwareKey = maslowSettings.getFirmwareKey(section, key)
         if firmwareKey is not None:
-            self.data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(value))
+            ks=maslowSettings.firmwareKeyString(firmwareKey,float(value))
+            self.data.gcode_queue.put(ks)
     
     def requestMachineSettings(self, *args):
         ''' 
