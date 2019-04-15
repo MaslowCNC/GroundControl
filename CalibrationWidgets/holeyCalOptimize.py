@@ -237,5 +237,5 @@ class HoleyCalOptimize(Widget):
                 else:
                     v='Triangular'
             else:
-                v=str(v)
+                v=maslowSettings.firmwareKeyValue(v)
             self.data.config.set(grp,fnm,v)
