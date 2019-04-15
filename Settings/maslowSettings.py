@@ -682,6 +682,11 @@ def syncFirmwareKey(firmwareKey, value, data):
     return
 
 def firmwareKeyString(firmwareKey,value):
+    strValue=firmwareKeyValue(value)
+    gc="$" + str(firmwareKey) + "=" + strValue
+    return gc
+        
+def firmwareKeyValue(value):
     try:
         de=math.log(abs(value),10)
         ru=math.ceil(de)
@@ -689,12 +694,10 @@ def firmwareKeyString(firmwareKey,value):
         ru=0
     fmt='{:'+str(int(max(max(7-ru,7),abs(ru))))+'.'+str(int(6-ru))+'f}'
     try:
-        gc="$" + str(firmwareKey) + "=" + fmt.format(value)
+        return fmt.format(value)
     except:
-        gc="$" + str(firmwareKey) + "=" + str(value)
-    print('keySync String" '+gc)
-    print(value)
-    return gc
+        print('firmwareKeyString Exception: value = '+str(value))
+        return str(value)
 
 def isClose(a, b, rel_tol=1e-06):
     '''
