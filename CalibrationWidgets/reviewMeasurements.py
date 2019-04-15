@@ -27,7 +27,7 @@ class ReviewMeasurements(GridLayout):
         tempString = tempString + "\nChain feed type: " + self.data.config.get('Advanced Settings', 'chainOverSprocket')
         if self.data.config.get('Advanced Settings', 'kinematicsType') == 'Triangular':
             tempString = tempString + "\nRotation radius: " + self.data.config.get('Advanced Settings', 'rotationRadius') + "mm"
-            tempString = tempString + "\nChain sag correction value: " + self.data.config.get('Advanced Settings', 'chainSagCorrection')
+            tempString = tempString + "\nSled Weight: " + self.data.config.get('Maslow Settings', 'sledWeight') + ' Newtons'
         else:
             tempString = tempString + "\nSled mount spacing: " + self.data.config.get('Maslow Settings', 'sledWidth') + "mm"
         
