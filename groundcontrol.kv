@@ -1021,6 +1021,29 @@
             id: enterValues
         Label:
 
+<EnterSledWeight>:
+    cols: 1
+    width: root.width
+    height: root.height
+    BoxLayout:
+        orientation: 'horizontal'
+        BoxLayout:
+            size_hint_x: 1.5
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+            Label:
+                text: "Sled Weight [Newtons]:"
+                halign: "center"
+            TextInput:
+                id: sledWeight
+            Button:
+                text: "Enter Values"
+                halign: "center"
+                on_release: root.enterValues()
+                id: enterValues
+            Label:
+
 <WipeOldCorrectionValues>:
     cols: 2
     width: root.width
@@ -1579,6 +1602,9 @@
         Label:
 
 <ChooseHoleyOrTriangularCalibration>:
+    cols: 1
+    width: root.width
+    height: root.height
     BoxLayout:
         height: root.height
         width: root.width
@@ -1610,6 +1636,9 @@
             Label:
 
 <HoleyCalMeasurements>
+    cols: 1
+    width: root.width
+    height: root.height
     BoxLayout:
         height: root.height
         width: root.width
@@ -1759,6 +1788,9 @@
                     Label:
                         
 <HoleyCalCut>:
+    cols: 1
+    width: root.width
+    height: root.height
     BoxLayout:
         width: root.width
         height: root.height
