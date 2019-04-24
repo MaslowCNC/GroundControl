@@ -34,6 +34,7 @@ from CalibrationWidgets.chooseHoleyOrTriangularCalibration  import  ChooseHoleyO
 from CalibrationWidgets.holeyCalMeasurements                import  HoleyCalMeasurements
 from CalibrationWidgets.holeyCalOptimize                    import  HoleyCalOptimize
 from CalibrationWidgets.holeyCalCut                         import  HoleyCalCut
+from CalibrationWidgets.enterSledWeight                     import  EnterSledWeight
 from kivy.app                                               import  App
 from kivy.lang                                              import  Builder
 from kivy.uix.label                                         import  Label
@@ -107,6 +108,9 @@ class CalibrationFrameWidget(GridLayout):
         
         measureMotorDist                            = MeasureDistBetweenMotors()
         self.listOfCalibrationSteps.append(measureMotorDist)
+        
+        esw                                         = EnterSledWeight()
+        self.listOfCalibrationSteps.append(esw)
         
         chooseChainOverSprocketDirection             = ChooseChainOverSprocketDirection()
         self.listOfCalibrationSteps.append(chooseChainOverSprocketDirection)
