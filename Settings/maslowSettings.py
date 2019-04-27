@@ -6,6 +6,8 @@ and using the data in this dict.
 
 '''
 import json
+import math
+from UIElements.firmwareSyncPopup import FirmwareSyncPopup
 
 '''
 
@@ -674,12 +676,12 @@ def syncFirmwareKey(firmwareKey, value, data):
                         storedValue = 3
                     else:
                         storedValue = 0
-                if not isClose(float(storedValue), value):
-                    gc=firmwareKeyString(firmwareKey,value)
-                    data.gcode_queue.put(gc)
+                storedValue=float(storedValue)
+                if not isClose(storedValue, value):
+                    return FirmwareSyncPopup(storedValue,value,section,option['key'])
                 else:
-                    break
-    return
+                    return None
+    return None
 
 def firmwareKeyString(firmwareKey,value):
     strValue=firmwareKeyValue(value)
