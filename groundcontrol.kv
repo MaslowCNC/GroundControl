@@ -2195,7 +2195,29 @@
     on_touch_down:
         V(args[1].pos).distance(self.center) < self.radius and (
         self.back() if self.choices_history else self.dismiss())
-
+<FirmwareSyncPopup>:
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            size_hint_y: .1
+            id: KeyLabel
+        GridLayout:
+            cols: 2
+            Label:
+                text: 'Ground Control Value'
+            Label:
+                text: 'Firmware Value'
+            Label:
+                id: GcVal
+            Label:
+                id: FwVal
+            Button:
+                text: 'Select Ground Control Value'
+                on_release: root.SelectGroundControlValue()
+            Button:
+                text: 'Select Firmware Value'
+                on_release: root.SelectFirmwareValue()
+            
 <ModernMenuLabel>:
     size: self.texture_size
     padding: 5, 5
