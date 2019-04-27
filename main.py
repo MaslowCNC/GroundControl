@@ -39,6 +39,8 @@ from UIElements.runMenu           import   RunMenu
 from UIElements.connectMenu       import   ConnectMenu
 from UIElements.diagnosticsMenu   import   Diagnostics
 from UIElements.manualControls    import   ManualControl
+
+from UIElements.firmwareSyncPopup import   FirmwareSyncPopup
 from DataStructures.data          import   Data
 from Connection.nonVisibleWidgets import   NonVisibleWidgets
 from UIElements.notificationPopup import   NotificationPopup
@@ -86,7 +88,7 @@ class GroundControlApp(App):
         
         
         Window.maximize()
-        
+        self.fwSyncPopupList=[]
         
         self.frontpage = FrontPage(self.data, name='FrontPage')
         interface.add_widget(self.frontpage)
@@ -259,6 +261,7 @@ class GroundControlApp(App):
                     value = 0
     
         
+        
         # Update Computed Settings
         self.computeSettings(section, key, value)
         
@@ -294,8 +297,19 @@ class GroundControlApp(App):
         parameter, position = self.parseFloat(message, 0)
         value, position = self.parseFloat(message, position)
         if (parameter is not None and value is not None):
-            maslowSettings.syncFirmwareKey(int(parameter), value, self.data)
-    
+            pu=maslowSettings.syncFirmwareKey(int(parameter), value, self.data)
+            if pu is not None:
+                pu.data=self.data
+                pu.bind(on_dismiss=self.loadNextFwSyncPopup)
+                self.fwSyncPopupList.append(pu)
+                if len(self.fwSyncPopupList)==1:
+                    self.fwSyncPopupList[0].open()
+        
+    def loadNextFwSyncPopup(self,pu):
+        if len(self.fwSyncPopupList)>1:
+            self.fwSyncPopupList.pop(0)
+            self.fwSyncPopupList[0].open()
+        
     def parseFloat(self, text, position=0):
         '''
         Takes a string and parses out the float found at position default to 0
