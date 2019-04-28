@@ -119,7 +119,7 @@ class GroundControlApp(App):
         self.data.gcodeShift = [offsetX,offsetY]
         self.data.config  = self.config
         self.config.add_callback(self.configSettingChange)
-
+        self.data.firmwareKeyValue=maslowSettings.firmwareKeyValue
         # Background image setup
         self.data.backgroundFile = self.config.get('Background Settings',
                                                    'backgroundFile')
