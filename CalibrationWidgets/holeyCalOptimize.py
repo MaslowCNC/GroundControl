@@ -225,7 +225,7 @@ class HoleyCalOptimize(Widget):
     def pushParamsToGC(self):
         #Calibrated Machine Parameters
         for grp,fnm,fky,shcnm,ehcnm,iid in self.KeyMap:
-            v=self.Cal.__dict__[ehcnm]            
+            v=self.Cal.__dict__[ehcnm]
             if iid == 'ChainOverSprocket':
                 if v:
                     v='Top'
@@ -237,5 +237,5 @@ class HoleyCalOptimize(Widget):
                 else:
                     v='Triangular'
             else:
-                v=maslowSettings.firmwareKeyValue(v)
+                v=self.data.firmwareKeyValue(v)
             self.data.config.set(grp,fnm,v)
