@@ -678,7 +678,7 @@ def syncFirmwareKey(firmwareKey, value, data):
                         storedValue = 0
                 storedValue=float(storedValue)
                 if not isClose(storedValue, value):
-                    return FirmwareSyncPopup(storedValue,value,section,option['key'])
+                    return FirmwareSyncPopup(data,storedValue,value,section,option['key'])
                 else:
                     return None
     return None
