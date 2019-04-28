@@ -128,7 +128,7 @@ class SerialPortThread(MakesmithInitFuncs):
             
             self._getFirmwareVersion()
             self._setupMachineUnits()
-            
+            oldTime=time.time()
             while True:
                 
                 
@@ -139,8 +139,16 @@ class SerialPortThread(MakesmithInitFuncs):
                 try:
                     if self.serialInstance.in_waiting > 0:
                         lineFromMachine = self.serialInstance.readline()
-                        self.lastMessageTime = time.time()
-                        self.data.message_queue.put(lineFromMachine)
+                        t=time.time()
+                        if lineFromMachine[0]=="[" or lineFromMachine[0]=="<":
+                            recordLine=(t-oldTime)>=1
+                            if recordLine:
+                                oldTime=t
+                        else:
+                            recordLine=True
+                        self.lastMessageTime = t
+                        if recordLine:
+                            self.data.message_queue.put(lineFromMachine)
                 except:
                     pass
                 
