@@ -10,6 +10,7 @@ from   kivy.uix.popup                            import   Popup
 class FirmwareSyncPopup(Popup):
     def __init__(self,data,GcVal,FwVal,Section,Key):
         super(FirmwareSyncPopup,self).__init__()
+        self.title="Parameter Value Difference"
         self.data=data
         self.GcVal=GcVal
         self.FwVal=FwVal
@@ -17,7 +18,9 @@ class FirmwareSyncPopup(Popup):
         self.Key=Key
         self.ids['GcVal'].text=data.firmwareKeyValue(GcVal)
         self.ids['FwVal'].text=data.firmwareKeyValue(FwVal)
-        self.ids['KeyLabel'].text='{}\n{}'.format(Section,Key)
+        self.ids['KeyLabel'].text='A parameter value is different between Ground Control and the Firmware.\n
+This popup is going to sync the two values, to be the same.\n
+Please select which value for{}\n{}'.format(Section,Key)
     def SelectGroundControlValue(self):
         self.data.config.set(self.Section,self.Key,self.GcVal)
         self.dismiss()
