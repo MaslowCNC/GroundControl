@@ -249,7 +249,7 @@ settings = {
                 "title": "Extend Chain Distance",
                 "desc": "The length in mm that will be extended during chain calibration",
                 "key": "chainExtendLength",
-                "default": 1650,
+                "default": 1651,
                 "firmwareKey": 11
             },
             {
