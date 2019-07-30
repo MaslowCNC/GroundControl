@@ -114,12 +114,18 @@ class SerialPortThread(MakesmithInitFuncs):
             msg = ""
             subReadyFlag = True
             
-            self.serialInstance.parity = serial.PARITY_ODD #This is something you have to do to get the connection to open properly. I have no idea why.
-            self.serialInstance.close()
+            
+            if self.serialInstance.isOpen(): 
+                self.serialInstance.close()
+            
             self.serialInstance.open()
-            self.serialInstance.close()
-            self.serialInstance.parity = serial.PARITY_NONE
-            self.serialInstance.open()
+            
+            # reset Arduino boards by toggling DTR signal
+            self.serialInstance.dtr = False
+            self.serialInstance.dtr = True
+            
+            # reset non-Arduino boards by sending 
+            self._write(b'\x18') # ctrl-X
             
             #print "port open?:"
             #print self.serialInstance.isOpen()
