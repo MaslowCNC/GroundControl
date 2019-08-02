@@ -18,9 +18,9 @@ class FirmwareSyncPopup(Popup):
         self.Key=Key
         self.ids['GcVal'].text=data.firmwareKeyValue(GcVal)
         self.ids['FwVal'].text=data.firmwareKeyValue(FwVal)
-        self.ids['KeyLabel'].text='A parameter value is different between Ground Control and the Firmware.\n\
-This popup is going to sync the two values, to be the same.\n\
-Please select which value for{}\n{}'.format(Section,Key)
+        self.ids['KeyLabel'].text="""A parameter value is different between Ground Control and the Firmware.
+This popup is going to sync the two values, to be the same.
+Please select which value for {}\{}""".format(Section,Key)
     def SelectGroundControlValue(self):
         self.data.config.set(self.Section,self.Key,self.GcVal)
         self.dismiss()
