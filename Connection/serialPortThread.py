@@ -153,7 +153,7 @@ class SerialPortThread(MakesmithInitFuncs):
                         else:
                             recordLine=True
                         self.lastMessageTime = t
-                        if recordLine:
+                        if True:
                             self.data.message_queue.put(lineFromMachine)
                 except:
                     pass
