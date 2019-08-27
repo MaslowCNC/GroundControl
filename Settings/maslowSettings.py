@@ -484,6 +484,34 @@ settings = {
                 "desc": "Zoom scale for 'Reset View' command.",
                 "key": "viewScale",
                 "default": ".45"
+            },
+            {
+                "type": "string",
+                "title": "Run",
+                "desc": "Pressing this key is the same as clicking the 'Start' button. Note combinations of keys like \'shift\' + \'=\' may not work as expected. Program must be restarted to take effect.",
+                "key": "runKey",
+                "default": "r"
+            },
+            {
+                "type": "string",
+                "title": "Pause",
+                "desc": "Pressing this key is the same as clicking the 'Pause' button. Note combinations of keys like \'shift\' + \'=\' may not work as expected. Program must be restarted to take effect.",
+                "key": "pauseKey",
+                "default": "p"
+            },
+            {
+                "type": "string",
+                "title": "Stop",
+                "desc": "Pressing this key is the same as clicking the 'Stop' button. Note upper case or shifted characters or combinations of keys like \'ctrl\' + \'=\' may not work as expected. Program must be restarted to take effect.",
+                "key": "stopKey",
+                "default": "s"
+            },
+            {
+                "type": "string",
+                "title": "FAKE_SERVO Off",
+                "desc": "Pressing this key will turn FAKE_SERVO off. Press this key along with 'cmd', 'alt' , or 'cmd' to turn FAKE_SERVO on. Program must be restarted to take effect.",
+                "key": "fakeServo_Off",
+                "default": "f"
             }
         ],
     "Computed Settings": #These are setting calculated from the user inputs on other settings, they are not directly seen by the user
