@@ -507,6 +507,14 @@ settings = {
                 "default": "s"
             },
             {
+                "type": "options",
+                "title": "FAKE_SERVO allowed",
+                "desc": "Should GroundControl allow FAKE_SERVO mode?",
+                "key": "fsModeAllowed",
+                "options": ["Not allowed", "Allowed"],
+                "default": "Not allowed",
+            },
+            {
                 "type": "string",
                 "title": "FAKE_SERVO Off",
                 "desc": "Pressing this key will turn FAKE_SERVO off. Press this key along with 'cmd', 'alt' , or 'cmd' to turn FAKE_SERVO on. Program must be restarted to take effect.",

@@ -110,14 +110,24 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         elif keycode[1] == self.data.config.get('Ground Control Settings', 'stopKey'):
             self.parent.stopRun() # "click" the 'Stop' button
             return True # we handled this key - don't pass to other callbacks
+#         elif keycode[1] == self.data.config.get('Ground Control Settings', 'fakeServo_Off'):
+#             if self.data.config.get('Ground Control Settings', 'fsModeAllowed') == "Allowed":
+#                 if 'ctrl' in modifiers or 'alt' in modifiers or 'meta' in modifiers:
+#                     self.data.gcode_queue.put("B99 ON \n")
+#                 else:
+#                     self.data.gcode_queue.put("B99 OFF \n")
+#                 return True # we handled this key - don't pass to other callbacks
+#             else:
+#                 return False # we didn't handle this key - let next callback handle it
         elif keycode[1] == self.data.config.get('Ground Control Settings', 'fakeServo_Off'):
             if 'ctrl' in modifiers or 'alt' in modifiers or 'meta' in modifiers:
-                self.data.gcode_queue.put("B99 ON \n")
+                if self.data.config.get('Ground Control Settings', 'fsModeAllowed') == "Allowed":
+                    self.data.gcode_queue.put("B99 ON \n")
             else:
                 self.data.gcode_queue.put("B99 OFF \n")
             return True # we handled this key - don't pass to other callbacks
         else:
-            return False # we didn't handle this key - let next callback handle it
+                return False # we didn't handle this key - let next callback handle it
 
     def isClose(self, a, b):
         return abs(a-b) <= self.data.tolerance
