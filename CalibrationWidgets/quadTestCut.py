@@ -86,7 +86,7 @@ class QuadTestCut(GridLayout):
         else:
             amtToChange = .9*dif
             newSledSpacing = float(self.data.config.get('Maslow Settings', 'sledWidth')) + amtToChange
-            print "Now trying spacing: " + str(newSledSpacing)
+            print("Now trying spacing: " + str(newSledSpacing))
             self.data.config.set('Maslow Settings', 'sledWidth', str(newSledSpacing))
             self.cutBtn.disabled = False
     

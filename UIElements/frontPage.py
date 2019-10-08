@@ -128,7 +128,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
                     delta = sqrt( (xPos-self.lastpos[0])*(xPos-self.lastpos[0]) + (yPos-self.lastpos[1])*(yPos-self.lastpos[1]) + (zPos-self.lastpos[2]) * (zPos-self.lastpos[2]))
                     Vel = delta / (time()-self.lasttime) * 60.0 #In XXXX/minute
                 except:
-                    print "unable to compute velocity"
+                    print("unable to compute velocity")
                     Vel = 0
             else:
                 Vel=0
@@ -254,7 +254,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
             
             self.gcodecanvas.positionIndicator.setPos(xTarget,yTarget,self.data.units)
         except:
-            print "Unable to update position for new gcode line"
+            print("Unable to update position for new gcode line")
     
     def pause(self):
         if  self.holdBtn.secretText == "HOLD":
@@ -272,7 +272,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
             pass
     
     def test(self):
-        print "test has no current function"
+        print("test has no current function")
     
     def upLeft(self):
         self.jmpsize()
@@ -372,7 +372,7 @@ class FrontPage(Screen, MakesmithInitFuncs):
             self.data.gcode_queue.put(self.data.gcode[self.data.gcodeIndex])
             self.data.gcodeIndex = self.data.gcodeIndex + 1
         except:
-            print "gcode run complete"
+            print("gcode run complete")
             self.gcodecanvas.uploadFlag = 0
             self.data.gcodeIndex = 0
     

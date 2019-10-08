@@ -80,7 +80,7 @@ class ModernMenu(Widget):
                 if ml.text == '[color=3333ff]Set Home[/color]':
                     ml.callback = partial(self.parent.parent.parent.setHome, self.xPosition, self.yPosition)
             except:
-                print "unable to link circular menu functions"
+                print("unable to link circular menu functions")
             self.animation.start(ml)
             self.add_widget(ml)
             

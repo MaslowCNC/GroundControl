@@ -34,7 +34,7 @@ class SerialPort(MakesmithInitFuncs):
         Defines which port the machine is attached to
         
         '''
-        print "update ports"
+        print("update ports")
         print port
         self.data.comport = port
     

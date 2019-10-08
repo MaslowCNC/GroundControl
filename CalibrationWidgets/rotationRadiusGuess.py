@@ -83,7 +83,7 @@ class RotationRadiusGuess(GridLayout):
         try:
             dist = float(self.enterMeasurement.text)
             self.data.config.set('Advanced Settings', 'rotationRadius', str(dist))
-            print "setting rotation radius to: " + str(dist)
+            print("setting rotation radius to: " + str(dist))
             print self.data.config.get('Advanced Settings', 'rotationRadius')
             self.readyToMoveOn()
         except:

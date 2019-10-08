@@ -17,7 +17,7 @@ class ChooseChainOverSprocketDirection(GridLayout):
         This function runs when the step is entered
         
         '''
-        print "choose sprocket direction on enter ran"
+        print("choose sprocket direction on enter ran")
     
     def setChainToTop(self):
         '''

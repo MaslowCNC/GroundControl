@@ -21,7 +21,7 @@ class NonVisibleWidgets(MakesmithInitFuncs):
         '''
         
         self.data = data
-        #print "Initialized: " + str(self)
+        #print("Initialized: " + str(self))
         
         data.serialPort = self.serialPort #add the serial port widget to the data object
         self.serialPort.setUpData(data)

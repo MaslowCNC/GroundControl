@@ -314,7 +314,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.yPosition = yTarget
             self.zPosition = zTarget
         except:
-            print "Unable to draw line on screen: " + gCodeLine
+            print("Unable to draw line on screen: " + gCodeLine)
     
     def drawArc(self,gCodeLine,command):
         '''
@@ -385,7 +385,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.xPosition = xTarget
             self.yPosition = yTarget
         except:
-            print "Unable to draw arc on screen: " + gCodeLine
+            print("Unable to draw arc on screen: " + gCodeLine)
 
     def clearGcode(self):
         '''
@@ -491,7 +491,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             
             return gCodeLine
         except ValueError:
-            print "line could not be moved:"
+            print("line could not be moved:")
             print originalLine
             return originalLine
     
@@ -557,7 +557,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             pass
         
         if gString == 'G18':
-            print "G18 not supported"
+            print("G18 not supported")
         
         if gString == 'G20':
             self.canvasScaleFactor = self.INCHES

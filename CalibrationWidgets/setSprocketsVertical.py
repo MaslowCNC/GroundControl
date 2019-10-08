@@ -198,7 +198,7 @@ class SetSprocketsVertical(GridLayout):
         
         '''
         
-        print "Current chain lengths:"
+        print("Current chain lengths:")
         print self.leftChainLength
         print self.rightChainLength
         
@@ -207,7 +207,7 @@ class SetSprocketsVertical(GridLayout):
         
         distPerRotation = chainPitch*gearTeeth
         
-        print "Rotations remainder:"
+        print("Rotations remainder:")
         distL = (-1*(self.leftChainLength%distPerRotation))
         distR = (-1*(self.rightChainLength%distPerRotation))
         
