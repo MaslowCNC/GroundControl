@@ -17,7 +17,7 @@ class RunMenu(FloatLayout):
         self.data.gcode_queue.put("G90  ")
         
         safeHeightMM = float(self.data.config.get('Maslow Settings', 'zAxisSafeHeight'))
-        safeHeightInches = safeHeightMM / 25.5
+        safeHeightInches = safeHeightMM / 25.4
         if self.data.units == "INCHES":
             self.data.gcode_queue.put("G00 Z" + '%.3f'%(safeHeightInches))
         else:
