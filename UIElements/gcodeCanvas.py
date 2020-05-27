@@ -91,6 +91,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         scaleFactor = .03
         anchor = (0,0)
         
+#         print 'gcodeCanvas',keycode, text, modifiers  # handy for exploring keyboard input
+        
         if keycode[1] == self.data.config.get('Ground Control Settings', 'zoomIn'):
             mat = Matrix().scale(1-scaleFactor, 1-scaleFactor, 1)
             self.scatterInstance.apply_transform(mat, anchor)
@@ -99,8 +101,33 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             mat = Matrix().scale(1+scaleFactor, 1+scaleFactor, 1)
             self.scatterInstance.apply_transform(mat, anchor)
             return True # we handled this key - don't pass to other callbacks
+        elif keycode[1] == self.data.config.get('Ground Control Settings', 'runKey'):
+            self.parent.startRun() # "click" the 'Run' button
+            return True # we handled this key - don't pass to other callbacks
+        elif keycode[1] == self.data.config.get('Ground Control Settings', 'pauseKey'):
+            self.parent.pause() # "click" the 'Pause' button
+            return True # we handled this key - don't pass to other callbacks
+        elif keycode[1] == self.data.config.get('Ground Control Settings', 'stopKey'):
+            self.parent.stopRun() # "click" the 'Stop' button
+            return True # we handled this key - don't pass to other callbacks
+#         elif keycode[1] == self.data.config.get('Ground Control Settings', 'fakeServo_Off'):
+#             if self.data.config.get('Ground Control Settings', 'fsModeAllowed') == "Allowed":
+#                 if 'ctrl' in modifiers or 'alt' in modifiers or 'meta' in modifiers:
+#                     self.data.gcode_queue.put("B99 ON \n")
+#                 else:
+#                     self.data.gcode_queue.put("B99 OFF \n")
+#                 return True # we handled this key - don't pass to other callbacks
+#             else:
+#                 return False # we didn't handle this key - let next callback handle it
+        elif keycode[1] == self.data.config.get('Ground Control Settings', 'fakeServo_Off'):
+            if 'ctrl' in modifiers or 'alt' in modifiers or 'meta' in modifiers:
+                if self.data.config.get('Ground Control Settings', 'fsModeAllowed') == "Allowed":
+                    self.data.gcode_queue.put("B99 ON \n")
+            else:
+                self.data.gcode_queue.put("B99 OFF \n")
+            return True # we handled this key - don't pass to other callbacks
         else:
-            return False # we didn't handle this key - let next callback handle it
+                return False # we didn't handle this key - let next callback handle it
 
     def isClose(self, a, b):
         return abs(a-b) <= self.data.tolerance
