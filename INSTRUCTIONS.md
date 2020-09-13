@@ -1,4 +1,4 @@
-**Note** GroundControl was the original control software written by @bar for the Maslow CNC. Since then WebControl was introduced and is now considered the goto control software. You can still download and use GroundControl, but developement has stopped, any you will find less and less support for it as memories fade. We recommend you use WebControl.
+**Note** GroundControl was the original control software written by @BarbourSmith for the Maslow CNC. Since then WebControl was introduced and is now considered the goto control software. You can still download and use GroundControl, but developement has stopped, any you will find less and less support for it as memories fade. We recommend you use WebControl.
 
 Ground Control is the program which runs on your computer and lets you control your machine. It provides controls to move the machine around, gives you a digital position readout, and lets you open and run Gcode files.
 
