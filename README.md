@@ -2,6 +2,8 @@
 
 Ground Control is the program which allows you to control the Maslow CNC machine.
 
+***Note:*** Ground Control has been superseeded by Web Control which is a community led project. For new installs consider using Web Control instead.
+
 ======================
 
 ## Overview
