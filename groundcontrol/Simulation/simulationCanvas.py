@@ -3,8 +3,8 @@ from kivy.properties                         import NumericProperty, ObjectPrope
 from kivy.graphics                           import Color, Ellipse, Line
 from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
-from kinematics                              import Kinematics
-from testPoint                               import TestPoint
+from .kinematics                              import Kinematics
+from .testPoint                               import TestPoint
 from kivy.graphics.transformation            import Matrix
 from kivy.clock                              import Clock
 from functools                               import partial
@@ -104,8 +104,8 @@ class SimulationCanvas(GridLayout):
         self.listOfPointsPlotted = []
         self.listOfDistortedPoints = []
         self.pointIndex = 0
-        self.verticalPoints   = range(int(int(topBottomBound/self.gridSize.value)*self.gridSize.value), -topBottomBound, -1 * int(self.gridSize.value))
-        self.horizontalPoints = range(int(int(leftRigthBound/self.gridSize.value)*self.gridSize.value), -leftRigthBound, -1 * int(self.gridSize.value))
+        self.verticalPoints   = list(range(int(int(topBottomBound/self.gridSize.value)*self.gridSize.value), -topBottomBound, -1 * int(self.gridSize.value)))
+        self.horizontalPoints = list(range(int(int(leftRigthBound/self.gridSize.value)*self.gridSize.value), -leftRigthBound, -1 * int(self.gridSize.value)))
 
         self.doSpecificCalculation()
         self.scatterInstance.canvas.clear()

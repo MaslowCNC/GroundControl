@@ -5,7 +5,7 @@ puts to the Queue immediately.
 
 '''
 
-from Queue import Queue
+from queue import Queue
 
 
 class LoggingQueue(Queue, object):

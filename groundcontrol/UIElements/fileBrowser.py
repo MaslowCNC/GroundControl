@@ -108,22 +108,22 @@ def get_drives():
             if bitmask & 1:
                 name = create_unicode_buffer(64)
                 # get name of the drive
-                drive = letter + u':'
+                drive = letter + ':'
                 res = GetVolumeInformationW(drive + sep, name, 64, None,
                                             None, None, None, 0)
                 drives.append((drive, name.value))
             bitmask >>= 1
     elif platform == 'linux':
         drives.append((sep, sep))
-        drives.append((expanduser(u'~'), '~/'))
-        places = (sep + u'mnt', sep + u'media')
+        drives.append((expanduser('~'), '~/'))
+        places = (sep + 'mnt', sep + 'media')
         for place in places:
             if isdir(place):
                 for directory in next(walk(place))[1]:
                     drives.append((place + sep + directory, directory))
     elif platform == 'macosx' or platform == 'ios':
-        drives.append((expanduser(u'~'), '~/'))
-        vol = sep + u'Volume'
+        drives.append((expanduser('~'), '~/'))
+        vol = sep + 'Volume'
         if isdir(vol):
             for drive in next(walk(vol))[1]:
                 drives.append((vol + sep + drive, drive))
@@ -285,7 +285,7 @@ class LinkTree(TreeView):
         sig_new = []
         for path, name in get_drives():
             if platform == 'win':
-                text = u'{}({})'.format((name + ' ') if name else '', path)
+                text = '{}({})'.format((name + ' ') if name else '', path)
             else:
                 text = name
             nodes_new.append((text, path))
@@ -382,7 +382,7 @@ class FileBrowser(BoxLayout):
     .. versionchanged:: 1.1
     '''
 
-    path = StringProperty(u'/')
+    path = StringProperty('/')
     '''
     :class:`~kivy.properties.StringProperty`, defaults to the current working
     directory as a unicode string. It specifies the path on the filesystem that
@@ -528,9 +528,9 @@ if __name__ == '__main__':
             print('cancelled, Close self.')
 
         def _fbrowser_success(self, instance):
-            print(instance.selection)
+            print((instance.selection))
 
         def _fbrowser_submit(self, instance):
-            print(instance.selection)
+            print((instance.selection))
 
     TestApp().run()

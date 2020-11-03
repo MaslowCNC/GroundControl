@@ -1,4 +1,5 @@
 *.pyc
+*.bak
 *.ini
 *ENV
 log.txt

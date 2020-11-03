@@ -44,7 +44,7 @@ class MeasureOneChain(GridLayout):
     def readMotorSpacing(self, dist):
         dist = dist - 2*6.35                                #subtract off the extra two links
 
-        print "Read motor spacing: " + str(dist)
+        print("Read motor spacing: " + str(dist))
         
         #put some slack in the chain
         self.data.gcode_queue.put("G91 ")

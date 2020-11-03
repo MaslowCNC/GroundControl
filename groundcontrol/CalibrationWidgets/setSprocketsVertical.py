@@ -198,21 +198,21 @@ class SetSprocketsVertical(GridLayout):
         
         '''
         
-        print "Current chain lengths:"
-        print self.leftChainLength
-        print self.rightChainLength
+        print("Current chain lengths:")
+        print(self.leftChainLength)
+        print(self.rightChainLength)
         
         chainPitch = float(self.data.config.get('Advanced Settings', 'chainPitch'))
         gearTeeth  = float(self.data.config.get('Advanced Settings', 'gearTeeth'))
         
         distPerRotation = chainPitch*gearTeeth
         
-        print "Rotations remainder:"
+        print("Rotations remainder:")
         distL = (-1*(self.leftChainLength%distPerRotation))
         distR = (-1*(self.rightChainLength%distPerRotation))
         
-        print distL
-        print distR
+        print(distL)
+        print(distR)
         
         self.data.gcode_queue.put("G91 ")
         self.data.gcode_queue.put("B09 L"+str(distL)+" ")

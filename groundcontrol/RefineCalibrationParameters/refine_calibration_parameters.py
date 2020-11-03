@@ -63,13 +63,13 @@ logger.debug( 'settings = {!r}'.format( settings ) )
 calibration = calibration_helpers.constructKinematicsCalibrationObject( settings )
 
 #	print initial calibration values
-print( 'Initial D = {:.03f}'.format( calibration.D ) )
-print( 'Initial R = {:.03f}'.format( calibration.R ) )
-print( 'Initial motorOffsetY = {:.03f}'.format( calibration.motorOffsetY ) )
-print( 'Initial rotationDiskRadius = {:.03f}'.format( calibration.rotationDiskRadius ) )
-print( 'Initial chainSagCorrection = {:.03f}'.format( calibration.chainSagCorrection ) )
-print( 'Initial motorOffsetX = {:.03f}'.format( calibration.motorOffsetX ) )
-print( 'Initial rightMotorDeltaY = {:.03f}'.format( calibration.rightMotorDeltaY ) )
+print(( 'Initial D = {:.03f}'.format( calibration.D ) ))
+print(( 'Initial R = {:.03f}'.format( calibration.R ) ))
+print(( 'Initial motorOffsetY = {:.03f}'.format( calibration.motorOffsetY ) ))
+print(( 'Initial rotationDiskRadius = {:.03f}'.format( calibration.rotationDiskRadius ) ))
+print(( 'Initial chainSagCorrection = {:.03f}'.format( calibration.chainSagCorrection ) ))
+print(( 'Initial motorOffsetX = {:.03f}'.format( calibration.motorOffsetX ) ))
+print(( 'Initial rightMotorDeltaY = {:.03f}'.format( calibration.rightMotorDeltaY ) ))
 print( '\n\n\n' )
 
 #	read the measurements .ini file
@@ -133,7 +133,7 @@ while True:
 	parameters = newParameters
 	cost = oldCost
 
-	print( 'Iteration count = {!r}'.format( iterationCount ) )
+	print(( 'Iteration count = {!r}'.format( iterationCount ) ))
 
 	#	increment iteration count
 	iterationCount += 1
@@ -142,13 +142,13 @@ while True:
 costFunction.setCalibrationFromParameters( parameters, calibration )
 
 #	print out the final calibration
-print( 'Final D = {:.03f}'.format( calibration.D ) )
-print( 'Final R = {:.03f}'.format( calibration.R ) )
-print( 'Final motorOffsetY = {:.03f}'.format( calibration.motorOffsetY ) )
-print( 'Final rotationDiskRadius = {:.03f}'.format( calibration.rotationDiskRadius ) )
-print( 'Final chainSagCorrection = {:.03f}'.format( calibration.chainSagCorrection ) )
-print( 'Final motorOffsetX = {:.03f}'.format( calibration.motorOffsetX ) )
-print( 'Final rightMotorDeltaY = {:.03f}'.format( calibration.rightMotorDeltaY ) )
+print(( 'Final D = {:.03f}'.format( calibration.D ) ))
+print(( 'Final R = {:.03f}'.format( calibration.R ) ))
+print(( 'Final motorOffsetY = {:.03f}'.format( calibration.motorOffsetY ) ))
+print(( 'Final rotationDiskRadius = {:.03f}'.format( calibration.rotationDiskRadius ) ))
+print(( 'Final chainSagCorrection = {:.03f}'.format( calibration.chainSagCorrection ) ))
+print(( 'Final motorOffsetX = {:.03f}'.format( calibration.motorOffsetX ) ))
+print(( 'Final rightMotorDeltaY = {:.03f}'.format( calibration.rightMotorDeltaY ) ))
 
 #	log final residuals
 kinematics = costFunction.constructKinematics( calibration )

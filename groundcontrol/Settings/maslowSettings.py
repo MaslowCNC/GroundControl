@@ -179,7 +179,7 @@ settings = {
                 "desc": "Max depth the z axis should plunge in order to find the touch probe",
                 "key": "maxTouchProbePlungeDistance",
                 "default": 0.0,
-	    },
+        },
             {
                 "type": "string",
                 "title": "Encoder Steps per Revolution",
@@ -255,7 +255,7 @@ settings = {
                 "title": "Spindle Automation",
                 "desc": "How should the spindle start and stop automatically based on gcode? Leave off for none, or set external servo control, or external relay control, active high or low.",
                 "key": "spindleAutomate",
-		"options": ["None", "Servo", "Relay_High", "Relay_Low"],
+        "options": ["None", "Servo", "Relay_High", "Relay_Low"],
                 "default": "None",
                 "firmwareKey": 17
             },
@@ -686,20 +686,20 @@ def syncFirmwareKey(firmwareKey, value, data):
             if 'firmwareKey' in option and option['firmwareKey'] == firmwareKey:
                 storedValue = data.config.get(section, option['key'])
 
-		if (option['key'] == "spindleAutomate"):
-                    if (storedValue == "Servo"):
-                        storedValue = 1
-                    elif (storedValue == "Relay_High"):
-                        storedValue = 2
-                    elif (storedValue == "Relay_Low"):
-                        storedValue = 3
-                    else:
-                        storedValue = 0
+        if (option['key'] == "spindleAutomate"):
+            if (storedValue == "Servo"):
+                storedValue = 1
+            elif (storedValue == "Relay_High"):
+                storedValue = 2
+            elif (storedValue == "Relay_Low"):
+                storedValue = 3
+            else:
+                storedValue = 0
 
-                if not isClose(float(storedValue), value):
-                    data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(storedValue))
-                else:
-                    break
+        if not isClose(float(storedValue), value):
+            data.gcode_queue.put("$" + str(firmwareKey) + "=" + str(storedValue))
+        else:
+            break
     return
 
 def isClose(a, b, rel_tol=1e-06):

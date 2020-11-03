@@ -128,7 +128,7 @@ class Diagnostics(FloatLayout, MakesmithInitFuncs):
         self._popup.dismiss()
     
     def launchSimulation(self):
-        print "launch simulation"
+        print("launch simulation")
         self.popupContent      = SimulationCanvas()
         self.popupContent.data = self.data
         self.popupContent.initialize()

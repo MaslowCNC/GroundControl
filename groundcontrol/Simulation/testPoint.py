@@ -1,6 +1,6 @@
 from kivy.uix.gridlayout                     import GridLayout
 from kivy.properties                         import NumericProperty, ObjectProperty
-from kinematics                              import Kinematics
+from .kinematics                              import Kinematics
 from kivy.graphics                           import Color, Ellipse, Line
 
 import math

@@ -23,12 +23,12 @@ class MeasureOutChains(GridLayout):
         self.text =  "If your chains are already in place they may retract to the target length.\n\nIf your left chain is still attached to the right motor from the length measurement motor-to-motor, remove it from the RIGHT motor without changing the position it has on the left motor.\nFor chains that are not attached to a motor (typical calibration = right chain) place the first link of the chain on the vertical sprocket tooth.\n\nThe correct length of first the left and then the right chain will be measured out\n\nOnce both chains are finished attach the sled, then press Next\n\nThe Move to Center button will move the sled to the center.\n\nBe sure to keep an eye on the chains during this process to ensure that they do not become tangled\naround the sprocket. The motors are very powerful and the machine can damage itself this way"
         
         #select the right image for a given setup
-        print "measure out chains on enter"
+        print("measure out chains on enter")
         if App.get_running_app().data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
-            print "top feeding detected"
+            print("top feeding detected")
             self.leftImg.source = "./Documentation/Calibrate Machine Dimensions/topfeeding/Ready To Calibrate.jpg"
         else :
-            print "bottom feeding detected"
+            print("bottom feeding detected")
             self.leftImg.source = "./Documentation/Calibrate Machine Dimensions/bottomfeeding/Ready To Calibrate.jpg"
     
     def stop(self):
@@ -44,7 +44,7 @@ class MeasureOutChains(GridLayout):
         '''
         self.data.gcode_queue.put("B15 ")
     
-    def next(self):
+    def __next__(self):
         
         self.readyToMoveOn()
     

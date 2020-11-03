@@ -278,7 +278,7 @@ class Kinematics():
 
 
         if (Tries > self.MaxTries):
-            print "unable to calculate chain lengths"
+            print("unable to calculate chain lengths")
 
         #Variables are within accuracy limits
         #  perform output computation
@@ -346,7 +346,7 @@ class Kinematics():
             #if we've converged on the point...or it's time to give up, exit the loop
             if((abs(aChainError) < .01 and abs(bChainError) < .01) or guessCount > 5000):
                 if(guessCount > 5000):
-                    print "Message: Unable to find valid machine position. Please calibrate chain lengths.",aChainError,bChainError,xGuess,yGuess
+                    print("Message: Unable to find valid machine position. Please calibrate chain lengths.",aChainError,bChainError,xGuess,yGuess)
                     return 0, 0
                 else:
                     return xGuess, yGuess

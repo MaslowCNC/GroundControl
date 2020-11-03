@@ -342,7 +342,7 @@ class GroundControlApp(App):
                     try:
                         self.data.measureRequest(measuredDist)
                     except:
-                        print "No function has requested a measurement"
+                        print("No function has requested a measurement")
             elif message[0:13] == "Maslow Paused":
                 self.data.uploadFlag = 0
                 self.writeToTextConsole(message)
@@ -458,7 +458,7 @@ class GroundControlApp(App):
                 self.writeToTextConsole("Unable to resolve z Kinematics.")
                 self.zval = 0
         except:
-            print "One Machine Position Report Command Misread"
+            print("One Machine Position Report Command Misread")
             return
 
         self.frontpage.setPosReadout(self.xval, self.yval, self.zval)
@@ -491,7 +491,7 @@ class GroundControlApp(App):
             
             
         except:
-            print "Machine Position Report Command Misread Happened Once"
+            print("Machine Position Report Command Misread Happened Once")
     
 if __name__ == '__main__':
     GroundControlApp().run()

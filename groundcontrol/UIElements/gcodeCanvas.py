@@ -314,7 +314,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.yPosition = yTarget
             self.zPosition = zTarget
         except:
-            print "Unable to draw line on screen: " + gCodeLine
+            print("Unable to draw line on screen: " + gCodeLine)
     
     def drawArc(self,gCodeLine,command):
         '''
@@ -385,7 +385,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             self.xPosition = xTarget
             self.yPosition = yTarget
         except:
-            print "Unable to draw arc on screen: " + gCodeLine
+            print("Unable to draw arc on screen: " + gCodeLine)
 
     def clearGcode(self):
         '''
@@ -491,8 +491,8 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             
             return gCodeLine
         except ValueError:
-            print "line could not be moved:"
-            print originalLine
+            print("line could not be moved:")
+            print(originalLine)
             return originalLine
     
     def loadNextLine(self):
@@ -557,7 +557,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
             pass
         
         if gString == 'G18':
-            print "G18 not supported"
+            print("G18 not supported")
         
         if gString == 'G20':
             self.canvasScaleFactor = self.INCHES
@@ -615,7 +615,7 @@ class GcodeCanvas(FloatLayout, MakesmithInitFuncs):
         #Check to see if file is too large to load
         if len(self.data.gcode) > self.maxNumberOfLinesToRead:
             errorText = "The current file contains " + str(len(self.data.gcode)) + " lines of gcode.\nrendering all " +  str(len(self.data.gcode)) + " lines simultaneously may crash the\n program, only the first " + self.maxNumberOfLinesToRead + "lines are shown here.\nThe complete program will cut if you choose to do so unless the home position is moved from (0,0)."
-            print errorText
+            print(errorText)
             self.data.message_queue.put("Message: " + errorText)
         
         self.callBackMechanism(self.updateGcode)

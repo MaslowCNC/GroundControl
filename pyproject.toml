@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "groundcontrol"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+wheel = "^0.35.1"
+pgen = "^0.2.1"
+cython = "^0.29.21"
+appdirs = "^1.4.4"
+kivy-garden = "^0.1.4"
+packaging = "^20.4"
+Pillow = "^8.0.1"
+kivy = "^1.11.1"
+pygame = "^2.0.0"
+pyparsing = "^2.4.7"
+pyserial = "^3.4"
+requests = "^2.24.0"
+six = "^1.15.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12", "cython"]
+build-backend = "poetry.masonry.api"

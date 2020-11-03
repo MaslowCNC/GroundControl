@@ -62,7 +62,7 @@ class ManualCalibration(GridLayout):
             self.loadNextStep()
             
         except Exception as e:
-            print e
+            print(e)
     
     def loadNextStep(self):
         self.readyToMoveOn()
