@@ -4,6 +4,9 @@ version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 
+[tool.poetry.scripts]
+groundcontrol = "groundcontrol.main:main"
+
 [tool.poetry.dependencies]
 python = "^3.7"
 wheel = "^0.35.1"

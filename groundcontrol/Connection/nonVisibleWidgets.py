@@ -1,5 +1,5 @@
-from DataStructures.makesmithInitFuncs         import   MakesmithInitFuncs
-from Connection.serialPort                     import   SerialPort
+from groundcontrol.data_structures.makesmithInitFuncs         import   MakesmithInitFuncs
+from groundcontrol.connection.serialPort                     import   SerialPort
 
 class NonVisibleWidgets(MakesmithInitFuncs):
     '''

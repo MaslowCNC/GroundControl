@@ -3,8 +3,8 @@ from kivy.properties                         import NumericProperty, ObjectPrope
 from kivy.graphics                           import Color, Ellipse, Line
 from kivy.graphics.transformation            import Matrix
 from kivy.core.window                        import Window
-from .kinematics                              import Kinematics
-from .testPoint                               import TestPoint
+from groundcontrol.simulation.kinematics                              import Kinematics
+from groundcontrol.simulation.testPoint                               import TestPoint
 from kivy.graphics.transformation            import Matrix
 from kivy.clock                              import Clock
 from functools                               import partial

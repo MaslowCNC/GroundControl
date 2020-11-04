@@ -1,5 +1,5 @@
-from DataStructures.makesmithInitFuncs         import   MakesmithInitFuncs
-from DataStructures.data          import   Data
+from groundcontrol.data_structures.makesmithInitFuncs         import   MakesmithInitFuncs
+from groundcontrol.data_structures.data          import   Data
 import serial
 import time
 from collections import deque

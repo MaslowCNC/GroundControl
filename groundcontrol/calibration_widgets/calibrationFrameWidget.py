@@ -1,0 +1,315 @@
+'''
+
+This is the widget which creates a frame around the calibration process providing infrastructure like the forwards and back buttons
+
+Each widget which it loads should be largely self contained and either gather a piece of information from the user or set the machine into a known
+state regardless of the machine's state when the widget begins.
+
+'''
+from   kivy.uix.gridlayout                                                 import  GridLayout
+from   kivy.properties                                                     import  ObjectProperty
+from groundcontrol.calibration_widgets.intro                               import  Intro
+from groundcontrol.calibration_widgets.chooseKinematicsType                import  ChooseKinematicsType
+from groundcontrol.calibration_widgets.chooseChainOverSprocketDirection    import  ChooseChainOverSprocketDirection
+from groundcontrol.calibration_widgets.computeCalibrationSteps             import  ComputeCalibrationSteps
+from groundcontrol.calibration_widgets.setSprocketsVertical                import  SetSprocketsVertical
+from groundcontrol.calibration_widgets.measureDistBetweenMotors            import  MeasureDistBetweenMotors
+from groundcontrol.calibration_widgets.vertDistToMotorsGuess               import  VertDistToMotorsGuess
+from groundcontrol.calibration_widgets.measureOutChains                    import  MeasureOutChains
+from groundcontrol.calibration_widgets.removeChains                        import  RemoveChains
+from groundcontrol.calibration_widgets.adjustZCalibrationDepth             import  AdjustZCalibrationDepth
+from groundcontrol.calibration_widgets.rotationRadiusGuess                 import  RotationRadiusGuess
+from groundcontrol.calibration_widgets.triangularCalibration               import  TriangularCalibration
+from groundcontrol.calibration_widgets.distBetweenChainBrackets            import  DistBetweenChainBrackets
+from groundcontrol.calibration_widgets.reviewMeasurements                  import  ReviewMeasurements
+from groundcontrol.calibration_widgets.quadTestCut                         import  QuadTestCut
+from groundcontrol.calibration_widgets.finish                              import  Finish
+from groundcontrol.calibration_widgets.finishSetChainLengths               import  FinishSetChainLengths
+from groundcontrol.calibration_widgets.manualCalibration                   import  ManualCalibration
+from groundcontrol.calibration_widgets.enterDistanceBetweenMotors          import  EnterDistanceBetweenMotors
+from groundcontrol.calibration_widgets.measureOneChain                     import  MeasureOneChain
+from groundcontrol.calibration_widgets.computeChainCorrectionFactors       import  ComputeChainCorrectionFactors
+from groundcontrol.calibration_widgets.wipeOldCorrectionValues             import  WipeOldCorrectionValues
+from kivy.app                                                              import  App
+
+
+class CalibrationFrameWidget(GridLayout):
+    done   = ObjectProperty(None)
+    listOfCalibrationSteps = []
+    currentStepNumber = 0
+    
+    def on_Enter(self):
+        '''
+        
+        Called the first time the widget is created
+        
+        '''
+        
+        App.get_running_app().data.calibrationInProcess = True
+        
+        
+        self.loadStep(0)
+    
+    def on_Exit(self):
+        '''
+        
+        This function run when the process is completed or quit is pressed
+        
+        '''
+        App.get_running_app().data.calibrationInProcess = False
+        App.get_running_app().data.message_queue.put("Message: Notice: Exiting the calibration process early may result in incorrect calibration.")
+        
+        #remove the old widget
+        try:
+            self.cFrameWidgetSpace.remove_widget(self.currentWidget)
+        except:
+            pass #there was no widget to remove
+        
+        self.done()
+    
+    def setupFullCalibration(self):
+        
+        #ensure that there are no widgets in the deck when we start
+        self.listOfCalibrationSteps = []
+        
+        #load the first steps in the calibration process because they are always the same
+        intro =  Intro()
+        self.listOfCalibrationSteps.append(intro)
+        
+        chooseKinematicsType                        = ChooseKinematicsType()
+        self.listOfCalibrationSteps.append(chooseKinematicsType)
+        
+        vertDistGuess                               = VertDistToMotorsGuess()
+        self.listOfCalibrationSteps.append(vertDistGuess)
+        
+        setTo12                                     = SetSprocketsVertical()
+        self.listOfCalibrationSteps.append(setTo12)
+        
+        measureMotorDist                            = MeasureDistBetweenMotors()
+        self.listOfCalibrationSteps.append(measureMotorDist)
+        
+        chooseChainOverSprocketDirection             = ChooseChainOverSprocketDirection()
+        self.listOfCalibrationSteps.append(chooseChainOverSprocketDirection)
+        
+        reviewMeasurements                          = ReviewMeasurements()
+        self.listOfCalibrationSteps.append(reviewMeasurements)
+        
+        computeCalibrationSteps                     = ComputeCalibrationSteps()
+        computeCalibrationSteps.setupListOfSteps    = self.addSteps
+        self.listOfCalibrationSteps.append(computeCalibrationSteps)
+    
+    def setupJustChainsCalibration(self):
+        '''
+        
+        Calling this function sets up the calibration process to show just the steps to calibrate the chain lengths
+        
+        '''
+        
+        #ensure that there are no widgets in the deck when we start
+        self.listOfCalibrationSteps = []
+        
+        #load steps
+        setSprocketsVertical =  SetSprocketsVertical()
+        self.listOfCalibrationSteps.append(setSprocketsVertical)
+        
+        measureOutChains =  MeasureOutChains()
+        self.listOfCalibrationSteps.append(measureOutChains)
+        
+        finishSetChainLengths =  FinishSetChainLengths()
+        finishSetChainLengths.done         = self.done
+        self.listOfCalibrationSteps.append(finishSetChainLengths)
+    
+    def setupJustTriangularTestCuts(self):
+        '''
+        
+        Calling this function sets up the calibration process to show just the steps cut the triangular test pattern
+        
+        '''
+        
+        #ensure that there are no widgets in the deck when we start
+        self.listOfCalibrationSteps = []
+        
+        #add triangular kinematics
+        triangularCalibration                       = TriangularCalibration()
+        self.listOfCalibrationSteps.append(triangularCalibration)
+        
+        #one last review
+        reviewMeasurements                          = ReviewMeasurements()
+        self.listOfCalibrationSteps.append(reviewMeasurements)
+        
+        #add finish step
+        finish              = Finish()
+        finish.done         = self.done
+        self.listOfCalibrationSteps.append(finish)
+    
+    def setupManualCalibration(self):
+        '''
+        
+        Calling this function sets up the calibration process to show an option to enter manual machine dimensions
+        
+        '''
+        
+        #ensure that there are no widgets in the deck when we start
+        self.listOfCalibrationSteps = []
+        
+        #add manual calibation card
+        manualCalibration                       = ManualCalibration()
+        self.listOfCalibrationSteps.append(manualCalibration)
+        
+        #one last review
+        reviewMeasurements                          = ReviewMeasurements()
+        self.listOfCalibrationSteps.append(reviewMeasurements)
+        
+        #add finish step
+        finish              = Finish()
+        finish.done         = self.done
+        self.listOfCalibrationSteps.append(finish)
+    
+    def setupMeasureChainTolerances(self):
+        '''
+        
+        Calling this function sets up the process with the cards to measure the chain tolerances
+        
+        '''
+        
+        #ensure that there are no widgets in the deck when we start
+        self.listOfCalibrationSteps = []
+        
+        #enter manual measurement of distance between motors
+        enterDistanceBetweenMotors                       = EnterDistanceBetweenMotors()
+        self.listOfCalibrationSteps.append(enterDistanceBetweenMotors)
+        
+        #enter manual measurement of distance between motors
+        wipeOldCorrectionValues                       = WipeOldCorrectionValues()
+        self.listOfCalibrationSteps.append(wipeOldCorrectionValues)
+        
+        #set to 12
+        setTo12                                          = SetSprocketsVertical()
+        self.listOfCalibrationSteps.append(setTo12)
+        
+        #extend left chain and pull tight to measure
+        measureOneChain                                  = MeasureOneChain()
+        measureOneChain.setDirection('L')
+        self.listOfCalibrationSteps.append(measureOneChain)
+        
+        #set to 12
+        setTo12                                          = SetSprocketsVertical()
+        self.listOfCalibrationSteps.append(setTo12)
+        
+        #extend right chain and pull tight to measure
+        measureOneChain                                  = MeasureOneChain()
+        measureOneChain.setDirection('R')
+        self.listOfCalibrationSteps.append(measureOneChain)
+        
+        #compute values
+        computeChainCorrectionFactors                    = ComputeChainCorrectionFactors()
+        self.listOfCalibrationSteps.append(computeChainCorrectionFactors)
+        
+        #finish
+        finish              = Finish()
+        finish.done         = self.done
+        self.listOfCalibrationSteps.append(finish)
+    
+    def addSteps(self):
+        '''
+        
+        This function will be called when the ComputeCalibrationSteps step is reached. It will compute which steps are needed for a 
+        given frame configuration and add them to the list
+        
+        '''
+        
+        if App.get_running_app().data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
+            #if we're using the top system no extra steps are needed
+            pass
+        else:
+            #if we're using the bottom method we need to remove the chain now and put it back at 12 o'clock
+            
+            removeChains                                 = RemoveChains()
+            self.listOfCalibrationSteps.append(removeChains)
+            
+            setTo12                                     = SetSprocketsVertical()
+            self.listOfCalibrationSteps.append(setTo12)
+            
+        
+        if App.get_running_app().data.config.get('Advanced Settings', 'kinematicsType') == 'Triangular':
+            #add rotation radius guess
+            rotationRadiusGuess                         = RotationRadiusGuess()
+            self.listOfCalibrationSteps.append(rotationRadiusGuess)
+            
+            #add extend chains
+            measureOutChains                                = MeasureOutChains()
+            self.listOfCalibrationSteps.append(measureOutChains)
+            
+            #add set z
+            adjustZCalibrationDepth                         = AdjustZCalibrationDepth()
+            self.listOfCalibrationSteps.append(adjustZCalibrationDepth)
+            
+            #add triangular kinematics
+            triangularCalibration                       = TriangularCalibration()
+            self.listOfCalibrationSteps.append(triangularCalibration)
+        else:
+            
+            #add extend chains
+            measureOutChains                                = MeasureOutChains()
+            self.listOfCalibrationSteps.append(measureOutChains)
+            
+            #add set z
+            adjustZCalibrationDepth                         = AdjustZCalibrationDepth()
+            self.listOfCalibrationSteps.append(adjustZCalibrationDepth)
+            
+            #Ask for guess of attachment spacing
+            distBetweenChainBrackets                    = DistBetweenChainBrackets()
+            self.listOfCalibrationSteps.append(distBetweenChainBrackets)
+            #Do quadrilateral test cut
+            quadTestCut                                 = QuadTestCut()
+            self.listOfCalibrationSteps.append(quadTestCut)
+        
+        
+        #one last review
+        reviewMeasurements                          = ReviewMeasurements()
+        self.listOfCalibrationSteps.append(reviewMeasurements)
+        
+        #add finish step
+        finish              = Finish()
+        finish.done         = self.done
+        self.listOfCalibrationSteps.append(finish)
+    
+    def loadNextStep(self):
+        '''
+        
+        Called to trigger a loading of the next slide
+        
+        '''
+        
+        self.currentStepNumber = self.currentStepNumber + 1
+        self.loadStep(self.currentStepNumber)
+    
+    def back(self):
+        '''
+        
+        Re-load the previous step
+        
+        '''
+        self.currentStepNumber = self.currentStepNumber - 1
+        self.loadStep(self.currentStepNumber)
+        
+    def loadStep(self, stepNumber):
+        
+        #remove the old widget
+        try:
+            self.currentWidget.on_Exit()
+            self.cFrameWidgetSpace.remove_widget(self.currentWidget)
+        except:
+            pass #there was no widget to remove
+        
+        try:
+            #load the new widget
+            self.currentWidget = self.listOfCalibrationSteps[self.currentStepNumber]
+            
+            #initialize the new widget
+            self.currentWidget.readyToMoveOn = self.loadNextStep
+            self.currentWidget.on_Enter()
+            self.cFrameWidgetSpace.add_widget(self.currentWidget)
+        except IndexError:
+            #the calibration has run out of steps
+            pass

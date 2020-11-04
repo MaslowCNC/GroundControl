@@ -18,7 +18,7 @@ from kivy.uix.button            import Button
 from kivy.clock                 import Clock
 from kivy.uix.popup             import Popup
 import math
-import global_variables
+import groundcontrol.global_variables as global_variables
 import sys
 import re
 import json
@@ -29,21 +29,21 @@ Internal Module Imports
 
 '''
 
-from UIElements.frontPage         import   FrontPage
-from UIElements.screenControls    import   ScreenControls
-from UIElements.gcodeCanvas       import   GcodeCanvas
-from UIElements.otherFeatures     import   OtherFeatures
-from UIElements.softwareSettings  import   SoftwareSettings
-from UIElements.viewMenu          import   ViewMenu
-from UIElements.runMenu           import   RunMenu
-from UIElements.connectMenu       import   ConnectMenu
-from UIElements.diagnosticsMenu   import   Diagnostics
-from UIElements.manualControls    import   ManualControl
-from DataStructures.data          import   Data
-from Connection.nonVisibleWidgets import   NonVisibleWidgets
-from UIElements.notificationPopup import   NotificationPopup
-from Settings                     import   maslowSettings
-from UIElements.backgroundMenu    import   BackgroundMenu
+from groundcontrol.ui_elements.frontPage         import   FrontPage
+from groundcontrol.ui_elements.screenControls    import   ScreenControls
+from groundcontrol.ui_elements.gcodeCanvas       import   GcodeCanvas
+from groundcontrol.ui_elements.otherFeatures     import   OtherFeatures
+from groundcontrol.ui_elements.softwareSettings  import   SoftwareSettings
+from groundcontrol.ui_elements.viewMenu          import   ViewMenu
+from groundcontrol.ui_elements.runMenu           import   RunMenu
+from groundcontrol.ui_elements.connectMenu       import   ConnectMenu
+from groundcontrol.ui_elements.diagnosticsMenu   import   Diagnostics
+from groundcontrol.ui_elements.manualControls    import   ManualControl
+from groundcontrol.data_structures.data          import   Data
+from groundcontrol.connection.nonVisibleWidgets import   NonVisibleWidgets
+from groundcontrol.ui_elements.notificationPopup import   NotificationPopup
+from groundcontrol.settings                    import   maslowSettings
+from groundcontrol.ui_elements.backgroundMenu    import   BackgroundMenu
 '''
 
 Main UI Program
@@ -165,7 +165,6 @@ class GroundControlApp(App):
         """
         Add custom section to the default configuration object.
         """
-        
         settings.add_json_panel('Maslow Settings', self.config, data=maslowSettings.getJSONSettingSection('Maslow Settings'))
         settings.add_json_panel('Advanced Settings', self.config, data=maslowSettings.getJSONSettingSection('Advanced Settings'))
         settings.add_json_panel('Ground Control Settings', self.config, data=maslowSettings.getJSONSettingSection("Ground Control Settings"))
@@ -493,5 +492,8 @@ class GroundControlApp(App):
         except:
             print("Machine Position Report Command Misread Happened Once")
     
-if __name__ == '__main__':
+def main():
     GroundControlApp().run()
+
+if __name__ == '__main__':
+    main()

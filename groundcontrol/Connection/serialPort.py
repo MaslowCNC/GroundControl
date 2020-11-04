@@ -1,7 +1,7 @@
 from kivy.properties                           import  ListProperty
 from kivy.clock                                import  Clock
-from DataStructures.makesmithInitFuncs         import  MakesmithInitFuncs
-from Connection.serialPortThread               import  SerialPortThread
+from groundcontrol.data_structures.makesmithInitFuncs         import  MakesmithInitFuncs
+from groundcontrol.connection.serialPortThread               import  SerialPortThread
 
 import sys
 import serial

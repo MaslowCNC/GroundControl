@@ -642,12 +642,17 @@ def getJSONSettingSection(section):
     options = []
     if section in settings:
         options = settings[section]
+    
+    valid_options = []
     for option in options:
         option['section'] = section
         if 'desc' in option and 'default' in option:
             if not "default setting:" in option['desc']:                            #check to see if the default text has already been added
                 option['desc'] += "\ndefault setting: " + str(option['default'])
-    return json.dumps(options)
+        valid_options.append(
+            {key: option[key] for key in ['type', 'title', 'desc', 'section', 'key']}
+        )
+    return json.dumps(valid_options)
 
 def getDefaultValueSection(section):
     '''
