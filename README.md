@@ -40,6 +40,41 @@ For Windows and OS X binaries, see the [releases](https://github.com/MaslowCNC/G
 
 For help installing binaries, see the [installation guides](https://github.com/MaslowCNC/GroundControl/wiki#gc-installation-guides).
 
+
+### MacOS
+
+Install homebrew and poetry.
+
+Install python 3.7
+
+```bash
+brew install python@3.7
+```
+
+Install Kivy dependencies following "Using Homebrew with pip" [instructions](https://kivy.org/doc/stable/installation/installation-osx.html).
+
+```bash
+brew install pkg-config sdl2 sdl2_image sdl2_ttf sdl2_mixer gstreamer
+```
+
+Depending on your poetry installation, you might want to set which python you want to use
+
+```bash
+poetry env use /path/to/python@3.7/bin/python3.7
+```
+
+Install GroundControl using poetry
+
+```bash
+poetry install
+```
+
+Run GroundControl
+
+```bash
+poetry run groundcontrol
+```
+
 ## Documentation
 
 Ground control documentation is available on the [project wiki](https://github.com/MaslowCNC/GroundControl/wiki).
