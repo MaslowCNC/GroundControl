@@ -1,4 +1,5 @@
 #:kivy 1.9.1
+#:import get_asset groundcontrol.util.get_asset
 
 #<Widget>:
 #This can be used to create boxes around each widget to clarify positioning issues. It is only for debug
@@ -686,7 +687,7 @@
         GridLayout:
             cols: 2
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Set Z Height.jpg")
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -781,9 +782,9 @@
         GridLayout:
             cols: 2
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Quadrilateral Kinematics.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Quadrilateral Kinematics.jpg")
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Triangular Kinematics.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Triangular Kinematics.jpg")
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -811,9 +812,9 @@
         GridLayout:
             cols: 2
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Chain off top.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Chain off top.jpg")
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Chain off bottom.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Chain off bottom.jpg")
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -906,7 +907,7 @@
         GridLayout:
             cols: 2
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview Triangular.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Test Shape Preview Triangular.jpg")
                 size_hint_x: 0.5
             Label:
                 text: root.triangularCalText
@@ -1125,11 +1126,11 @@
         GridLayout:
             cols: 3
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Test Shape Preview.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Test Shape Preview.jpg")
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Measure Test Shape Horizontal.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Measure Test Shape Horizontal.jpg")
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Measure Test Shape Vertical.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Measure Test Shape Vertical.jpg")
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -1180,11 +1181,11 @@
         GridLayout:
             cols: 3
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Chain On Left Sprocket.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Chain On Left Sprocket.jpg")
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Chain Between Sprockets.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Chain Between Sprockets.jpg")
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Chain On Right Sprocket.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Chain On Right Sprocket.jpg")
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -1227,11 +1228,11 @@
         GridLayout:
             cols: 3
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Chain On Left Sprocket.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Chain On Left Sprocket.jpg")
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Chain Between Sprockets.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Chain Between Sprockets.jpg")
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Chain On Right Sprocket.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Chain On Right Sprocket.jpg")
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -1264,7 +1265,7 @@
         GridLayout:
             cols: 2
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Measure Motor Height.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Measure Motor Height.jpg")
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -1295,7 +1296,7 @@
         GridLayout:
             cols: 2
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Set Z Height.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Set Z Height.jpg")
     GridLayout:
         cols: 1
         size_hint_x: rightCol
@@ -1382,7 +1383,7 @@
             text_size: self.size
             valign: 'middle'
         Image:
-            source: "./Documentation/Calibrate Machine Dimensions/Sprocket at 12-00.jpg"
+            source: get_asset("documentation/Calibrate Machine Dimensions/Sprocket at 12-00.jpg")
     GridLayout:
         cols:1
         size_hint_x: .4
@@ -1553,7 +1554,7 @@
             Image:
                 id: leftImg
             Image:
-                source: "./Documentation/Calibrate Machine Dimensions/Sled Attached.jpg"
+                source: get_asset("documentation/Calibrate Machine Dimensions/Sled Attached.jpg")
     GridLayout:
         cols: 1
         size_hint_x: rightCol

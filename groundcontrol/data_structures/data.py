@@ -7,6 +7,7 @@ from kivy.properties                                  import NumericProperty
 from kivy.event                                       import EventDispatcher
 from groundcontrol.data_structures.logger                            import   Logger
 from groundcontrol.data_structures.loggingQueue                      import   LoggingQueue
+from groundcontrol.util import get_asset
 import queue
 
 class Data(EventDispatcher):
@@ -78,7 +79,7 @@ class Data(EventDispatcher):
     '''
     fontColor                                             =  StringProperty('[color=7a7a7a]')
     drawingColor                                          =  ObjectProperty([.47,.47,.47])
-    iconPath                                              =  StringProperty('./Images/Icons/normal/')
+    iconPath                                              =  StringProperty(get_asset('images/Icons/normal/'))
     posIndicatorColor                                     =  ObjectProperty([0,0,0])
     targetInicatorColor                                   =  ObjectProperty([1,0,0])
 

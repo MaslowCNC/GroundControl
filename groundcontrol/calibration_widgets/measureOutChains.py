@@ -3,6 +3,8 @@ from kivy.properties                      import   ObjectProperty, StringPropert
 from kivy.clock                           import   Clock
 from   kivy.app                           import   App
 
+from groundcontrol.util import get_asset
+
 class MeasureOutChains(GridLayout):
     '''
     
@@ -26,10 +28,10 @@ class MeasureOutChains(GridLayout):
         print("measure out chains on enter")
         if App.get_running_app().data.config.get('Advanced Settings', 'chainOverSprocket') == 'Top':
             print("top feeding detected")
-            self.leftImg.source = "./Documentation/Calibrate Machine Dimensions/topfeeding/Ready To Calibrate.jpg"
+            self.leftImg.source = get_asset("documentation/Calibrate Machine Dimensions/topfeeding/Ready To Calibrate.jpg")
         else :
             print("bottom feeding detected")
-            self.leftImg.source = "./Documentation/Calibrate Machine Dimensions/bottomfeeding/Ready To Calibrate.jpg"
+            self.leftImg.source = get_asset("documentation/Calibrate Machine Dimensions/bottomfeeding/Ready To Calibrate.jpg")
     
     def stop(self):
         self.data.quick_queue.put("!") 
