@@ -40,6 +40,119 @@ For Windows and OS X binaries, see the [releases](https://github.com/MaslowCNC/G
 
 For help installing binaries, see the [installation guides](https://github.com/MaslowCNC/GroundControl/wiki#gc-installation-guides).
 
+
+### MacOS
+
+Install homebrew and poetry.
+
+Install python 3.7
+
+```bash
+brew install python@3.7
+```
+
+Install Kivy dependencies following "Using Homebrew with pip" [instructions](https://kivy.org/doc/stable/installation/installation-osx.html).
+
+```bash
+brew install pkg-config sdl2 sdl2_image sdl2_ttf sdl2_mixer gstreamer
+```
+
+Depending on your poetry installation, you might want to set which python you want to use
+
+```bash
+poetry env use /path/to/python@3.7/bin/python3.7
+```
+
+Install GroundControl using poetry
+
+```bash
+poetry install
+```
+
+Run GroundControl
+
+```bash
+poetry run groundcontrol
+```
+
+## Raspberry Pi 3B+ (Version 4 currently has problems with kivy)
+
+Flash an SD card with Raspberry Pi OS Lite
+
+Do updata/upgrade
+
+```bash
+sudo apt-get update
+sudo apt-get upgrade
+```
+
+Install Kivy dependencies
+
+```bash
+sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
+   pkg-config libgl1-mesa-dev libgles2-mesa-dev \
+   python-setuptools libgstreamer1.0-dev git-core \
+   gstreamer1.0-plugins-{bad,base,good,ugly} \
+   gstreamer1.0-{omx,alsa} python-dev libmtdev-dev \
+   xclip xsel libjpeg-dev
+```
+
+Make sure you have python3.7 and installed and python is pointing to 3.7
+
+```bash
+sudo apt-get install python3.7 python3-distutils python3-venv python3-pip
+sudo rm /usr/bin/python
+sudo ln -s /usr/bin/python3.7 /usr/bin/python
+```
+
+Install poetry
+
+```bash
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+```
+
+Downgrade poetry to 1.0.0 (later versions might not work well on Raspberry)
+
+```bash
+source $HOME/.poetry/env
+poetry self update 1.0.0
+```
+
+Install git and clone repository
+
+```bash
+sudo apt-get install git
+git clone https://github.com/mdelmans/GroundControl.git -b feature/cleanup
+```
+
+Install GroundControl
+
+```bash
+cd GroundControll
+poetry install
+```
+
+Run GroundControl
+
+```bash
+poetry run groundcontrol
+```
+
+If you are using Official Raspberry Pi Screen, add the following to `~/.kivy/config.ini` [input] section
+
+```bash
+mouse = mouse
+mtdev_%(name)s = probesysfs,provider=mtdev
+hid_%(name)s = probesysfs,provider=hidinput
+```
+And increase gpu memory to 128MB in raspi-config [Perfomance] -> [GPU Memory]
+
+```bash
+sudo raspi-config
+```
+
+
+
 ## Documentation
 
 Ground control documentation is available on the [project wiki](https://github.com/MaslowCNC/GroundControl/wiki).
