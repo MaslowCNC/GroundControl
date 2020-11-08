@@ -95,14 +95,6 @@ version = "8.0.1"
 
 [[package]]
 category = "main"
-description = "Python Game Development"
-name = "pygame"
-optional = false
-python-versions = "*"
-version = "2.0.0"
-
-[[package]]
-category = "main"
 description = "Pygments is a syntax highlighting package written in Python."
 name = "pygments"
 optional = false
@@ -165,7 +157,7 @@ secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "cer
 socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
 
 [metadata]
-content-hash = "06f1abe2ef997b7b095a352647155bc1c78971ff803cea77a62e7ce73be87e0e"
+content-hash = "25f5a4e5d57b97edfdac961e46400eff206f63f62625b409fefe3889d21d2970"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -281,49 +273,6 @@ pillow = [
     {file = "Pillow-8.0.1-pp36-pypy36_pp73-manylinux2010_x86_64.whl", hash = "sha256:4b0ef2470c4979e345e4e0cc1bbac65fda11d0d7b789dbac035e4c6ce3f98adb"},
     {file = "Pillow-8.0.1-pp37-pypy37_pp73-win32.whl", hash = "sha256:8de332053707c80963b589b22f8e0229f1be1f3ca862a932c1bcd48dafb18dd8"},
     {file = "Pillow-8.0.1.tar.gz", hash = "sha256:11c5c6e9b02c9dac08af04f093eb5a2f84857df70a7d4a6a6ad461aca803fb9e"},
-]
-pygame = [
-    {file = "pygame-2.0.0-cp27-cp27m-macosx_10_9_intel.whl", hash = "sha256:697599838b559b9f6573c3064357b404d3fd7af145168e2f4e3ed551bc4400ec"},
-    {file = "pygame-2.0.0-cp27-cp27m-win32.whl", hash = "sha256:411fa087a21f065d720d199b848652bf02d61cb39ff4d62745be37257fd84361"},
-    {file = "pygame-2.0.0-cp27-cp27m-win_amd64.whl", hash = "sha256:6bd16df20e5b9bc82a4dae7342573a7917530c2e4713c576f2684ebc79a9aa73"},
-    {file = "pygame-2.0.0-cp27-cp27mu-manylinux1_i686.whl", hash = "sha256:0ba624e8cc2056f0c8f7f819f2564284bb675dd9a8097e03762763a63f99e1b3"},
-    {file = "pygame-2.0.0-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:a03f0357ad4a9daf6e70b239804b77088d0b1543fc32e672f97f38e35fb1c206"},
-    {file = "pygame-2.0.0-cp35-cp35m-macosx_10_9_intel.whl", hash = "sha256:dc7cbfc0a0a0f1f8b1be4dbf0788a4ac7d3dd2991067e1cfd869c65c323a24a5"},
-    {file = "pygame-2.0.0-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:7c228e067b5e212acc2ee1412e2cf29f5900fd290b09556014aee74665ffaded"},
-    {file = "pygame-2.0.0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:69f9452365eef5ef476eca2657dcc488d8f93423a2f6e80e6dc5ada9fa813d21"},
-    {file = "pygame-2.0.0-cp35-cp35m-win32.whl", hash = "sha256:a7d298ebc7239dcf98e093b3510abc5279c8c7c149c60d2a8a81a1b44a671da3"},
-    {file = "pygame-2.0.0-cp35-cp35m-win_amd64.whl", hash = "sha256:5450704eab972951cce02231e21dbbdffcf7e7c569cfb8d26346e2b18197ae0f"},
-    {file = "pygame-2.0.0-cp36-cp36m-macosx_10_9_intel.whl", hash = "sha256:6f5b10de20a6d6a4c84371fd55d25038ef3fa3ceb1a20a61bcab1b1f2459a115"},
-    {file = "pygame-2.0.0-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:8a240f598c21a4d2218eaeccfdd77bf0d0f6789133a154b07667285157b95ffa"},
-    {file = "pygame-2.0.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:5ed4b00612b11c1ebbfbff1379616de2fa4d1acd9830232cc9a4a2ac2aa55e84"},
-    {file = "pygame-2.0.0-cp36-cp36m-win32.whl", hash = "sha256:cb6dda696df8326eebf8514aa7d6e18977d37822241d8661069ca42a45f957d6"},
-    {file = "pygame-2.0.0-cp36-cp36m-win_amd64.whl", hash = "sha256:d700ffe744efde7eba1709950066429bdd21e9eec2288e29d39c3a9f21a04a7c"},
-    {file = "pygame-2.0.0-cp37-cp37m-macosx_10_9_intel.whl", hash = "sha256:b5ac39ef5453252cb4b4ce2956ad9832688476a7a99bbdee1a7e17bf40e0a11f"},
-    {file = "pygame-2.0.0-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:e716b3a5ca469959ad0d631cbb7846386741fc056968a3abb097ba5b43757214"},
-    {file = "pygame-2.0.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:abed99f21c11d7f8deb0b3a41e2e4b0d00a98c17c23edd4dd344f169b317a586"},
-    {file = "pygame-2.0.0-cp37-cp37m-win32.whl", hash = "sha256:3a2e7a0e6377224d3956ac9791382f7baadf66957679be8a9cc493f488245584"},
-    {file = "pygame-2.0.0-cp37-cp37m-win_amd64.whl", hash = "sha256:3d0be0275b1d4939c9c9074d879407f330cbac0c837cd0f4b24ab0377959f6da"},
-    {file = "pygame-2.0.0-cp38-cp38-macosx_10_9_intel.whl", hash = "sha256:d768ff1f2dd3de84585a68b491821badc35b2c9c4453c6cbcf48949be99ea781"},
-    {file = "pygame-2.0.0-cp38-cp38-manylinux1_i686.whl", hash = "sha256:4e58cc6f47412cf441a0c9b98dcb8141e1f2cdb6bbd0b00d1b89572d54195002"},
-    {file = "pygame-2.0.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:00268b75204519628760030d256b17e557710a859fadf7cbf80ead80efc22779"},
-    {file = "pygame-2.0.0-cp38-cp38-win32.whl", hash = "sha256:21f4e50c1f13e143c590a48e63644ed2d0cfb50f9ce699c5e8b7af7caaa5cbe3"},
-    {file = "pygame-2.0.0-cp38-cp38-win_amd64.whl", hash = "sha256:2c2475f706e49b4a67d6958e5cce1157f3875083eba92ab298bdf7ba33780524"},
-    {file = "pygame-2.0.0-cp39-cp39-macosx_10_9_intel.whl", hash = "sha256:87795c07c1de05150759b52e7bc3ccb38e76148ae8e40f07bf2b1368e7fabf0e"},
-    {file = "pygame-2.0.0-cp39-cp39-manylinux1_i686.whl", hash = "sha256:d1b9279133bb9f1ff5e7f5369a7a25749279724f64428980f6cec58eb7ce18da"},
-    {file = "pygame-2.0.0-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:9d10a197518f8b50d3a61b923762a37063b9d6e27d1abe5167bb3a762e816833"},
-    {file = "pygame-2.0.0-cp39-cp39-win32.whl", hash = "sha256:579d2162591241dc98c80c796576bb93edbd8107a8a43e13a18bf3c9c0dfb446"},
-    {file = "pygame-2.0.0-cp39-cp39-win_amd64.whl", hash = "sha256:e75fe7624d2fc03b93a706f4d8f8204cb9c83c8f16245553546b3bd0a733556c"},
-    {file = "pygame-2.0.0-pp27-pypy_73-manylinux2010_i686.whl", hash = "sha256:1bc6e76e31e7ce6b734f12a06d975af2ef29da93e5ccbecbc8ed2d38d1bea8ea"},
-    {file = "pygame-2.0.0-pp27-pypy_73-manylinux2010_x86_64.whl", hash = "sha256:19b66c7546261996e2533b922f78b04edc1901586d6e023af7ec0aef4d6d4a9f"},
-    {file = "pygame-2.0.0-pp27-pypy_73-win32.whl", hash = "sha256:7ee08691262b1a22dfd28b9b0e126cfc0276b349ddfd7ef8964a0e54d000ab0e"},
-    {file = "pygame-2.0.0-pp36-pypy36_pp73-macosx_10_9_intel.whl", hash = "sha256:e21e68b1110bea64ed1dee6e644b49423f9539fb3e29d27ca6c68011f999c8f9"},
-    {file = "pygame-2.0.0-pp36-pypy36_pp73-manylinux2010_i686.whl", hash = "sha256:c2aea8cfa8156016d5316a601e804e8eacc77facd550d6bff893130f8f506a45"},
-    {file = "pygame-2.0.0-pp36-pypy36_pp73-manylinux2010_x86_64.whl", hash = "sha256:db05ce075aed6a9ac6b5613f273eb134a643a7b910ded4f6395b09a7f24edacf"},
-    {file = "pygame-2.0.0-pp36-pypy36_pp73-win32.whl", hash = "sha256:0fa2dfa9daacaa5533ab733c0fd038e319b83d685f92e986fe3233dd06e508e4"},
-    {file = "pygame-2.0.0-pp37-pypy37_pp73-macosx_10_9_intel.whl", hash = "sha256:208fbc0f25a641b953c7ec1c537a3c0b43a4faf6a8f303be15d02e308c671bab"},
-    {file = "pygame-2.0.0-pp37-pypy37_pp73-manylinux2010_i686.whl", hash = "sha256:e8effa8b5a8d2bb9c07dccb18337b07174d4956516978a35350bc23e254189cc"},
-    {file = "pygame-2.0.0-pp37-pypy37_pp73-manylinux2010_x86_64.whl", hash = "sha256:5a3f0f436174e95027c60a37f06d84d25d2275de3255fe85846baa47c0e36e6b"},
-    {file = "pygame-2.0.0.tar.gz", hash = "sha256:63b038da116a643046181b02173fd894d87d2f85ecfd6aa7d5ece73c6ef501e9"},
 ]
 pygments = [
     {file = "Pygments-2.7.2-py3-none-any.whl", hash = "sha256:88a0bbcd659fcb9573703957c6b9cff9fab7295e6e76db54c9d00ae42df32773"},
